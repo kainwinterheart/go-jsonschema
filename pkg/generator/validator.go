@@ -9,8 +9,8 @@ import (
 	"github.com/sanity-io/litter"
 	"github.com/sosodev/duration"
 
-	"github.com/atombender/go-jsonschema/pkg/codegen"
-	"github.com/atombender/go-jsonschema/pkg/mathutils"
+	"github.com/kainwinterheart/go-jsonschema/pkg/codegen"
+	"github.com/kainwinterheart/go-jsonschema/pkg/mathutils"
 )
 
 const typeInt = "int"

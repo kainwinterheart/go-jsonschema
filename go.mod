@@ -1,4 +1,4 @@
-module github.com/atombender/go-jsonschema
+module github.com/kainwinterheart/go-jsonschema
 
 go 1.25.0
 

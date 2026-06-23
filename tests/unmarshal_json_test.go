@@ -7,11 +7,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	testAdditionalProperties "github.com/atombender/go-jsonschema/tests/data/core/additionalProperties"
-	testAllOf "github.com/atombender/go-jsonschema/tests/data/core/allOf"
-	testAnyOf "github.com/atombender/go-jsonschema/tests/data/core/anyOf"
-	test "github.com/atombender/go-jsonschema/tests/data/extraImports/gopkgYAMLv3"
-	testValudationRequiredFields "github.com/atombender/go-jsonschema/tests/data/validation/requiredFields"
+	testAdditionalProperties "github.com/kainwinterheart/go-jsonschema/tests/data/core/additionalProperties"
+	testAllOf "github.com/kainwinterheart/go-jsonschema/tests/data/core/allOf"
+	testAnyOf "github.com/kainwinterheart/go-jsonschema/tests/data/core/anyOf"
+	test "github.com/kainwinterheart/go-jsonschema/tests/data/extraImports/gopkgYAMLv3"
+	testValudationRequiredFields "github.com/kainwinterheart/go-jsonschema/tests/data/validation/requiredFields"
 )
 
 func TestJsonUnmarshalValidation(t *testing.T) {

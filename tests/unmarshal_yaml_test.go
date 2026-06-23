@@ -3,7 +3,7 @@ package tests_test
 import (
 	"testing"
 
-	test "github.com/atombender/go-jsonschema/tests/data/extraImports/gopkgYAMLv3"
+	test "github.com/kainwinterheart/go-jsonschema/tests/data/extraImports/gopkgYAMLv3"
 )
 
 func TestYamlV3UnmarshalValidEnum(t *testing.T) {
