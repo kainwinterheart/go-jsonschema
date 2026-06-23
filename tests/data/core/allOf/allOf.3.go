@@ -4,8 +4,9 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
-type AllOf3Json struct {
+type AllOf3 struct {
 	// bar corresponds to the JSON schema field "bar".
 	bar float64 `json:"bar" yaml:"bar" mapstructure:"bar"`
 
@@ -16,37 +17,37 @@ type AllOf3Json struct {
 	foo string `json:"foo" yaml:"foo" mapstructure:"foo"`
 }
 
-func (o *AllOf3Json) Bar() float64 {
+func (o *AllOf3) Bar() float64 {
 	return o.bar
 }
 
-func (o *AllOf3Json) Configurations() []interface{} {
+func (o *AllOf3) Configurations() []interface{} {
 	return o.configurations
 }
 
-func (o *AllOf3Json) Foo() string {
+func (o *AllOf3) Foo() string {
 	return o.foo
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *AllOf3Json) UnmarshalJSON(value []byte) error {
+func (j *AllOf3) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in AllOf3Json: required")
+		return fmt.Errorf("field bar in AllOf3: required")
 	}
 	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AllOf3Json: required")
+		return fmt.Errorf("field foo in AllOf3: required")
 	}
-	type AllOf3JsonHelper struct {
+	type AllOf3Helper struct {
 		Bar            float64       `json:"bar"`
 		Configurations []interface{} `json:"configurations",omitempty`
 		Foo            string        `json:"foo"`
 	}
-	type Plain AllOf3Json
-	var helper AllOf3JsonHelper
+	type Plain AllOf3
+	var helper AllOf3Helper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -54,6 +55,42 @@ func (j *AllOf3Json) UnmarshalJSON(value []byte) error {
 	plain.bar = helper.Bar
 	plain.configurations = helper.Configurations
 	plain.foo = helper.Foo
-	*j = AllOf3Json(plain)
+	*j = AllOf3(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *AllOf3) MarshalJSON() ([]byte, error) {
+	type AllOf3MarshalHelper struct {
+		Bar            float64       `json:"bar"`
+		Configurations []interface{} `json:"configurations",omitempty`
+		Foo            string        `json:"foo"`
+	}
+	helper := AllOf3MarshalHelper{
+		Bar:            j.bar,
+		Configurations: j.configurations,
+		Foo:            j.foo,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AllOf3) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["bar"]; raw != nil && !ok {
+		return fmt.Errorf("field bar in AllOf3: required")
+	}
+	if _, ok := raw["foo"]; raw != nil && !ok {
+		return fmt.Errorf("field foo in AllOf3: required")
+	}
+	type Plain AllOf3
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AllOf3(plain)
 	return nil
 }

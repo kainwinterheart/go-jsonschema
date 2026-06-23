@@ -4,8 +4,9 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
-type ExclusiveMinimumJson struct {
+type ExclusiveMinimum struct {
 	// myinteger corresponds to the JSON schema field "myInteger".
 	myinteger int `json:"myInteger" yaml:"myInteger" mapstructure:"myInteger"`
 
@@ -19,42 +20,42 @@ type ExclusiveMinimumJson struct {
 	mynumber float64 `json:"myNumber" yaml:"myNumber" mapstructure:"myNumber"`
 }
 
-func (o *ExclusiveMinimumJson) MyInteger() int {
+func (o *ExclusiveMinimum) MyInteger() int {
 	return o.myinteger
 }
 
-func (o *ExclusiveMinimumJson) MyNullableInteger() *int {
+func (o *ExclusiveMinimum) MyNullableInteger() *int {
 	return o.mynullableinteger
 }
 
-func (o *ExclusiveMinimumJson) MyNullableNumber() *float64 {
+func (o *ExclusiveMinimum) MyNullableNumber() *float64 {
 	return o.mynullablenumber
 }
 
-func (o *ExclusiveMinimumJson) MyNumber() float64 {
+func (o *ExclusiveMinimum) MyNumber() float64 {
 	return o.mynumber
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ExclusiveMinimumJson) UnmarshalJSON(value []byte) error {
+func (j *ExclusiveMinimum) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myInteger"]; raw != nil && !ok {
-		return fmt.Errorf("field myInteger in ExclusiveMinimumJson: required")
+		return fmt.Errorf("field myInteger in ExclusiveMinimum: required")
 	}
 	if _, ok := raw["myNumber"]; raw != nil && !ok {
-		return fmt.Errorf("field myNumber in ExclusiveMinimumJson: required")
+		return fmt.Errorf("field myNumber in ExclusiveMinimum: required")
 	}
-	type ExclusiveMinimumJsonHelper struct {
+	type ExclusiveMinimumHelper struct {
 		Myinteger         int      `json:"myInteger"`
 		Mynullableinteger *int     `json:"myNullableInteger",omitempty`
 		Mynullablenumber  *float64 `json:"myNullableNumber",omitempty`
 		Mynumber          float64  `json:"myNumber"`
 	}
-	type Plain ExclusiveMinimumJson
-	var helper ExclusiveMinimumJsonHelper
+	type Plain ExclusiveMinimum
+	var helper ExclusiveMinimumHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -75,6 +76,56 @@ func (j *ExclusiveMinimumJson) UnmarshalJSON(value []byte) error {
 	if 1.2 >= plain.mynumber {
 		return fmt.Errorf("field %s: must be > %v", "myNumber", 1.2)
 	}
-	*j = ExclusiveMinimumJson(plain)
+	*j = ExclusiveMinimum(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *ExclusiveMinimum) MarshalJSON() ([]byte, error) {
+	type ExclusiveMinimumMarshalHelper struct {
+		Myinteger         int      `json:"myInteger"`
+		Mynullableinteger *int     `json:"myNullableInteger",omitempty`
+		Mynullablenumber  *float64 `json:"myNullableNumber",omitempty`
+		Mynumber          float64  `json:"myNumber"`
+	}
+	helper := ExclusiveMinimumMarshalHelper{
+		Myinteger:         j.myinteger,
+		Mynullableinteger: j.mynullableinteger,
+		Mynullablenumber:  j.mynullablenumber,
+		Mynumber:          j.mynumber,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ExclusiveMinimum) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myInteger"]; raw != nil && !ok {
+		return fmt.Errorf("field myInteger in ExclusiveMinimum: required")
+	}
+	if _, ok := raw["myNumber"]; raw != nil && !ok {
+		return fmt.Errorf("field myNumber in ExclusiveMinimum: required")
+	}
+	type Plain ExclusiveMinimum
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if 2 >= plain.myinteger {
+		return fmt.Errorf("field %s: must be > %v", "myInteger", 2)
+	}
+	if plain.mynullableinteger != nil && 2 >= *plain.mynullableinteger {
+		return fmt.Errorf("field %s: must be > %v", "myNullableInteger", 2)
+	}
+	if plain.mynullablenumber != nil && 1.2 >= *plain.mynullablenumber {
+		return fmt.Errorf("field %s: must be > %v", "myNullableNumber", 1.2)
+	}
+	if 1.2 >= plain.mynumber {
+		return fmt.Errorf("field %s: must be > %v", "myNumber", 1.2)
+	}
+	*j = ExclusiveMinimum(plain)
 	return nil
 }

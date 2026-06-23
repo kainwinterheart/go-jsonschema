@@ -2,6 +2,9 @@
 
 package test
 
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
 type YamlMultilineDescriptions struct {
 	// I'm a multiline description in a literal block. Literal blocks, on the other
 	// hand,
@@ -24,4 +27,46 @@ func (o *YamlMultilineDescriptions) Bar() *string {
 
 func (o *YamlMultilineDescriptions) Foo() *string {
 	return o.foo
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *YamlMultilineDescriptions) UnmarshalJSON(value []byte) error {
+	type YamlMultilineDescriptionsHelper struct {
+		Bar *string `json:"bar",omitempty`
+		Foo *string `json:"foo",omitempty`
+	}
+	type Plain YamlMultilineDescriptions
+	var helper YamlMultilineDescriptionsHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.bar = helper.Bar
+	plain.foo = helper.Foo
+	*j = YamlMultilineDescriptions(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *YamlMultilineDescriptions) MarshalJSON() ([]byte, error) {
+	type YamlMultilineDescriptionsMarshalHelper struct {
+		Bar *string `json:"bar",omitempty`
+		Foo *string `json:"foo",omitempty`
+	}
+	helper := YamlMultilineDescriptionsMarshalHelper{
+		Bar: j.bar,
+		Foo: j.foo,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *YamlMultilineDescriptions) UnmarshalYAML(value *yaml.Node) error {
+	type Plain YamlMultilineDescriptions
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = YamlMultilineDescriptions(plain)
+	return nil
 }

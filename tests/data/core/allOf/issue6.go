@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "time"
 
@@ -31,19 +32,103 @@ func (o *Element) Name() *string {
 	return o.name
 }
 
-// see http://hl7.org/fhir/json.html#schema for information about the FHIR Json
-// Schemas
-type Issue6Json struct {
-	// A human's name with the ability to identify parts and usage.
-	name *Issue6Jsonname `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Element) UnmarshalJSON(value []byte) error {
+	type ElementHelper struct {
+		Extension []string `json:"extension",omitempty`
+		Id        *string  `json:"id",omitempty`
+		Name      *string  `json:"name",omitempty`
+	}
+	type Plain Element
+	var helper ElementHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.extension = helper.Extension
+	plain.id = helper.Id
+	plain.name = helper.Name
+	*j = Element(plain)
+	return nil
 }
 
-func (o *Issue6Json) Name() *Issue6Jsonname {
+// MarshalJSON implements json.Marshaler.
+func (j *Element) MarshalJSON() ([]byte, error) {
+	type ElementMarshalHelper struct {
+		Extension []string `json:"extension",omitempty`
+		Id        *string  `json:"id",omitempty`
+		Name      *string  `json:"name",omitempty`
+	}
+	helper := ElementMarshalHelper{
+		Extension: j.extension,
+		Id:        j.id,
+		Name:      j.name,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Element) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Element
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Element(plain)
+	return nil
+}
+
+// see http://hl7.org/fhir/json.html#schema for information about the FHIR Json
+// Schemas
+type Issue6 struct {
+	// A human's name with the ability to identify parts and usage.
+	name *Issue6name `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+}
+
+func (o *Issue6) Name() *Issue6name {
 	return o.name
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Issue6) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Issue6
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Issue6(plain)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Issue6) UnmarshalJSON(value []byte) error {
+	type Issue6Helper struct {
+		Name *Issue6name `json:"name",omitempty`
+	}
+	type Plain Issue6
+	var helper Issue6Helper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.name = helper.Name
+	*j = Issue6(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Issue6) MarshalJSON() ([]byte, error) {
+	type Issue6MarshalHelper struct {
+		Name *Issue6name `json:"name",omitempty`
+	}
+	helper := Issue6MarshalHelper{
+		Name: j.name,
+	}
+	return json.Marshal(helper)
+}
+
 // A human's name with the ability to identify parts and usage.
-type Issue6Jsonname struct {
+type Issue6name struct {
 	// Extensions for family
 	family *Element `json:"_family,omitempty,omitzero" yaml:"_family,omitempty" mapstructure:"_family,omitempty"`
 
@@ -84,48 +169,134 @@ type Issue6Jsonname struct {
 	text_2 *string `json:"text,omitempty,omitzero" yaml:"text,omitempty" mapstructure:"text,omitempty"`
 
 	// Identifies the purpose for this name.
-	use_2 *Issue6Jsonnameuse_2 `json:"use,omitempty,omitzero" yaml:"use,omitempty" mapstructure:"use,omitempty"`
+	use_2 *Issue6nameuse_2 `json:"use,omitempty,omitzero" yaml:"use,omitempty" mapstructure:"use,omitempty"`
 }
 
-func (o *Issue6Jsonname) Family() *Element {
+func (o *Issue6name) Family() *Element {
 	return o.family
 }
 
-func (o *Issue6Jsonname) Given() []Element {
+func (o *Issue6name) Given() []Element {
 	return o.given
 }
 
-func (o *Issue6Jsonname) Period() *Period {
+func (o *Issue6name) Period() *Period {
 	return o.period
 }
 
-func (o *Issue6Jsonname) Prefix() []Element {
+func (o *Issue6name) Prefix() []Element {
 	return o.prefix
 }
 
-func (o *Issue6Jsonname) Suffix() []Element {
+func (o *Issue6name) Suffix() []Element {
 	return o.suffix
 }
 
-func (o *Issue6Jsonname) Text() *Element {
+func (o *Issue6name) Text() *Element {
 	return o.text
 }
 
-func (o *Issue6Jsonname) Use() *Element {
+func (o *Issue6name) Use() *Element {
 	return o.use
 }
 
-type Issue6Jsonnameuse_2 string
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Issue6name) UnmarshalJSON(value []byte) error {
+	type Issue6nameHelper struct {
+		Family   *Element         `json:"_family",omitempty`
+		Given    []Element        `json:"_given",omitempty`
+		Prefix   []Element        `json:"_prefix",omitempty`
+		Suffix   []Element        `json:"_suffix",omitempty`
+		Text     *Element         `json:"_text",omitempty`
+		Use      *Element         `json:"_use",omitempty`
+		Family_2 *string          `json:"family",omitempty`
+		Given_2  []string         `json:"given",omitempty`
+		Period   *Period          `json:"period",omitempty`
+		Prefix_2 []string         `json:"prefix",omitempty`
+		Suffix_2 []string         `json:"suffix",omitempty`
+		Text_2   *string          `json:"text",omitempty`
+		Use_2    *Issue6nameuse_2 `json:"use",omitempty`
+	}
+	type Plain Issue6name
+	var helper Issue6nameHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.family = helper.Family
+	plain.given = helper.Given
+	plain.prefix = helper.Prefix
+	plain.suffix = helper.Suffix
+	plain.text = helper.Text
+	plain.use = helper.Use
+	plain.family_2 = helper.Family_2
+	plain.given_2 = helper.Given_2
+	plain.period = helper.Period
+	plain.prefix_2 = helper.Prefix_2
+	plain.suffix_2 = helper.Suffix_2
+	plain.text_2 = helper.Text_2
+	plain.use_2 = helper.Use_2
+	*j = Issue6name(plain)
+	return nil
+}
 
-const Issue6Jsonnameuse_2_Anonymous Issue6Jsonnameuse_2 = "anonymous"
-const Issue6Jsonnameuse_2_Maiden Issue6Jsonnameuse_2 = "maiden"
-const Issue6Jsonnameuse_2_Nickname Issue6Jsonnameuse_2 = "nickname"
-const Issue6Jsonnameuse_2_Official Issue6Jsonnameuse_2 = "official"
-const Issue6Jsonnameuse_2_Old Issue6Jsonnameuse_2 = "old"
-const Issue6Jsonnameuse_2_Temp Issue6Jsonnameuse_2 = "temp"
-const Issue6Jsonnameuse_2_Usual Issue6Jsonnameuse_2 = "usual"
+// MarshalJSON implements json.Marshaler.
+func (j *Issue6name) MarshalJSON() ([]byte, error) {
+	type Issue6nameMarshalHelper struct {
+		Family   *Element         `json:"_family",omitempty`
+		Given    []Element        `json:"_given",omitempty`
+		Prefix   []Element        `json:"_prefix",omitempty`
+		Suffix   []Element        `json:"_suffix",omitempty`
+		Text     *Element         `json:"_text",omitempty`
+		Use      *Element         `json:"_use",omitempty`
+		Family_2 *string          `json:"family",omitempty`
+		Given_2  []string         `json:"given",omitempty`
+		Period   *Period          `json:"period",omitempty`
+		Prefix_2 []string         `json:"prefix",omitempty`
+		Suffix_2 []string         `json:"suffix",omitempty`
+		Text_2   *string          `json:"text",omitempty`
+		Use_2    *Issue6nameuse_2 `json:"use",omitempty`
+	}
+	helper := Issue6nameMarshalHelper{
+		Family:   j.family,
+		Given:    j.given,
+		Prefix:   j.prefix,
+		Suffix:   j.suffix,
+		Text:     j.text,
+		Use:      j.use,
+		Family_2: j.family_2,
+		Given_2:  j.given_2,
+		Period:   j.period,
+		Prefix_2: j.prefix_2,
+		Suffix_2: j.suffix_2,
+		Text_2:   j.text_2,
+		Use_2:    j.use_2,
+	}
+	return json.Marshal(helper)
+}
 
-var enumValues_Issue6Jsonnameuse_2 = []interface{}{
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Issue6name) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Issue6name
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Issue6name(plain)
+	return nil
+}
+
+type Issue6nameuse_2 string
+
+const Issue6nameuse_2_Anonymous Issue6nameuse_2 = "anonymous"
+const Issue6nameuse_2_Maiden Issue6nameuse_2 = "maiden"
+const Issue6nameuse_2_Nickname Issue6nameuse_2 = "nickname"
+const Issue6nameuse_2_Official Issue6nameuse_2 = "official"
+const Issue6nameuse_2_Old Issue6nameuse_2 = "old"
+const Issue6nameuse_2_Temp Issue6nameuse_2 = "temp"
+const Issue6nameuse_2_Usual Issue6nameuse_2 = "usual"
+
+var enumValues_Issue6nameuse_2 = []interface{}{
 	"usual",
 	"official",
 	"temp",
@@ -135,23 +306,43 @@ var enumValues_Issue6Jsonnameuse_2 = []interface{}{
 	"maiden",
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Issue6Jsonnameuse_2) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Issue6nameuse_2) UnmarshalYAML(value *yaml.Node) error {
 	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
-	for _, expected := range enumValues_Issue6Jsonnameuse_2 {
+	for _, expected := range enumValues_Issue6nameuse_2 {
 		if reflect.DeepEqual(v, expected) {
 			ok = true
 			break
 		}
 	}
 	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_Issue6Jsonnameuse_2, v)
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_Issue6nameuse_2, v)
 	}
-	*j = Issue6Jsonnameuse_2(v)
+	*j = Issue6nameuse_2(v)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Issue6nameuse_2) UnmarshalJSON(value []byte) error {
+	var v string
+	if err := json.Unmarshal(value, &v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_Issue6nameuse_2 {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_Issue6nameuse_2, v)
+	}
+	*j = Issue6nameuse_2(v)
 	return nil
 }
 
@@ -171,4 +362,46 @@ func (o *Period) End() *time.Time {
 
 func (o *Period) Start() *time.Time {
 	return o.start
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Period) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Period
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Period(plain)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Period) UnmarshalJSON(value []byte) error {
+	type PeriodHelper struct {
+		End   *time.Time `json:"end",omitempty`
+		Start *time.Time `json:"start",omitempty`
+	}
+	type Plain Period
+	var helper PeriodHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.end = helper.End
+	plain.start = helper.Start
+	*j = Period(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Period) MarshalJSON() ([]byte, error) {
+	type PeriodMarshalHelper struct {
+		End   *time.Time `json:"end",omitempty`
+		Start *time.Time `json:"start",omitempty`
+	}
+	helper := PeriodMarshalHelper{
+		End:   j.end,
+		Start: j.start,
+	}
+	return json.Marshal(helper)
 }

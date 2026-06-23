@@ -4,107 +4,108 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
-type ExactJson struct {
+type Exact struct {
 	// i16 corresponds to the JSON schema field "i16".
-	i16 []int `json:"i16" yaml:"i16" mapstructure:"i16"`
+	i16 []int16 `json:"i16" yaml:"i16" mapstructure:"i16"`
 
 	// i32 corresponds to the JSON schema field "i32".
-	i32 []int `json:"i32" yaml:"i32" mapstructure:"i32"`
+	i32 []int32 `json:"i32" yaml:"i32" mapstructure:"i32"`
 
 	// i64 corresponds to the JSON schema field "i64".
-	i64 []int `json:"i64" yaml:"i64" mapstructure:"i64"`
+	i64 []int64 `json:"i64" yaml:"i64" mapstructure:"i64"`
 
 	// i8 corresponds to the JSON schema field "i8".
-	i8 []int `json:"i8" yaml:"i8" mapstructure:"i8"`
+	i8 []int8 `json:"i8" yaml:"i8" mapstructure:"i8"`
 
 	// u16 corresponds to the JSON schema field "u16".
-	u16 []int `json:"u16" yaml:"u16" mapstructure:"u16"`
+	u16 []uint16 `json:"u16" yaml:"u16" mapstructure:"u16"`
 
 	// u32 corresponds to the JSON schema field "u32".
-	u32 []int `json:"u32" yaml:"u32" mapstructure:"u32"`
+	u32 []uint32 `json:"u32" yaml:"u32" mapstructure:"u32"`
 
 	// u64 corresponds to the JSON schema field "u64".
-	u64 []int `json:"u64" yaml:"u64" mapstructure:"u64"`
+	u64 []uint64 `json:"u64" yaml:"u64" mapstructure:"u64"`
 
 	// u8 corresponds to the JSON schema field "u8".
-	u8 []int `json:"u8" yaml:"u8" mapstructure:"u8"`
+	u8 []uint8 `json:"u8" yaml:"u8" mapstructure:"u8"`
 }
 
-func (o *ExactJson) I16() []int {
+func (o *Exact) I16() []int16 {
 	return o.i16
 }
 
-func (o *ExactJson) I32() []int {
+func (o *Exact) I32() []int32 {
 	return o.i32
 }
 
-func (o *ExactJson) I64() []int {
+func (o *Exact) I64() []int64 {
 	return o.i64
 }
 
-func (o *ExactJson) I8() []int {
+func (o *Exact) I8() []int8 {
 	return o.i8
 }
 
-func (o *ExactJson) U16() []int {
+func (o *Exact) U16() []uint16 {
 	return o.u16
 }
 
-func (o *ExactJson) U32() []int {
+func (o *Exact) U32() []uint32 {
 	return o.u32
 }
 
-func (o *ExactJson) U64() []int {
+func (o *Exact) U64() []uint64 {
 	return o.u64
 }
 
-func (o *ExactJson) U8() []int {
+func (o *Exact) U8() []uint8 {
 	return o.u8
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ExactJson) UnmarshalJSON(value []byte) error {
+func (j *Exact) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["i16"]; raw != nil && !ok {
-		return fmt.Errorf("field i16 in ExactJson: required")
+		return fmt.Errorf("field i16 in Exact: required")
 	}
 	if _, ok := raw["i32"]; raw != nil && !ok {
-		return fmt.Errorf("field i32 in ExactJson: required")
+		return fmt.Errorf("field i32 in Exact: required")
 	}
 	if _, ok := raw["i64"]; raw != nil && !ok {
-		return fmt.Errorf("field i64 in ExactJson: required")
+		return fmt.Errorf("field i64 in Exact: required")
 	}
 	if _, ok := raw["i8"]; raw != nil && !ok {
-		return fmt.Errorf("field i8 in ExactJson: required")
+		return fmt.Errorf("field i8 in Exact: required")
 	}
 	if _, ok := raw["u16"]; raw != nil && !ok {
-		return fmt.Errorf("field u16 in ExactJson: required")
+		return fmt.Errorf("field u16 in Exact: required")
 	}
 	if _, ok := raw["u32"]; raw != nil && !ok {
-		return fmt.Errorf("field u32 in ExactJson: required")
+		return fmt.Errorf("field u32 in Exact: required")
 	}
 	if _, ok := raw["u64"]; raw != nil && !ok {
-		return fmt.Errorf("field u64 in ExactJson: required")
+		return fmt.Errorf("field u64 in Exact: required")
 	}
 	if _, ok := raw["u8"]; raw != nil && !ok {
-		return fmt.Errorf("field u8 in ExactJson: required")
+		return fmt.Errorf("field u8 in Exact: required")
 	}
-	type ExactJsonHelper struct {
-		I16 []int `json:"i16"`
-		I32 []int `json:"i32"`
-		I64 []int `json:"i64"`
-		I8  []int `json:"i8"`
-		U16 []int `json:"u16"`
-		U32 []int `json:"u32"`
-		U64 []int `json:"u64"`
-		U8  []int `json:"u8"`
+	type ExactHelper struct {
+		I16 []int16  `json:"i16"`
+		I32 []int32  `json:"i32"`
+		I64 []int64  `json:"i64"`
+		I8  []int8   `json:"i8"`
+		U16 []uint16 `json:"u16"`
+		U32 []uint32 `json:"u32"`
+		U64 []uint64 `json:"u64"`
+		U8  []uint8  `json:"u8"`
 	}
-	type Plain ExactJson
-	var helper ExactJsonHelper
+	type Plain Exact
+	var helper ExactHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -117,6 +118,70 @@ func (j *ExactJson) UnmarshalJSON(value []byte) error {
 	plain.u32 = helper.U32
 	plain.u64 = helper.U64
 	plain.u8 = helper.U8
-	*j = ExactJson(plain)
+	*j = Exact(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Exact) MarshalJSON() ([]byte, error) {
+	type ExactMarshalHelper struct {
+		I16 []int16  `json:"i16"`
+		I32 []int32  `json:"i32"`
+		I64 []int64  `json:"i64"`
+		I8  []int8   `json:"i8"`
+		U16 []uint16 `json:"u16"`
+		U32 []uint32 `json:"u32"`
+		U64 []uint64 `json:"u64"`
+		U8  []uint8  `json:"u8"`
+	}
+	helper := ExactMarshalHelper{
+		I16: j.i16,
+		I32: j.i32,
+		I64: j.i64,
+		I8:  j.i8,
+		U16: j.u16,
+		U32: j.u32,
+		U64: j.u64,
+		U8:  j.u8,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Exact) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["i16"]; raw != nil && !ok {
+		return fmt.Errorf("field i16 in Exact: required")
+	}
+	if _, ok := raw["i32"]; raw != nil && !ok {
+		return fmt.Errorf("field i32 in Exact: required")
+	}
+	if _, ok := raw["i64"]; raw != nil && !ok {
+		return fmt.Errorf("field i64 in Exact: required")
+	}
+	if _, ok := raw["i8"]; raw != nil && !ok {
+		return fmt.Errorf("field i8 in Exact: required")
+	}
+	if _, ok := raw["u16"]; raw != nil && !ok {
+		return fmt.Errorf("field u16 in Exact: required")
+	}
+	if _, ok := raw["u32"]; raw != nil && !ok {
+		return fmt.Errorf("field u32 in Exact: required")
+	}
+	if _, ok := raw["u64"]; raw != nil && !ok {
+		return fmt.Errorf("field u64 in Exact: required")
+	}
+	if _, ok := raw["u8"]; raw != nil && !ok {
+		return fmt.Errorf("field u8 in Exact: required")
+	}
+	type Plain Exact
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Exact(plain)
 	return nil
 }

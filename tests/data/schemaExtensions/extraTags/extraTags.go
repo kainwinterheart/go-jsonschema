@@ -2,11 +2,52 @@
 
 package test
 
-type ExtraTagsJson struct {
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+type ExtraTags struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty" a:"" b:"foo,bar" c:"baz"`
 }
 
-func (o *ExtraTagsJson) Name() *string {
+func (o *ExtraTags) Name() *string {
 	return o.name
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *ExtraTags) UnmarshalJSON(value []byte) error {
+	type ExtraTagsHelper struct {
+		Name *string `json:"name",omitempty`
+	}
+	type Plain ExtraTags
+	var helper ExtraTagsHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.name = helper.Name
+	*j = ExtraTags(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *ExtraTags) MarshalJSON() ([]byte, error) {
+	type ExtraTagsMarshalHelper struct {
+		Name *string `json:"name",omitempty`
+	}
+	helper := ExtraTagsMarshalHelper{
+		Name: j.name,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ExtraTags) UnmarshalYAML(value *yaml.Node) error {
+	type Plain ExtraTags
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ExtraTags(plain)
+	return nil
 }

@@ -2,7 +2,18 @@
 
 package test
 
-type RefExternalFileJson struct {
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+type Ref struct {
+	// mything corresponds to the JSON schema field "myThing".
+	mything *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
+
+	// mything2 corresponds to the JSON schema field "myThing2".
+	mything2 *Thing `json:"myThing2,omitempty,omitzero" yaml:"myThing2,omitempty" mapstructure:"myThing2,omitempty"`
+}
+
+type RefExternalFile struct {
 	// myexternalthing corresponds to the JSON schema field "myExternalThing".
 	myexternalthing *Thing `json:"myExternalThing,omitempty,omitzero" yaml:"myExternalThing,omitempty" mapstructure:"myExternalThing,omitempty"`
 
@@ -11,28 +22,104 @@ type RefExternalFileJson struct {
 	someotherexternalthing *Thing `json:"someOtherExternalThing,omitempty,omitzero" yaml:"someOtherExternalThing,omitempty" mapstructure:"someOtherExternalThing,omitempty"`
 }
 
-func (o *RefExternalFileJson) MyExternalThing() *Thing {
+func (o *RefExternalFile) MyExternalThing() *Thing {
 	return o.myexternalthing
 }
 
-func (o *RefExternalFileJson) SomeOtherExternalThing() *Thing {
+func (o *RefExternalFile) SomeOtherExternalThing() *Thing {
 	return o.someotherexternalthing
 }
 
-type RefJson struct {
-	// mything corresponds to the JSON schema field "myThing".
-	mything *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
-
-	// mything2 corresponds to the JSON schema field "myThing2".
-	mything2 *Thing `json:"myThing2,omitempty,omitzero" yaml:"myThing2,omitempty" mapstructure:"myThing2,omitempty"`
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RefExternalFile) UnmarshalYAML(value *yaml.Node) error {
+	type Plain RefExternalFile
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RefExternalFile(plain)
+	return nil
 }
 
-func (o *RefJson) MyThing() *Thing {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *RefExternalFile) UnmarshalJSON(value []byte) error {
+	type RefExternalFileHelper struct {
+		Myexternalthing        *Thing `json:"myExternalThing",omitempty`
+		Someotherexternalthing *Thing `json:"someOtherExternalThing",omitempty`
+	}
+	type Plain RefExternalFile
+	var helper RefExternalFileHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.myexternalthing = helper.Myexternalthing
+	plain.someotherexternalthing = helper.Someotherexternalthing
+	*j = RefExternalFile(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *RefExternalFile) MarshalJSON() ([]byte, error) {
+	type RefExternalFileMarshalHelper struct {
+		Myexternalthing        *Thing `json:"myExternalThing",omitempty`
+		Someotherexternalthing *Thing `json:"someOtherExternalThing",omitempty`
+	}
+	helper := RefExternalFileMarshalHelper{
+		Myexternalthing:        j.myexternalthing,
+		Someotherexternalthing: j.someotherexternalthing,
+	}
+	return json.Marshal(helper)
+}
+
+func (o *Ref) MyThing() *Thing {
 	return o.mything
 }
 
-func (o *RefJson) MyThing2() *Thing {
+func (o *Ref) MyThing2() *Thing {
 	return o.mything2
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Ref) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Ref
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Ref(plain)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Ref) UnmarshalJSON(value []byte) error {
+	type RefHelper struct {
+		Mything  *Thing `json:"myThing",omitempty`
+		Mything2 *Thing `json:"myThing2",omitempty`
+	}
+	type Plain Ref
+	var helper RefHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.mything = helper.Mything
+	plain.mything2 = helper.Mything2
+	*j = Ref(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Ref) MarshalJSON() ([]byte, error) {
+	type RefMarshalHelper struct {
+		Mything  *Thing `json:"myThing",omitempty`
+		Mything2 *Thing `json:"myThing2",omitempty`
+	}
+	helper := RefMarshalHelper{
+		Mything:  j.mything,
+		Mything2: j.mything2,
+	}
+	return json.Marshal(helper)
 }
 
 type Thing struct {
@@ -42,4 +129,42 @@ type Thing struct {
 
 func (o *Thing) Name() *string {
 	return o.name
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Thing
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Thing(plain)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Thing) UnmarshalJSON(value []byte) error {
+	type ThingHelper struct {
+		Name *string `json:"name",omitempty`
+	}
+	type Plain Thing
+	var helper ThingHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.name = helper.Name
+	*j = Thing(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Thing) MarshalJSON() ([]byte, error) {
+	type ThingMarshalHelper struct {
+		Name *string `json:"name",omitempty`
+	}
+	helper := ThingMarshalHelper{
+		Name: j.name,
+	}
+	return json.Marshal(helper)
 }

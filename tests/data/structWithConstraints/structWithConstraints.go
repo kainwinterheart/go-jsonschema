@@ -5,31 +5,32 @@ package test
 import "encoding/json"
 import "fmt"
 import "github.com/go-viper/mapstructure/v2"
+import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "strings"
 
-type StructWithConstraintsJson struct {
+type StructWithConstraints struct {
 	// prop corresponds to the JSON schema field "prop".
 	prop *float64 `json:"prop,omitempty,omitzero" yaml:"prop,omitempty" mapstructure:"prop,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
-func (o *StructWithConstraintsJson) Prop() *float64 {
+func (o *StructWithConstraints) Prop() *float64 {
 	return o.prop
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *StructWithConstraintsJson) UnmarshalJSON(value []byte) error {
+func (j *StructWithConstraints) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	type StructWithConstraintsJsonHelper struct {
+	type StructWithConstraintsHelper struct {
 		Prop *float64 `json:"prop",omitempty`
 	}
-	type Plain StructWithConstraintsJson
-	var helper StructWithConstraintsJsonHelper
+	type Plain StructWithConstraints
+	var helper StructWithConstraintsHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -46,6 +47,43 @@ func (j *StructWithConstraintsJson) UnmarshalJSON(value []byte) error {
 	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
 		return err
 	}
-	*j = StructWithConstraintsJson(plain)
+	*j = StructWithConstraints(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *StructWithConstraints) MarshalJSON() ([]byte, error) {
+	type StructWithConstraintsMarshalHelper struct {
+		Prop *float64 `json:"prop",omitempty`
+	}
+	helper := StructWithConstraintsMarshalHelper{
+		Prop: j.prop,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *StructWithConstraints) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain StructWithConstraints
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.prop != nil && 0 > *plain.prop {
+		return fmt.Errorf("field %s: must be >= %v", "prop", 0)
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = StructWithConstraints(plain)
 	return nil
 }

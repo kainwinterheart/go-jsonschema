@@ -2,24 +2,102 @@
 
 package test
 
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
 import "time"
 
-type DateTimeNullableJson struct {
+type DateTimeNullable struct {
 	// myobject corresponds to the JSON schema field "myObject".
-	myobject *DateTimeNullableJsonmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+	myobject *DateTimeNullablemyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
-func (o *DateTimeNullableJson) MyObject() *DateTimeNullableJsonmyobject {
+func (o *DateTimeNullable) MyObject() *DateTimeNullablemyobject {
 	return o.myobject
 }
 
-type DateTimeNullableJsonmyobject struct {
-	// mynullabledatetime corresponds to the JSON schema field "myNullableDateTime".
-	mynullabledatetime DateTimeNullableJsonmyobjectmynullabledatetime `json:"myNullableDateTime,omitempty,omitzero" yaml:"myNullableDateTime,omitempty" mapstructure:"myNullableDateTime,omitempty"`
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *DateTimeNullable) UnmarshalJSON(value []byte) error {
+	type DateTimeNullableHelper struct {
+		Myobject *DateTimeNullablemyobject `json:"myObject",omitempty`
+	}
+	type Plain DateTimeNullable
+	var helper DateTimeNullableHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.myobject = helper.Myobject
+	*j = DateTimeNullable(plain)
+	return nil
 }
 
-func (o *DateTimeNullableJsonmyobject) MyNullableDateTime() DateTimeNullableJsonmyobjectmynullabledatetime {
+// MarshalJSON implements json.Marshaler.
+func (j *DateTimeNullable) MarshalJSON() ([]byte, error) {
+	type DateTimeNullableMarshalHelper struct {
+		Myobject *DateTimeNullablemyobject `json:"myObject",omitempty`
+	}
+	helper := DateTimeNullableMarshalHelper{
+		Myobject: j.myobject,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *DateTimeNullable) UnmarshalYAML(value *yaml.Node) error {
+	type Plain DateTimeNullable
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = DateTimeNullable(plain)
+	return nil
+}
+
+type DateTimeNullablemyobject struct {
+	// mynullabledatetime corresponds to the JSON schema field "myNullableDateTime".
+	mynullabledatetime DateTimeNullablemyobjectmynullabledatetime `json:"myNullableDateTime,omitempty,omitzero" yaml:"myNullableDateTime,omitempty" mapstructure:"myNullableDateTime,omitempty"`
+}
+
+func (o *DateTimeNullablemyobject) MyNullableDateTime() DateTimeNullablemyobjectmynullabledatetime {
 	return o.mynullabledatetime
 }
 
-type DateTimeNullableJsonmyobjectmynullabledatetime *time.Time
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *DateTimeNullablemyobject) UnmarshalJSON(value []byte) error {
+	type DateTimeNullablemyobjectHelper struct {
+		Mynullabledatetime DateTimeNullablemyobjectmynullabledatetime `json:"myNullableDateTime",omitempty`
+	}
+	type Plain DateTimeNullablemyobject
+	var helper DateTimeNullablemyobjectHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.mynullabledatetime = helper.Mynullabledatetime
+	*j = DateTimeNullablemyobject(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *DateTimeNullablemyobject) MarshalJSON() ([]byte, error) {
+	type DateTimeNullablemyobjectMarshalHelper struct {
+		Mynullabledatetime DateTimeNullablemyobjectmynullabledatetime `json:"myNullableDateTime",omitempty`
+	}
+	helper := DateTimeNullablemyobjectMarshalHelper{
+		Mynullabledatetime: j.mynullabledatetime,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *DateTimeNullablemyobject) UnmarshalYAML(value *yaml.Node) error {
+	type Plain DateTimeNullablemyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = DateTimeNullablemyobject(plain)
+	return nil
+}
+
+type DateTimeNullablemyobjectmynullabledatetime *time.Time

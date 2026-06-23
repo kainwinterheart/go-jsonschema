@@ -2,29 +2,146 @@
 
 package test
 
-type ObjectNestedJson struct {
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+type ObjectNested struct {
 	// myobject corresponds to the JSON schema field "myObject".
-	myobject *ObjectNestedJsonmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+	myobject *ObjectNestedmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
-func (o *ObjectNestedJson) MyObject() *ObjectNestedJsonmyobject {
+func (o *ObjectNested) MyObject() *ObjectNestedmyobject {
 	return o.myobject
 }
 
-type ObjectNestedJsonmyobject struct {
-	// myobject corresponds to the JSON schema field "myObject".
-	myobject *ObjectNestedJsonmyobjectmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *ObjectNested) UnmarshalJSON(value []byte) error {
+	type ObjectNestedHelper struct {
+		Myobject *ObjectNestedmyobject `json:"myObject",omitempty`
+	}
+	type Plain ObjectNested
+	var helper ObjectNestedHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.myobject = helper.Myobject
+	*j = ObjectNested(plain)
+	return nil
 }
 
-func (o *ObjectNestedJsonmyobject) MyObject() *ObjectNestedJsonmyobjectmyobject {
+// MarshalJSON implements json.Marshaler.
+func (j *ObjectNested) MarshalJSON() ([]byte, error) {
+	type ObjectNestedMarshalHelper struct {
+		Myobject *ObjectNestedmyobject `json:"myObject",omitempty`
+	}
+	helper := ObjectNestedMarshalHelper{
+		Myobject: j.myobject,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ObjectNested) UnmarshalYAML(value *yaml.Node) error {
+	type Plain ObjectNested
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ObjectNested(plain)
+	return nil
+}
+
+type ObjectNestedmyobject struct {
+	// myobject corresponds to the JSON schema field "myObject".
+	myobject *ObjectNestedmyobjectmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+}
+
+func (o *ObjectNestedmyobject) MyObject() *ObjectNestedmyobjectmyobject {
 	return o.myobject
 }
 
-type ObjectNestedJsonmyobjectmyobject struct {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *ObjectNestedmyobject) UnmarshalJSON(value []byte) error {
+	type ObjectNestedmyobjectHelper struct {
+		Myobject *ObjectNestedmyobjectmyobject `json:"myObject",omitempty`
+	}
+	type Plain ObjectNestedmyobject
+	var helper ObjectNestedmyobjectHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.myobject = helper.Myobject
+	*j = ObjectNestedmyobject(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *ObjectNestedmyobject) MarshalJSON() ([]byte, error) {
+	type ObjectNestedmyobjectMarshalHelper struct {
+		Myobject *ObjectNestedmyobjectmyobject `json:"myObject",omitempty`
+	}
+	helper := ObjectNestedmyobjectMarshalHelper{
+		Myobject: j.myobject,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ObjectNestedmyobject) UnmarshalYAML(value *yaml.Node) error {
+	type Plain ObjectNestedmyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ObjectNestedmyobject(plain)
+	return nil
+}
+
+type ObjectNestedmyobjectmyobject struct {
 	// mystring corresponds to the JSON schema field "myString".
 	mystring *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
 }
 
-func (o *ObjectNestedJsonmyobjectmyobject) MyString() *string {
+func (o *ObjectNestedmyobjectmyobject) MyString() *string {
 	return o.mystring
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *ObjectNestedmyobjectmyobject) UnmarshalJSON(value []byte) error {
+	type ObjectNestedmyobjectmyobjectHelper struct {
+		Mystring *string `json:"myString",omitempty`
+	}
+	type Plain ObjectNestedmyobjectmyobject
+	var helper ObjectNestedmyobjectmyobjectHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.mystring = helper.Mystring
+	*j = ObjectNestedmyobjectmyobject(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *ObjectNestedmyobjectmyobject) MarshalJSON() ([]byte, error) {
+	type ObjectNestedmyobjectmyobjectMarshalHelper struct {
+		Mystring *string `json:"myString",omitempty`
+	}
+	helper := ObjectNestedmyobjectmyobjectMarshalHelper{
+		Mystring: j.mystring,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ObjectNestedmyobjectmyobject) UnmarshalYAML(value *yaml.Node) error {
+	type Plain ObjectNestedmyobjectmyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ObjectNestedmyobjectmyobject(plain)
+	return nil
 }

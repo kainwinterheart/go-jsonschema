@@ -4,45 +4,113 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 import "net/netip"
 
-type IpJson struct {
+type Ip struct {
 	// myobject corresponds to the JSON schema field "myObject".
-	myobject *IpJsonmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+	myobject *Ipmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
-func (o *IpJson) MyObject() *IpJsonmyobject {
+func (o *Ip) MyObject() *Ipmyobject {
 	return o.myobject
 }
 
-type IpJsonmyobject struct {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Ip) UnmarshalJSON(value []byte) error {
+	type IpHelper struct {
+		Myobject *Ipmyobject `json:"myObject",omitempty`
+	}
+	type Plain Ip
+	var helper IpHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.myobject = helper.Myobject
+	*j = Ip(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Ip) MarshalJSON() ([]byte, error) {
+	type IpMarshalHelper struct {
+		Myobject *Ipmyobject `json:"myObject",omitempty`
+	}
+	helper := IpMarshalHelper{
+		Myobject: j.myobject,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Ip) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Ip
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Ip(plain)
+	return nil
+}
+
+type Ipmyobject struct {
 	// myip corresponds to the JSON schema field "myIp".
 	myip netip.Addr `json:"myIp" yaml:"myIp" mapstructure:"myIp"`
 }
 
-func (o *IpJsonmyobject) MyIp() netip.Addr {
+func (o *Ipmyobject) MyIp() netip.Addr {
 	return o.myip
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *IpJsonmyobject) UnmarshalJSON(value []byte) error {
+func (j *Ipmyobject) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myIp"]; raw != nil && !ok {
-		return fmt.Errorf("field myIp in IpJsonmyobject: required")
+		return fmt.Errorf("field myIp in Ipmyobject: required")
 	}
-	type IpJsonmyobjectHelper struct {
+	type IpmyobjectHelper struct {
 		Myip netip.Addr `json:"myIp"`
 	}
-	type Plain IpJsonmyobject
-	var helper IpJsonmyobjectHelper
+	type Plain Ipmyobject
+	var helper IpmyobjectHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.myip = helper.Myip
-	*j = IpJsonmyobject(plain)
+	*j = Ipmyobject(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Ipmyobject) MarshalJSON() ([]byte, error) {
+	type IpmyobjectMarshalHelper struct {
+		Myip netip.Addr `json:"myIp"`
+	}
+	helper := IpmyobjectMarshalHelper{
+		Myip: j.myip,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Ipmyobject) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myIp"]; raw != nil && !ok {
+		return fmt.Errorf("field myIp in Ipmyobject: required")
+	}
+	type Plain Ipmyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Ipmyobject(plain)
 	return nil
 }

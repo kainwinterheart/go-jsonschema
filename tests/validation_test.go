@@ -64,7 +64,7 @@ func TestMaxStringLength(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			model := testMaxLength.MaxLengthJson{}
+			model := testMaxLength.MaxLength{}
 
 			err := json.Unmarshal([]byte(tC.data), &model)
 
@@ -111,7 +111,7 @@ func TestMinStringLength(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			model := testMinLength.MinLengthJson{}
+			model := testMinLength.MinLength{}
 
 			err := json.Unmarshal([]byte(tC.data), &model)
 
@@ -148,7 +148,7 @@ func TestRequiredFields(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			model := testRequiredFields.RequiredNullableJson{}
+			model := testRequiredFields.RequiredNullable{}
 
 			err := json.Unmarshal([]byte(tC.data), &model)
 
@@ -180,7 +180,7 @@ func TestReadOnlyFields(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			model := testReadOnlyFields.ReadOnlyJson{}
+			model := testReadOnlyFields.ReadOnly{}
 
 			err := json.Unmarshal([]byte(tC.data), &model)
 
@@ -207,7 +207,7 @@ func TestReadOnlyFieldsNoValidation(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			model := testReadOnlyValidationDisabledFields.ReadOnlyNoValidationJson{}
+			model := testReadOnlyValidationDisabledFields.ReadOnlyNoValidation{}
 
 			err := json.Unmarshal([]byte(tC.data), &model)
 
@@ -239,7 +239,7 @@ func TestReadOnlyAndRequiredFields(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			model := testReadOnlyAndRequiredFields.ReadOnlyAndRequiredJson{}
+			model := testReadOnlyAndRequiredFields.ReadOnlyAndRequired{}
 
 			err := json.Unmarshal([]byte(tC.data), &model)
 
@@ -263,7 +263,7 @@ func TestPattern(t *testing.T) {
 		{
 			desc:    "myString does not match pattern",
 			data:    `{"myString": "0x123456"}`,
-			wantErr: errors.New("field MyString pattern match: must match ^0x[0-9a-f]{10}\\.$"),
+			wantErr: errors.New("field mystring pattern match: must match ^0x[0-9a-f]{10}\\.$"),
 		},
 		{
 			desc: "no violations",
@@ -272,7 +272,7 @@ func TestPattern(t *testing.T) {
 		{
 			desc:    "myEscapedString does not match pattern",
 			data:    `{"myEscapedString": "${MISSING_CURLY_BRACKET}", "myString": "0x12345abcde."}`,
-			wantErr: errors.New("field MyEscapedString pattern match: must match ^\\$\\{\\{(.|[\\r\\n])*\\}\\}$"),
+			wantErr: errors.New("field myescapedstring pattern match: must match ^\\$\\{\\{(.|[\\r\\n])*\\}\\}$"),
 		},
 	}
 
@@ -280,7 +280,7 @@ func TestPattern(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			model := testPattern.PatternJson{}
+			model := testPattern.Pattern{}
 
 			err := json.Unmarshal([]byte(tC.data), &model)
 
@@ -312,7 +312,7 @@ func TestPrimitiveDefs(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			prim := testPrimitiveDefs.PrimitiveDefsJson{}
+			prim := testPrimitiveDefs.PrimitiveDefs{}
 
 			err := json.Unmarshal([]byte(tC.data), &prim)
 
@@ -353,7 +353,7 @@ func TestMultipleOf(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			mo := testMultipleOf.MultipleOfJson{}
+			mo := testMultipleOf.MultipleOf{}
 
 			err := json.Unmarshal([]byte(tC.data), &mo)
 
@@ -394,7 +394,7 @@ func TestMaximum(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			mo := testMaximum.MaximumJson{}
+			mo := testMaximum.Maximum{}
 
 			err := json.Unmarshal([]byte(tC.data), &mo)
 
@@ -435,7 +435,7 @@ func TestMinimum(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			mo := testMinimum.MinimumJson{}
+			mo := testMinimum.Minimum{}
 
 			err := json.Unmarshal([]byte(tC.data), &mo)
 
@@ -476,13 +476,13 @@ func TestExclusiveMaximum(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			mo := testExclusiveMaximum.ExclusiveMaximumJson{}
+			mo := testExclusiveMaximum.ExclusiveMaximum{}
 
 			err := json.Unmarshal([]byte(tC.data), &mo)
 
 			helpers.CheckError(t, tC.wantErr, err)
 
-			mo2 := testExclusiveMaximum.ExclusiveMaximumOldJson{}
+			mo2 := testExclusiveMaximum.ExclusiveMaximumOld{}
 
 			err = json.Unmarshal([]byte(tC.data), &mo2)
 
@@ -523,13 +523,13 @@ func TestExclusiveMinimum(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			mo := testExclusiveMinimum.ExclusiveMinimumJson{}
+			mo := testExclusiveMinimum.ExclusiveMinimum{}
 
 			err := json.Unmarshal([]byte(tC.data), &mo)
 
 			helpers.CheckError(t, tC.wantErr, err)
 
-			mo2 := testExclusiveMinimum.ExclusiveMinimumOldJson{}
+			mo2 := testExclusiveMinimum.ExclusiveMinimumOld{}
 
 			err = json.Unmarshal([]byte(tC.data), &mo2)
 

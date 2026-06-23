@@ -2,7 +2,10 @@
 
 package test
 
-type CaseJson struct {
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+type ACase struct {
 	// capitalcamelfield corresponds to the JSON schema field "CapitalCamelField".
 	capitalcamelfield *string `json:"CapitalCamelField,omitempty,omitzero" yaml:"CapitalCamelField,omitempty" mapstructure:"CapitalCamelField,omitempty"`
 
@@ -22,26 +25,84 @@ type CaseJson struct {
 	snakecase *string `json:"snake_case,omitempty,omitzero" yaml:"snake_case,omitempty" mapstructure:"snake_case,omitempty"`
 }
 
-func (o *CaseJson) CamelCase() *string {
+func (o *ACase) CamelCase() *string {
 	return o.camelcase
 }
 
-func (o *CaseJson) CapitalCamelField() *string {
+func (o *ACase) CapitalCamelField() *string {
 	return o.capitalcamelfield
 }
 
-func (o *CaseJson) Lowercase() *string {
+func (o *ACase) Lowercase() *string {
 	return o.lowercase
 }
 
-func (o *CaseJson) SnakeCase() *string {
+func (o *ACase) SnakeCase() *string {
 	return o.snakecase
 }
 
-func (o *CaseJson) SnakeMixedCase() *string {
+func (o *ACase) SnakeMixedCase() *string {
 	return o.snakemixedcase
 }
 
-func (o *CaseJson) UPPERCASEFIELD() *string {
+func (o *ACase) UPPERCASEFIELD() *string {
 	return o.uppercasefield
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *ACase) UnmarshalJSON(value []byte) error {
+	type ACaseHelper struct {
+		Capitalcamelfield *string `json:"CapitalCamelField",omitempty`
+		Uppercasefield    *string `json:"UPPERCASEFIELD",omitempty`
+		Camelcase         *string `json:"camelCase",omitempty`
+		Lowercase         *string `json:"lowercase",omitempty`
+		Snakemixedcase    *string `json:"snake_Mixed_Case",omitempty`
+		Snakecase         *string `json:"snake_case",omitempty`
+	}
+	type Plain ACase
+	var helper ACaseHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.capitalcamelfield = helper.Capitalcamelfield
+	plain.uppercasefield = helper.Uppercasefield
+	plain.camelcase = helper.Camelcase
+	plain.lowercase = helper.Lowercase
+	plain.snakemixedcase = helper.Snakemixedcase
+	plain.snakecase = helper.Snakecase
+	*j = ACase(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *ACase) MarshalJSON() ([]byte, error) {
+	type ACaseMarshalHelper struct {
+		Capitalcamelfield *string `json:"CapitalCamelField",omitempty`
+		Uppercasefield    *string `json:"UPPERCASEFIELD",omitempty`
+		Camelcase         *string `json:"camelCase",omitempty`
+		Lowercase         *string `json:"lowercase",omitempty`
+		Snakemixedcase    *string `json:"snake_Mixed_Case",omitempty`
+		Snakecase         *string `json:"snake_case",omitempty`
+	}
+	helper := ACaseMarshalHelper{
+		Capitalcamelfield: j.capitalcamelfield,
+		Uppercasefield:    j.uppercasefield,
+		Camelcase:         j.camelcase,
+		Lowercase:         j.lowercase,
+		Snakemixedcase:    j.snakemixedcase,
+		Snakecase:         j.snakecase,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ACase) UnmarshalYAML(value *yaml.Node) error {
+	type Plain ACase
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ACase(plain)
+	return nil
 }

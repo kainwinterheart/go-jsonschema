@@ -4,9 +4,10 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 import "unicode/utf8"
 
-type MaxLengthJson struct {
+type MaxLength struct {
 	// mynullablestring corresponds to the JSON schema field "myNullableString".
 	mynullablestring *string `json:"myNullableString,omitempty,omitzero" yaml:"myNullableString,omitempty" mapstructure:"myNullableString,omitempty"`
 
@@ -14,29 +15,29 @@ type MaxLengthJson struct {
 	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
 }
 
-func (o *MaxLengthJson) MyNullableString() *string {
+func (o *MaxLength) MyNullableString() *string {
 	return o.mynullablestring
 }
 
-func (o *MaxLengthJson) MyString() string {
+func (o *MaxLength) MyString() string {
 	return o.mystring
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *MaxLengthJson) UnmarshalJSON(value []byte) error {
+func (j *MaxLength) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myString"]; raw != nil && !ok {
-		return fmt.Errorf("field myString in MaxLengthJson: required")
+		return fmt.Errorf("field myString in MaxLength: required")
 	}
-	type MaxLengthJsonHelper struct {
+	type MaxLengthHelper struct {
 		Mynullablestring *string `json:"myNullableString",omitempty`
 		Mystring         string  `json:"myString"`
 	}
-	type Plain MaxLengthJson
-	var helper MaxLengthJsonHelper
+	type Plain MaxLength
+	var helper MaxLengthHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -49,6 +50,43 @@ func (j *MaxLengthJson) UnmarshalJSON(value []byte) error {
 	if utf8.RuneCountInString(string(plain.mystring)) > 5 {
 		return fmt.Errorf("field %s length: must be <= %d", "myString", 5)
 	}
-	*j = MaxLengthJson(plain)
+	*j = MaxLength(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *MaxLength) MarshalJSON() ([]byte, error) {
+	type MaxLengthMarshalHelper struct {
+		Mynullablestring *string `json:"myNullableString",omitempty`
+		Mystring         string  `json:"myString"`
+	}
+	helper := MaxLengthMarshalHelper{
+		Mynullablestring: j.mynullablestring,
+		Mystring:         j.mystring,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *MaxLength) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myString"]; raw != nil && !ok {
+		return fmt.Errorf("field myString in MaxLength: required")
+	}
+	type Plain MaxLength
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.mynullablestring != nil && utf8.RuneCountInString(string(*plain.mynullablestring)) > 10 {
+		return fmt.Errorf("field %s length: must be <= %d", "myNullableString", 10)
+	}
+	if utf8.RuneCountInString(string(plain.mystring)) > 5 {
+		return fmt.Errorf("field %s length: must be <= %d", "myString", 5)
+	}
+	*j = MaxLength(plain)
 	return nil
 }

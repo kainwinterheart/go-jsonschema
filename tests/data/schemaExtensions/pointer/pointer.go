@@ -4,9 +4,10 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 import "time"
 
-type PointerJson struct {
+type Pointer struct {
 	// boolwithdefault corresponds to the JSON schema field "boolWithDefault".
 	boolwithdefault *bool `json:"boolWithDefault,omitempty,omitzero" yaml:"boolWithDefault,omitempty" mapstructure:"boolWithDefault,omitempty"`
 
@@ -44,63 +45,63 @@ type PointerJson struct {
 	stringwithdefault *string `json:"stringWithDefault,omitempty,omitzero" yaml:"stringWithDefault,omitempty" mapstructure:"stringWithDefault,omitempty"`
 }
 
-func (o *PointerJson) BoolWithDefault() *bool {
+func (o *Pointer) BoolWithDefault() *bool {
 	return o.boolwithdefault
 }
 
-func (o *PointerJson) DurationWithDefault() *time.Duration {
+func (o *Pointer) DurationWithDefault() *time.Duration {
 	return o.durationwithdefault
 }
 
-func (o *PointerJson) IntWithDefault() *int {
+func (o *Pointer) IntWithDefault() *int {
 	return o.intwithdefault
 }
 
-func (o *PointerJson) NormalDefault() string {
+func (o *Pointer) NormalDefault() string {
 	return o.normaldefault
 }
 
-func (o *PointerJson) NormalOptional() *string {
+func (o *Pointer) NormalOptional() *string {
 	return o.normaloptional
 }
 
-func (o *PointerJson) OptionalIntNonPointer() int {
+func (o *Pointer) OptionalIntNonPointer() int {
 	return o.optionalintnonpointer
 }
 
-func (o *PointerJson) OptionalStringNonPointer() string {
+func (o *Pointer) OptionalStringNonPointer() string {
 	return o.optionalstringnonpointer
 }
 
-func (o *PointerJson) RequiredIntNonPointer() int {
+func (o *Pointer) RequiredIntNonPointer() int {
 	return o.requiredintnonpointer
 }
 
-func (o *PointerJson) RequiredIntPointer() *int {
+func (o *Pointer) RequiredIntPointer() *int {
 	return o.requiredintpointer
 }
 
-func (o *PointerJson) SliceWithDefault() []string {
+func (o *Pointer) SliceWithDefault() []string {
 	return o.slicewithdefault
 }
 
-func (o *PointerJson) StringWithDefault() *string {
+func (o *Pointer) StringWithDefault() *string {
 	return o.stringwithdefault
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *PointerJson) UnmarshalJSON(value []byte) error {
+func (j *Pointer) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["requiredIntNonPointer"]; raw != nil && !ok {
-		return fmt.Errorf("field requiredIntNonPointer in PointerJson: required")
+		return fmt.Errorf("field requiredIntNonPointer in Pointer: required")
 	}
 	if _, ok := raw["requiredIntPointer"]; raw != nil && !ok {
-		return fmt.Errorf("field requiredIntPointer in PointerJson: required")
+		return fmt.Errorf("field requiredIntPointer in Pointer: required")
 	}
-	type PointerJsonHelper struct {
+	type PointerHelper struct {
 		Boolwithdefault          *bool          `json:"boolWithDefault",omitempty`
 		Durationwithdefault      *time.Duration `json:"durationWithDefault",omitempty`
 		Intwithdefault           *int           `json:"intWithDefault",omitempty`
@@ -113,8 +114,8 @@ func (j *PointerJson) UnmarshalJSON(value []byte) error {
 		Slicewithdefault         []string       `json:"sliceWithDefault",omitempty`
 		Stringwithdefault        *string        `json:"stringWithDefault",omitempty`
 	}
-	type Plain PointerJson
-	var helper PointerJsonHelper
+	type Plain Pointer
+	var helper PointerHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -159,6 +160,87 @@ func (j *PointerJson) UnmarshalJSON(value []byte) error {
 		var defaultstringwithdefault string = "hello"
 		plain.stringwithdefault = &defaultstringwithdefault
 	}
-	*j = PointerJson(plain)
+	*j = Pointer(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Pointer) MarshalJSON() ([]byte, error) {
+	type PointerMarshalHelper struct {
+		Boolwithdefault          *bool          `json:"boolWithDefault",omitempty`
+		Durationwithdefault      *time.Duration `json:"durationWithDefault",omitempty`
+		Intwithdefault           *int           `json:"intWithDefault",omitempty`
+		Normaldefault            string         `json:"normalDefault",omitempty`
+		Normaloptional           *string        `json:"normalOptional",omitempty`
+		Optionalintnonpointer    int            `json:"optionalIntNonPointer",omitempty`
+		Optionalstringnonpointer string         `json:"optionalStringNonPointer",omitempty`
+		Requiredintnonpointer    int            `json:"requiredIntNonPointer"`
+		Requiredintpointer       *int           `json:"requiredIntPointer"`
+		Slicewithdefault         []string       `json:"sliceWithDefault",omitempty`
+		Stringwithdefault        *string        `json:"stringWithDefault",omitempty`
+	}
+	helper := PointerMarshalHelper{
+		Boolwithdefault:          j.boolwithdefault,
+		Durationwithdefault:      j.durationwithdefault,
+		Intwithdefault:           j.intwithdefault,
+		Normaldefault:            j.normaldefault,
+		Normaloptional:           j.normaloptional,
+		Optionalintnonpointer:    j.optionalintnonpointer,
+		Optionalstringnonpointer: j.optionalstringnonpointer,
+		Requiredintnonpointer:    j.requiredintnonpointer,
+		Requiredintpointer:       j.requiredintpointer,
+		Slicewithdefault:         j.slicewithdefault,
+		Stringwithdefault:        j.stringwithdefault,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Pointer) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["requiredIntNonPointer"]; raw != nil && !ok {
+		return fmt.Errorf("field requiredIntNonPointer in Pointer: required")
+	}
+	if _, ok := raw["requiredIntPointer"]; raw != nil && !ok {
+		return fmt.Errorf("field requiredIntPointer in Pointer: required")
+	}
+	type Plain Pointer
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if v, ok := raw["boolWithDefault"]; !ok || v == nil {
+		var defaultboolwithdefault bool = true
+		plain.boolwithdefault = &defaultboolwithdefault
+	}
+	if v, ok := raw["durationWithDefault"]; !ok || v == nil {
+		defaultDuration, err := time.ParseDuration("20s")
+		if err != nil {
+			return fmt.Errorf("failed to parse the \"20s\" default value for field durationWithDefault: %w", err)
+		}
+		plain.durationwithdefault = &defaultDuration
+
+	}
+	if v, ok := raw["intWithDefault"]; !ok || v == nil {
+		var defaultintwithdefault int = 42
+		plain.intwithdefault = &defaultintwithdefault
+	}
+	if v, ok := raw["normalDefault"]; !ok || v == nil {
+		plain.normaldefault = "world"
+	}
+	if v, ok := raw["sliceWithDefault"]; !ok || v == nil {
+		plain.slicewithdefault = []string{
+			"a",
+			"b",
+		}
+	}
+	if v, ok := raw["stringWithDefault"]; !ok || v == nil {
+		var defaultstringwithdefault string = "hello"
+		plain.stringwithdefault = &defaultstringwithdefault
+	}
+	*j = Pointer(plain)
 	return nil
 }

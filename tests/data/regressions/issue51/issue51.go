@@ -2,13 +2,81 @@
 
 package test
 
-type Issue51Json struct {
+import "encoding/json"
+import "github.com/go-viper/mapstructure/v2"
+import yaml "gopkg.in/yaml.v3"
+import "reflect"
+import "strings"
+
+type Issue51 struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
-func (o *Issue51Json) Name() *string {
+func (o *Issue51) Name() *string {
 	return o.name
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Issue51) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	type Issue51Helper struct {
+		Name *string `json:"name",omitempty`
+	}
+	type Plain Issue51
+	var helper Issue51Helper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.name = helper.Name
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = Issue51(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Issue51) MarshalJSON() ([]byte, error) {
+	type Issue51MarshalHelper struct {
+		Name *string `json:"name",omitempty`
+	}
+	helper := Issue51MarshalHelper{
+		Name: j.name,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Issue51) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain Issue51
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = Issue51(plain)
+	return nil
 }

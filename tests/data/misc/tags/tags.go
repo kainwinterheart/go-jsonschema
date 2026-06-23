@@ -2,25 +2,74 @@
 
 package test
 
-type TagsJson struct {
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+type Tags struct {
 	// html corresponds to the JSON schema field "html".
-	html *string `json:"html,omitempty,omitzero" yaml:"html,omitempty" mapstructure:"html,omitempty"`
+	html *string `yaml:"html,omitempty"`
 
 	// id corresponds to the JSON schema field "id".
-	id *string `json:"id,omitempty,omitzero" yaml:"id,omitempty" mapstructure:"id,omitempty"`
+	id *string `yaml:"id,omitempty"`
 
 	// url corresponds to the JSON schema field "url".
-	url *string `json:"url,omitempty,omitzero" yaml:"url,omitempty" mapstructure:"url,omitempty"`
+	url *string `yaml:"url,omitempty"`
 }
 
-func (o *TagsJson) Html() *string {
+func (o *Tags) Html() *string {
 	return o.html
 }
 
-func (o *TagsJson) Id() *string {
+func (o *Tags) Id() *string {
 	return o.id
 }
 
-func (o *TagsJson) Url() *string {
+func (o *Tags) Url() *string {
 	return o.url
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Tags) UnmarshalJSON(value []byte) error {
+	type TagsHelper struct {
+		Html *string `json:"html",omitempty`
+		Id   *string `json:"id",omitempty`
+		Url  *string `json:"url",omitempty`
+	}
+	type Plain Tags
+	var helper TagsHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.html = helper.Html
+	plain.id = helper.Id
+	plain.url = helper.Url
+	*j = Tags(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Tags) MarshalJSON() ([]byte, error) {
+	type TagsMarshalHelper struct {
+		Html *string `json:"html",omitempty`
+		Id   *string `json:"id",omitempty`
+		Url  *string `json:"url",omitempty`
+	}
+	helper := TagsMarshalHelper{
+		Html: j.html,
+		Id:   j.id,
+		Url:  j.url,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Tags) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Tags
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Tags(plain)
+	return nil
 }

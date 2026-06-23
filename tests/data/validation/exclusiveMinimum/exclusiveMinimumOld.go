@@ -4,8 +4,9 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
-type ExclusiveMinimumOldJson struct {
+type ExclusiveMinimumOld struct {
 	// myinteger corresponds to the JSON schema field "myInteger".
 	myinteger int `json:"myInteger" yaml:"myInteger" mapstructure:"myInteger"`
 
@@ -19,42 +20,42 @@ type ExclusiveMinimumOldJson struct {
 	mynumber float64 `json:"myNumber" yaml:"myNumber" mapstructure:"myNumber"`
 }
 
-func (o *ExclusiveMinimumOldJson) MyInteger() int {
+func (o *ExclusiveMinimumOld) MyInteger() int {
 	return o.myinteger
 }
 
-func (o *ExclusiveMinimumOldJson) MyNullableInteger() *int {
+func (o *ExclusiveMinimumOld) MyNullableInteger() *int {
 	return o.mynullableinteger
 }
 
-func (o *ExclusiveMinimumOldJson) MyNullableNumber() interface{} {
+func (o *ExclusiveMinimumOld) MyNullableNumber() interface{} {
 	return o.mynullablenumber
 }
 
-func (o *ExclusiveMinimumOldJson) MyNumber() float64 {
+func (o *ExclusiveMinimumOld) MyNumber() float64 {
 	return o.mynumber
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ExclusiveMinimumOldJson) UnmarshalJSON(value []byte) error {
+func (j *ExclusiveMinimumOld) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myInteger"]; raw != nil && !ok {
-		return fmt.Errorf("field myInteger in ExclusiveMinimumOldJson: required")
+		return fmt.Errorf("field myInteger in ExclusiveMinimumOld: required")
 	}
 	if _, ok := raw["myNumber"]; raw != nil && !ok {
-		return fmt.Errorf("field myNumber in ExclusiveMinimumOldJson: required")
+		return fmt.Errorf("field myNumber in ExclusiveMinimumOld: required")
 	}
-	type ExclusiveMinimumOldJsonHelper struct {
+	type ExclusiveMinimumOldHelper struct {
 		Myinteger         int         `json:"myInteger"`
 		Mynullableinteger *int        `json:"myNullableInteger",omitempty`
 		Mynullablenumber  interface{} `json:"myNullableNumber",omitempty`
 		Mynumber          float64     `json:"myNumber"`
 	}
-	type Plain ExclusiveMinimumOldJson
-	var helper ExclusiveMinimumOldJsonHelper
+	type Plain ExclusiveMinimumOld
+	var helper ExclusiveMinimumOldHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -72,6 +73,53 @@ func (j *ExclusiveMinimumOldJson) UnmarshalJSON(value []byte) error {
 	if 1.2 >= plain.mynumber {
 		return fmt.Errorf("field %s: must be > %v", "myNumber", 1.2)
 	}
-	*j = ExclusiveMinimumOldJson(plain)
+	*j = ExclusiveMinimumOld(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *ExclusiveMinimumOld) MarshalJSON() ([]byte, error) {
+	type ExclusiveMinimumOldMarshalHelper struct {
+		Myinteger         int         `json:"myInteger"`
+		Mynullableinteger *int        `json:"myNullableInteger",omitempty`
+		Mynullablenumber  interface{} `json:"myNullableNumber",omitempty`
+		Mynumber          float64     `json:"myNumber"`
+	}
+	helper := ExclusiveMinimumOldMarshalHelper{
+		Myinteger:         j.myinteger,
+		Mynullableinteger: j.mynullableinteger,
+		Mynullablenumber:  j.mynullablenumber,
+		Mynumber:          j.mynumber,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ExclusiveMinimumOld) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myInteger"]; raw != nil && !ok {
+		return fmt.Errorf("field myInteger in ExclusiveMinimumOld: required")
+	}
+	if _, ok := raw["myNumber"]; raw != nil && !ok {
+		return fmt.Errorf("field myNumber in ExclusiveMinimumOld: required")
+	}
+	type Plain ExclusiveMinimumOld
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if 2 >= plain.myinteger {
+		return fmt.Errorf("field %s: must be > %v", "myInteger", 2)
+	}
+	if plain.mynullableinteger != nil && 2 >= *plain.mynullableinteger {
+		return fmt.Errorf("field %s: must be > %v", "myNullableInteger", 2)
+	}
+	if 1.2 >= plain.mynumber {
+		return fmt.Errorf("field %s: must be > %v", "myNumber", 1.2)
+	}
+	*j = ExclusiveMinimumOld(plain)
 	return nil
 }

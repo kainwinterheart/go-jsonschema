@@ -6,6 +6,7 @@ import "encoding/json"
 import "errors"
 import "fmt"
 import "github.com/go-viper/mapstructure/v2"
+import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "strings"
 
@@ -37,6 +38,35 @@ func (j *BaseObject) UnmarshalJSON(value []byte) error {
 	}
 	var plain Plain
 	plain.basefield = helper.Basefield
+	*j = BaseObject(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *BaseObject) MarshalJSON() ([]byte, error) {
+	type BaseObjectMarshalHelper struct {
+		Basefield string `json:"BaseField"`
+	}
+	helper := BaseObjectMarshalHelper{
+		Basefield: j.basefield,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *BaseObject) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["BaseField"]; raw != nil && !ok {
+		return fmt.Errorf("field BaseField in BaseObject: required")
+	}
+	type Plain BaseObject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
 	*j = BaseObject(plain)
 	return nil
 }
@@ -87,6 +117,50 @@ func (j *ComposedWithAllOfAndProperties) UnmarshalJSON(value []byte) error {
 	var plain Plain
 	plain.basefield = helper.Basefield
 	plain.directfield = helper.Directfield
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = ComposedWithAllOfAndProperties(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *ComposedWithAllOfAndProperties) MarshalJSON() ([]byte, error) {
+	type ComposedWithAllOfAndPropertiesMarshalHelper struct {
+		Basefield   string   `json:"BaseField"`
+		Directfield []string `json:"DirectField",omitempty`
+	}
+	helper := ComposedWithAllOfAndPropertiesMarshalHelper{
+		Basefield:   j.basefield,
+		Directfield: j.directfield,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ComposedWithAllOfAndProperties) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var composedWithAllOfAndProperties_0 ComposedWithAllOfAndProperties_0
+	var errs []error
+	if err := composedWithAllOfAndProperties_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 1 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain ComposedWithAllOfAndProperties
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)

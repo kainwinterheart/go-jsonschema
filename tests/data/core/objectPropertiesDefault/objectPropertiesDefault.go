@@ -5,6 +5,7 @@ package test
 import "encoding/json"
 import "errors"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 import "reflect"
 
 type DecoratedPlanner struct {
@@ -21,6 +22,27 @@ func (o *DecoratedPlanner) Decorator() DecoratedPlannerdecorator {
 
 func (o *DecoratedPlanner) Event() *Event {
 	return o.event
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *DecoratedPlanner) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain DecoratedPlanner
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if v, ok := raw["decorator"]; !ok || v == nil {
+		plain.decorator = DecoratedPlannerdecorator{
+			color: "#ffffff",
+			theme: nil,
+		}
+	}
+	*j = DecoratedPlanner(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -51,6 +73,19 @@ func (j *DecoratedPlanner) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
+// MarshalJSON implements json.Marshaler.
+func (j *DecoratedPlanner) MarshalJSON() ([]byte, error) {
+	type DecoratedPlannerMarshalHelper struct {
+		Decorator DecoratedPlannerdecorator `json:"decorator",omitempty`
+		Event     *Event                    `json:"event",omitempty`
+	}
+	helper := DecoratedPlannerMarshalHelper{
+		Decorator: j.decorator,
+		Event:     j.event,
+	}
+	return json.Marshal(helper)
+}
+
 type DecoratedPlannerdecorator struct {
 	// color corresponds to the JSON schema field "color".
 	color string `json:"color,omitempty,omitzero" yaml:"color,omitempty" mapstructure:"color,omitempty"`
@@ -65,6 +100,24 @@ func (o *DecoratedPlannerdecorator) Color() string {
 
 func (o *DecoratedPlannerdecorator) Theme() *string {
 	return o.theme
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *DecoratedPlannerdecorator) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain DecoratedPlannerdecorator
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if v, ok := raw["color"]; !ok || v == nil {
+		plain.color = "#ffffff"
+	}
+	*j = DecoratedPlannerdecorator(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -92,6 +145,19 @@ func (j *DecoratedPlannerdecorator) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
+// MarshalJSON implements json.Marshaler.
+func (j *DecoratedPlannerdecorator) MarshalJSON() ([]byte, error) {
+	type DecoratedPlannerdecoratorMarshalHelper struct {
+		Color string  `json:"color",omitempty`
+		Theme *string `json:"theme",omitempty`
+	}
+	helper := DecoratedPlannerdecoratorMarshalHelper{
+		Color: j.color,
+		Theme: j.theme,
+	}
+	return json.Marshal(helper)
+}
+
 type DefaultPlanner struct {
 	// event corresponds to the JSON schema field "event".
 	event *Event `json:"event,omitempty,omitzero" yaml:"event,omitempty" mapstructure:"event,omitempty"`
@@ -99,6 +165,44 @@ type DefaultPlanner struct {
 
 func (o *DefaultPlanner) Event() *Event {
 	return o.event
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *DefaultPlanner) UnmarshalJSON(value []byte) error {
+	type DefaultPlannerHelper struct {
+		Event *Event `json:"event",omitempty`
+	}
+	type Plain DefaultPlanner
+	var helper DefaultPlannerHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.event = helper.Event
+	*j = DefaultPlanner(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *DefaultPlanner) MarshalJSON() ([]byte, error) {
+	type DefaultPlannerMarshalHelper struct {
+		Event *Event `json:"event",omitempty`
+	}
+	helper := DefaultPlannerMarshalHelper{
+		Event: j.event,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *DefaultPlanner) UnmarshalYAML(value *yaml.Node) error {
+	type Plain DefaultPlanner
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = DefaultPlanner(plain)
+	return nil
 }
 
 type Event struct {
@@ -115,6 +219,24 @@ func (o *Event) Name() *Eventname {
 
 func (o *Event) Tags() []EventtagsElem {
 	return o.tags
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Event) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain Event
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if v, ok := raw["tags"]; !ok || v == nil {
+		plain.tags = []EventtagsElem{}
+	}
+	*j = Event(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -142,6 +264,19 @@ func (j *Event) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
+// MarshalJSON implements json.Marshaler.
+func (j *Event) MarshalJSON() ([]byte, error) {
+	type EventMarshalHelper struct {
+		Name *Eventname      `json:"name",omitempty`
+		Tags []EventtagsElem `json:"tags",omitempty`
+	}
+	helper := EventMarshalHelper{
+		Name: j.name,
+		Tags: j.tags,
+	}
+	return json.Marshal(helper)
+}
+
 type Eventname string
 
 const EventnameBIRTHDAY Eventname = "BIRTHDAY"
@@ -152,6 +287,26 @@ var enumValues_Eventname = []interface{}{
 	"BIRTHDAY",
 	"GAME",
 	"HOLIDAY",
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Eventname) UnmarshalYAML(value *yaml.Node) error {
+	var v string
+	if err := value.Decode(&v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_Eventname {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_Eventname, v)
+	}
+	*j = Eventname(v)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -188,6 +343,26 @@ var enumValues_EventtagsElem = []interface{}{
 	"PERSON",
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *EventtagsElem) UnmarshalYAML(value *yaml.Node) error {
+	var v string
+	if err := value.Decode(&v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_EventtagsElem {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_EventtagsElem, v)
+	}
+	*j = EventtagsElem(v)
+	return nil
+}
+
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *EventtagsElem) UnmarshalJSON(value []byte) error {
 	var v string
@@ -208,23 +383,65 @@ func (j *EventtagsElem) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-type ObjectPropertiesDefaultJson struct {
+type ObjectPropertiesDefault struct {
 	// active corresponds to the JSON schema field "active".
 	active interface{} `json:"active,omitempty,omitzero" yaml:"active,omitempty" mapstructure:"active,omitempty"`
 
 	// planners corresponds to the JSON schema field "planners".
-	planners []ObjectPropertiesDefaultJsonplannersElem `json:"planners,omitempty,omitzero" yaml:"planners,omitempty" mapstructure:"planners,omitempty"`
+	planners []ObjectPropertiesDefaultplannersElem `json:"planners,omitempty,omitzero" yaml:"planners,omitempty" mapstructure:"planners,omitempty"`
 }
 
-func (o *ObjectPropertiesDefaultJson) Active() interface{} {
+func (o *ObjectPropertiesDefault) Active() interface{} {
 	return o.active
 }
 
-func (o *ObjectPropertiesDefaultJson) Planners() []ObjectPropertiesDefaultJsonplannersElem {
+func (o *ObjectPropertiesDefault) Planners() []ObjectPropertiesDefaultplannersElem {
 	return o.planners
 }
 
-type ObjectPropertiesDefaultJsonplannersElem struct {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ObjectPropertiesDefault) UnmarshalYAML(value *yaml.Node) error {
+	type Plain ObjectPropertiesDefault
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ObjectPropertiesDefault(plain)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *ObjectPropertiesDefault) UnmarshalJSON(value []byte) error {
+	type ObjectPropertiesDefaultHelper struct {
+		Active   interface{}                           `json:"active",omitempty`
+		Planners []ObjectPropertiesDefaultplannersElem `json:"planners",omitempty`
+	}
+	type Plain ObjectPropertiesDefault
+	var helper ObjectPropertiesDefaultHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.active = helper.Active
+	plain.planners = helper.Planners
+	*j = ObjectPropertiesDefault(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *ObjectPropertiesDefault) MarshalJSON() ([]byte, error) {
+	type ObjectPropertiesDefaultMarshalHelper struct {
+		Active   interface{}                           `json:"active",omitempty`
+		Planners []ObjectPropertiesDefaultplannersElem `json:"planners",omitempty`
+	}
+	helper := ObjectPropertiesDefaultMarshalHelper{
+		Active:   j.active,
+		Planners: j.planners,
+	}
+	return json.Marshal(helper)
+}
+
+type ObjectPropertiesDefaultplannersElem struct {
 	// decorated corresponds to the JSON schema field "decorated".
 	decorated *DecoratedPlanner `json:"decorated,omitempty,omitzero" yaml:"decorated,omitempty" mapstructure:"decorated,omitempty"`
 
@@ -232,94 +449,178 @@ type ObjectPropertiesDefaultJsonplannersElem struct {
 	plain *DefaultPlanner `json:"plain,omitempty,omitzero" yaml:"plain,omitempty" mapstructure:"plain,omitempty"`
 }
 
-type ObjectPropertiesDefaultJsonplannersElem_0 struct {
+type ObjectPropertiesDefaultplannersElem_0 struct {
 	// plain corresponds to the JSON schema field "plain".
 	plain *DefaultPlanner `json:"plain,omitempty,omitzero" yaml:"plain,omitempty" mapstructure:"plain,omitempty"`
 }
 
-func (o *ObjectPropertiesDefaultJsonplannersElem_0) Plain() *DefaultPlanner {
+func (o *ObjectPropertiesDefaultplannersElem_0) Plain() *DefaultPlanner {
 	return o.plain
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ObjectPropertiesDefaultplannersElem_0) UnmarshalYAML(value *yaml.Node) error {
+	type Plain ObjectPropertiesDefaultplannersElem_0
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ObjectPropertiesDefaultplannersElem_0(plain)
+	return nil
+}
+
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ObjectPropertiesDefaultJsonplannersElem_0) UnmarshalJSON(value []byte) error {
-	type ObjectPropertiesDefaultJsonplannersElem_0Helper struct {
+func (j *ObjectPropertiesDefaultplannersElem_0) UnmarshalJSON(value []byte) error {
+	type ObjectPropertiesDefaultplannersElem_0Helper struct {
 		Plain *DefaultPlanner `json:"plain",omitempty`
 	}
-	type Plain ObjectPropertiesDefaultJsonplannersElem_0
-	var helper ObjectPropertiesDefaultJsonplannersElem_0Helper
+	type Plain ObjectPropertiesDefaultplannersElem_0
+	var helper ObjectPropertiesDefaultplannersElem_0Helper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.plain = helper.Plain
-	*j = ObjectPropertiesDefaultJsonplannersElem_0(plain)
+	*j = ObjectPropertiesDefaultplannersElem_0(plain)
 	return nil
 }
 
-type ObjectPropertiesDefaultJsonplannersElem_1 struct {
+// MarshalJSON implements json.Marshaler.
+func (j *ObjectPropertiesDefaultplannersElem_0) MarshalJSON() ([]byte, error) {
+	type ObjectPropertiesDefaultplannersElem_0MarshalHelper struct {
+		Plain *DefaultPlanner `json:"plain",omitempty`
+	}
+	helper := ObjectPropertiesDefaultplannersElem_0MarshalHelper{
+		Plain: j.plain,
+	}
+	return json.Marshal(helper)
+}
+
+type ObjectPropertiesDefaultplannersElem_1 struct {
 	// decorated corresponds to the JSON schema field "decorated".
 	decorated *DecoratedPlanner `json:"decorated,omitempty,omitzero" yaml:"decorated,omitempty" mapstructure:"decorated,omitempty"`
 }
 
-func (o *ObjectPropertiesDefaultJsonplannersElem_1) Decorated() *DecoratedPlanner {
+func (o *ObjectPropertiesDefaultplannersElem_1) Decorated() *DecoratedPlanner {
 	return o.decorated
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ObjectPropertiesDefaultJsonplannersElem_1) UnmarshalJSON(value []byte) error {
-	type ObjectPropertiesDefaultJsonplannersElem_1Helper struct {
+func (j *ObjectPropertiesDefaultplannersElem_1) UnmarshalJSON(value []byte) error {
+	type ObjectPropertiesDefaultplannersElem_1Helper struct {
 		Decorated *DecoratedPlanner `json:"decorated",omitempty`
 	}
-	type Plain ObjectPropertiesDefaultJsonplannersElem_1
-	var helper ObjectPropertiesDefaultJsonplannersElem_1Helper
+	type Plain ObjectPropertiesDefaultplannersElem_1
+	var helper ObjectPropertiesDefaultplannersElem_1Helper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.decorated = helper.Decorated
-	*j = ObjectPropertiesDefaultJsonplannersElem_1(plain)
+	*j = ObjectPropertiesDefaultplannersElem_1(plain)
 	return nil
 }
 
-func (o *ObjectPropertiesDefaultJsonplannersElem) Decorated() *DecoratedPlanner {
+// MarshalJSON implements json.Marshaler.
+func (j *ObjectPropertiesDefaultplannersElem_1) MarshalJSON() ([]byte, error) {
+	type ObjectPropertiesDefaultplannersElem_1MarshalHelper struct {
+		Decorated *DecoratedPlanner `json:"decorated",omitempty`
+	}
+	helper := ObjectPropertiesDefaultplannersElem_1MarshalHelper{
+		Decorated: j.decorated,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ObjectPropertiesDefaultplannersElem_1) UnmarshalYAML(value *yaml.Node) error {
+	type Plain ObjectPropertiesDefaultplannersElem_1
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ObjectPropertiesDefaultplannersElem_1(plain)
+	return nil
+}
+
+func (o *ObjectPropertiesDefaultplannersElem) Decorated() *DecoratedPlanner {
 	return o.decorated
 }
 
-func (o *ObjectPropertiesDefaultJsonplannersElem) Plain() *DefaultPlanner {
+func (o *ObjectPropertiesDefaultplannersElem) Plain() *DefaultPlanner {
 	return o.plain
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ObjectPropertiesDefaultJsonplannersElem) UnmarshalJSON(value []byte) error {
+func (j *ObjectPropertiesDefaultplannersElem) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	var objectPropertiesDefaultJsonplannersElem_0 ObjectPropertiesDefaultJsonplannersElem_0
-	var objectPropertiesDefaultJsonplannersElem_1 ObjectPropertiesDefaultJsonplannersElem_1
+	var objectPropertiesDefaultplannersElem_0 ObjectPropertiesDefaultplannersElem_0
+	var objectPropertiesDefaultplannersElem_1 ObjectPropertiesDefaultplannersElem_1
 	var errs []error
-	if err := objectPropertiesDefaultJsonplannersElem_0.UnmarshalJSON(value); err != nil {
+	if err := objectPropertiesDefaultplannersElem_0.UnmarshalJSON(value); err != nil {
 		errs = append(errs, err)
 	}
-	if err := objectPropertiesDefaultJsonplannersElem_1.UnmarshalJSON(value); err != nil {
+	if err := objectPropertiesDefaultplannersElem_1.UnmarshalJSON(value); err != nil {
 		errs = append(errs, err)
 	}
 	if len(errs) == 2 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
-	type ObjectPropertiesDefaultJsonplannersElemHelper struct {
+	type ObjectPropertiesDefaultplannersElemHelper struct {
 		Decorated *DecoratedPlanner `json:"decorated",omitempty`
 		Plain     *DefaultPlanner   `json:"plain",omitempty`
 	}
-	type Plain ObjectPropertiesDefaultJsonplannersElem
-	var helper ObjectPropertiesDefaultJsonplannersElemHelper
+	type Plain ObjectPropertiesDefaultplannersElem
+	var helper ObjectPropertiesDefaultplannersElemHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.decorated = helper.Decorated
 	plain.plain = helper.Plain
-	*j = ObjectPropertiesDefaultJsonplannersElem(plain)
+	*j = ObjectPropertiesDefaultplannersElem(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *ObjectPropertiesDefaultplannersElem) MarshalJSON() ([]byte, error) {
+	type ObjectPropertiesDefaultplannersElemMarshalHelper struct {
+		Decorated *DecoratedPlanner `json:"decorated",omitempty`
+		Plain     *DefaultPlanner   `json:"plain",omitempty`
+	}
+	helper := ObjectPropertiesDefaultplannersElemMarshalHelper{
+		Decorated: j.decorated,
+		Plain:     j.plain,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ObjectPropertiesDefaultplannersElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var objectPropertiesDefaultplannersElem_0 ObjectPropertiesDefaultplannersElem_0
+	var objectPropertiesDefaultplannersElem_1 ObjectPropertiesDefaultplannersElem_1
+	var errs []error
+	if err := objectPropertiesDefaultplannersElem_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := objectPropertiesDefaultplannersElem_1.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 2 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain ObjectPropertiesDefaultplannersElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ObjectPropertiesDefaultplannersElem(plain)
 	return nil
 }

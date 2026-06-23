@@ -2,7 +2,13 @@
 
 package test
 
-type GopkgYAMLv3AdditionalPropertiesJson struct {
+import "encoding/json"
+import "github.com/go-viper/mapstructure/v2"
+import yaml "gopkg.in/yaml.v3"
+import "reflect"
+import "strings"
+
+type GopkgYAMLv3AdditionalProperties struct {
 	// bar corresponds to the JSON schema field "bar".
 	bar *string `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
 
@@ -12,10 +18,76 @@ type GopkgYAMLv3AdditionalPropertiesJson struct {
 	AdditionalProperties map[string]interface{} `mapstructure:",remain"`
 }
 
-func (o *GopkgYAMLv3AdditionalPropertiesJson) Bar() *string {
+func (o *GopkgYAMLv3AdditionalProperties) Bar() *string {
 	return o.bar
 }
 
-func (o *GopkgYAMLv3AdditionalPropertiesJson) Foo() *string {
+func (o *GopkgYAMLv3AdditionalProperties) Foo() *string {
 	return o.foo
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *GopkgYAMLv3AdditionalProperties) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	type GopkgYAMLv3AdditionalPropertiesHelper struct {
+		Bar *string `json:"bar",omitempty`
+		Foo *string `json:"foo",omitempty`
+	}
+	type Plain GopkgYAMLv3AdditionalProperties
+	var helper GopkgYAMLv3AdditionalPropertiesHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.bar = helper.Bar
+	plain.foo = helper.Foo
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = GopkgYAMLv3AdditionalProperties(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *GopkgYAMLv3AdditionalProperties) MarshalJSON() ([]byte, error) {
+	type GopkgYAMLv3AdditionalPropertiesMarshalHelper struct {
+		Bar *string `json:"bar",omitempty`
+		Foo *string `json:"foo",omitempty`
+	}
+	helper := GopkgYAMLv3AdditionalPropertiesMarshalHelper{
+		Bar: j.bar,
+		Foo: j.foo,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *GopkgYAMLv3AdditionalProperties) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain GopkgYAMLv3AdditionalProperties
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = GopkgYAMLv3AdditionalProperties(plain)
+	return nil
 }

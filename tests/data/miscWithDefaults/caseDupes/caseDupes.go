@@ -2,7 +2,10 @@
 
 package test
 
-type CaseDupesJson struct {
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+type CaseDupes struct {
 	// somefield corresponds to the JSON schema field "SomeField".
 	somefield *string `json:"SomeField,omitempty,omitzero" yaml:"SomeField,omitempty" mapstructure:"SomeField,omitempty"`
 
@@ -19,10 +22,64 @@ type CaseDupesJson struct {
 	somefield_5 *string `json:"somefield,omitempty,omitzero" yaml:"somefield,omitempty" mapstructure:"somefield,omitempty"`
 }
 
-func (o *CaseDupesJson) SomeField() *string {
+func (o *CaseDupes) SomeField() *string {
 	return o.somefield
 }
 
-func (o *CaseDupesJson) Somefield() *string {
+func (o *CaseDupes) Somefield() *string {
 	return o.somefield_5
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *CaseDupes) UnmarshalJSON(value []byte) error {
+	type CaseDupesHelper struct {
+		Somefield   *string `json:"SomeField",omitempty`
+		Somefield_2 *string `json:"someField",omitempty`
+		Somefield_3 *string `json:"some_Field",omitempty`
+		Somefield_4 *string `json:"some_field",omitempty`
+		Somefield_5 *string `json:"somefield",omitempty`
+	}
+	type Plain CaseDupes
+	var helper CaseDupesHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.somefield = helper.Somefield
+	plain.somefield_2 = helper.Somefield_2
+	plain.somefield_3 = helper.Somefield_3
+	plain.somefield_4 = helper.Somefield_4
+	plain.somefield_5 = helper.Somefield_5
+	*j = CaseDupes(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *CaseDupes) MarshalJSON() ([]byte, error) {
+	type CaseDupesMarshalHelper struct {
+		Somefield   *string `json:"SomeField",omitempty`
+		Somefield_2 *string `json:"someField",omitempty`
+		Somefield_3 *string `json:"some_Field",omitempty`
+		Somefield_4 *string `json:"some_field",omitempty`
+		Somefield_5 *string `json:"somefield",omitempty`
+	}
+	helper := CaseDupesMarshalHelper{
+		Somefield:   j.somefield,
+		Somefield_2: j.somefield_2,
+		Somefield_3: j.somefield_3,
+		Somefield_4: j.somefield_4,
+		Somefield_5: j.somefield_5,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *CaseDupes) UnmarshalYAML(value *yaml.Node) error {
+	type Plain CaseDupes
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = CaseDupes(plain)
+	return nil
 }

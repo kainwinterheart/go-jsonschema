@@ -5,6 +5,7 @@ package test
 import "encoding/json"
 import "errors"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
 type Agreement struct {
 	// atype corresponds to the JSON schema field "@type".
@@ -19,6 +20,17 @@ type Agreement struct {
 
 type Agreement_0 map[string]interface{}
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Agreement_0) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Agreement_0
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Agreement_0(plain)
+	return nil
+}
+
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Agreement_0) UnmarshalJSON(value []byte) error {
 	type Plain Agreement_0
@@ -31,6 +43,17 @@ func (j *Agreement_0) UnmarshalJSON(value []byte) error {
 }
 
 type Agreement_1 map[string]interface{}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Agreement_1) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Agreement_1
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Agreement_1(plain)
+	return nil
+}
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Agreement_1) UnmarshalJSON(value []byte) error {
@@ -91,6 +114,48 @@ func (j *Agreement) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
+// MarshalJSON implements json.Marshaler.
+func (j *Agreement) MarshalJSON() ([]byte, error) {
+	type AgreementMarshalHelper struct {
+		Atype       string   `json:"@type"`
+		Permission  *string  `json:"permission",omitempty`
+		Prohibition *float64 `json:"prohibition",omitempty`
+	}
+	helper := AgreementMarshalHelper{
+		Atype:       j.atype,
+		Permission:  j.permission,
+		Prohibition: j.prohibition,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Agreement) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var agreement_0 Agreement_0
+	var agreement_1 Agreement_1
+	var errs []error
+	if err := agreement_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := agreement_1.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 2 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain Agreement
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Agreement(plain)
+	return nil
+}
+
 type CommonType struct {
 	// permission corresponds to the JSON schema field "permission".
 	permission *string `json:"permission,omitempty,omitzero" yaml:"permission,omitempty" mapstructure:"permission,omitempty"`
@@ -105,4 +170,46 @@ func (o *CommonType) Permission() *string {
 
 func (o *CommonType) Prohibition() *float64 {
 	return o.prohibition
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *CommonType) UnmarshalYAML(value *yaml.Node) error {
+	type Plain CommonType
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = CommonType(plain)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *CommonType) UnmarshalJSON(value []byte) error {
+	type CommonTypeHelper struct {
+		Permission  *string  `json:"permission",omitempty`
+		Prohibition *float64 `json:"prohibition",omitempty`
+	}
+	type Plain CommonType
+	var helper CommonTypeHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.permission = helper.Permission
+	plain.prohibition = helper.Prohibition
+	*j = CommonType(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *CommonType) MarshalJSON() ([]byte, error) {
+	type CommonTypeMarshalHelper struct {
+		Permission  *string  `json:"permission",omitempty`
+		Prohibition *float64 `json:"prohibition",omitempty`
+	}
+	helper := CommonTypeMarshalHelper{
+		Permission:  j.permission,
+		Prohibition: j.prohibition,
+	}
+	return json.Marshal(helper)
 }

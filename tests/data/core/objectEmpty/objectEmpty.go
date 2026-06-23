@@ -2,13 +2,54 @@
 
 package test
 
-type ObjectEmptyJson struct {
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+type ObjectEmpty struct {
 	// foo corresponds to the JSON schema field "foo".
-	foo ObjectEmptyJsonfoo `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
+	foo ObjectEmptyfoo `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
 }
 
-func (o *ObjectEmptyJson) Foo() ObjectEmptyJsonfoo {
+func (o *ObjectEmpty) Foo() ObjectEmptyfoo {
 	return o.foo
 }
 
-type ObjectEmptyJsonfoo map[string]interface{}
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *ObjectEmpty) UnmarshalJSON(value []byte) error {
+	type ObjectEmptyHelper struct {
+		Foo ObjectEmptyfoo `json:"foo",omitempty`
+	}
+	type Plain ObjectEmpty
+	var helper ObjectEmptyHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.foo = helper.Foo
+	*j = ObjectEmpty(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *ObjectEmpty) MarshalJSON() ([]byte, error) {
+	type ObjectEmptyMarshalHelper struct {
+		Foo ObjectEmptyfoo `json:"foo",omitempty`
+	}
+	helper := ObjectEmptyMarshalHelper{
+		Foo: j.foo,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ObjectEmpty) UnmarshalYAML(value *yaml.Node) error {
+	type Plain ObjectEmpty
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ObjectEmpty(plain)
+	return nil
+}
+
+type ObjectEmptyfoo map[string]interface{}

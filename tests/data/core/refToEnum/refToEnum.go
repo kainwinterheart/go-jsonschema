@@ -4,15 +4,54 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 import "reflect"
 
-type RefToEnumJson struct {
+type RefToEnum struct {
 	// mything corresponds to the JSON schema field "myThing".
 	mything *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
 }
 
-func (o *RefToEnumJson) MyThing() *Thing {
+func (o *RefToEnum) MyThing() *Thing {
 	return o.mything
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *RefToEnum) UnmarshalJSON(value []byte) error {
+	type RefToEnumHelper struct {
+		Mything *Thing `json:"myThing",omitempty`
+	}
+	type Plain RefToEnum
+	var helper RefToEnumHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.mything = helper.Mything
+	*j = RefToEnum(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *RefToEnum) MarshalJSON() ([]byte, error) {
+	type RefToEnumMarshalHelper struct {
+		Mything *Thing `json:"myThing",omitempty`
+	}
+	helper := RefToEnumMarshalHelper{
+		Mything: j.mything,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RefToEnum) UnmarshalYAML(value *yaml.Node) error {
+	type Plain RefToEnum
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RefToEnum(plain)
+	return nil
 }
 
 type Thing string
@@ -29,6 +68,26 @@ var enumValues_Thing = []interface{}{
 func (j *Thing) UnmarshalJSON(value []byte) error {
 	var v string
 	if err := json.Unmarshal(value, &v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_Thing {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_Thing, v)
+	}
+	*j = Thing(v)
+	return nil
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	var v string
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool

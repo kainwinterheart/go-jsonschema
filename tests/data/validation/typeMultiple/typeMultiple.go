@@ -2,7 +2,10 @@
 
 package test
 
-type TypeMultipleJson struct {
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+type TypeMultiple struct {
 	// all corresponds to the JSON schema field "all".
 	all interface{} `json:"all,omitempty,omitzero" yaml:"all,omitempty" mapstructure:"all,omitempty"`
 
@@ -20,22 +23,76 @@ type TypeMultipleJson struct {
 	onlytwooptions interface{} `json:"onlyTwoOptions,omitempty,omitzero" yaml:"onlyTwoOptions,omitempty" mapstructure:"onlyTwoOptions,omitempty"`
 }
 
-func (o *TypeMultipleJson) All() interface{} {
+func (o *TypeMultiple) All() interface{} {
 	return o.all
 }
 
-func (o *TypeMultipleJson) AllPrimitives() interface{} {
+func (o *TypeMultiple) AllPrimitives() interface{} {
 	return o.allprimitives
 }
 
-func (o *TypeMultipleJson) ArrayOfAll() []interface{} {
+func (o *TypeMultiple) ArrayOfAll() []interface{} {
 	return o.arrayofall
 }
 
-func (o *TypeMultipleJson) ArrayOfAllPrimitives() []interface{} {
+func (o *TypeMultiple) ArrayOfAllPrimitives() []interface{} {
 	return o.arrayofallprimitives
 }
 
-func (o *TypeMultipleJson) OnlyTwoOptions() interface{} {
+func (o *TypeMultiple) OnlyTwoOptions() interface{} {
 	return o.onlytwooptions
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *TypeMultiple) UnmarshalJSON(value []byte) error {
+	type TypeMultipleHelper struct {
+		All                  interface{}   `json:"all",omitempty`
+		Allprimitives        interface{}   `json:"allPrimitives",omitempty`
+		Arrayofall           []interface{} `json:"arrayOfAll",omitempty`
+		Arrayofallprimitives []interface{} `json:"arrayOfAllPrimitives",omitempty`
+		Onlytwooptions       interface{}   `json:"onlyTwoOptions",omitempty`
+	}
+	type Plain TypeMultiple
+	var helper TypeMultipleHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.all = helper.All
+	plain.allprimitives = helper.Allprimitives
+	plain.arrayofall = helper.Arrayofall
+	plain.arrayofallprimitives = helper.Arrayofallprimitives
+	plain.onlytwooptions = helper.Onlytwooptions
+	*j = TypeMultiple(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *TypeMultiple) MarshalJSON() ([]byte, error) {
+	type TypeMultipleMarshalHelper struct {
+		All                  interface{}   `json:"all",omitempty`
+		Allprimitives        interface{}   `json:"allPrimitives",omitempty`
+		Arrayofall           []interface{} `json:"arrayOfAll",omitempty`
+		Arrayofallprimitives []interface{} `json:"arrayOfAllPrimitives",omitempty`
+		Onlytwooptions       interface{}   `json:"onlyTwoOptions",omitempty`
+	}
+	helper := TypeMultipleMarshalHelper{
+		All:                  j.all,
+		Allprimitives:        j.allprimitives,
+		Arrayofall:           j.arrayofall,
+		Arrayofallprimitives: j.arrayofallprimitives,
+		Onlytwooptions:       j.onlytwooptions,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *TypeMultiple) UnmarshalYAML(value *yaml.Node) error {
+	type Plain TypeMultiple
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = TypeMultiple(plain)
+	return nil
 }

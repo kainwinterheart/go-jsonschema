@@ -3,8 +3,7 @@
 package test
 
 import "encoding/json"
-import "errors"
-import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
 type Thing struct {
 	// values corresponds to the JSON schema field "values".
@@ -31,43 +30,28 @@ func (j *Thing) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-type Value float64
-
-type AnyOfJson_0 = Thing
-
-type AnyOfJson struct {
-	// values corresponds to the JSON schema field "values".
-	values []Value `json:"values,omitempty,omitzero" yaml:"values,omitempty" mapstructure:"values,omitempty"`
-}
-
-func (o *AnyOfJson) Values() []Value {
-	return o.values
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *AnyOfJson) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	var anyOfJson_0 AnyOfJson_0
-	var errs []error
-	if err := anyOfJson_0.UnmarshalJSON(value); err != nil {
-		errs = append(errs, err)
-	}
-	if len(errs) == 1 {
-		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
-	}
-	type AnyOfJsonHelper struct {
+// MarshalJSON implements json.Marshaler.
+func (j *Thing) MarshalJSON() ([]byte, error) {
+	type ThingMarshalHelper struct {
 		Values []Value `json:"values",omitempty`
 	}
-	type Plain AnyOfJson
-	var helper AnyOfJsonHelper
-	if err := json.Unmarshal(value, &helper); err != nil {
+	helper := ThingMarshalHelper{
+		Values: j.values,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Thing
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
 		return err
 	}
-	var plain Plain
-	plain.values = helper.Values
-	*j = AnyOfJson(plain)
+	*j = Thing(plain)
 	return nil
 }
+
+type Value float64
+
+type AnyOf = Thing

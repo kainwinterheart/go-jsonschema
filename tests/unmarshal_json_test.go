@@ -25,7 +25,7 @@ func TestJsonUnmarshalValidation(t *testing.T) {
 		{
 			desc:   "requiredFields - nullable",
 			json:   `{"myNullableObject": null, "myNullableString": null, "myNullableStringArray": null}`,
-			target: &testValudationRequiredFields.RequiredNullableJson{},
+			target: &testValudationRequiredFields.RequiredNullable{},
 		},
 	}
 	for _, tC := range testCases {
@@ -57,7 +57,7 @@ func TestJsonUmarshalAnyOf(t *testing.T) {
 				],
 				"flags": "hello"
 			}`,
-			target: &testAnyOf.AnyOf1Json{},
+			target: &testAnyOf.AnyOf1{},
 		},
 		{
 			desc: "anyOf.1 - 2",
@@ -68,7 +68,7 @@ func TestJsonUmarshalAnyOf(t *testing.T) {
 				],
 				"flags": true
 			}`,
-			target: &testAnyOf.AnyOf1Json{},
+			target: &testAnyOf.AnyOf1{},
 		},
 		{
 			desc: "anyOf.2 - 1",
@@ -79,22 +79,22 @@ func TestJsonUmarshalAnyOf(t *testing.T) {
 					{"baz": false}
 				]
 			}`,
-			target: &testAnyOf.AnyOf2Json{},
+			target: &testAnyOf.AnyOf2{},
 		},
 		{
 			desc:   "anyOf.3 - 1",
 			json:   `{"foo": "ciao"}`,
-			target: &testAnyOf.AnyOf3Json{},
+			target: &testAnyOf.AnyOf3{},
 		},
 		{
 			desc:   "anyOf.3 - 2",
 			json:   `{"bar": 2.0}`,
-			target: &testAnyOf.AnyOf3Json{},
+			target: &testAnyOf.AnyOf3{},
 		},
 		{
 			desc:   "anyOf.3 - 3",
 			json:   `{"configurations": ["ciao"]}`,
-			target: &testAnyOf.AnyOf3Json{},
+			target: &testAnyOf.AnyOf3{},
 		},
 	}
 	for _, tC := range testCases {
@@ -123,7 +123,7 @@ func TestJsonUmarshalAllOf(t *testing.T) {
 					{"foo": "hello", "bar": 2.2}
 				]
 			}`,
-			target: &testAllOf.AllOf1Json{},
+			target: &testAllOf.AllOf1{},
 		},
 		{
 			desc: "allOf.2 - 1",
@@ -132,7 +132,7 @@ func TestJsonUmarshalAllOf(t *testing.T) {
 					{"foo": "hello", "bar": 2.2, "baz": true}
 				]
 			}`,
-			target: &testAllOf.AllOf2Json{},
+			target: &testAllOf.AllOf2{},
 		},
 		{
 			desc: "allOf.3 - 1",
@@ -141,7 +141,7 @@ func TestJsonUmarshalAllOf(t *testing.T) {
 				"bar": 2.2,
 				"configurations": ["ciao"]
 			}`,
-			target: &testAllOf.AllOf3Json{},
+			target: &testAllOf.AllOf3{},
 		},
 	}
 	for _, tC := range testCases {
@@ -171,9 +171,9 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 				"property1": ["one", "two"],
 				"property2": [3, 4]
 			}`,
-			target: &testAdditionalProperties.ArrayAdditionalPropertiesJson{},
+			target: &testAdditionalProperties.ArrayAdditionalProperties{},
 			assertFn: func(target any) {
-				addProps := target.(*testAdditionalProperties.ArrayAdditionalPropertiesJson).AdditionalProperties
+				addProps := target.(*testAdditionalProperties.ArrayAdditionalProperties).AdditionalProperties
 				assert.Equal(t, map[string][]any{"property1": {"one", "two"}, "property2": {3.0, 4.0}}, addProps)
 			},
 		},
@@ -184,9 +184,9 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 				"property1": true,
 				"property2": false
 			}`,
-			target: &testAdditionalProperties.BoolAdditionalPropertiesJson{},
+			target: &testAdditionalProperties.BoolAdditionalProperties{},
 			assertFn: func(target any) {
-				addProps := target.(*testAdditionalProperties.BoolAdditionalPropertiesJson).AdditionalProperties
+				addProps := target.(*testAdditionalProperties.BoolAdditionalProperties).AdditionalProperties
 				assert.Equal(t, map[string]bool{"property1": true, "property2": false}, addProps)
 			},
 		},
@@ -197,9 +197,9 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 				"property1": 1,
 				"property2": 2
 			}`,
-			target: &testAdditionalProperties.IntAdditionalPropertiesJson{},
+			target: &testAdditionalProperties.IntAdditionalProperties{},
 			assertFn: func(target any) {
-				addProps := target.(*testAdditionalProperties.IntAdditionalPropertiesJson).AdditionalProperties
+				addProps := target.(*testAdditionalProperties.IntAdditionalProperties).AdditionalProperties
 				assert.Equal(t, map[string]int{"property1": 1, "property2": 2}, addProps)
 			},
 		},
@@ -210,9 +210,9 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 				"property1": 1.1,
 				"property2": 2.3
 			}`,
-			target: &testAdditionalProperties.NumberAdditionalPropertiesJson{},
+			target: &testAdditionalProperties.NumberAdditionalProperties{},
 			assertFn: func(target any) {
-				addProps := target.(*testAdditionalProperties.NumberAdditionalPropertiesJson).AdditionalProperties
+				addProps := target.(*testAdditionalProperties.NumberAdditionalProperties).AdditionalProperties
 				assert.Equal(t, map[string]float64{"property1": 1.1, "property2": 2.3}, addProps)
 			},
 		},
@@ -225,9 +225,9 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 					"world": "what's up?"
 				}
 			}`,
-			target: &testAdditionalProperties.ObjectAdditionalPropertiesJson{},
+			target: &testAdditionalProperties.ObjectAdditionalProperties{},
 			assertFn: func(target any) {
-				addProps := target.(*testAdditionalProperties.ObjectAdditionalPropertiesJson).AdditionalProperties
+				addProps := target.(*testAdditionalProperties.ObjectAdditionalProperties).AdditionalProperties
 				assert.Equal(t, map[string]any{"surname": map[string]any{"hello": 1.1, "world": "what's up?"}}, addProps)
 			},
 		},
@@ -241,9 +241,9 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 					"property2": 123
 				}
 			}`,
-			target: &testAdditionalProperties.ObjectWithPropsAdditionalPropertiesJson{},
+			target: &testAdditionalProperties.ObjectWithPropsAdditionalProperties{},
 			assertFn: func(target any) {
-				addProps := target.(*testAdditionalProperties.ObjectWithPropsAdditionalPropertiesJson).AdditionalProperties
+				addProps := target.(*testAdditionalProperties.ObjectWithPropsAdditionalProperties).AdditionalProperties
 				assert.Equal(t, map[string]any{"baz": map[string]any{"property1": "hello", "property2": 123.0}}, addProps)
 			},
 		},
@@ -254,9 +254,9 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 				"property1": "hello",
 				"property2": "world"
 			}`,
-			target: &testAdditionalProperties.StringAdditionalPropertiesJson{},
+			target: &testAdditionalProperties.StringAdditionalProperties{},
 			assertFn: func(target any) {
-				addProps := target.(*testAdditionalProperties.StringAdditionalPropertiesJson).AdditionalProperties
+				addProps := target.(*testAdditionalProperties.StringAdditionalProperties).AdditionalProperties
 				assert.Equal(t, map[string]string{"property1": "hello", "property2": "world"}, addProps)
 			},
 		},
@@ -274,7 +274,7 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 	}
 }
 
-func formatGopkgYAMLv3(v test.GopkgYAMLv3Json) string {
+func formatGopkgYAMLv3(v test.GopkgYAMLv3) string {
 	ms := ""
 	if v.MyString() != nil {
 		ms = *v.MyString()
@@ -296,7 +296,7 @@ func formatGopkgYAMLv3(v test.GopkgYAMLv3Json) string {
 		me = string(*v.MyEnum())
 	}
 	return fmt.Sprintf(
-		"GopkgYAMLv3Json{MyString: %s, MyNumber: %f, MyInteger: %d, MyBoolean: %t, MyNull: %v, MyEnum: %v}",
+		"GopkgYAMLv3{MyString: %s, MyNumber: %f, MyInteger: %d, MyBoolean: %t, MyNull: %v, MyEnum: %v}",
 		ms, mn, mi, mb, nil, me,
 	)
 }

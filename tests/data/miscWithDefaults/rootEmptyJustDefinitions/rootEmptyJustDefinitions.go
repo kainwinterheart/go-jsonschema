@@ -2,6 +2,9 @@
 
 package test
 
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
 type Thing struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
@@ -9,4 +12,42 @@ type Thing struct {
 
 func (o *Thing) Name() *string {
 	return o.name
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Thing) UnmarshalJSON(value []byte) error {
+	type ThingHelper struct {
+		Name *string `json:"name",omitempty`
+	}
+	type Plain Thing
+	var helper ThingHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.name = helper.Name
+	*j = Thing(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Thing) MarshalJSON() ([]byte, error) {
+	type ThingMarshalHelper struct {
+		Name *string `json:"name",omitempty`
+	}
+	helper := ThingMarshalHelper{
+		Name: j.name,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Thing
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Thing(plain)
+	return nil
 }

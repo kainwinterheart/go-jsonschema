@@ -393,7 +393,8 @@ func (g *schemaGenerator) generateDeclaredType(t *schemas.Type, scope nameScope)
 			validators = g.structFieldValidators(validators, f, f.Type, false)
 		}
 
-		if t.IsSubSchemaTypeElem() || len(validators) > 0 {
+		hasPrivateFields := hasPrivateStructFields(tt.Fields)
+		if t.IsSubSchemaTypeElem() || len(validators) > 0 || hasPrivateFields {
 			g.generateUnmarshaler(&decl, validators)
 		}
 
@@ -1556,4 +1557,13 @@ func (g *schemaGenerator) isTypeNullable(t *schemas.Type) (int, bool) {
 	}
 
 	return -1, false
+}
+
+func hasPrivateStructFields(fields []codegen.StructField) bool {
+	for _, f := range fields {
+		if len(f.Name) > 0 && f.Name[0] >= 'a' && f.Name[0] <= 'z' {
+			return true
+		}
+	}
+	return false
 }

@@ -4,9 +4,10 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 import "unicode/utf8"
 
-type MinLengthJson struct {
+type MinLength struct {
 	// mynullablestring corresponds to the JSON schema field "myNullableString".
 	mynullablestring *string `json:"myNullableString,omitempty,omitzero" yaml:"myNullableString,omitempty" mapstructure:"myNullableString,omitempty"`
 
@@ -14,29 +15,29 @@ type MinLengthJson struct {
 	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
 }
 
-func (o *MinLengthJson) MyNullableString() *string {
+func (o *MinLength) MyNullableString() *string {
 	return o.mynullablestring
 }
 
-func (o *MinLengthJson) MyString() string {
+func (o *MinLength) MyString() string {
 	return o.mystring
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *MinLengthJson) UnmarshalJSON(value []byte) error {
+func (j *MinLength) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myString"]; raw != nil && !ok {
-		return fmt.Errorf("field myString in MinLengthJson: required")
+		return fmt.Errorf("field myString in MinLength: required")
 	}
-	type MinLengthJsonHelper struct {
+	type MinLengthHelper struct {
 		Mynullablestring *string `json:"myNullableString",omitempty`
 		Mystring         string  `json:"myString"`
 	}
-	type Plain MinLengthJson
-	var helper MinLengthJsonHelper
+	type Plain MinLength
+	var helper MinLengthHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -49,6 +50,43 @@ func (j *MinLengthJson) UnmarshalJSON(value []byte) error {
 	if utf8.RuneCountInString(string(plain.mystring)) < 5 {
 		return fmt.Errorf("field %s length: must be >= %d", "myString", 5)
 	}
-	*j = MinLengthJson(plain)
+	*j = MinLength(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *MinLength) MarshalJSON() ([]byte, error) {
+	type MinLengthMarshalHelper struct {
+		Mynullablestring *string `json:"myNullableString",omitempty`
+		Mystring         string  `json:"myString"`
+	}
+	helper := MinLengthMarshalHelper{
+		Mynullablestring: j.mynullablestring,
+		Mystring:         j.mystring,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *MinLength) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myString"]; raw != nil && !ok {
+		return fmt.Errorf("field myString in MinLength: required")
+	}
+	type Plain MinLength
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.mynullablestring != nil && utf8.RuneCountInString(string(*plain.mynullablestring)) < 10 {
+		return fmt.Errorf("field %s length: must be >= %d", "myNullableString", 10)
+	}
+	if utf8.RuneCountInString(string(plain.mystring)) < 5 {
+		return fmt.Errorf("field %s length: must be >= %d", "myString", 5)
+	}
+	*j = MinLength(plain)
 	return nil
 }

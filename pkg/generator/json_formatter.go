@@ -182,6 +182,95 @@ func (jf *jsonFormatter) generate(
 		out.Indent(-1)
 		out.Printlnf("}")
 
+		// Generate MarshalJSON for structs with private fields
+		if structType != nil {
+			out.Printlnf("")
+			out.Commentf("Marshal%s implements %s.Marshaler.", strings.ToUpper(formatJSON), formatJSON)
+			out.Printlnf("func (j *%s) Marshal%s() ([]byte, error) {", declType.Name, strings.ToUpper(formatJSON))
+			out.Indent(1)
+
+			// Check if any field is private
+			hasPrivate := false
+			for _, f := range structType.Fields {
+				if len(f.Name) > 0 && f.Name[0] >= 'a' && f.Name[0] <= 'z' {
+					hasPrivate = true
+					break
+				}
+			}
+
+			if hasPrivate {
+				// Generate helper struct with exported fields
+				marshalHelperName := declType.Name + "MarshalHelper"
+				if marshalHelperName == declType.Name {
+					for i := 0; !output.isUniqueTypeName(marshalHelperName) && i < math.MaxInt; i++ {
+						marshalHelperName = fmt.Sprintf("%s_%d", declType.Name+"MarshalHelper", i)
+					}
+				}
+
+				out.Printlnf("type %s struct {", marshalHelperName)
+				for _, f := range structType.Fields {
+					if f.Name == additionalProperties {
+						continue
+					}
+					exportedName := strings.ToUpper(f.Name[:1]) + f.Name[1:]
+					out.Printf("\t%s ", exportedName)
+					if err := f.Type.Generate(out); err != nil {
+						return err
+					}
+					tag := fmt.Sprintf(`json:"%s"`, f.JSONName)
+					if !isRequiredField(f, structType) {
+						tag += ",omitempty"
+					}
+					out.Printf("`%s`", tag)
+					out.Newline()
+				}
+				out.Printlnf("}")
+
+				out.Printlnf("helper := %s {", marshalHelperName)
+				for _, f := range structType.Fields {
+					if f.Name == additionalProperties {
+						continue
+					}
+					exportedName := strings.ToUpper(f.Name[:1]) + f.Name[1:]
+					out.Printlnf("%s: j.%s,", exportedName, f.Name)
+				}
+				out.Printlnf("}")
+				out.Printlnf("return json.Marshal(helper)")
+			} else {
+				out.Printlnf("return json.Marshal(struct {")
+				for _, f := range structType.Fields {
+					if f.Name == additionalProperties {
+						continue
+					}
+					exportedName := strings.ToUpper(f.Name[:1]) + f.Name[1:]
+					tag := fmt.Sprintf(`json:"%s"`, f.JSONName)
+					if !isRequiredField(f, structType) {
+						tag += ",omitempty"
+					}
+					out.Printf("\t%s ", exportedName)
+					if err := f.Type.Generate(out); err != nil {
+						return err
+					}
+					out.Printf("`%s`\n", tag)
+				}
+				out.Printlnf("}{")
+				for i, f := range structType.Fields {
+					if f.Name == additionalProperties {
+						continue
+					}
+					if i > 0 {
+						out.Printlnf(",")
+					}
+					out.Printf("\t%s: j.%s", strings.ToUpper(f.Name[:1])+f.Name[1:], f.Name)
+				}
+				out.Printlnf("}")
+				out.Printlnf("})")
+			}
+
+			out.Indent(-1)
+			out.Printlnf("}")
+		}
+
 		return nil
 	}
 }

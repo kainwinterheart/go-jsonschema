@@ -4,44 +4,112 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
-type ObjectJson struct {
+type Object struct {
 	// myobject corresponds to the JSON schema field "myObject".
-	myobject *ObjectJsonmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+	myobject *Objectmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
-func (o *ObjectJson) MyObject() *ObjectJsonmyobject {
+func (o *Object) MyObject() *Objectmyobject {
 	return o.myobject
 }
 
-type ObjectJsonmyobject struct {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Object) UnmarshalJSON(value []byte) error {
+	type ObjectHelper struct {
+		Myobject *Objectmyobject `json:"myObject",omitempty`
+	}
+	type Plain Object
+	var helper ObjectHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.myobject = helper.Myobject
+	*j = Object(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Object) MarshalJSON() ([]byte, error) {
+	type ObjectMarshalHelper struct {
+		Myobject *Objectmyobject `json:"myObject",omitempty`
+	}
+	helper := ObjectMarshalHelper{
+		Myobject: j.myobject,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Object) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Object
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Object(plain)
+	return nil
+}
+
+type Objectmyobject struct {
 	// mystring corresponds to the JSON schema field "myString".
 	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
 }
 
-func (o *ObjectJsonmyobject) MyString() string {
+func (o *Objectmyobject) MyString() string {
 	return o.mystring
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ObjectJsonmyobject) UnmarshalJSON(value []byte) error {
+func (j *Objectmyobject) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myString"]; raw != nil && !ok {
-		return fmt.Errorf("field myString in ObjectJsonmyobject: required")
+		return fmt.Errorf("field myString in Objectmyobject: required")
 	}
-	type ObjectJsonmyobjectHelper struct {
+	type ObjectmyobjectHelper struct {
 		Mystring string `json:"myString"`
 	}
-	type Plain ObjectJsonmyobject
-	var helper ObjectJsonmyobjectHelper
+	type Plain Objectmyobject
+	var helper ObjectmyobjectHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.mystring = helper.Mystring
-	*j = ObjectJsonmyobject(plain)
+	*j = Objectmyobject(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Objectmyobject) MarshalJSON() ([]byte, error) {
+	type ObjectmyobjectMarshalHelper struct {
+		Mystring string `json:"myString"`
+	}
+	helper := ObjectmyobjectMarshalHelper{
+		Mystring: j.mystring,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Objectmyobject) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myString"]; raw != nil && !ok {
+		return fmt.Errorf("field myString in Objectmyobject: required")
+	}
+	type Plain Objectmyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Objectmyobject(plain)
 	return nil
 }

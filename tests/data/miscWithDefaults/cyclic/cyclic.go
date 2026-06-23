@@ -2,6 +2,9 @@
 
 package test
 
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
 type Bar struct {
 	// reftofoo corresponds to the JSON schema field "refToFoo".
 	reftofoo *Foo `json:"refToFoo,omitempty,omitzero" yaml:"refToFoo,omitempty" mapstructure:"refToFoo,omitempty"`
@@ -11,13 +14,89 @@ func (o *Bar) RefToFoo() *Foo {
 	return o.reftofoo
 }
 
-type CyclicJson struct {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Bar) UnmarshalJSON(value []byte) error {
+	type BarHelper struct {
+		Reftofoo *Foo `json:"refToFoo",omitempty`
+	}
+	type Plain Bar
+	var helper BarHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.reftofoo = helper.Reftofoo
+	*j = Bar(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Bar) MarshalJSON() ([]byte, error) {
+	type BarMarshalHelper struct {
+		Reftofoo *Foo `json:"refToFoo",omitempty`
+	}
+	helper := BarMarshalHelper{
+		Reftofoo: j.reftofoo,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Bar) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Bar
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Bar(plain)
+	return nil
+}
+
+type Cyclic struct {
 	// a corresponds to the JSON schema field "a".
 	a *Foo `json:"a,omitempty,omitzero" yaml:"a,omitempty" mapstructure:"a,omitempty"`
 }
 
-func (o *CyclicJson) A() *Foo {
+func (o *Cyclic) A() *Foo {
 	return o.a
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Cyclic) UnmarshalJSON(value []byte) error {
+	type CyclicHelper struct {
+		A *Foo `json:"a",omitempty`
+	}
+	type Plain Cyclic
+	var helper CyclicHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.a = helper.A
+	*j = Cyclic(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Cyclic) MarshalJSON() ([]byte, error) {
+	type CyclicMarshalHelper struct {
+		A *Foo `json:"a",omitempty`
+	}
+	helper := CyclicMarshalHelper{
+		A: j.a,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Cyclic) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Cyclic
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Cyclic(plain)
+	return nil
 }
 
 type Foo struct {
@@ -27,4 +106,42 @@ type Foo struct {
 
 func (o *Foo) RefToBar() *Bar {
 	return o.reftobar
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Foo) UnmarshalJSON(value []byte) error {
+	type FooHelper struct {
+		Reftobar *Bar `json:"refToBar",omitempty`
+	}
+	type Plain Foo
+	var helper FooHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.reftobar = helper.Reftobar
+	*j = Foo(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Foo) MarshalJSON() ([]byte, error) {
+	type FooMarshalHelper struct {
+		Reftobar *Bar `json:"refToBar",omitempty`
+	}
+	helper := FooMarshalHelper{
+		Reftobar: j.reftobar,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Foo) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Foo
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Foo(plain)
+	return nil
 }

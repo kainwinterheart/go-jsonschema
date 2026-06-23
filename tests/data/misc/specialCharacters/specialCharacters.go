@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 import "reflect"
 
 type License string
@@ -44,10 +45,50 @@ func (j *License_1) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *License_1) UnmarshalYAML(value *yaml.Node) error {
+	var v string
+	if err := value.Decode(&v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_License_1 {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_License_1, v)
+	}
+	*j = License_1(v)
+	return nil
+}
+
 var enumValues_License = []interface{}{
 	"GPL-3.0",
 	"MIT",
 	"*",
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *License) UnmarshalYAML(value *yaml.Node) error {
+	var v string
+	if err := value.Decode(&v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_License {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_License, v)
+	}
+	*j = License(v)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -70,96 +111,186 @@ func (j *License) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-type SpecialCharactersJson struct {
+type SpecialCharacters struct {
 	// plainlicenses corresponds to the JSON schema field "plainLicenses".
-	plainlicenses *SpecialCharactersJsonplainlicenses `json:"plainLicenses,omitempty,omitzero" yaml:"plainLicenses,omitempty" mapstructure:"plainLicenses,omitempty"`
+	plainlicenses *SpecialCharactersplainlicenses `json:"plainLicenses,omitempty,omitzero" yaml:"plainLicenses,omitempty" mapstructure:"plainLicenses,omitempty"`
 
 	// plainlicensesref corresponds to the JSON schema field "plainLicensesRef".
 	plainlicensesref []License `json:"plainLicensesRef,omitempty,omitzero" yaml:"plainLicensesRef,omitempty" mapstructure:"plainLicensesRef,omitempty"`
 
 	// pluslicenses corresponds to the JSON schema field "plusLicenses".
-	pluslicenses *SpecialCharactersJsonpluslicenses `json:"plusLicenses,omitempty,omitzero" yaml:"plusLicenses,omitempty" mapstructure:"plusLicenses,omitempty"`
+	pluslicenses *SpecialCharacterspluslicenses `json:"plusLicenses,omitempty,omitzero" yaml:"plusLicenses,omitempty" mapstructure:"plusLicenses,omitempty"`
 
 	// pluslicensesref corresponds to the JSON schema field "plusLicensesRef".
 	pluslicensesref []License_1 `json:"plusLicensesRef,omitempty,omitzero" yaml:"plusLicensesRef,omitempty" mapstructure:"plusLicensesRef,omitempty"`
 }
 
-func (o *SpecialCharactersJson) PlainLicenses() *SpecialCharactersJsonplainlicenses {
+func (o *SpecialCharacters) PlainLicenses() *SpecialCharactersplainlicenses {
 	return o.plainlicenses
 }
 
-func (o *SpecialCharactersJson) PlainLicensesRef() []License {
+func (o *SpecialCharacters) PlainLicensesRef() []License {
 	return o.plainlicensesref
 }
 
-func (o *SpecialCharactersJson) PlusLicenses() *SpecialCharactersJsonpluslicenses {
+func (o *SpecialCharacters) PlusLicenses() *SpecialCharacterspluslicenses {
 	return o.pluslicenses
 }
 
-func (o *SpecialCharactersJson) PlusLicensesRef() []License_1 {
+func (o *SpecialCharacters) PlusLicensesRef() []License_1 {
 	return o.pluslicensesref
 }
 
-type SpecialCharactersJsonplainlicenses string
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *SpecialCharacters) UnmarshalYAML(value *yaml.Node) error {
+	type Plain SpecialCharacters
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = SpecialCharacters(plain)
+	return nil
+}
 
-const SpecialCharactersJsonplainlicensesGPL30 SpecialCharactersJsonplainlicenses = "GPL-3.0"
-const SpecialCharactersJsonplainlicensesMIT SpecialCharactersJsonplainlicenses = "MIT"
-const SpecialCharactersJsonplainlicensesWildcard SpecialCharactersJsonplainlicenses = "*"
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *SpecialCharacters) UnmarshalJSON(value []byte) error {
+	type SpecialCharactersHelper struct {
+		Plainlicenses    *SpecialCharactersplainlicenses `json:"plainLicenses",omitempty`
+		Plainlicensesref []License                       `json:"plainLicensesRef",omitempty`
+		Pluslicenses     *SpecialCharacterspluslicenses  `json:"plusLicenses",omitempty`
+		Pluslicensesref  []License_1                     `json:"plusLicensesRef",omitempty`
+	}
+	type Plain SpecialCharacters
+	var helper SpecialCharactersHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.plainlicenses = helper.Plainlicenses
+	plain.plainlicensesref = helper.Plainlicensesref
+	plain.pluslicenses = helper.Pluslicenses
+	plain.pluslicensesref = helper.Pluslicensesref
+	*j = SpecialCharacters(plain)
+	return nil
+}
 
-var enumValues_SpecialCharactersJsonplainlicenses = []interface{}{
+// MarshalJSON implements json.Marshaler.
+func (j *SpecialCharacters) MarshalJSON() ([]byte, error) {
+	type SpecialCharactersMarshalHelper struct {
+		Plainlicenses    *SpecialCharactersplainlicenses `json:"plainLicenses",omitempty`
+		Plainlicensesref []License                       `json:"plainLicensesRef",omitempty`
+		Pluslicenses     *SpecialCharacterspluslicenses  `json:"plusLicenses",omitempty`
+		Pluslicensesref  []License_1                     `json:"plusLicensesRef",omitempty`
+	}
+	helper := SpecialCharactersMarshalHelper{
+		Plainlicenses:    j.plainlicenses,
+		Plainlicensesref: j.plainlicensesref,
+		Pluslicenses:     j.pluslicenses,
+		Pluslicensesref:  j.pluslicensesref,
+	}
+	return json.Marshal(helper)
+}
+
+type SpecialCharactersplainlicenses string
+
+const SpecialCharactersplainlicensesGPL30 SpecialCharactersplainlicenses = "GPL-3.0"
+const SpecialCharactersplainlicensesMIT SpecialCharactersplainlicenses = "MIT"
+const SpecialCharactersplainlicensesWildcard SpecialCharactersplainlicenses = "*"
+
+var enumValues_SpecialCharactersplainlicenses = []interface{}{
 	"GPL-3.0",
 	"MIT",
 	"*",
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *SpecialCharactersJsonplainlicenses) UnmarshalJSON(value []byte) error {
+func (j *SpecialCharactersplainlicenses) UnmarshalJSON(value []byte) error {
 	var v string
 	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
-	for _, expected := range enumValues_SpecialCharactersJsonplainlicenses {
+	for _, expected := range enumValues_SpecialCharactersplainlicenses {
 		if reflect.DeepEqual(v, expected) {
 			ok = true
 			break
 		}
 	}
 	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_SpecialCharactersJsonplainlicenses, v)
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_SpecialCharactersplainlicenses, v)
 	}
-	*j = SpecialCharactersJsonplainlicenses(v)
+	*j = SpecialCharactersplainlicenses(v)
 	return nil
 }
 
-type SpecialCharactersJsonpluslicenses string
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *SpecialCharactersplainlicenses) UnmarshalYAML(value *yaml.Node) error {
+	var v string
+	if err := value.Decode(&v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_SpecialCharactersplainlicenses {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_SpecialCharactersplainlicenses, v)
+	}
+	*j = SpecialCharactersplainlicenses(v)
+	return nil
+}
 
-const SpecialCharactersJsonpluslicensesGPL30 SpecialCharactersJsonpluslicenses = "GPL-3.0+"
-const SpecialCharactersJsonpluslicensesMIT SpecialCharactersJsonpluslicenses = "MIT+"
-const SpecialCharactersJsonpluslicensesWildcard SpecialCharactersJsonpluslicenses = "*"
+type SpecialCharacterspluslicenses string
 
-var enumValues_SpecialCharactersJsonpluslicenses = []interface{}{
+const SpecialCharacterspluslicensesGPL30 SpecialCharacterspluslicenses = "GPL-3.0+"
+const SpecialCharacterspluslicensesMIT SpecialCharacterspluslicenses = "MIT+"
+const SpecialCharacterspluslicensesWildcard SpecialCharacterspluslicenses = "*"
+
+var enumValues_SpecialCharacterspluslicenses = []interface{}{
 	"GPL-3.0+",
 	"MIT+",
 	"*",
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *SpecialCharactersJsonpluslicenses) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *SpecialCharacterspluslicenses) UnmarshalYAML(value *yaml.Node) error {
 	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
-	for _, expected := range enumValues_SpecialCharactersJsonpluslicenses {
+	for _, expected := range enumValues_SpecialCharacterspluslicenses {
 		if reflect.DeepEqual(v, expected) {
 			ok = true
 			break
 		}
 	}
 	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_SpecialCharactersJsonpluslicenses, v)
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_SpecialCharacterspluslicenses, v)
 	}
-	*j = SpecialCharactersJsonpluslicenses(v)
+	*j = SpecialCharacterspluslicenses(v)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *SpecialCharacterspluslicenses) UnmarshalJSON(value []byte) error {
+	var v string
+	if err := json.Unmarshal(value, &v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_SpecialCharacterspluslicenses {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_SpecialCharacterspluslicenses, v)
+	}
+	*j = SpecialCharacterspluslicenses(v)
 	return nil
 }

@@ -5,49 +5,71 @@ package test
 import "encoding/json"
 import "errors"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
-type AnyOf7Json struct {
+type AnyOf7 struct {
 	// bar corresponds to the JSON schema field "bar".
-	bar []*AnyOf7JsonbarElem `json:"bar" yaml:"bar" mapstructure:"bar"`
+	bar []*AnyOf7barElem `json:"bar" yaml:"bar" mapstructure:"bar"`
 
 	// baz corresponds to the JSON schema field "baz".
-	baz []*AnyOf7JsonbazElem `json:"baz,omitempty,omitzero" yaml:"baz,omitempty" mapstructure:"baz,omitempty"`
+	baz []*AnyOf7bazElem `json:"baz,omitempty,omitzero" yaml:"baz,omitempty" mapstructure:"baz,omitempty"`
 
 	// foo corresponds to the JSON schema field "foo".
-	foo *AnyOf7Jsonfoo `json:"foo" yaml:"foo" mapstructure:"foo"`
+	foo *AnyOf7foo `json:"foo" yaml:"foo" mapstructure:"foo"`
 }
 
-func (o *AnyOf7Json) Bar() []*AnyOf7JsonbarElem {
+func (o *AnyOf7) Bar() []*AnyOf7barElem {
 	return o.bar
 }
 
-func (o *AnyOf7Json) Baz() []*AnyOf7JsonbazElem {
+func (o *AnyOf7) Baz() []*AnyOf7bazElem {
 	return o.baz
 }
 
-func (o *AnyOf7Json) Foo() *AnyOf7Jsonfoo {
+func (o *AnyOf7) Foo() *AnyOf7foo {
 	return o.foo
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf7) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["bar"]; raw != nil && !ok {
+		return fmt.Errorf("field bar in AnyOf7: required")
+	}
+	if _, ok := raw["foo"]; raw != nil && !ok {
+		return fmt.Errorf("field foo in AnyOf7: required")
+	}
+	type Plain AnyOf7
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf7(plain)
+	return nil
+}
+
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *AnyOf7Json) UnmarshalJSON(value []byte) error {
+func (j *AnyOf7) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in AnyOf7Json: required")
+		return fmt.Errorf("field bar in AnyOf7: required")
 	}
 	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AnyOf7Json: required")
+		return fmt.Errorf("field foo in AnyOf7: required")
 	}
-	type AnyOf7JsonHelper struct {
-		Bar []*AnyOf7JsonbarElem `json:"bar"`
-		Baz []*AnyOf7JsonbazElem `json:"baz",omitempty`
-		Foo *AnyOf7Jsonfoo       `json:"foo"`
+	type AnyOf7Helper struct {
+		Bar []*AnyOf7barElem `json:"bar"`
+		Baz []*AnyOf7bazElem `json:"baz",omitempty`
+		Foo *AnyOf7foo       `json:"foo"`
 	}
-	type Plain AnyOf7Json
-	var helper AnyOf7JsonHelper
+	type Plain AnyOf7
+	var helper AnyOf7Helper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -55,134 +77,262 @@ func (j *AnyOf7Json) UnmarshalJSON(value []byte) error {
 	plain.bar = helper.Bar
 	plain.baz = helper.Baz
 	plain.foo = helper.Foo
-	*j = AnyOf7Json(plain)
+	*j = AnyOf7(plain)
 	return nil
 }
 
-type AnyOf7JsonbarElem struct {
+// MarshalJSON implements json.Marshaler.
+func (j *AnyOf7) MarshalJSON() ([]byte, error) {
+	type AnyOf7MarshalHelper struct {
+		Bar []*AnyOf7barElem `json:"bar"`
+		Baz []*AnyOf7bazElem `json:"baz",omitempty`
+		Foo *AnyOf7foo       `json:"foo"`
+	}
+	helper := AnyOf7MarshalHelper{
+		Bar: j.bar,
+		Baz: j.baz,
+		Foo: j.foo,
+	}
+	return json.Marshal(helper)
+}
+
+type AnyOf7barElem struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-func (o *AnyOf7JsonbarElem) Name() *string {
+func (o *AnyOf7barElem) Name() *string {
 	return o.name
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *AnyOf7JsonbarElem) UnmarshalJSON(value []byte) error {
+func (j *AnyOf7barElem) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	var anyOf7JsonbarElem_0 AnyOf7JsonbarElem_0
+	var anyOf7barElem_0 AnyOf7barElem_0
 	var errs []error
-	if err := anyOf7JsonbarElem_0.UnmarshalJSON(value); err != nil {
+	if err := anyOf7barElem_0.UnmarshalJSON(value); err != nil {
 		errs = append(errs, err)
 	}
 	if len(errs) == 1 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
-	type AnyOf7JsonbarElemHelper struct {
+	type AnyOf7barElemHelper struct {
 		Name *string `json:"name",omitempty`
 	}
-	type Plain AnyOf7JsonbarElem
-	var helper AnyOf7JsonbarElemHelper
+	type Plain AnyOf7barElem
+	var helper AnyOf7barElemHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.name = helper.Name
-	*j = AnyOf7JsonbarElem(plain)
+	*j = AnyOf7barElem(plain)
 	return nil
 }
 
-type AnyOf7JsonbazElem struct {
-	// name corresponds to the JSON schema field "name".
-	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+// MarshalJSON implements json.Marshaler.
+func (j *AnyOf7barElem) MarshalJSON() ([]byte, error) {
+	type AnyOf7barElemMarshalHelper struct {
+		Name *string `json:"name",omitempty`
+	}
+	helper := AnyOf7barElemMarshalHelper{
+		Name: j.name,
+	}
+	return json.Marshal(helper)
 }
 
-func (o *AnyOf7JsonbazElem) Name() *string {
-	return o.name
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *AnyOf7JsonbazElem) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf7barElem) UnmarshalYAML(value *yaml.Node) error {
 	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
+	if err := value.Decode(&raw); err != nil {
 		return err
 	}
-	var anyOf7JsonbazElem_0 AnyOf7JsonbazElem_0
+	var anyOf7barElem_0 AnyOf7barElem_0
 	var errs []error
-	if err := anyOf7JsonbazElem_0.UnmarshalJSON(value); err != nil {
+	if err := anyOf7barElem_0.UnmarshalYAML(value); err != nil {
 		errs = append(errs, err)
 	}
 	if len(errs) == 1 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
-	type AnyOf7JsonbazElemHelper struct {
-		Name *string `json:"name",omitempty`
-	}
-	type Plain AnyOf7JsonbazElem
-	var helper AnyOf7JsonbazElemHelper
-	if err := json.Unmarshal(value, &helper); err != nil {
+	type Plain AnyOf7barElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
 		return err
 	}
-	var plain Plain
-	plain.name = helper.Name
-	*j = AnyOf7JsonbazElem(plain)
+	*j = AnyOf7barElem(plain)
 	return nil
 }
 
-type AnyOf7Jsonfoo struct {
+type AnyOf7bazElem struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-func (o *AnyOf7Jsonfoo) Name() *string {
+func (o *AnyOf7bazElem) Name() *string {
 	return o.name
 }
 
-type AnyOf7JsonbazElem_0 = Item
-
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *AnyOf7Jsonfoo) UnmarshalJSON(value []byte) error {
+func (j *AnyOf7bazElem) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	var anyOf7Jsonfoo_0 AnyOf7Jsonfoo_0
+	var anyOf7bazElem_0 AnyOf7bazElem_0
 	var errs []error
-	if err := anyOf7Jsonfoo_0.UnmarshalJSON(value); err != nil {
+	if err := anyOf7bazElem_0.UnmarshalJSON(value); err != nil {
 		errs = append(errs, err)
 	}
 	if len(errs) == 1 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
-	type AnyOf7JsonfooHelper struct {
+	type AnyOf7bazElemHelper struct {
 		Name *string `json:"name",omitempty`
 	}
-	type Plain AnyOf7Jsonfoo
-	var helper AnyOf7JsonfooHelper
+	type Plain AnyOf7bazElem
+	var helper AnyOf7bazElemHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.name = helper.Name
-	*j = AnyOf7Jsonfoo(plain)
+	*j = AnyOf7bazElem(plain)
 	return nil
 }
 
-type AnyOf7Jsonfoo_0 = Item
+// MarshalJSON implements json.Marshaler.
+func (j *AnyOf7bazElem) MarshalJSON() ([]byte, error) {
+	type AnyOf7bazElemMarshalHelper struct {
+		Name *string `json:"name",omitempty`
+	}
+	helper := AnyOf7bazElemMarshalHelper{
+		Name: j.name,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf7bazElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var anyOf7bazElem_0 AnyOf7bazElem_0
+	var errs []error
+	if err := anyOf7bazElem_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 1 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain AnyOf7bazElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf7bazElem(plain)
+	return nil
+}
+
+type AnyOf7foo_0 = Item
+
+type AnyOf7foo struct {
+	// name corresponds to the JSON schema field "name".
+	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+}
+
+func (o *AnyOf7foo) Name() *string {
+	return o.name
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *AnyOf7foo) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	var anyOf7foo_0 AnyOf7foo_0
+	var errs []error
+	if err := anyOf7foo_0.UnmarshalJSON(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 1 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type AnyOf7fooHelper struct {
+		Name *string `json:"name",omitempty`
+	}
+	type Plain AnyOf7foo
+	var helper AnyOf7fooHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.name = helper.Name
+	*j = AnyOf7foo(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *AnyOf7foo) MarshalJSON() ([]byte, error) {
+	type AnyOf7fooMarshalHelper struct {
+		Name *string `json:"name",omitempty`
+	}
+	helper := AnyOf7fooMarshalHelper{
+		Name: j.name,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf7foo) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var anyOf7foo_0 AnyOf7foo_0
+	var errs []error
+	if err := anyOf7foo_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 1 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain AnyOf7foo
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf7foo(plain)
+	return nil
+}
 
 type Item struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-type AnyOf7JsonbarElem_0 = Item
+type AnyOf7bazElem_0 = Item
+
+type AnyOf7barElem_0 = Item
 
 func (o *Item) Name() *string {
 	return o.name
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Item) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Item
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Item(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -199,4 +349,15 @@ func (j *Item) UnmarshalJSON(value []byte) error {
 	plain.name = helper.Name
 	*j = Item(plain)
 	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Item) MarshalJSON() ([]byte, error) {
+	type ItemMarshalHelper struct {
+		Name *string `json:"name",omitempty`
+	}
+	helper := ItemMarshalHelper{
+		Name: j.name,
+	}
+	return json.Marshal(helper)
 }

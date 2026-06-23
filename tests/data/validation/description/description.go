@@ -2,8 +2,11 @@
 
 package test
 
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
 // A simple schema.
-type DescriptionJson struct {
+type Description struct {
 	// mydescriptionlessfield corresponds to the JSON schema field
 	// "myDescriptionlessField".
 	mydescriptionlessfield *string `json:"myDescriptionlessField,omitempty,omitzero" yaml:"myDescriptionlessField,omitempty" mapstructure:"myDescriptionlessField,omitempty"`
@@ -12,10 +15,52 @@ type DescriptionJson struct {
 	myfield *string `json:"myField,omitempty,omitzero" yaml:"myField,omitempty" mapstructure:"myField,omitempty"`
 }
 
-func (o *DescriptionJson) MyDescriptionlessField() *string {
+func (o *Description) MyDescriptionlessField() *string {
 	return o.mydescriptionlessfield
 }
 
-func (o *DescriptionJson) MyField() *string {
+func (o *Description) MyField() *string {
 	return o.myfield
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Description) UnmarshalJSON(value []byte) error {
+	type DescriptionHelper struct {
+		Mydescriptionlessfield *string `json:"myDescriptionlessField",omitempty`
+		Myfield                *string `json:"myField",omitempty`
+	}
+	type Plain Description
+	var helper DescriptionHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.mydescriptionlessfield = helper.Mydescriptionlessfield
+	plain.myfield = helper.Myfield
+	*j = Description(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Description) MarshalJSON() ([]byte, error) {
+	type DescriptionMarshalHelper struct {
+		Mydescriptionlessfield *string `json:"myDescriptionlessField",omitempty`
+		Myfield                *string `json:"myField",omitempty`
+	}
+	helper := DescriptionMarshalHelper{
+		Mydescriptionlessfield: j.mydescriptionlessfield,
+		Myfield:                j.myfield,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Description) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Description
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Description(plain)
+	return nil
 }

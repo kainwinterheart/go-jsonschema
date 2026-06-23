@@ -2,11 +2,52 @@
 
 package test
 
-type BooleanAsSchemaJson struct {
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+type BooleanAsSchema struct {
 	// id corresponds to the JSON schema field "id".
 	id *string `json:"id,omitempty,omitzero" yaml:"id,omitempty" mapstructure:"id,omitempty"`
 }
 
-func (o *BooleanAsSchemaJson) Id() *string {
+func (o *BooleanAsSchema) Id() *string {
 	return o.id
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *BooleanAsSchema) UnmarshalJSON(value []byte) error {
+	type BooleanAsSchemaHelper struct {
+		Id *string `json:"id",omitempty`
+	}
+	type Plain BooleanAsSchema
+	var helper BooleanAsSchemaHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.id = helper.Id
+	*j = BooleanAsSchema(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *BooleanAsSchema) MarshalJSON() ([]byte, error) {
+	type BooleanAsSchemaMarshalHelper struct {
+		Id *string `json:"id",omitempty`
+	}
+	helper := BooleanAsSchemaMarshalHelper{
+		Id: j.id,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *BooleanAsSchema) UnmarshalYAML(value *yaml.Node) error {
+	type Plain BooleanAsSchema
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = BooleanAsSchema(plain)
+	return nil
 }

@@ -2,11 +2,52 @@
 
 package test
 
-type NillabilityJson struct {
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+type Nillability struct {
 	// name corresponds to the JSON schema field "name".
 	name map[bool]string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-func (o *NillabilityJson) Name() map[bool]string {
+func (o *Nillability) Name() map[bool]string {
 	return o.name
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Nillability) UnmarshalJSON(value []byte) error {
+	type NillabilityHelper struct {
+		Name map[bool]string `json:"name",omitempty`
+	}
+	type Plain Nillability
+	var helper NillabilityHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.name = helper.Name
+	*j = Nillability(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Nillability) MarshalJSON() ([]byte, error) {
+	type NillabilityMarshalHelper struct {
+		Name map[bool]string `json:"name",omitempty`
+	}
+	helper := NillabilityMarshalHelper{
+		Name: j.name,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Nillability) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Nillability
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Nillability(plain)
+	return nil
 }

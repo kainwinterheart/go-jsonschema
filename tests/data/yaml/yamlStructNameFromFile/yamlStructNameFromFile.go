@@ -2,11 +2,52 @@
 
 package test
 
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
 type YamlStructNameFromFile struct {
-	// Foo corresponds to the JSON schema field "foo".
+	// foo corresponds to the JSON schema field "foo".
 	foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
 }
 
 func (o *YamlStructNameFromFile) Foo() *string {
 	return o.foo
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *YamlStructNameFromFile) UnmarshalJSON(value []byte) error {
+	type YamlStructNameFromFileHelper struct {
+		Foo *string `json:"foo",omitempty`
+	}
+	type Plain YamlStructNameFromFile
+	var helper YamlStructNameFromFileHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.foo = helper.Foo
+	*j = YamlStructNameFromFile(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *YamlStructNameFromFile) MarshalJSON() ([]byte, error) {
+	type YamlStructNameFromFileMarshalHelper struct {
+		Foo *string `json:"foo",omitempty`
+	}
+	helper := YamlStructNameFromFileMarshalHelper{
+		Foo: j.foo,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *YamlStructNameFromFile) UnmarshalYAML(value *yaml.Node) error {
+	type Plain YamlStructNameFromFile
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = YamlStructNameFromFile(plain)
+	return nil
 }

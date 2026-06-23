@@ -4,9 +4,10 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 import "math"
 
-type MultipleOfJson struct {
+type MultipleOf struct {
 	// myinteger corresponds to the JSON schema field "myInteger".
 	myinteger int `json:"myInteger" yaml:"myInteger" mapstructure:"myInteger"`
 
@@ -20,42 +21,42 @@ type MultipleOfJson struct {
 	mynumber float64 `json:"myNumber" yaml:"myNumber" mapstructure:"myNumber"`
 }
 
-func (o *MultipleOfJson) MyInteger() int {
+func (o *MultipleOf) MyInteger() int {
 	return o.myinteger
 }
 
-func (o *MultipleOfJson) MyNullableInteger() *int {
+func (o *MultipleOf) MyNullableInteger() *int {
 	return o.mynullableinteger
 }
 
-func (o *MultipleOfJson) MyNullableNumber() *float64 {
+func (o *MultipleOf) MyNullableNumber() *float64 {
 	return o.mynullablenumber
 }
 
-func (o *MultipleOfJson) MyNumber() float64 {
+func (o *MultipleOf) MyNumber() float64 {
 	return o.mynumber
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *MultipleOfJson) UnmarshalJSON(value []byte) error {
+func (j *MultipleOf) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myInteger"]; raw != nil && !ok {
-		return fmt.Errorf("field myInteger in MultipleOfJson: required")
+		return fmt.Errorf("field myInteger in MultipleOf: required")
 	}
 	if _, ok := raw["myNumber"]; raw != nil && !ok {
-		return fmt.Errorf("field myNumber in MultipleOfJson: required")
+		return fmt.Errorf("field myNumber in MultipleOf: required")
 	}
-	type MultipleOfJsonHelper struct {
+	type MultipleOfHelper struct {
 		Myinteger         int      `json:"myInteger"`
 		Mynullableinteger *int     `json:"myNullableInteger",omitempty`
 		Mynullablenumber  *float64 `json:"myNullableNumber",omitempty`
 		Mynumber          float64  `json:"myNumber"`
 	}
-	type Plain MultipleOfJson
-	var helper MultipleOfJsonHelper
+	type Plain MultipleOf
+	var helper MultipleOfHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -82,6 +83,62 @@ func (j *MultipleOfJson) UnmarshalJSON(value []byte) error {
 			return fmt.Errorf("field %s: must be a multiple of %v", "myNumber", 0.200000)
 		}
 	}
-	*j = MultipleOfJson(plain)
+	*j = MultipleOf(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *MultipleOf) MarshalJSON() ([]byte, error) {
+	type MultipleOfMarshalHelper struct {
+		Myinteger         int      `json:"myInteger"`
+		Mynullableinteger *int     `json:"myNullableInteger",omitempty`
+		Mynullablenumber  *float64 `json:"myNullableNumber",omitempty`
+		Mynumber          float64  `json:"myNumber"`
+	}
+	helper := MultipleOfMarshalHelper{
+		Myinteger:         j.myinteger,
+		Mynullableinteger: j.mynullableinteger,
+		Mynullablenumber:  j.mynullablenumber,
+		Mynumber:          j.mynumber,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *MultipleOf) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myInteger"]; raw != nil && !ok {
+		return fmt.Errorf("field myInteger in MultipleOf: required")
+	}
+	if _, ok := raw["myNumber"]; raw != nil && !ok {
+		return fmt.Errorf("field myNumber in MultipleOf: required")
+	}
+	type Plain MultipleOf
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.myinteger%2 != 0 {
+		return fmt.Errorf("field %s: must be a multiple of %v", "myInteger", 2.000000)
+	}
+	if plain.mynullableinteger != nil && *plain.mynullableinteger%2 != 0 {
+		return fmt.Errorf("field %s: must be a multiple of %v", "myNullableInteger", 2.000000)
+	}
+	if plain.mynullablenumber != nil {
+		remainder := math.Mod(*plain.mynullablenumber, 0.2)
+		if !(math.Abs(remainder) < 1e-10 || math.Abs(remainder-0.2) < 1e-10) {
+			return fmt.Errorf("field %s: must be a multiple of %v", "myNullableNumber", 0.200000)
+		}
+	}
+	{
+		remainder := math.Mod(plain.mynumber, 0.2)
+		if !(math.Abs(remainder) < 1e-10 || math.Abs(remainder-0.2) < 1e-10) {
+			return fmt.Errorf("field %s: must be a multiple of %v", "myNumber", 0.200000)
+		}
+	}
+	*j = MultipleOf(plain)
 	return nil
 }

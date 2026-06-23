@@ -4,28 +4,29 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 import "reflect"
 
-type TypedDefaultEnumsJson struct {
+type TypedDefaultEnums struct {
 	// some corresponds to the JSON schema field "some".
-	some TypedDefaultEnumsJsonsome `json:"some,omitempty,omitzero" yaml:"some,omitempty" mapstructure:"some,omitempty"`
+	some TypedDefaultEnumssome `json:"some,omitempty,omitzero" yaml:"some,omitempty" mapstructure:"some,omitempty"`
 }
 
-func (o *TypedDefaultEnumsJson) Some() TypedDefaultEnumsJsonsome {
+func (o *TypedDefaultEnums) Some() TypedDefaultEnumssome {
 	return o.some
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *TypedDefaultEnumsJson) UnmarshalJSON(value []byte) error {
+func (j *TypedDefaultEnums) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	type TypedDefaultEnumsJsonHelper struct {
-		Some TypedDefaultEnumsJsonsome `json:"some",omitempty`
+	type TypedDefaultEnumsHelper struct {
+		Some TypedDefaultEnumssome `json:"some",omitempty`
 	}
-	type Plain TypedDefaultEnumsJson
-	var helper TypedDefaultEnumsJsonHelper
+	type Plain TypedDefaultEnums
+	var helper TypedDefaultEnumsHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -34,36 +35,85 @@ func (j *TypedDefaultEnumsJson) UnmarshalJSON(value []byte) error {
 	if v, ok := raw["some"]; !ok || v == nil {
 		plain.some = "random"
 	}
-	*j = TypedDefaultEnumsJson(plain)
+	*j = TypedDefaultEnums(plain)
 	return nil
 }
 
-type TypedDefaultEnumsJsonsome string
+// MarshalJSON implements json.Marshaler.
+func (j *TypedDefaultEnums) MarshalJSON() ([]byte, error) {
+	type TypedDefaultEnumsMarshalHelper struct {
+		Some TypedDefaultEnumssome `json:"some",omitempty`
+	}
+	helper := TypedDefaultEnumsMarshalHelper{
+		Some: j.some,
+	}
+	return json.Marshal(helper)
+}
 
-const TypedDefaultEnumsJsonsomeOther TypedDefaultEnumsJsonsome = "other"
-const TypedDefaultEnumsJsonsomeRandom TypedDefaultEnumsJsonsome = "random"
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *TypedDefaultEnums) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain TypedDefaultEnums
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if v, ok := raw["some"]; !ok || v == nil {
+		plain.some = "random"
+	}
+	*j = TypedDefaultEnums(plain)
+	return nil
+}
 
-var enumValues_TypedDefaultEnumsJsonsome = []interface{}{
+type TypedDefaultEnumssome string
+
+const TypedDefaultEnumssomeOther TypedDefaultEnumssome = "other"
+const TypedDefaultEnumssomeRandom TypedDefaultEnumssome = "random"
+
+var enumValues_TypedDefaultEnumssome = []interface{}{
 	"random",
 	"other",
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *TypedDefaultEnumsJsonsome) UnmarshalJSON(value []byte) error {
+func (j *TypedDefaultEnumssome) UnmarshalJSON(value []byte) error {
 	var v string
 	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
-	for _, expected := range enumValues_TypedDefaultEnumsJsonsome {
+	for _, expected := range enumValues_TypedDefaultEnumssome {
 		if reflect.DeepEqual(v, expected) {
 			ok = true
 			break
 		}
 	}
 	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_TypedDefaultEnumsJsonsome, v)
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_TypedDefaultEnumssome, v)
 	}
-	*j = TypedDefaultEnumsJsonsome(v)
+	*j = TypedDefaultEnumssome(v)
+	return nil
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *TypedDefaultEnumssome) UnmarshalYAML(value *yaml.Node) error {
+	var v string
+	if err := value.Decode(&v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_TypedDefaultEnumssome {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_TypedDefaultEnumssome, v)
+	}
+	*j = TypedDefaultEnumssome(v)
 	return nil
 }

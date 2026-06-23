@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 import "unicode/utf8"
 
 type MinStr string
@@ -22,7 +23,21 @@ func (j *MinStr) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-type PrimitiveDefsJson struct {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *MinStr) UnmarshalYAML(value *yaml.Node) error {
+	type Plain MinStr
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if utf8.RuneCountInString(string(plain)) < 5 {
+		return fmt.Errorf("field %s length: must be >= %d", "", 5)
+	}
+	*j = MinStr(plain)
+	return nil
+}
+
+type PrimitiveDefs struct {
 	// mynullablestring corresponds to the JSON schema field "myNullableString".
 	mynullablestring *MinStr `json:"myNullableString,omitempty,omitzero" yaml:"myNullableString,omitempty" mapstructure:"myNullableString,omitempty"`
 
@@ -30,35 +45,66 @@ type PrimitiveDefsJson struct {
 	mystring MinStr `json:"myString" yaml:"myString" mapstructure:"myString"`
 }
 
-func (o *PrimitiveDefsJson) MyNullableString() *MinStr {
+func (o *PrimitiveDefs) MyNullableString() *MinStr {
 	return o.mynullablestring
 }
 
-func (o *PrimitiveDefsJson) MyString() MinStr {
+func (o *PrimitiveDefs) MyString() MinStr {
 	return o.mystring
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *PrimitiveDefsJson) UnmarshalJSON(value []byte) error {
+func (j *PrimitiveDefs) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myString"]; raw != nil && !ok {
-		return fmt.Errorf("field myString in PrimitiveDefsJson: required")
+		return fmt.Errorf("field myString in PrimitiveDefs: required")
 	}
-	type PrimitiveDefsJsonHelper struct {
+	type PrimitiveDefsHelper struct {
 		Mynullablestring *MinStr `json:"myNullableString",omitempty`
 		Mystring         MinStr  `json:"myString"`
 	}
-	type Plain PrimitiveDefsJson
-	var helper PrimitiveDefsJsonHelper
+	type Plain PrimitiveDefs
+	var helper PrimitiveDefsHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.mynullablestring = helper.Mynullablestring
 	plain.mystring = helper.Mystring
-	*j = PrimitiveDefsJson(plain)
+	*j = PrimitiveDefs(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *PrimitiveDefs) MarshalJSON() ([]byte, error) {
+	type PrimitiveDefsMarshalHelper struct {
+		Mynullablestring *MinStr `json:"myNullableString",omitempty`
+		Mystring         MinStr  `json:"myString"`
+	}
+	helper := PrimitiveDefsMarshalHelper{
+		Mynullablestring: j.mynullablestring,
+		Mystring:         j.mystring,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *PrimitiveDefs) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myString"]; raw != nil && !ok {
+		return fmt.Errorf("field myString in PrimitiveDefs: required")
+	}
+	type Plain PrimitiveDefs
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = PrimitiveDefs(plain)
 	return nil
 }

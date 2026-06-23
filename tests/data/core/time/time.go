@@ -5,44 +5,112 @@ package test
 import "encoding/json"
 import "fmt"
 import "github.com/kainwinterheart/go-jsonschema/pkg/types"
+import yaml "gopkg.in/yaml.v3"
 
-type TimeJson struct {
+type Time struct {
 	// myobject corresponds to the JSON schema field "myObject".
-	myobject *TimeJsonmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+	myobject *Timemyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
-func (o *TimeJson) MyObject() *TimeJsonmyobject {
+func (o *Time) MyObject() *Timemyobject {
 	return o.myobject
 }
 
-type TimeJsonmyobject struct {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Time) UnmarshalJSON(value []byte) error {
+	type TimeHelper struct {
+		Myobject *Timemyobject `json:"myObject",omitempty`
+	}
+	type Plain Time
+	var helper TimeHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.myobject = helper.Myobject
+	*j = Time(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Time) MarshalJSON() ([]byte, error) {
+	type TimeMarshalHelper struct {
+		Myobject *Timemyobject `json:"myObject",omitempty`
+	}
+	helper := TimeMarshalHelper{
+		Myobject: j.myobject,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Time) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Time
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Time(plain)
+	return nil
+}
+
+type Timemyobject struct {
 	// mytime corresponds to the JSON schema field "myTime".
 	mytime types.SerializableTime `json:"myTime" yaml:"myTime" mapstructure:"myTime"`
 }
 
-func (o *TimeJsonmyobject) MyTime() types.SerializableTime {
+func (o *Timemyobject) MyTime() types.SerializableTime {
 	return o.mytime
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *TimeJsonmyobject) UnmarshalJSON(value []byte) error {
+func (j *Timemyobject) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myTime"]; raw != nil && !ok {
-		return fmt.Errorf("field myTime in TimeJsonmyobject: required")
+		return fmt.Errorf("field myTime in Timemyobject: required")
 	}
-	type TimeJsonmyobjectHelper struct {
+	type TimemyobjectHelper struct {
 		Mytime types.SerializableTime `json:"myTime"`
 	}
-	type Plain TimeJsonmyobject
-	var helper TimeJsonmyobjectHelper
+	type Plain Timemyobject
+	var helper TimemyobjectHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.mytime = helper.Mytime
-	*j = TimeJsonmyobject(plain)
+	*j = Timemyobject(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Timemyobject) MarshalJSON() ([]byte, error) {
+	type TimemyobjectMarshalHelper struct {
+		Mytime types.SerializableTime `json:"myTime"`
+	}
+	helper := TimemyobjectMarshalHelper{
+		Mytime: j.mytime,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Timemyobject) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myTime"]; raw != nil && !ok {
+		return fmt.Errorf("field myTime in Timemyobject: required")
+	}
+	type Plain Timemyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Timemyobject(plain)
 	return nil
 }

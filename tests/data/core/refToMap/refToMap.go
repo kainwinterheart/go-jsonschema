@@ -2,13 +2,54 @@
 
 package test
 
-type RefToMapJson struct {
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+type RefToMap struct {
 	// mything corresponds to the JSON schema field "myThing".
 	mything Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
 }
 
-func (o *RefToMapJson) MyThing() Thing {
+func (o *RefToMap) MyThing() Thing {
 	return o.mything
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *RefToMap) UnmarshalJSON(value []byte) error {
+	type RefToMapHelper struct {
+		Mything Thing `json:"myThing",omitempty`
+	}
+	type Plain RefToMap
+	var helper RefToMapHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.mything = helper.Mything
+	*j = RefToMap(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *RefToMap) MarshalJSON() ([]byte, error) {
+	type RefToMapMarshalHelper struct {
+		Mything Thing `json:"myThing",omitempty`
+	}
+	helper := RefToMapMarshalHelper{
+		Mything: j.mything,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RefToMap) UnmarshalYAML(value *yaml.Node) error {
+	type Plain RefToMap
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RefToMap(plain)
+	return nil
 }
 
 type Thing map[string]float64

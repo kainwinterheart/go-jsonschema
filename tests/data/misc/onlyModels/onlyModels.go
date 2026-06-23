@@ -2,16 +2,12 @@
 
 package test
 
-import "encoding/json"
-import "fmt"
-import "reflect"
-
-type OnlyModelsJson struct {
+type OnlyModels struct {
 	// myboolean corresponds to the JSON schema field "myBoolean".
 	myboolean *bool `json:"myBoolean,omitempty,omitzero" yaml:"myBoolean,omitempty" mapstructure:"myBoolean,omitempty"`
 
 	// myenum corresponds to the JSON schema field "myEnum".
-	myenum *OnlyModelsJsonmyenum `json:"myEnum,omitempty,omitzero" yaml:"myEnum,omitempty" mapstructure:"myEnum,omitempty"`
+	myenum *OnlyModelsmyenum `json:"myEnum,omitempty,omitzero" yaml:"myEnum,omitempty" mapstructure:"myEnum,omitempty"`
 
 	// myinteger corresponds to the JSON schema field "myInteger".
 	myinteger *int `json:"myInteger,omitempty,omitzero" yaml:"myInteger,omitempty" mapstructure:"myInteger,omitempty"`
@@ -26,89 +22,7 @@ type OnlyModelsJson struct {
 	mystring *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
 }
 
-func (o *OnlyModelsJson) MyBoolean() *bool {
-	return o.myboolean
-}
+type OnlyModelsmyenum string
 
-func (o *OnlyModelsJson) MyEnum() *OnlyModelsJsonmyenum {
-	return o.myenum
-}
-
-func (o *OnlyModelsJson) MyInteger() *int {
-	return o.myinteger
-}
-
-func (o *OnlyModelsJson) MyNull() interface{} {
-	return o.mynull
-}
-
-func (o *OnlyModelsJson) MyNumber() *float64 {
-	return o.mynumber
-}
-
-func (o *OnlyModelsJson) MyString() *string {
-	return o.mystring
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *OnlyModelsJson) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	type OnlyModelsJsonHelper struct {
-		Myboolean *bool                 `json:"myBoolean",omitempty`
-		Myenum    *OnlyModelsJsonmyenum `json:"myEnum",omitempty`
-		Myinteger *int                  `json:"myInteger",omitempty`
-		Mynull    interface{}           `json:"myNull",omitempty`
-		Mynumber  *float64              `json:"myNumber",omitempty`
-		Mystring  *string               `json:"myString",omitempty`
-	}
-	type Plain OnlyModelsJson
-	var helper OnlyModelsJsonHelper
-	if err := json.Unmarshal(value, &helper); err != nil {
-		return err
-	}
-	var plain Plain
-	plain.myboolean = helper.Myboolean
-	plain.myenum = helper.Myenum
-	plain.myinteger = helper.Myinteger
-	plain.mynull = helper.Mynull
-	plain.mynumber = helper.Mynumber
-	plain.mystring = helper.Mystring
-	if plain.mynull != nil {
-		return fmt.Errorf("field %s: must be null", "myNull")
-	}
-	*j = OnlyModelsJson(plain)
-	return nil
-}
-
-type OnlyModelsJsonmyenum string
-
-const OnlyModelsJsonmyenumX OnlyModelsJsonmyenum = "x"
-const OnlyModelsJsonmyenumY OnlyModelsJsonmyenum = "y"
-
-var enumValues_OnlyModelsJsonmyenum = []interface{}{
-	"x",
-	"y",
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *OnlyModelsJsonmyenum) UnmarshalJSON(value []byte) error {
-	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_OnlyModelsJsonmyenum {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_OnlyModelsJsonmyenum, v)
-	}
-	*j = OnlyModelsJsonmyenum(v)
-	return nil
-}
+const OnlyModelsmyenumX OnlyModelsmyenum = "x"
+const OnlyModelsmyenumY OnlyModelsmyenum = "y"

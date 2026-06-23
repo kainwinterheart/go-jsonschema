@@ -2,7 +2,13 @@
 
 package test
 
-type ObjectWithPropsAdditionalPropertiesJson struct {
+import "encoding/json"
+import "github.com/go-viper/mapstructure/v2"
+import yaml "gopkg.in/yaml.v3"
+import "reflect"
+import "strings"
+
+type ObjectWithPropsAdditionalProperties struct {
 	// bar corresponds to the JSON schema field "bar".
 	bar *string `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
 
@@ -12,10 +18,76 @@ type ObjectWithPropsAdditionalPropertiesJson struct {
 	AdditionalProperties map[string]interface{} `mapstructure:",remain"`
 }
 
-func (o *ObjectWithPropsAdditionalPropertiesJson) Bar() *string {
+func (o *ObjectWithPropsAdditionalProperties) Bar() *string {
 	return o.bar
 }
 
-func (o *ObjectWithPropsAdditionalPropertiesJson) Foo() *string {
+func (o *ObjectWithPropsAdditionalProperties) Foo() *string {
 	return o.foo
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *ObjectWithPropsAdditionalProperties) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	type ObjectWithPropsAdditionalPropertiesHelper struct {
+		Bar *string `json:"bar",omitempty`
+		Foo *string `json:"foo",omitempty`
+	}
+	type Plain ObjectWithPropsAdditionalProperties
+	var helper ObjectWithPropsAdditionalPropertiesHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.bar = helper.Bar
+	plain.foo = helper.Foo
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = ObjectWithPropsAdditionalProperties(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *ObjectWithPropsAdditionalProperties) MarshalJSON() ([]byte, error) {
+	type ObjectWithPropsAdditionalPropertiesMarshalHelper struct {
+		Bar *string `json:"bar",omitempty`
+		Foo *string `json:"foo",omitempty`
+	}
+	helper := ObjectWithPropsAdditionalPropertiesMarshalHelper{
+		Bar: j.bar,
+		Foo: j.foo,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ObjectWithPropsAdditionalProperties) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain ObjectWithPropsAdditionalProperties
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = ObjectWithPropsAdditionalProperties(plain)
+	return nil
 }

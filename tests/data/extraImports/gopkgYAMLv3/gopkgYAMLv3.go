@@ -4,14 +4,15 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 import "reflect"
 
-type GopkgYAMLv3Json struct {
+type GopkgYAMLv3 struct {
 	// myboolean corresponds to the JSON schema field "myBoolean".
 	myboolean *bool `json:"myBoolean,omitempty,omitzero" yaml:"myBoolean,omitempty" mapstructure:"myBoolean,omitempty"`
 
 	// myenum corresponds to the JSON schema field "myEnum".
-	myenum *GopkgYAMLv3Jsonmyenum `json:"myEnum,omitempty,omitzero" yaml:"myEnum,omitempty" mapstructure:"myEnum,omitempty"`
+	myenum *GopkgYAMLv3myenum `json:"myEnum,omitempty,omitzero" yaml:"myEnum,omitempty" mapstructure:"myEnum,omitempty"`
 
 	// myinteger corresponds to the JSON schema field "myInteger".
 	myinteger *int `json:"myInteger,omitempty,omitzero" yaml:"myInteger,omitempty" mapstructure:"myInteger,omitempty"`
@@ -26,46 +27,46 @@ type GopkgYAMLv3Json struct {
 	mystring *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
 }
 
-func (o *GopkgYAMLv3Json) MyBoolean() *bool {
+func (o *GopkgYAMLv3) MyBoolean() *bool {
 	return o.myboolean
 }
 
-func (o *GopkgYAMLv3Json) MyEnum() *GopkgYAMLv3Jsonmyenum {
+func (o *GopkgYAMLv3) MyEnum() *GopkgYAMLv3myenum {
 	return o.myenum
 }
 
-func (o *GopkgYAMLv3Json) MyInteger() *int {
+func (o *GopkgYAMLv3) MyInteger() *int {
 	return o.myinteger
 }
 
-func (o *GopkgYAMLv3Json) MyNull() interface{} {
+func (o *GopkgYAMLv3) MyNull() interface{} {
 	return o.mynull
 }
 
-func (o *GopkgYAMLv3Json) MyNumber() *float64 {
+func (o *GopkgYAMLv3) MyNumber() *float64 {
 	return o.mynumber
 }
 
-func (o *GopkgYAMLv3Json) MyString() *string {
+func (o *GopkgYAMLv3) MyString() *string {
 	return o.mystring
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *GopkgYAMLv3Json) UnmarshalJSON(value []byte) error {
+func (j *GopkgYAMLv3) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	type GopkgYAMLv3JsonHelper struct {
-		Myboolean *bool                  `json:"myBoolean",omitempty`
-		Myenum    *GopkgYAMLv3Jsonmyenum `json:"myEnum",omitempty`
-		Myinteger *int                   `json:"myInteger",omitempty`
-		Mynull    interface{}            `json:"myNull",omitempty`
-		Mynumber  *float64               `json:"myNumber",omitempty`
-		Mystring  *string                `json:"myString",omitempty`
+	type GopkgYAMLv3Helper struct {
+		Myboolean *bool              `json:"myBoolean",omitempty`
+		Myenum    *GopkgYAMLv3myenum `json:"myEnum",omitempty`
+		Myinteger *int               `json:"myInteger",omitempty`
+		Mynull    interface{}        `json:"myNull",omitempty`
+		Mynumber  *float64           `json:"myNumber",omitempty`
+		Mystring  *string            `json:"myString",omitempty`
 	}
-	type Plain GopkgYAMLv3Json
-	var helper GopkgYAMLv3JsonHelper
+	type Plain GopkgYAMLv3
+	var helper GopkgYAMLv3Helper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -79,36 +80,95 @@ func (j *GopkgYAMLv3Json) UnmarshalJSON(value []byte) error {
 	if plain.mynull != nil {
 		return fmt.Errorf("field %s: must be null", "myNull")
 	}
-	*j = GopkgYAMLv3Json(plain)
+	*j = GopkgYAMLv3(plain)
 	return nil
 }
 
-type GopkgYAMLv3Jsonmyenum string
+// MarshalJSON implements json.Marshaler.
+func (j *GopkgYAMLv3) MarshalJSON() ([]byte, error) {
+	type GopkgYAMLv3MarshalHelper struct {
+		Myboolean *bool              `json:"myBoolean",omitempty`
+		Myenum    *GopkgYAMLv3myenum `json:"myEnum",omitempty`
+		Myinteger *int               `json:"myInteger",omitempty`
+		Mynull    interface{}        `json:"myNull",omitempty`
+		Mynumber  *float64           `json:"myNumber",omitempty`
+		Mystring  *string            `json:"myString",omitempty`
+	}
+	helper := GopkgYAMLv3MarshalHelper{
+		Myboolean: j.myboolean,
+		Myenum:    j.myenum,
+		Myinteger: j.myinteger,
+		Mynull:    j.mynull,
+		Mynumber:  j.mynumber,
+		Mystring:  j.mystring,
+	}
+	return json.Marshal(helper)
+}
 
-const GopkgYAMLv3JsonmyenumX GopkgYAMLv3Jsonmyenum = "x"
-const GopkgYAMLv3JsonmyenumY GopkgYAMLv3Jsonmyenum = "y"
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *GopkgYAMLv3) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain GopkgYAMLv3
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.mynull != nil {
+		return fmt.Errorf("field %s: must be null", "myNull")
+	}
+	*j = GopkgYAMLv3(plain)
+	return nil
+}
 
-var enumValues_GopkgYAMLv3Jsonmyenum = []interface{}{
+type GopkgYAMLv3myenum string
+
+const GopkgYAMLv3myenumX GopkgYAMLv3myenum = "x"
+const GopkgYAMLv3myenumY GopkgYAMLv3myenum = "y"
+
+var enumValues_GopkgYAMLv3myenum = []interface{}{
 	"x",
 	"y",
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *GopkgYAMLv3Jsonmyenum) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *GopkgYAMLv3myenum) UnmarshalYAML(value *yaml.Node) error {
 	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
-	for _, expected := range enumValues_GopkgYAMLv3Jsonmyenum {
+	for _, expected := range enumValues_GopkgYAMLv3myenum {
 		if reflect.DeepEqual(v, expected) {
 			ok = true
 			break
 		}
 	}
 	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_GopkgYAMLv3Jsonmyenum, v)
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_GopkgYAMLv3myenum, v)
 	}
-	*j = GopkgYAMLv3Jsonmyenum(v)
+	*j = GopkgYAMLv3myenum(v)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *GopkgYAMLv3myenum) UnmarshalJSON(value []byte) error {
+	var v string
+	if err := json.Unmarshal(value, &v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_GopkgYAMLv3myenum {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_GopkgYAMLv3myenum, v)
+	}
+	*j = GopkgYAMLv3myenum(v)
 	return nil
 }

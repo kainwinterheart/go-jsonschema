@@ -2,28 +2,73 @@
 
 package test
 
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
 type BoolThing *bool
 
 type FloatThing *float64
 
 type IntegerThing *int
 
-type NullableTypeJson struct {
+type NullableType struct {
 	// myinlinestringvalue corresponds to the JSON schema field "MyInlineStringValue".
-	myinlinestringvalue NullableTypeJsonmyinlinestringvalue `json:"MyInlineStringValue,omitempty,omitzero" yaml:"MyInlineStringValue,omitempty" mapstructure:"MyInlineStringValue,omitempty"`
+	myinlinestringvalue NullableTypemyinlinestringvalue `json:"MyInlineStringValue,omitempty,omitzero" yaml:"MyInlineStringValue,omitempty" mapstructure:"MyInlineStringValue,omitempty"`
 
 	// mystringvalue corresponds to the JSON schema field "MyStringValue".
 	mystringvalue StringThing `json:"MyStringValue,omitempty,omitzero" yaml:"MyStringValue,omitempty" mapstructure:"MyStringValue,omitempty"`
 }
 
-func (o *NullableTypeJson) MyInlineStringValue() NullableTypeJsonmyinlinestringvalue {
+func (o *NullableType) MyInlineStringValue() NullableTypemyinlinestringvalue {
 	return o.myinlinestringvalue
 }
 
-func (o *NullableTypeJson) MyStringValue() StringThing {
+func (o *NullableType) MyStringValue() StringThing {
 	return o.mystringvalue
 }
 
-type NullableTypeJsonmyinlinestringvalue *string
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *NullableType) UnmarshalJSON(value []byte) error {
+	type NullableTypeHelper struct {
+		Myinlinestringvalue NullableTypemyinlinestringvalue `json:"MyInlineStringValue",omitempty`
+		Mystringvalue       StringThing                     `json:"MyStringValue",omitempty`
+	}
+	type Plain NullableType
+	var helper NullableTypeHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.myinlinestringvalue = helper.Myinlinestringvalue
+	plain.mystringvalue = helper.Mystringvalue
+	*j = NullableType(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *NullableType) MarshalJSON() ([]byte, error) {
+	type NullableTypeMarshalHelper struct {
+		Myinlinestringvalue NullableTypemyinlinestringvalue `json:"MyInlineStringValue",omitempty`
+		Mystringvalue       StringThing                     `json:"MyStringValue",omitempty`
+	}
+	helper := NullableTypeMarshalHelper{
+		Myinlinestringvalue: j.myinlinestringvalue,
+		Mystringvalue:       j.mystringvalue,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *NullableType) UnmarshalYAML(value *yaml.Node) error {
+	type Plain NullableType
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = NullableType(plain)
+	return nil
+}
+
+type NullableTypemyinlinestringvalue *string
 
 type StringThing *string

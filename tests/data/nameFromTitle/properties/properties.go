@@ -5,6 +5,7 @@ package test
 import "encoding/json"
 import "fmt"
 import "github.com/go-viper/mapstructure/v2"
+import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "strings"
 
@@ -26,6 +27,72 @@ func (o *Alpha) Eta() *Eta {
 	return o.eta
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Alpha) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain Alpha
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = Alpha(plain)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Alpha) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	type AlphaHelper struct {
+		Beta Beta `json:"beta",omitempty`
+		Eta  *Eta `json:"eta",omitempty`
+	}
+	type Plain Alpha
+	var helper AlphaHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.beta = helper.Beta
+	plain.eta = helper.Eta
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = Alpha(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Alpha) MarshalJSON() ([]byte, error) {
+	type AlphaMarshalHelper struct {
+		Beta Beta `json:"beta",omitempty`
+		Eta  *Eta `json:"eta",omitempty`
+	}
+	helper := AlphaMarshalHelper{
+		Beta: j.beta,
+		Eta:  j.eta,
+	}
+	return json.Marshal(helper)
+}
+
 type Beta interface{}
 
 type Eta struct {
@@ -44,6 +111,35 @@ func (o *Eta) Epsilon() string {
 
 func (o *Eta) Theta() Theta {
 	return o.theta
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Eta) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["epsilon"]; raw != nil && !ok {
+		return fmt.Errorf("field epsilon in Eta: required")
+	}
+	if _, ok := raw["theta"]; raw != nil && !ok {
+		return fmt.Errorf("field theta in Eta: required")
+	}
+	type Plain Eta
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = Eta(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -82,27 +178,90 @@ func (j *Eta) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
+// MarshalJSON implements json.Marshaler.
+func (j *Eta) MarshalJSON() ([]byte, error) {
+	type EtaMarshalHelper struct {
+		Epsilon string `json:"epsilon"`
+		Theta   Theta  `json:"theta"`
+	}
+	helper := EtaMarshalHelper{
+		Epsilon: j.epsilon,
+		Theta:   j.theta,
+	}
+	return json.Marshal(helper)
+}
+
 type Iota struct {
 	// DESCRIPTION
-	kappa *Iotakappa `json:"kappa,omitempty,omitzero" yaml:"kappa,omitempty" mapstructure:"kappa,omitempty"`
+	kappa *TITLE `json:"kappa,omitempty,omitzero" yaml:"kappa,omitempty" mapstructure:"kappa,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
-func (o *Iota) Kappa() *Iotakappa {
+func (o *Iota) Kappa() *TITLE {
 	return o.kappa
 }
 
-// DESCRIPTION
-type Iotakappa struct {
-	// lambda corresponds to the JSON schema field "lambda".
-	lambda []IotakappalambdaElem `json:"lambda,omitempty,omitzero" yaml:"lambda,omitempty" mapstructure:"lambda,omitempty"`
-
-	AdditionalProperties interface{} `mapstructure:",remain"`
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Iota) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	type IotaHelper struct {
+		Kappa *TITLE `json:"kappa",omitempty`
+	}
+	type Plain Iota
+	var helper IotaHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.kappa = helper.Kappa
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = Iota(plain)
+	return nil
 }
 
-func (o *Iotakappa) Lambda() []IotakappalambdaElem {
-	return o.lambda
+// MarshalJSON implements json.Marshaler.
+func (j *Iota) MarshalJSON() ([]byte, error) {
+	type IotaMarshalHelper struct {
+		Kappa *TITLE `json:"kappa",omitempty`
+	}
+	helper := IotaMarshalHelper{
+		Kappa: j.kappa,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Iota) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain Iota
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = Iota(plain)
+	return nil
 }
 
 type IotakappalambdaElem struct {
@@ -116,31 +275,119 @@ func (o *IotakappalambdaElem) Sigma() *Alpha {
 	return o.sigma
 }
 
-type PropertiesJson struct {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *IotakappalambdaElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain IotakappalambdaElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = IotakappalambdaElem(plain)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *IotakappalambdaElem) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	type IotakappalambdaElemHelper struct {
+		Sigma *Alpha `json:"sigma",omitempty`
+	}
+	type Plain IotakappalambdaElem
+	var helper IotakappalambdaElemHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.sigma = helper.Sigma
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = IotakappalambdaElem(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *IotakappalambdaElem) MarshalJSON() ([]byte, error) {
+	type IotakappalambdaElemMarshalHelper struct {
+		Sigma *Alpha `json:"sigma",omitempty`
+	}
+	helper := IotakappalambdaElemMarshalHelper{
+		Sigma: j.sigma,
+	}
+	return json.Marshal(helper)
+}
+
+type Properties struct {
 	// iota corresponds to the JSON schema field "iota".
 	iota Iota `json:"iota" yaml:"iota" mapstructure:"iota"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
-func (o *PropertiesJson) Iota() Iota {
+func (o *Properties) Iota() Iota {
 	return o.iota
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Properties) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["iota"]; raw != nil && !ok {
+		return fmt.Errorf("field iota in Properties: required")
+	}
+	type Plain Properties
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = Properties(plain)
+	return nil
+}
+
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *PropertiesJson) UnmarshalJSON(value []byte) error {
+func (j *Properties) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["iota"]; raw != nil && !ok {
-		return fmt.Errorf("field iota in PropertiesJson: required")
+		return fmt.Errorf("field iota in Properties: required")
 	}
-	type PropertiesJsonHelper struct {
+	type PropertiesHelper struct {
 		Iota Iota `json:"iota"`
 	}
-	type Plain PropertiesJson
-	var helper PropertiesJsonHelper
+	type Plain Properties
+	var helper PropertiesHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -154,8 +401,93 @@ func (j *PropertiesJson) UnmarshalJSON(value []byte) error {
 	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
 		return err
 	}
-	*j = PropertiesJson(plain)
+	*j = Properties(plain)
 	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Properties) MarshalJSON() ([]byte, error) {
+	type PropertiesMarshalHelper struct {
+		Iota Iota `json:"iota"`
+	}
+	helper := PropertiesMarshalHelper{
+		Iota: j.iota,
+	}
+	return json.Marshal(helper)
+}
+
+// DESCRIPTION
+type TITLE struct {
+	// lambda corresponds to the JSON schema field "lambda".
+	lambda []IotakappalambdaElem `json:"lambda,omitempty,omitzero" yaml:"lambda,omitempty" mapstructure:"lambda,omitempty"`
+
+	AdditionalProperties interface{} `mapstructure:",remain"`
+}
+
+func (o *TITLE) Lambda() []IotakappalambdaElem {
+	return o.lambda
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *TITLE) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain TITLE
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = TITLE(plain)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *TITLE) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	type TITLEHelper struct {
+		Lambda []IotakappalambdaElem `json:"lambda",omitempty`
+	}
+	type Plain TITLE
+	var helper TITLEHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.lambda = helper.Lambda
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = TITLE(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *TITLE) MarshalJSON() ([]byte, error) {
+	type TITLEMarshalHelper struct {
+		Lambda []IotakappalambdaElem `json:"lambda",omitempty`
+	}
+	helper := TITLEMarshalHelper{
+		Lambda: j.lambda,
+	}
+	return json.Marshal(helper)
 }
 
 type Theta int
@@ -165,6 +497,23 @@ func (j *Theta) UnmarshalJSON(value []byte) error {
 	type Plain Theta
 	var plain Plain
 	if err := json.Unmarshal(value, &plain); err != nil {
+		return err
+	}
+	if 65535 < plain {
+		return fmt.Errorf("field %s: must be <= %v", "", 65535)
+	}
+	if 0 > plain {
+		return fmt.Errorf("field %s: must be >= %v", "", 0)
+	}
+	*j = Theta(plain)
+	return nil
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Theta) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Theta
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
 		return err
 	}
 	if 65535 < plain {

@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
 // The server's response to a tool call
 type CallToolResult struct {
@@ -13,6 +14,44 @@ type CallToolResult struct {
 
 func (o *CallToolResult) Content() []CallToolResultcontentElem {
 	return o.content
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *CallToolResult) UnmarshalJSON(value []byte) error {
+	type CallToolResultHelper struct {
+		Content []CallToolResultcontentElem `json:"content",omitempty`
+	}
+	type Plain CallToolResult
+	var helper CallToolResultHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.content = helper.Content
+	*j = CallToolResult(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *CallToolResult) MarshalJSON() ([]byte, error) {
+	type CallToolResultMarshalHelper struct {
+		Content []CallToolResultcontentElem `json:"content",omitempty`
+	}
+	helper := CallToolResultMarshalHelper{
+		Content: j.content,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *CallToolResult) UnmarshalYAML(value *yaml.Node) error {
+	type Plain CallToolResult
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = CallToolResult(plain)
+	return nil
 }
 
 // Text provided to or from an LLM.
@@ -48,6 +87,35 @@ func (j *CallToolResultcontentElem) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
+// MarshalJSON implements json.Marshaler.
+func (j *CallToolResultcontentElem) MarshalJSON() ([]byte, error) {
+	type CallToolResultcontentElemMarshalHelper struct {
+		Text string `json:"text"`
+	}
+	helper := CallToolResultcontentElemMarshalHelper{
+		Text: j.text,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *CallToolResultcontentElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["text"]; raw != nil && !ok {
+		return fmt.Errorf("field text in CallToolResultcontentElem: required")
+	}
+	type Plain CallToolResultcontentElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = CallToolResultcontentElem(plain)
+	return nil
+}
+
 // Text provided to or from an LLM.
 type TextContent struct {
 	// The text content of the message.
@@ -77,6 +145,35 @@ func (j *TextContent) UnmarshalJSON(value []byte) error {
 	}
 	var plain Plain
 	plain.text = helper.Text
+	*j = TextContent(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *TextContent) MarshalJSON() ([]byte, error) {
+	type TextContentMarshalHelper struct {
+		Text string `json:"text"`
+	}
+	helper := TextContentMarshalHelper{
+		Text: j.text,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *TextContent) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["text"]; raw != nil && !ok {
+		return fmt.Errorf("field text in TextContent: required")
+	}
+	type Plain TextContent
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
 	*j = TextContent(plain)
 	return nil
 }

@@ -4,8 +4,9 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
-type ReadOnlyJson struct {
+type ReadOnly struct {
 	// myreadonlystring corresponds to the JSON schema field "myReadOnlyString".
 	myreadonlystring *string `json:"myReadOnlyString,omitempty,omitzero" yaml:"myReadOnlyString,omitempty" mapstructure:"myReadOnlyString,omitempty"`
 
@@ -13,38 +14,72 @@ type ReadOnlyJson struct {
 	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
 }
 
-func (o *ReadOnlyJson) MyReadOnlyString() *string {
+func (o *ReadOnly) MyReadOnlyString() *string {
 	return o.myreadonlystring
 }
 
-func (o *ReadOnlyJson) MyString() string {
+func (o *ReadOnly) MyString() string {
 	return o.mystring
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ReadOnlyJson) UnmarshalJSON(value []byte) error {
+func (j *ReadOnly) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myString"]; raw != nil && !ok {
-		return fmt.Errorf("field myString in ReadOnlyJson: required")
+		return fmt.Errorf("field myString in ReadOnly: required")
 	}
 	if _, ok := raw["myReadOnlyString"]; raw != nil && ok {
-		return fmt.Errorf("field myReadOnlyString in ReadOnlyJson: read only")
+		return fmt.Errorf("field myReadOnlyString in ReadOnly: read only")
 	}
-	type ReadOnlyJsonHelper struct {
+	type ReadOnlyHelper struct {
 		Myreadonlystring *string `json:"myReadOnlyString",omitempty`
 		Mystring         string  `json:"myString"`
 	}
-	type Plain ReadOnlyJson
-	var helper ReadOnlyJsonHelper
+	type Plain ReadOnly
+	var helper ReadOnlyHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.myreadonlystring = helper.Myreadonlystring
 	plain.mystring = helper.Mystring
-	*j = ReadOnlyJson(plain)
+	*j = ReadOnly(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *ReadOnly) MarshalJSON() ([]byte, error) {
+	type ReadOnlyMarshalHelper struct {
+		Myreadonlystring *string `json:"myReadOnlyString",omitempty`
+		Mystring         string  `json:"myString"`
+	}
+	helper := ReadOnlyMarshalHelper{
+		Myreadonlystring: j.myreadonlystring,
+		Mystring:         j.mystring,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ReadOnly) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myString"]; raw != nil && !ok {
+		return fmt.Errorf("field myString in ReadOnly: required")
+	}
+	if _, ok := raw["myReadOnlyString"]; raw != nil && ok {
+		return fmt.Errorf("field myReadOnlyString in ReadOnly: read only")
+	}
+	type Plain ReadOnly
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ReadOnly(plain)
 	return nil
 }

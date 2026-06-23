@@ -2,13 +2,81 @@
 
 package test
 
-type StringAdditionalPropertiesJson struct {
+import "encoding/json"
+import "github.com/go-viper/mapstructure/v2"
+import yaml "gopkg.in/yaml.v3"
+import "reflect"
+import "strings"
+
+type StringAdditionalProperties struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 
 	AdditionalProperties map[string]string `mapstructure:",remain"`
 }
 
-func (o *StringAdditionalPropertiesJson) Name() *string {
+func (o *StringAdditionalProperties) Name() *string {
 	return o.name
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *StringAdditionalProperties) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	type StringAdditionalPropertiesHelper struct {
+		Name *string `json:"name",omitempty`
+	}
+	type Plain StringAdditionalProperties
+	var helper StringAdditionalPropertiesHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.name = helper.Name
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = StringAdditionalProperties(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *StringAdditionalProperties) MarshalJSON() ([]byte, error) {
+	type StringAdditionalPropertiesMarshalHelper struct {
+		Name *string `json:"name",omitempty`
+	}
+	helper := StringAdditionalPropertiesMarshalHelper{
+		Name: j.name,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *StringAdditionalProperties) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain StringAdditionalProperties
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = StringAdditionalProperties(plain)
+	return nil
 }

@@ -4,8 +4,9 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
-type MinItemsJson struct {
+type MinItems struct {
 	// mynestedarray corresponds to the JSON schema field "myNestedArray".
 	mynestedarray [][]interface{} `json:"myNestedArray,omitempty,omitzero" yaml:"myNestedArray,omitempty" mapstructure:"myNestedArray,omitempty"`
 
@@ -13,22 +14,22 @@ type MinItemsJson struct {
 	mystringarray []string `json:"myStringArray,omitempty,omitzero" yaml:"myStringArray,omitempty" mapstructure:"myStringArray,omitempty"`
 }
 
-func (o *MinItemsJson) MyNestedArray() [][]interface{} {
+func (o *MinItems) MyNestedArray() [][]interface{} {
 	return o.mynestedarray
 }
 
-func (o *MinItemsJson) MyStringArray() []string {
+func (o *MinItems) MyStringArray() []string {
 	return o.mystringarray
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *MinItemsJson) UnmarshalJSON(value []byte) error {
-	type MinItemsJsonHelper struct {
+func (j *MinItems) UnmarshalJSON(value []byte) error {
+	type MinItemsHelper struct {
 		Mynestedarray [][]interface{} `json:"myNestedArray",omitempty`
 		Mystringarray []string        `json:"myStringArray",omitempty`
 	}
-	type Plain MinItemsJson
-	var helper MinItemsJsonHelper
+	type Plain MinItems
+	var helper MinItemsHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -46,6 +47,41 @@ func (j *MinItemsJson) UnmarshalJSON(value []byte) error {
 	if plain.mystringarray != nil && len(plain.mystringarray) < 5 {
 		return fmt.Errorf("field %s length: must be >= %d", "myStringArray", 5)
 	}
-	*j = MinItemsJson(plain)
+	*j = MinItems(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *MinItems) MarshalJSON() ([]byte, error) {
+	type MinItemsMarshalHelper struct {
+		Mynestedarray [][]interface{} `json:"myNestedArray",omitempty`
+		Mystringarray []string        `json:"myStringArray",omitempty`
+	}
+	helper := MinItemsMarshalHelper{
+		Mynestedarray: j.mynestedarray,
+		Mystringarray: j.mystringarray,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *MinItems) UnmarshalYAML(value *yaml.Node) error {
+	type Plain MinItems
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.mynestedarray != nil && len(plain.mynestedarray) < 5 {
+		return fmt.Errorf("field %s length: must be >= %d", "myNestedArray", 5)
+	}
+	for i1 := range plain.mynestedarray {
+		if plain.mynestedarray[i1] != nil && len(plain.mynestedarray[i1]) < 5 {
+			return fmt.Errorf("field %s length: must be >= %d", fmt.Sprintf("myNestedArray[%d]", i1), 5)
+		}
+	}
+	if plain.mystringarray != nil && len(plain.mystringarray) < 5 {
+		return fmt.Errorf("field %s length: must be >= %d", "myStringArray", 5)
+	}
+	*j = MinItems(plain)
 	return nil
 }

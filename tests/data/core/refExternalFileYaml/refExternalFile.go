@@ -2,28 +2,111 @@
 
 package test
 
-type RefExternalFileJson struct {
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+type RefExternalFile struct {
 	// myexternalthing corresponds to the JSON schema field "myExternalThing".
-	myexternalthing *YamlStructNameFromFileYaml `json:"myExternalThing,omitempty,omitzero" yaml:"myExternalThing,omitempty" mapstructure:"myExternalThing,omitempty"`
+	myexternalthing *YamlStructNameFromFile `json:"myExternalThing,omitempty,omitzero" yaml:"myExternalThing,omitempty" mapstructure:"myExternalThing,omitempty"`
 
 	// someotherexternalthing corresponds to the JSON schema field
 	// "someOtherExternalThing".
-	someotherexternalthing *YamlStructNameFromFileYaml `json:"someOtherExternalThing,omitempty,omitzero" yaml:"someOtherExternalThing,omitempty" mapstructure:"someOtherExternalThing,omitempty"`
+	someotherexternalthing *YamlStructNameFromFile `json:"someOtherExternalThing,omitempty,omitzero" yaml:"someOtherExternalThing,omitempty" mapstructure:"someOtherExternalThing,omitempty"`
 }
 
-func (o *RefExternalFileJson) MyExternalThing() *YamlStructNameFromFileYaml {
+func (o *RefExternalFile) MyExternalThing() *YamlStructNameFromFile {
 	return o.myexternalthing
 }
 
-func (o *RefExternalFileJson) SomeOtherExternalThing() *YamlStructNameFromFileYaml {
+func (o *RefExternalFile) SomeOtherExternalThing() *YamlStructNameFromFile {
 	return o.someotherexternalthing
 }
 
-type YamlStructNameFromFileYaml struct {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *RefExternalFile) UnmarshalJSON(value []byte) error {
+	type RefExternalFileHelper struct {
+		Myexternalthing        *YamlStructNameFromFile `json:"myExternalThing",omitempty`
+		Someotherexternalthing *YamlStructNameFromFile `json:"someOtherExternalThing",omitempty`
+	}
+	type Plain RefExternalFile
+	var helper RefExternalFileHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.myexternalthing = helper.Myexternalthing
+	plain.someotherexternalthing = helper.Someotherexternalthing
+	*j = RefExternalFile(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *RefExternalFile) MarshalJSON() ([]byte, error) {
+	type RefExternalFileMarshalHelper struct {
+		Myexternalthing        *YamlStructNameFromFile `json:"myExternalThing",omitempty`
+		Someotherexternalthing *YamlStructNameFromFile `json:"someOtherExternalThing",omitempty`
+	}
+	helper := RefExternalFileMarshalHelper{
+		Myexternalthing:        j.myexternalthing,
+		Someotherexternalthing: j.someotherexternalthing,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RefExternalFile) UnmarshalYAML(value *yaml.Node) error {
+	type Plain RefExternalFile
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RefExternalFile(plain)
+	return nil
+}
+
+type YamlStructNameFromFile struct {
 	// foo corresponds to the JSON schema field "foo".
 	foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
 }
 
-func (o *YamlStructNameFromFileYaml) Foo() *string {
+func (o *YamlStructNameFromFile) Foo() *string {
 	return o.foo
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *YamlStructNameFromFile) UnmarshalJSON(value []byte) error {
+	type YamlStructNameFromFileHelper struct {
+		Foo *string `json:"foo",omitempty`
+	}
+	type Plain YamlStructNameFromFile
+	var helper YamlStructNameFromFileHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.foo = helper.Foo
+	*j = YamlStructNameFromFile(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *YamlStructNameFromFile) MarshalJSON() ([]byte, error) {
+	type YamlStructNameFromFileMarshalHelper struct {
+		Foo *string `json:"foo",omitempty`
+	}
+	helper := YamlStructNameFromFileMarshalHelper{
+		Foo: j.foo,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *YamlStructNameFromFile) UnmarshalYAML(value *yaml.Node) error {
+	type Plain YamlStructNameFromFile
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = YamlStructNameFromFile(plain)
+	return nil
 }

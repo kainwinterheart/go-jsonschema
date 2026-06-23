@@ -4,8 +4,9 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
-type ConstJson struct {
+type AConst struct {
 	// myboolean corresponds to the JSON schema field "myBoolean".
 	myboolean *bool `json:"myBoolean,omitempty,omitzero" yaml:"myBoolean,omitempty" mapstructure:"myBoolean,omitempty"`
 
@@ -19,32 +20,55 @@ type ConstJson struct {
 	mystring *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
 }
 
-func (o *ConstJson) MyBoolean() *bool {
+func (o *AConst) MyBoolean() *bool {
 	return o.myboolean
 }
 
-func (o *ConstJson) MyInteger() *int {
+func (o *AConst) MyInteger() *int {
 	return o.myinteger
 }
 
-func (o *ConstJson) MyNumber() *float64 {
+func (o *AConst) MyNumber() *float64 {
 	return o.mynumber
 }
 
-func (o *ConstJson) MyString() *string {
+func (o *AConst) MyString() *string {
 	return o.mystring
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AConst) UnmarshalYAML(value *yaml.Node) error {
+	type Plain AConst
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.myboolean != nil && *plain.myboolean != true {
+		return fmt.Errorf("field %s: must be equal to %t", "myBoolean", true)
+	}
+	if plain.myinteger != nil && *plain.myinteger != 42 {
+		return fmt.Errorf("field %s: must be equal to %v", "myInteger", 42)
+	}
+	if plain.mynumber != nil && *plain.mynumber != 4.2 {
+		return fmt.Errorf("field %s: must be equal to %v", "myNumber", 4.2)
+	}
+	if plain.mystring != nil && *plain.mystring != "foo" {
+		return fmt.Errorf("field %s: must be equal to %s", "myString", "foo")
+	}
+	*j = AConst(plain)
+	return nil
+}
+
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ConstJson) UnmarshalJSON(value []byte) error {
-	type ConstJsonHelper struct {
+func (j *AConst) UnmarshalJSON(value []byte) error {
+	type AConstHelper struct {
 		Myboolean *bool    `json:"myBoolean",omitempty`
 		Myinteger *int     `json:"myInteger",omitempty`
 		Mynumber  *float64 `json:"myNumber",omitempty`
 		Mystring  *string  `json:"myString",omitempty`
 	}
-	type Plain ConstJson
-	var helper ConstJsonHelper
+	type Plain AConst
+	var helper AConstHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -65,8 +89,25 @@ func (j *ConstJson) UnmarshalJSON(value []byte) error {
 	if plain.mystring != nil && *plain.mystring != "foo" {
 		return fmt.Errorf("field %s: must be equal to %s", "myString", "foo")
 	}
-	*j = ConstJson(plain)
+	*j = AConst(plain)
 	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *AConst) MarshalJSON() ([]byte, error) {
+	type AConstMarshalHelper struct {
+		Myboolean *bool    `json:"myBoolean",omitempty`
+		Myinteger *int     `json:"myInteger",omitempty`
+		Mynumber  *float64 `json:"myNumber",omitempty`
+		Mystring  *string  `json:"myString",omitempty`
+	}
+	helper := AConstMarshalHelper{
+		Myboolean: j.myboolean,
+		Myinteger: j.myinteger,
+		Mynumber:  j.mynumber,
+		Mystring:  j.mystring,
+	}
+	return json.Marshal(helper)
 }
 
 type Required struct {
@@ -97,6 +138,45 @@ func (o *Required) MyNumber() float64 {
 
 func (o *Required) MyString() string {
 	return o.mystring
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Required) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myBoolean"]; raw != nil && !ok {
+		return fmt.Errorf("field myBoolean in Required: required")
+	}
+	if _, ok := raw["myInteger"]; raw != nil && !ok {
+		return fmt.Errorf("field myInteger in Required: required")
+	}
+	if _, ok := raw["myNumber"]; raw != nil && !ok {
+		return fmt.Errorf("field myNumber in Required: required")
+	}
+	if _, ok := raw["myString"]; raw != nil && !ok {
+		return fmt.Errorf("field myString in Required: required")
+	}
+	type Plain Required
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.myboolean != true {
+		return fmt.Errorf("field %s: must be equal to %t", "myBoolean", true)
+	}
+	if plain.myinteger != 42 {
+		return fmt.Errorf("field %s: must be equal to %v", "myInteger", 42)
+	}
+	if plain.mynumber != 4.2 {
+		return fmt.Errorf("field %s: must be equal to %v", "myNumber", 4.2)
+	}
+	if plain.mystring != "foo" {
+		return fmt.Errorf("field %s: must be equal to %s", "myString", "foo")
+	}
+	*j = Required(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -147,4 +227,21 @@ func (j *Required) UnmarshalJSON(value []byte) error {
 	}
 	*j = Required(plain)
 	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Required) MarshalJSON() ([]byte, error) {
+	type RequiredMarshalHelper struct {
+		Myboolean bool    `json:"myBoolean"`
+		Myinteger int     `json:"myInteger"`
+		Mynumber  float64 `json:"myNumber"`
+		Mystring  string  `json:"myString"`
+	}
+	helper := RequiredMarshalHelper{
+		Myboolean: j.myboolean,
+		Myinteger: j.myinteger,
+		Mynumber:  j.mynumber,
+		Mystring:  j.mystring,
+	}
+	return json.Marshal(helper)
 }

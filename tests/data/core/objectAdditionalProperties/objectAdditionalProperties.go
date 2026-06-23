@@ -3,27 +3,28 @@
 package test
 
 import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
 
-type ObjectAdditionalPropertiesJson struct {
+type ObjectAdditionalProperties struct {
 	// foo corresponds to the JSON schema field "foo".
-	foo ObjectAdditionalPropertiesJsonfoo `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
+	foo ObjectAdditionalPropertiesfoo `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
 }
 
-func (o *ObjectAdditionalPropertiesJson) Foo() ObjectAdditionalPropertiesJsonfoo {
+func (o *ObjectAdditionalProperties) Foo() ObjectAdditionalPropertiesfoo {
 	return o.foo
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ObjectAdditionalPropertiesJson) UnmarshalJSON(value []byte) error {
+func (j *ObjectAdditionalProperties) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	type ObjectAdditionalPropertiesJsonHelper struct {
-		Foo ObjectAdditionalPropertiesJsonfoo `json:"foo",omitempty`
+	type ObjectAdditionalPropertiesHelper struct {
+		Foo ObjectAdditionalPropertiesfoo `json:"foo",omitempty`
 	}
-	type Plain ObjectAdditionalPropertiesJson
-	var helper ObjectAdditionalPropertiesJsonHelper
+	type Plain ObjectAdditionalProperties
+	var helper ObjectAdditionalPropertiesHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -32,8 +33,37 @@ func (j *ObjectAdditionalPropertiesJson) UnmarshalJSON(value []byte) error {
 	if v, ok := raw["foo"]; !ok || v == nil {
 		plain.foo = map[string]string{}
 	}
-	*j = ObjectAdditionalPropertiesJson(plain)
+	*j = ObjectAdditionalProperties(plain)
 	return nil
 }
 
-type ObjectAdditionalPropertiesJsonfoo map[string]string
+// MarshalJSON implements json.Marshaler.
+func (j *ObjectAdditionalProperties) MarshalJSON() ([]byte, error) {
+	type ObjectAdditionalPropertiesMarshalHelper struct {
+		Foo ObjectAdditionalPropertiesfoo `json:"foo",omitempty`
+	}
+	helper := ObjectAdditionalPropertiesMarshalHelper{
+		Foo: j.foo,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ObjectAdditionalProperties) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain ObjectAdditionalProperties
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if v, ok := raw["foo"]; !ok || v == nil {
+		plain.foo = map[string]string{}
+	}
+	*j = ObjectAdditionalProperties(plain)
+	return nil
+}
+
+type ObjectAdditionalPropertiesfoo map[string]string

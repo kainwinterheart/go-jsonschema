@@ -4,8 +4,9 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
-type PrimitivesJson struct {
+type Primitives struct {
 	// myboolean corresponds to the JSON schema field "myBoolean".
 	myboolean *bool `json:"myBoolean,omitempty,omitzero" yaml:"myBoolean,omitempty" mapstructure:"myBoolean,omitempty"`
 
@@ -22,41 +23,41 @@ type PrimitivesJson struct {
 	mystring *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
 }
 
-func (o *PrimitivesJson) MyBoolean() *bool {
+func (o *Primitives) MyBoolean() *bool {
 	return o.myboolean
 }
 
-func (o *PrimitivesJson) MyInteger() *int {
+func (o *Primitives) MyInteger() *int {
 	return o.myinteger
 }
 
-func (o *PrimitivesJson) MyNull() interface{} {
+func (o *Primitives) MyNull() interface{} {
 	return o.mynull
 }
 
-func (o *PrimitivesJson) MyNumber() *float64 {
+func (o *Primitives) MyNumber() *float64 {
 	return o.mynumber
 }
 
-func (o *PrimitivesJson) MyString() *string {
+func (o *Primitives) MyString() *string {
 	return o.mystring
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *PrimitivesJson) UnmarshalJSON(value []byte) error {
+func (j *Primitives) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	type PrimitivesJsonHelper struct {
+	type PrimitivesHelper struct {
 		Myboolean *bool       `json:"myBoolean",omitempty`
 		Myinteger *int        `json:"myInteger",omitempty`
 		Mynull    interface{} `json:"myNull",omitempty`
 		Mynumber  *float64    `json:"myNumber",omitempty`
 		Mystring  *string     `json:"myString",omitempty`
 	}
-	type Plain PrimitivesJson
-	var helper PrimitivesJsonHelper
+	type Plain Primitives
+	var helper PrimitivesHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -69,6 +70,43 @@ func (j *PrimitivesJson) UnmarshalJSON(value []byte) error {
 	if plain.mynull != nil {
 		return fmt.Errorf("field %s: must be null", "myNull")
 	}
-	*j = PrimitivesJson(plain)
+	*j = Primitives(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Primitives) MarshalJSON() ([]byte, error) {
+	type PrimitivesMarshalHelper struct {
+		Myboolean *bool       `json:"myBoolean",omitempty`
+		Myinteger *int        `json:"myInteger",omitempty`
+		Mynull    interface{} `json:"myNull",omitempty`
+		Mynumber  *float64    `json:"myNumber",omitempty`
+		Mystring  *string     `json:"myString",omitempty`
+	}
+	helper := PrimitivesMarshalHelper{
+		Myboolean: j.myboolean,
+		Myinteger: j.myinteger,
+		Mynull:    j.mynull,
+		Mynumber:  j.mynumber,
+		Mystring:  j.mystring,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Primitives) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain Primitives
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.mynull != nil {
+		return fmt.Errorf("field %s: must be null", "myNull")
+	}
+	*j = Primitives(plain)
 	return nil
 }

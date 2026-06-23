@@ -6,6 +6,7 @@ import "encoding/json"
 import "errors"
 import "fmt"
 import "github.com/go-viper/mapstructure/v2"
+import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "strings"
 
@@ -41,6 +42,35 @@ func (j *MultipleRequiredBase) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
+// MarshalJSON implements json.Marshaler.
+func (j *MultipleRequiredBase) MarshalJSON() ([]byte, error) {
+	type MultipleRequiredBaseMarshalHelper struct {
+		Basefield string `json:"baseField"`
+	}
+	helper := MultipleRequiredBaseMarshalHelper{
+		Basefield: j.basefield,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *MultipleRequiredBase) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["baseField"]; raw != nil && !ok {
+		return fmt.Errorf("field baseField in MultipleRequiredBase: required")
+	}
+	type Plain MultipleRequiredBase
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = MultipleRequiredBase(plain)
+	return nil
+}
+
 type MultipleRequiredMiddle struct {
 	// middlefield corresponds to the JSON schema field "middleField".
 	middlefield float64 `json:"middleField" yaml:"middleField" mapstructure:"middleField"`
@@ -69,6 +99,35 @@ func (j *MultipleRequiredMiddle) UnmarshalJSON(value []byte) error {
 	}
 	var plain Plain
 	plain.middlefield = helper.Middlefield
+	*j = MultipleRequiredMiddle(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *MultipleRequiredMiddle) MarshalJSON() ([]byte, error) {
+	type MultipleRequiredMiddleMarshalHelper struct {
+		Middlefield float64 `json:"middleField"`
+	}
+	helper := MultipleRequiredMiddleMarshalHelper{
+		Middlefield: j.middlefield,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *MultipleRequiredMiddle) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["middleField"]; raw != nil && !ok {
+		return fmt.Errorf("field middleField in MultipleRequiredMiddle: required")
+	}
+	type Plain MultipleRequiredMiddle
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
 	*j = MultipleRequiredMiddle(plain)
 	return nil
 }
@@ -134,6 +193,56 @@ func (j *ComposedWithMultipleRequired) UnmarshalJSON(value []byte) error {
 	plain.basefield = helper.Basefield
 	plain.directfield = helper.Directfield
 	plain.middlefield = helper.Middlefield
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = ComposedWithMultipleRequired(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *ComposedWithMultipleRequired) MarshalJSON() ([]byte, error) {
+	type ComposedWithMultipleRequiredMarshalHelper struct {
+		Basefield   *string  `json:"baseField",omitempty`
+		Directfield bool     `json:"directField"`
+		Middlefield *float64 `json:"middleField",omitempty`
+	}
+	helper := ComposedWithMultipleRequiredMarshalHelper{
+		Basefield:   j.basefield,
+		Directfield: j.directfield,
+		Middlefield: j.middlefield,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ComposedWithMultipleRequired) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var composedWithMultipleRequired_0 ComposedWithMultipleRequired_0
+	var composedWithMultipleRequired_1 ComposedWithMultipleRequired_1
+	var errs []error
+	if err := composedWithMultipleRequired_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := composedWithMultipleRequired_1.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 2 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain ComposedWithMultipleRequired
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)

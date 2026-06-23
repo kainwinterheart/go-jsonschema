@@ -2,7 +2,10 @@
 
 package test
 
-type CapitalizationJson struct {
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+type Capitalization struct {
 	// html corresponds to the JSON schema field "html".
 	html *string `json:"html,omitempty,omitzero" yaml:"html,omitempty" mapstructure:"html,omitempty"`
 
@@ -52,54 +55,152 @@ type CapitalizationJson struct {
 	a속성 *string `json:"속성,omitempty,omitzero" yaml:"속성,omitempty" mapstructure:"속성,omitempty"`
 }
 
-func (o *CapitalizationJson) Aアトリビュート() *string {
+func (o *Capitalization) Aアトリビュート() *string {
 	return o.aアトリビュート
 }
 
-func (o *CapitalizationJson) A属性() *string {
+func (o *Capitalization) A属性() *string {
 	return o.a属性
 }
 
-func (o *CapitalizationJson) A屬性() *string {
+func (o *Capitalization) A屬性() *string {
 	return o.a屬性
 }
 
-func (o *CapitalizationJson) A속성() *string {
+func (o *Capitalization) A속성() *string {
 	return o.a속성
 }
 
-func (o *CapitalizationJson) Html() *string {
+func (o *Capitalization) HtMl() *string {
 	return o.html
 }
 
-func (o *CapitalizationJson) HtmlSomething() *string {
+func (o *Capitalization) HtMlSomething() *string {
 	return o.htmlsomething
 }
 
-func (o *CapitalizationJson) HtmlSomethingElse() *string {
+func (o *Capitalization) HtMlSomethingElse() *string {
 	return o.htmlsomethingelse
 }
 
-func (o *CapitalizationJson) Id() *string {
+func (o *Capitalization) ID() *string {
 	return o.id
 }
 
-func (o *CapitalizationJson) IdSomething() *string {
+func (o *Capitalization) IDSomething() *string {
 	return o.idsomething
 }
 
-func (o *CapitalizationJson) IdSomethingElse() *string {
+func (o *Capitalization) IDSomethingElse() *string {
 	return o.idsomethingelse
 }
 
-func (o *CapitalizationJson) Url() *string {
+func (o *Capitalization) URL() *string {
 	return o.url
 }
 
-func (o *CapitalizationJson) UrlSomething() *string {
+func (o *Capitalization) URLSomething() *string {
 	return o.urlsomething
 }
 
-func (o *CapitalizationJson) UrlSomethingElse() *string {
+func (o *Capitalization) URLSomethingElse() *string {
 	return o.urlsomethingelse
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Capitalization) UnmarshalJSON(value []byte) error {
+	type CapitalizationHelper struct {
+		Html              *string `json:"html",omitempty`
+		Htmlsomethingelse *string `json:"htmlSomethingElse",omitempty`
+		Html_2            *string `json:"html__",omitempty`
+		Htmlsomething     *string `json:"html_something",omitempty`
+		Id                *string `json:"id",omitempty`
+		Idsomethingelse   *string `json:"idSomethingElse",omitempty`
+		Id_2              *string `json:"id__",omitempty`
+		Idsomething       *string `json:"id_something",omitempty`
+		Url               *string `json:"url",omitempty`
+		Urlsomethingelse  *string `json:"urlSomethingElse",omitempty`
+		Url_2             *string `json:"url__",omitempty`
+		Urlsomething      *string `json:"url_something",omitempty`
+		Aアトリビュート          *string `json:"アトリビュート",omitempty`
+		A属性               *string `json:"属性",omitempty`
+		A屬性               *string `json:"屬性",omitempty`
+		A속성               *string `json:"속성",omitempty`
+	}
+	type Plain Capitalization
+	var helper CapitalizationHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.html = helper.Html
+	plain.htmlsomethingelse = helper.Htmlsomethingelse
+	plain.html_2 = helper.Html_2
+	plain.htmlsomething = helper.Htmlsomething
+	plain.id = helper.Id
+	plain.idsomethingelse = helper.Idsomethingelse
+	plain.id_2 = helper.Id_2
+	plain.idsomething = helper.Idsomething
+	plain.url = helper.Url
+	plain.urlsomethingelse = helper.Urlsomethingelse
+	plain.url_2 = helper.Url_2
+	plain.urlsomething = helper.Urlsomething
+	plain.aアトリビュート = helper.Aアトリビュート
+	plain.a属性 = helper.A属性
+	plain.a屬性 = helper.A屬性
+	plain.a속성 = helper.A속성
+	*j = Capitalization(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Capitalization) MarshalJSON() ([]byte, error) {
+	type CapitalizationMarshalHelper struct {
+		Html              *string `json:"html",omitempty`
+		Htmlsomethingelse *string `json:"htmlSomethingElse",omitempty`
+		Html_2            *string `json:"html__",omitempty`
+		Htmlsomething     *string `json:"html_something",omitempty`
+		Id                *string `json:"id",omitempty`
+		Idsomethingelse   *string `json:"idSomethingElse",omitempty`
+		Id_2              *string `json:"id__",omitempty`
+		Idsomething       *string `json:"id_something",omitempty`
+		Url               *string `json:"url",omitempty`
+		Urlsomethingelse  *string `json:"urlSomethingElse",omitempty`
+		Url_2             *string `json:"url__",omitempty`
+		Urlsomething      *string `json:"url_something",omitempty`
+		Aアトリビュート          *string `json:"アトリビュート",omitempty`
+		A属性               *string `json:"属性",omitempty`
+		A屬性               *string `json:"屬性",omitempty`
+		A속성               *string `json:"속성",omitempty`
+	}
+	helper := CapitalizationMarshalHelper{
+		Html:              j.html,
+		Htmlsomethingelse: j.htmlsomethingelse,
+		Html_2:            j.html_2,
+		Htmlsomething:     j.htmlsomething,
+		Id:                j.id,
+		Idsomethingelse:   j.idsomethingelse,
+		Id_2:              j.id_2,
+		Idsomething:       j.idsomething,
+		Url:               j.url,
+		Urlsomethingelse:  j.urlsomethingelse,
+		Url_2:             j.url_2,
+		Urlsomething:      j.urlsomething,
+		Aアトリビュート:          j.aアトリビュート,
+		A属性:               j.a属性,
+		A屬性:               j.a屬性,
+		A속성:               j.a속성,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Capitalization) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Capitalization
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Capitalization(plain)
+	return nil
 }

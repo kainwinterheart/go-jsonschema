@@ -5,58 +5,139 @@ package test
 import "encoding/json"
 import "errors"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
-type AnyOf6Json struct {
+type AnyOf6 struct {
 	// qux2 corresponds to the JSON schema field "qux2".
-	qux2 []AnyOf6Jsonqux2Elem `json:"qux2,omitempty,omitzero" yaml:"qux2,omitempty" mapstructure:"qux2,omitempty"`
+	qux2 []AnyOf6qux2Elem `json:"qux2,omitempty,omitzero" yaml:"qux2,omitempty" mapstructure:"qux2,omitempty"`
 }
 
-func (o *AnyOf6Json) Qux2() []AnyOf6Jsonqux2Elem {
+func (o *AnyOf6) Qux2() []AnyOf6qux2Elem {
 	return o.qux2
 }
 
-type AnyOf6Jsonqux2Elem struct {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf6) UnmarshalYAML(value *yaml.Node) error {
+	type Plain AnyOf6
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf6(plain)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *AnyOf6) UnmarshalJSON(value []byte) error {
+	type AnyOf6Helper struct {
+		Qux2 []AnyOf6qux2Elem `json:"qux2",omitempty`
+	}
+	type Plain AnyOf6
+	var helper AnyOf6Helper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.qux2 = helper.Qux2
+	*j = AnyOf6(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *AnyOf6) MarshalJSON() ([]byte, error) {
+	type AnyOf6MarshalHelper struct {
+		Qux2 []AnyOf6qux2Elem `json:"qux2",omitempty`
+	}
+	helper := AnyOf6MarshalHelper{
+		Qux2: j.qux2,
+	}
+	return json.Marshal(helper)
+}
+
+type AnyOf6qux2Elem struct {
 	// content corresponds to the JSON schema field "content".
 	content []interface{} `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
-func (o *AnyOf6Jsonqux2Elem) Content() []interface{} {
+func (o *AnyOf6qux2Elem) Content() []interface{} {
 	return o.content
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *AnyOf6Jsonqux2Elem) UnmarshalJSON(value []byte) error {
+func (j *AnyOf6qux2Elem) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	var anyOf6Jsonqux2Elem_0 AnyOf6Jsonqux2Elem_0
-	var anyOf6Jsonqux2Elem_1 AnyOf6Jsonqux2Elem_1
-	var anyOf6Jsonqux2Elem_2 AnyOf6Jsonqux2Elem_2
+	var anyOf6qux2Elem_0 AnyOf6qux2Elem_0
+	var anyOf6qux2Elem_1 AnyOf6qux2Elem_1
+	var anyOf6qux2Elem_2 AnyOf6qux2Elem_2
 	var errs []error
-	if err := anyOf6Jsonqux2Elem_0.UnmarshalJSON(value); err != nil {
+	if err := anyOf6qux2Elem_0.UnmarshalJSON(value); err != nil {
 		errs = append(errs, err)
 	}
-	if err := anyOf6Jsonqux2Elem_1.UnmarshalJSON(value); err != nil {
+	if err := anyOf6qux2Elem_1.UnmarshalJSON(value); err != nil {
 		errs = append(errs, err)
 	}
-	if err := anyOf6Jsonqux2Elem_2.UnmarshalJSON(value); err != nil {
+	if err := anyOf6qux2Elem_2.UnmarshalJSON(value); err != nil {
 		errs = append(errs, err)
 	}
 	if len(errs) == 3 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
-	type AnyOf6Jsonqux2ElemHelper struct {
+	type AnyOf6qux2ElemHelper struct {
 		Content []interface{} `json:"content",omitempty`
 	}
-	type Plain AnyOf6Jsonqux2Elem
-	var helper AnyOf6Jsonqux2ElemHelper
+	type Plain AnyOf6qux2Elem
+	var helper AnyOf6qux2ElemHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.content = helper.Content
-	*j = AnyOf6Jsonqux2Elem(plain)
+	*j = AnyOf6qux2Elem(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *AnyOf6qux2Elem) MarshalJSON() ([]byte, error) {
+	type AnyOf6qux2ElemMarshalHelper struct {
+		Content []interface{} `json:"content",omitempty`
+	}
+	helper := AnyOf6qux2ElemMarshalHelper{
+		Content: j.content,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf6qux2Elem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var anyOf6qux2Elem_0 AnyOf6qux2Elem_0
+	var anyOf6qux2Elem_1 AnyOf6qux2Elem_1
+	var anyOf6qux2Elem_2 AnyOf6qux2Elem_2
+	var errs []error
+	if err := anyOf6qux2Elem_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := anyOf6qux2Elem_1.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := anyOf6qux2Elem_2.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 3 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain AnyOf6qux2Elem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf6qux2Elem(plain)
 	return nil
 }
 
@@ -67,6 +148,17 @@ type Bar2 struct {
 
 func (o *Bar2) Content() []Bar2contentElem {
 	return o.content
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Bar2) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Bar2
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Bar2(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -85,6 +177,17 @@ func (j *Bar2) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
+// MarshalJSON implements json.Marshaler.
+func (j *Bar2) MarshalJSON() ([]byte, error) {
+	type Bar2MarshalHelper struct {
+		Content []Bar2contentElem `json:"content",omitempty`
+	}
+	helper := Bar2MarshalHelper{
+		Content: j.content,
+	}
+	return json.Marshal(helper)
+}
+
 type Bar2contentElem struct {
 	// content corresponds to the JSON schema field "content".
 	content []interface{} `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
@@ -92,6 +195,37 @@ type Bar2contentElem struct {
 
 func (o *Bar2contentElem) Content() []interface{} {
 	return o.content
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Bar2contentElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var bar2contentElem_0 Bar2contentElem_0
+	var bar2contentElem_1 Bar2contentElem_1
+	var bar2contentElem_2 Bar2contentElem_2
+	var errs []error
+	if err := bar2contentElem_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := bar2contentElem_1.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := bar2contentElem_2.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 3 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain Bar2contentElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Bar2contentElem(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -130,6 +264,17 @@ func (j *Bar2contentElem) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
+// MarshalJSON implements json.Marshaler.
+func (j *Bar2contentElem) MarshalJSON() ([]byte, error) {
+	type Bar2contentElemMarshalHelper struct {
+		Content []interface{} `json:"content",omitempty`
+	}
+	helper := Bar2contentElemMarshalHelper{
+		Content: j.content,
+	}
+	return json.Marshal(helper)
+}
+
 type Baz2 struct {
 	// content corresponds to the JSON schema field "content".
 	content []Baz2contentElem `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
@@ -155,6 +300,28 @@ func (j *Baz2) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
+// MarshalJSON implements json.Marshaler.
+func (j *Baz2) MarshalJSON() ([]byte, error) {
+	type Baz2MarshalHelper struct {
+		Content []Baz2contentElem `json:"content",omitempty`
+	}
+	helper := Baz2MarshalHelper{
+		Content: j.content,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Baz2) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Baz2
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Baz2(plain)
+	return nil
+}
+
 type Baz2contentElem struct {
 	// content corresponds to the JSON schema field "content".
 	content []interface{} `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
@@ -162,6 +329,37 @@ type Baz2contentElem struct {
 
 func (o *Baz2contentElem) Content() []interface{} {
 	return o.content
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Baz2contentElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var baz2contentElem_0 Baz2contentElem_0
+	var baz2contentElem_1 Baz2contentElem_1
+	var baz2contentElem_2 Baz2contentElem_2
+	var errs []error
+	if err := baz2contentElem_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := baz2contentElem_1.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := baz2contentElem_2.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 3 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain Baz2contentElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Baz2contentElem(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -200,17 +398,89 @@ func (j *Baz2contentElem) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-type Foo2contentElem_2 = Baz2
+// MarshalJSON implements json.Marshaler.
+func (j *Baz2contentElem) MarshalJSON() ([]byte, error) {
+	type Baz2contentElemMarshalHelper struct {
+		Content []interface{} `json:"content",omitempty`
+	}
+	helper := Baz2contentElemMarshalHelper{
+		Content: j.content,
+	}
+	return json.Marshal(helper)
+}
+
+type Foo2 struct {
+	// content corresponds to the JSON schema field "content".
+	content []Foo2contentElem `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
+}
+
+type AnyOf6qux2Elem_0 = Foo2
+
+type Bar2contentElem_2 = Baz2
+
+type Bar2contentElem_0 = Foo2
 
 func (o *Foo2) Content() []Foo2contentElem {
 	return o.content
 }
 
-type Bar2contentElem_0 = Foo2
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Foo2) UnmarshalJSON(value []byte) error {
+	type Foo2Helper struct {
+		Content []Foo2contentElem `json:"content",omitempty`
+	}
+	type Plain Foo2
+	var helper Foo2Helper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.content = helper.Content
+	*j = Foo2(plain)
+	return nil
+}
 
-type Bar2contentElem_1 = Bar2
+// MarshalJSON implements json.Marshaler.
+func (j *Foo2) MarshalJSON() ([]byte, error) {
+	type Foo2MarshalHelper struct {
+		Content []Foo2contentElem `json:"content",omitempty`
+	}
+	helper := Foo2MarshalHelper{
+		Content: j.content,
+	}
+	return json.Marshal(helper)
+}
 
-type Bar2contentElem_2 = Baz2
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Foo2contentElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var foo2contentElem_0 Foo2contentElem_0
+	var foo2contentElem_1 Foo2contentElem_1
+	var foo2contentElem_2 Foo2contentElem_2
+	var errs []error
+	if err := foo2contentElem_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := foo2contentElem_1.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := foo2contentElem_2.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 3 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain Foo2contentElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Foo2contentElem(plain)
+	return nil
+}
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Foo2contentElem) UnmarshalJSON(value []byte) error {
@@ -248,48 +518,51 @@ func (j *Foo2contentElem) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
+// MarshalJSON implements json.Marshaler.
+func (j *Foo2contentElem) MarshalJSON() ([]byte, error) {
+	type Foo2contentElemMarshalHelper struct {
+		Content []interface{} `json:"content",omitempty`
+	}
+	helper := Foo2contentElemMarshalHelper{
+		Content: j.content,
+	}
+	return json.Marshal(helper)
+}
+
 func (o *Foo2contentElem) Content() []interface{} {
 	return o.content
 }
+
+type Bar2contentElem_1 = Bar2
+
+type AnyOf6qux2Elem_1 = Bar2
+
+type AnyOf6qux2Elem_2 = Baz2
 
 type Foo2contentElem struct {
 	// content corresponds to the JSON schema field "content".
 	content []interface{} `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
-type Foo2 struct {
-	// content corresponds to the JSON schema field "content".
-	content []Foo2contentElem `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
-}
+type Foo2contentElem_2 = Baz2
 
 type Foo2contentElem_1 = Bar2
 
-type AnyOf6Jsonqux2Elem_0 = Foo2
-
-type AnyOf6Jsonqux2Elem_1 = Bar2
-
-type AnyOf6Jsonqux2Elem_2 = Baz2
-
 type Foo2contentElem_0 = Foo2
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Foo2) UnmarshalJSON(value []byte) error {
-	type Foo2Helper struct {
-		Content []Foo2contentElem `json:"content",omitempty`
-	}
-	type Plain Foo2
-	var helper Foo2Helper
-	if err := json.Unmarshal(value, &helper); err != nil {
-		return err
-	}
-	var plain Plain
-	plain.content = helper.Content
-	*j = Foo2(plain)
-	return nil
-}
 
 type Baz2contentElem_2 = Baz2
 
 type Baz2contentElem_1 = Bar2
 
 type Baz2contentElem_0 = Foo2
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Foo2) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Foo2
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Foo2(plain)
+	return nil
+}

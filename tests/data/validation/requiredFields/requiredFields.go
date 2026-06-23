@@ -4,8 +4,9 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
-type RequiredFieldsJson struct {
+type RequiredFields struct {
 	// myboolean corresponds to the JSON schema field "myBoolean".
 	myboolean bool `json:"myBoolean" yaml:"myBoolean" mapstructure:"myBoolean"`
 
@@ -31,10 +32,10 @@ type RequiredFieldsJson struct {
 	mynumberarray []float64 `json:"myNumberArray" yaml:"myNumberArray" mapstructure:"myNumberArray"`
 
 	// myobject corresponds to the JSON schema field "myObject".
-	myobject RequiredFieldsJsonmyobject `json:"myObject" yaml:"myObject" mapstructure:"myObject"`
+	myobject RequiredFieldsmyobject `json:"myObject" yaml:"myObject" mapstructure:"myObject"`
 
 	// myobjectarray corresponds to the JSON schema field "myObjectArray".
-	myobjectarray []RequiredFieldsJsonmyobjectarrayElem `json:"myObjectArray" yaml:"myObjectArray" mapstructure:"myObjectArray"`
+	myobjectarray []RequiredFieldsmyobjectarrayElem `json:"myObjectArray" yaml:"myObjectArray" mapstructure:"myObjectArray"`
 
 	// mystring corresponds to the JSON schema field "myString".
 	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
@@ -43,106 +44,159 @@ type RequiredFieldsJson struct {
 	mystringarray []string `json:"myStringArray" yaml:"myStringArray" mapstructure:"myStringArray"`
 }
 
-func (o *RequiredFieldsJson) MyBoolean() bool {
+func (o *RequiredFields) MyBoolean() bool {
 	return o.myboolean
 }
 
-func (o *RequiredFieldsJson) MyBooleanArray() []bool {
+func (o *RequiredFields) MyBooleanArray() []bool {
 	return o.mybooleanarray
 }
 
-func (o *RequiredFieldsJson) MyInteger() *int {
+func (o *RequiredFields) MyInteger() *int {
 	return o.myinteger
 }
 
-func (o *RequiredFieldsJson) MyIntegerArray() []int {
+func (o *RequiredFields) MyIntegerArray() []int {
 	return o.myintegerarray
 }
 
-func (o *RequiredFieldsJson) MyNull() interface{} {
+func (o *RequiredFields) MyNull() interface{} {
 	return o.mynull
 }
 
-func (o *RequiredFieldsJson) MyNullArray() []interface{} {
+func (o *RequiredFields) MyNullArray() []interface{} {
 	return o.mynullarray
 }
 
-func (o *RequiredFieldsJson) MyNumber() float64 {
+func (o *RequiredFields) MyNumber() float64 {
 	return o.mynumber
 }
 
-func (o *RequiredFieldsJson) MyNumberArray() []float64 {
+func (o *RequiredFields) MyNumberArray() []float64 {
 	return o.mynumberarray
 }
 
-func (o *RequiredFieldsJson) MyObject() RequiredFieldsJsonmyobject {
+func (o *RequiredFields) MyObject() RequiredFieldsmyobject {
 	return o.myobject
 }
 
-func (o *RequiredFieldsJson) MyObjectArray() []RequiredFieldsJsonmyobjectarrayElem {
+func (o *RequiredFields) MyObjectArray() []RequiredFieldsmyobjectarrayElem {
 	return o.myobjectarray
 }
 
-func (o *RequiredFieldsJson) MyString() string {
+func (o *RequiredFields) MyString() string {
 	return o.mystring
 }
 
-func (o *RequiredFieldsJson) MyStringArray() []string {
+func (o *RequiredFields) MyStringArray() []string {
 	return o.mystringarray
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RequiredFields) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myBoolean"]; raw != nil && !ok {
+		return fmt.Errorf("field myBoolean in RequiredFields: required")
+	}
+	if _, ok := raw["myBooleanArray"]; raw != nil && !ok {
+		return fmt.Errorf("field myBooleanArray in RequiredFields: required")
+	}
+	if _, ok := raw["myNull"]; raw != nil && !ok {
+		return fmt.Errorf("field myNull in RequiredFields: required")
+	}
+	if _, ok := raw["myNullArray"]; raw != nil && !ok {
+		return fmt.Errorf("field myNullArray in RequiredFields: required")
+	}
+	if _, ok := raw["myNumber"]; raw != nil && !ok {
+		return fmt.Errorf("field myNumber in RequiredFields: required")
+	}
+	if _, ok := raw["myNumberArray"]; raw != nil && !ok {
+		return fmt.Errorf("field myNumberArray in RequiredFields: required")
+	}
+	if _, ok := raw["myObject"]; raw != nil && !ok {
+		return fmt.Errorf("field myObject in RequiredFields: required")
+	}
+	if _, ok := raw["myObjectArray"]; raw != nil && !ok {
+		return fmt.Errorf("field myObjectArray in RequiredFields: required")
+	}
+	if _, ok := raw["myString"]; raw != nil && !ok {
+		return fmt.Errorf("field myString in RequiredFields: required")
+	}
+	if _, ok := raw["myStringArray"]; raw != nil && !ok {
+		return fmt.Errorf("field myStringArray in RequiredFields: required")
+	}
+	type Plain RequiredFields
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.mynull != nil {
+		return fmt.Errorf("field %s: must be null", "myNull")
+	}
+	for i0 := range plain.mynullarray {
+		if plain.mynullarray[i0] != nil {
+			return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNullArray[%d]", i0))
+		}
+	}
+	*j = RequiredFields(plain)
+	return nil
+}
+
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *RequiredFieldsJson) UnmarshalJSON(value []byte) error {
+func (j *RequiredFields) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myBoolean"]; raw != nil && !ok {
-		return fmt.Errorf("field myBoolean in RequiredFieldsJson: required")
+		return fmt.Errorf("field myBoolean in RequiredFields: required")
 	}
 	if _, ok := raw["myBooleanArray"]; raw != nil && !ok {
-		return fmt.Errorf("field myBooleanArray in RequiredFieldsJson: required")
+		return fmt.Errorf("field myBooleanArray in RequiredFields: required")
 	}
 	if _, ok := raw["myNull"]; raw != nil && !ok {
-		return fmt.Errorf("field myNull in RequiredFieldsJson: required")
+		return fmt.Errorf("field myNull in RequiredFields: required")
 	}
 	if _, ok := raw["myNullArray"]; raw != nil && !ok {
-		return fmt.Errorf("field myNullArray in RequiredFieldsJson: required")
+		return fmt.Errorf("field myNullArray in RequiredFields: required")
 	}
 	if _, ok := raw["myNumber"]; raw != nil && !ok {
-		return fmt.Errorf("field myNumber in RequiredFieldsJson: required")
+		return fmt.Errorf("field myNumber in RequiredFields: required")
 	}
 	if _, ok := raw["myNumberArray"]; raw != nil && !ok {
-		return fmt.Errorf("field myNumberArray in RequiredFieldsJson: required")
+		return fmt.Errorf("field myNumberArray in RequiredFields: required")
 	}
 	if _, ok := raw["myObject"]; raw != nil && !ok {
-		return fmt.Errorf("field myObject in RequiredFieldsJson: required")
+		return fmt.Errorf("field myObject in RequiredFields: required")
 	}
 	if _, ok := raw["myObjectArray"]; raw != nil && !ok {
-		return fmt.Errorf("field myObjectArray in RequiredFieldsJson: required")
+		return fmt.Errorf("field myObjectArray in RequiredFields: required")
 	}
 	if _, ok := raw["myString"]; raw != nil && !ok {
-		return fmt.Errorf("field myString in RequiredFieldsJson: required")
+		return fmt.Errorf("field myString in RequiredFields: required")
 	}
 	if _, ok := raw["myStringArray"]; raw != nil && !ok {
-		return fmt.Errorf("field myStringArray in RequiredFieldsJson: required")
+		return fmt.Errorf("field myStringArray in RequiredFields: required")
 	}
-	type RequiredFieldsJsonHelper struct {
-		Myboolean      bool                                  `json:"myBoolean"`
-		Mybooleanarray []bool                                `json:"myBooleanArray"`
-		Myinteger      *int                                  `json:"myInteger",omitempty`
-		Myintegerarray []int                                 `json:"myIntegerArray",omitempty`
-		Mynull         interface{}                           `json:"myNull"`
-		Mynullarray    []interface{}                         `json:"myNullArray"`
-		Mynumber       float64                               `json:"myNumber"`
-		Mynumberarray  []float64                             `json:"myNumberArray"`
-		Myobject       RequiredFieldsJsonmyobject            `json:"myObject"`
-		Myobjectarray  []RequiredFieldsJsonmyobjectarrayElem `json:"myObjectArray"`
-		Mystring       string                                `json:"myString"`
-		Mystringarray  []string                              `json:"myStringArray"`
+	type RequiredFieldsHelper struct {
+		Myboolean      bool                              `json:"myBoolean"`
+		Mybooleanarray []bool                            `json:"myBooleanArray"`
+		Myinteger      *int                              `json:"myInteger",omitempty`
+		Myintegerarray []int                             `json:"myIntegerArray",omitempty`
+		Mynull         interface{}                       `json:"myNull"`
+		Mynullarray    []interface{}                     `json:"myNullArray"`
+		Mynumber       float64                           `json:"myNumber"`
+		Mynumberarray  []float64                         `json:"myNumberArray"`
+		Myobject       RequiredFieldsmyobject            `json:"myObject"`
+		Myobjectarray  []RequiredFieldsmyobjectarrayElem `json:"myObjectArray"`
+		Mystring       string                            `json:"myString"`
+		Mystringarray  []string                          `json:"myStringArray"`
 	}
-	type Plain RequiredFieldsJson
-	var helper RequiredFieldsJsonHelper
+	type Plain RequiredFields
+	var helper RequiredFieldsHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -167,72 +221,163 @@ func (j *RequiredFieldsJson) UnmarshalJSON(value []byte) error {
 			return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNullArray[%d]", i0))
 		}
 	}
-	*j = RequiredFieldsJson(plain)
+	*j = RequiredFields(plain)
 	return nil
 }
 
-type RequiredFieldsJsonmyobject struct {
+// MarshalJSON implements json.Marshaler.
+func (j *RequiredFields) MarshalJSON() ([]byte, error) {
+	type RequiredFieldsMarshalHelper struct {
+		Myboolean      bool                              `json:"myBoolean"`
+		Mybooleanarray []bool                            `json:"myBooleanArray"`
+		Myinteger      *int                              `json:"myInteger",omitempty`
+		Myintegerarray []int                             `json:"myIntegerArray",omitempty`
+		Mynull         interface{}                       `json:"myNull"`
+		Mynullarray    []interface{}                     `json:"myNullArray"`
+		Mynumber       float64                           `json:"myNumber"`
+		Mynumberarray  []float64                         `json:"myNumberArray"`
+		Myobject       RequiredFieldsmyobject            `json:"myObject"`
+		Myobjectarray  []RequiredFieldsmyobjectarrayElem `json:"myObjectArray"`
+		Mystring       string                            `json:"myString"`
+		Mystringarray  []string                          `json:"myStringArray"`
+	}
+	helper := RequiredFieldsMarshalHelper{
+		Myboolean:      j.myboolean,
+		Mybooleanarray: j.mybooleanarray,
+		Myinteger:      j.myinteger,
+		Myintegerarray: j.myintegerarray,
+		Mynull:         j.mynull,
+		Mynullarray:    j.mynullarray,
+		Mynumber:       j.mynumber,
+		Mynumberarray:  j.mynumberarray,
+		Myobject:       j.myobject,
+		Myobjectarray:  j.myobjectarray,
+		Mystring:       j.mystring,
+		Mystringarray:  j.mystringarray,
+	}
+	return json.Marshal(helper)
+}
+
+type RequiredFieldsmyobject struct {
 	// mynestedobjectstring corresponds to the JSON schema field
 	// "myNestedObjectString".
 	mynestedobjectstring string `json:"myNestedObjectString" yaml:"myNestedObjectString" mapstructure:"myNestedObjectString"`
 }
 
-func (o *RequiredFieldsJsonmyobject) MyNestedObjectString() string {
+func (o *RequiredFieldsmyobject) MyNestedObjectString() string {
 	return o.mynestedobjectstring
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *RequiredFieldsJsonmyobject) UnmarshalJSON(value []byte) error {
+func (j *RequiredFieldsmyobject) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myNestedObjectString"]; raw != nil && !ok {
-		return fmt.Errorf("field myNestedObjectString in RequiredFieldsJsonmyobject: required")
+		return fmt.Errorf("field myNestedObjectString in RequiredFieldsmyobject: required")
 	}
-	type RequiredFieldsJsonmyobjectHelper struct {
+	type RequiredFieldsmyobjectHelper struct {
 		Mynestedobjectstring string `json:"myNestedObjectString"`
 	}
-	type Plain RequiredFieldsJsonmyobject
-	var helper RequiredFieldsJsonmyobjectHelper
+	type Plain RequiredFieldsmyobject
+	var helper RequiredFieldsmyobjectHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.mynestedobjectstring = helper.Mynestedobjectstring
-	*j = RequiredFieldsJsonmyobject(plain)
+	*j = RequiredFieldsmyobject(plain)
 	return nil
 }
 
-type RequiredFieldsJsonmyobjectarrayElem struct {
+// MarshalJSON implements json.Marshaler.
+func (j *RequiredFieldsmyobject) MarshalJSON() ([]byte, error) {
+	type RequiredFieldsmyobjectMarshalHelper struct {
+		Mynestedobjectstring string `json:"myNestedObjectString"`
+	}
+	helper := RequiredFieldsmyobjectMarshalHelper{
+		Mynestedobjectstring: j.mynestedobjectstring,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RequiredFieldsmyobject) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myNestedObjectString"]; raw != nil && !ok {
+		return fmt.Errorf("field myNestedObjectString in RequiredFieldsmyobject: required")
+	}
+	type Plain RequiredFieldsmyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RequiredFieldsmyobject(plain)
+	return nil
+}
+
+type RequiredFieldsmyobjectarrayElem struct {
 	// mynestedobjectstring corresponds to the JSON schema field
 	// "myNestedObjectString".
 	mynestedobjectstring string `json:"myNestedObjectString" yaml:"myNestedObjectString" mapstructure:"myNestedObjectString"`
 }
 
-func (o *RequiredFieldsJsonmyobjectarrayElem) MyNestedObjectString() string {
+func (o *RequiredFieldsmyobjectarrayElem) MyNestedObjectString() string {
 	return o.mynestedobjectstring
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RequiredFieldsmyobjectarrayElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myNestedObjectString"]; raw != nil && !ok {
+		return fmt.Errorf("field myNestedObjectString in RequiredFieldsmyobjectarrayElem: required")
+	}
+	type Plain RequiredFieldsmyobjectarrayElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RequiredFieldsmyobjectarrayElem(plain)
+	return nil
+}
+
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *RequiredFieldsJsonmyobjectarrayElem) UnmarshalJSON(value []byte) error {
+func (j *RequiredFieldsmyobjectarrayElem) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myNestedObjectString"]; raw != nil && !ok {
-		return fmt.Errorf("field myNestedObjectString in RequiredFieldsJsonmyobjectarrayElem: required")
+		return fmt.Errorf("field myNestedObjectString in RequiredFieldsmyobjectarrayElem: required")
 	}
-	type RequiredFieldsJsonmyobjectarrayElemHelper struct {
+	type RequiredFieldsmyobjectarrayElemHelper struct {
 		Mynestedobjectstring string `json:"myNestedObjectString"`
 	}
-	type Plain RequiredFieldsJsonmyobjectarrayElem
-	var helper RequiredFieldsJsonmyobjectarrayElemHelper
+	type Plain RequiredFieldsmyobjectarrayElem
+	var helper RequiredFieldsmyobjectarrayElemHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.mynestedobjectstring = helper.Mynestedobjectstring
-	*j = RequiredFieldsJsonmyobjectarrayElem(plain)
+	*j = RequiredFieldsmyobjectarrayElem(plain)
 	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *RequiredFieldsmyobjectarrayElem) MarshalJSON() ([]byte, error) {
+	type RequiredFieldsmyobjectarrayElemMarshalHelper struct {
+		Mynestedobjectstring string `json:"myNestedObjectString"`
+	}
+	helper := RequiredFieldsmyobjectarrayElemMarshalHelper{
+		Mynestedobjectstring: j.mynestedobjectstring,
+	}
+	return json.Marshal(helper)
 }

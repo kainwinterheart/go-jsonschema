@@ -3,27 +3,28 @@
 package test
 
 import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
 
-type TypedDefaultEmptyJson struct {
+type TypedDefaultEmpty struct {
 	// topleveldomains corresponds to the JSON schema field "topLevelDomains".
 	topleveldomains []string `json:"topLevelDomains,omitempty,omitzero" yaml:"topLevelDomains,omitempty" mapstructure:"topLevelDomains,omitempty"`
 }
 
-func (o *TypedDefaultEmptyJson) TopLevelDomains() []string {
+func (o *TypedDefaultEmpty) TopLevelDomains() []string {
 	return o.topleveldomains
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *TypedDefaultEmptyJson) UnmarshalJSON(value []byte) error {
+func (j *TypedDefaultEmpty) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	type TypedDefaultEmptyJsonHelper struct {
+	type TypedDefaultEmptyHelper struct {
 		Topleveldomains []string `json:"topLevelDomains",omitempty`
 	}
-	type Plain TypedDefaultEmptyJson
-	var helper TypedDefaultEmptyJsonHelper
+	type Plain TypedDefaultEmpty
+	var helper TypedDefaultEmptyHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -32,6 +33,35 @@ func (j *TypedDefaultEmptyJson) UnmarshalJSON(value []byte) error {
 	if v, ok := raw["topLevelDomains"]; !ok || v == nil {
 		plain.topleveldomains = []string{}
 	}
-	*j = TypedDefaultEmptyJson(plain)
+	*j = TypedDefaultEmpty(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *TypedDefaultEmpty) MarshalJSON() ([]byte, error) {
+	type TypedDefaultEmptyMarshalHelper struct {
+		Topleveldomains []string `json:"topLevelDomains",omitempty`
+	}
+	helper := TypedDefaultEmptyMarshalHelper{
+		Topleveldomains: j.topleveldomains,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *TypedDefaultEmpty) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain TypedDefaultEmpty
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if v, ok := raw["topLevelDomains"]; !ok || v == nil {
+		plain.topleveldomains = []string{}
+	}
+	*j = TypedDefaultEmpty(plain)
 	return nil
 }

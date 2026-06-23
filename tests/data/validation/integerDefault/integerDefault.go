@@ -4,52 +4,53 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
-type IntegerDefaultJson struct {
+type IntegerDefault struct {
 	// count corresponds to the JSON schema field "count".
 	count int `json:"count" yaml:"count" mapstructure:"count"`
 
 	// nullablecount corresponds to the JSON schema field "nullableCount".
-	nullablecount IntegerDefaultJsonnullablecount `json:"nullableCount" yaml:"nullableCount" mapstructure:"nullableCount"`
+	nullablecount IntegerDefaultnullablecount `json:"nullableCount" yaml:"nullableCount" mapstructure:"nullableCount"`
 
 	// programid corresponds to the JSON schema field "programId".
 	programid int `json:"programId" yaml:"programId" mapstructure:"programId"`
 }
 
-func (o *IntegerDefaultJson) Count() int {
+func (o *IntegerDefault) Count() int {
 	return o.count
 }
 
-func (o *IntegerDefaultJson) NullableCount() IntegerDefaultJsonnullablecount {
+func (o *IntegerDefault) NullableCount() IntegerDefaultnullablecount {
 	return o.nullablecount
 }
 
-func (o *IntegerDefaultJson) ProgramId() int {
+func (o *IntegerDefault) ProgramId() int {
 	return o.programid
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *IntegerDefaultJson) UnmarshalJSON(value []byte) error {
+func (j *IntegerDefault) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["count"]; raw != nil && !ok {
-		return fmt.Errorf("field count in IntegerDefaultJson: required")
+		return fmt.Errorf("field count in IntegerDefault: required")
 	}
 	if _, ok := raw["nullableCount"]; raw != nil && !ok {
-		return fmt.Errorf("field nullableCount in IntegerDefaultJson: required")
+		return fmt.Errorf("field nullableCount in IntegerDefault: required")
 	}
 	if _, ok := raw["programId"]; raw != nil && !ok {
-		return fmt.Errorf("field programId in IntegerDefaultJson: required")
+		return fmt.Errorf("field programId in IntegerDefault: required")
 	}
-	type IntegerDefaultJsonHelper struct {
-		Count         int                             `json:"count"`
-		Nullablecount IntegerDefaultJsonnullablecount `json:"nullableCount"`
-		Programid     int                             `json:"programId"`
+	type IntegerDefaultHelper struct {
+		Count         int                         `json:"count"`
+		Nullablecount IntegerDefaultnullablecount `json:"nullableCount"`
+		Programid     int                         `json:"programId"`
 	}
-	type Plain IntegerDefaultJson
-	var helper IntegerDefaultJsonHelper
+	type Plain IntegerDefault
+	var helper IntegerDefaultHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -68,8 +69,58 @@ func (j *IntegerDefaultJson) UnmarshalJSON(value []byte) error {
 	if v, ok := raw["programId"]; !ok || v == nil {
 		plain.programid = 0
 	}
-	*j = IntegerDefaultJson(plain)
+	*j = IntegerDefault(plain)
 	return nil
 }
 
-type IntegerDefaultJsonnullablecount *int
+// MarshalJSON implements json.Marshaler.
+func (j *IntegerDefault) MarshalJSON() ([]byte, error) {
+	type IntegerDefaultMarshalHelper struct {
+		Count         int                         `json:"count"`
+		Nullablecount IntegerDefaultnullablecount `json:"nullableCount"`
+		Programid     int                         `json:"programId"`
+	}
+	helper := IntegerDefaultMarshalHelper{
+		Count:         j.count,
+		Nullablecount: j.nullablecount,
+		Programid:     j.programid,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *IntegerDefault) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["count"]; raw != nil && !ok {
+		return fmt.Errorf("field count in IntegerDefault: required")
+	}
+	if _, ok := raw["nullableCount"]; raw != nil && !ok {
+		return fmt.Errorf("field nullableCount in IntegerDefault: required")
+	}
+	if _, ok := raw["programId"]; raw != nil && !ok {
+		return fmt.Errorf("field programId in IntegerDefault: required")
+	}
+	type Plain IntegerDefault
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if v, ok := raw["count"]; !ok || v == nil {
+		plain.count = 42
+	}
+	if v, ok := raw["nullableCount"]; !ok || v == nil {
+		defaultInt := 0
+		plain.nullablecount = &defaultInt
+
+	}
+	if v, ok := raw["programId"]; !ok || v == nil {
+		plain.programid = 0
+	}
+	*j = IntegerDefault(plain)
+	return nil
+}
+
+type IntegerDefaultnullablecount *int

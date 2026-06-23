@@ -5,9 +5,10 @@ package test
 import "encoding/json"
 import "errors"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
 // object with anyOf properties as root
-type AnyOf3Json struct {
+type AnyOf3 struct {
 	// bar corresponds to the JSON schema field "bar".
 	bar *float64 `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
 
@@ -18,136 +19,216 @@ type AnyOf3Json struct {
 	foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
 }
 
-type AnyOf3Json_0 struct {
+type AnyOf3_0 struct {
 	// foo corresponds to the JSON schema field "foo".
 	foo string `json:"foo" yaml:"foo" mapstructure:"foo"`
 }
 
-func (o *AnyOf3Json_0) Foo() string {
+func (o *AnyOf3_0) Foo() string {
 	return o.foo
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *AnyOf3Json_0) UnmarshalJSON(value []byte) error {
+func (j *AnyOf3_0) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AnyOf3Json_0: required")
+		return fmt.Errorf("field foo in AnyOf3_0: required")
 	}
-	type AnyOf3Json_0Helper struct {
+	type AnyOf3_0Helper struct {
 		Foo string `json:"foo"`
 	}
-	type Plain AnyOf3Json_0
-	var helper AnyOf3Json_0Helper
+	type Plain AnyOf3_0
+	var helper AnyOf3_0Helper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.foo = helper.Foo
-	*j = AnyOf3Json_0(plain)
+	*j = AnyOf3_0(plain)
 	return nil
 }
 
-type AnyOf3Json_1 struct {
+// MarshalJSON implements json.Marshaler.
+func (j *AnyOf3_0) MarshalJSON() ([]byte, error) {
+	type AnyOf3_0MarshalHelper struct {
+		Foo string `json:"foo"`
+	}
+	helper := AnyOf3_0MarshalHelper{
+		Foo: j.foo,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf3_0) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["foo"]; raw != nil && !ok {
+		return fmt.Errorf("field foo in AnyOf3_0: required")
+	}
+	type Plain AnyOf3_0
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf3_0(plain)
+	return nil
+}
+
+type AnyOf3_1 struct {
 	// bar corresponds to the JSON schema field "bar".
 	bar float64 `json:"bar" yaml:"bar" mapstructure:"bar"`
 }
 
-func (o *AnyOf3Json_1) Bar() float64 {
+func (o *AnyOf3_1) Bar() float64 {
 	return o.bar
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *AnyOf3Json_1) UnmarshalJSON(value []byte) error {
+func (j *AnyOf3_1) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in AnyOf3Json_1: required")
+		return fmt.Errorf("field bar in AnyOf3_1: required")
 	}
-	type AnyOf3Json_1Helper struct {
+	type AnyOf3_1Helper struct {
 		Bar float64 `json:"bar"`
 	}
-	type Plain AnyOf3Json_1
-	var helper AnyOf3Json_1Helper
+	type Plain AnyOf3_1
+	var helper AnyOf3_1Helper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.bar = helper.Bar
-	*j = AnyOf3Json_1(plain)
+	*j = AnyOf3_1(plain)
 	return nil
 }
 
-type AnyOf3Json_2 struct {
+// MarshalJSON implements json.Marshaler.
+func (j *AnyOf3_1) MarshalJSON() ([]byte, error) {
+	type AnyOf3_1MarshalHelper struct {
+		Bar float64 `json:"bar"`
+	}
+	helper := AnyOf3_1MarshalHelper{
+		Bar: j.bar,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf3_1) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["bar"]; raw != nil && !ok {
+		return fmt.Errorf("field bar in AnyOf3_1: required")
+	}
+	type Plain AnyOf3_1
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf3_1(plain)
+	return nil
+}
+
+type AnyOf3_2 struct {
 	// configurations corresponds to the JSON schema field "configurations".
 	configurations []interface{} `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
 }
 
-func (o *AnyOf3Json_2) Configurations() []interface{} {
+func (o *AnyOf3_2) Configurations() []interface{} {
 	return o.configurations
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *AnyOf3Json_2) UnmarshalJSON(value []byte) error {
-	type AnyOf3Json_2Helper struct {
+func (j *AnyOf3_2) UnmarshalJSON(value []byte) error {
+	type AnyOf3_2Helper struct {
 		Configurations []interface{} `json:"configurations",omitempty`
 	}
-	type Plain AnyOf3Json_2
-	var helper AnyOf3Json_2Helper
+	type Plain AnyOf3_2
+	var helper AnyOf3_2Helper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
 	var plain Plain
 	plain.configurations = helper.Configurations
-	*j = AnyOf3Json_2(plain)
+	*j = AnyOf3_2(plain)
 	return nil
 }
 
-func (o *AnyOf3Json) Bar() *float64 {
+// MarshalJSON implements json.Marshaler.
+func (j *AnyOf3_2) MarshalJSON() ([]byte, error) {
+	type AnyOf3_2MarshalHelper struct {
+		Configurations []interface{} `json:"configurations",omitempty`
+	}
+	helper := AnyOf3_2MarshalHelper{
+		Configurations: j.configurations,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf3_2) UnmarshalYAML(value *yaml.Node) error {
+	type Plain AnyOf3_2
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf3_2(plain)
+	return nil
+}
+
+func (o *AnyOf3) Bar() *float64 {
 	return o.bar
 }
 
-func (o *AnyOf3Json) Configurations() []interface{} {
+func (o *AnyOf3) Configurations() []interface{} {
 	return o.configurations
 }
 
-func (o *AnyOf3Json) Foo() *string {
+func (o *AnyOf3) Foo() *string {
 	return o.foo
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *AnyOf3Json) UnmarshalJSON(value []byte) error {
+func (j *AnyOf3) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	var anyOf3Json_0 AnyOf3Json_0
-	var anyOf3Json_1 AnyOf3Json_1
-	var anyOf3Json_2 AnyOf3Json_2
+	var anyOf3_0 AnyOf3_0
+	var anyOf3_1 AnyOf3_1
+	var anyOf3_2 AnyOf3_2
 	var errs []error
-	if err := anyOf3Json_0.UnmarshalJSON(value); err != nil {
+	if err := anyOf3_0.UnmarshalJSON(value); err != nil {
 		errs = append(errs, err)
 	}
-	if err := anyOf3Json_1.UnmarshalJSON(value); err != nil {
+	if err := anyOf3_1.UnmarshalJSON(value); err != nil {
 		errs = append(errs, err)
 	}
-	if err := anyOf3Json_2.UnmarshalJSON(value); err != nil {
+	if err := anyOf3_2.UnmarshalJSON(value); err != nil {
 		errs = append(errs, err)
 	}
 	if len(errs) == 3 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
-	type AnyOf3JsonHelper struct {
+	type AnyOf3Helper struct {
 		Bar            *float64      `json:"bar",omitempty`
 		Configurations []interface{} `json:"configurations",omitempty`
 		Foo            *string       `json:"foo",omitempty`
 	}
-	type Plain AnyOf3Json
-	var helper AnyOf3JsonHelper
+	type Plain AnyOf3
+	var helper AnyOf3Helper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -155,6 +236,52 @@ func (j *AnyOf3Json) UnmarshalJSON(value []byte) error {
 	plain.bar = helper.Bar
 	plain.configurations = helper.Configurations
 	plain.foo = helper.Foo
-	*j = AnyOf3Json(plain)
+	*j = AnyOf3(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *AnyOf3) MarshalJSON() ([]byte, error) {
+	type AnyOf3MarshalHelper struct {
+		Bar            *float64      `json:"bar",omitempty`
+		Configurations []interface{} `json:"configurations",omitempty`
+		Foo            *string       `json:"foo",omitempty`
+	}
+	helper := AnyOf3MarshalHelper{
+		Bar:            j.bar,
+		Configurations: j.configurations,
+		Foo:            j.foo,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf3) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var anyOf3_0 AnyOf3_0
+	var anyOf3_1 AnyOf3_1
+	var anyOf3_2 AnyOf3_2
+	var errs []error
+	if err := anyOf3_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := anyOf3_1.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := anyOf3_2.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 3 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain AnyOf3
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf3(plain)
 	return nil
 }

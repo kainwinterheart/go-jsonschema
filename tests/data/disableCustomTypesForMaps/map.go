@@ -2,13 +2,52 @@
 
 package test
 
-type MapJson struct {
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+type AMap struct {
 	// mymap corresponds to the JSON schema field "myMap".
-	mymap MapJsonmymap `json:"myMap,omitempty,omitzero" yaml:"myMap,omitempty" mapstructure:"myMap,omitempty"`
+	mymap map[string]float64 `json:"myMap,omitempty,omitzero" yaml:"myMap,omitempty" mapstructure:"myMap,omitempty"`
 }
 
-func (o *MapJson) MyMap() MapJsonmymap {
+func (o *AMap) MyMap() map[string]float64 {
 	return o.mymap
 }
 
-type MapJsonmymap map[string]float64
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *AMap) UnmarshalJSON(value []byte) error {
+	type AMapHelper struct {
+		Mymap map[string]float64 `json:"myMap",omitempty`
+	}
+	type Plain AMap
+	var helper AMapHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.mymap = helper.Mymap
+	*j = AMap(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *AMap) MarshalJSON() ([]byte, error) {
+	type AMapMarshalHelper struct {
+		Mymap map[string]float64 `json:"myMap",omitempty`
+	}
+	helper := AMapMarshalHelper{
+		Mymap: j.mymap,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AMap) UnmarshalYAML(value *yaml.Node) error {
+	type Plain AMap
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AMap(plain)
+	return nil
+}

@@ -16,7 +16,7 @@ func TestYamlV3UnmarshalValidEnum(t *testing.T) {
 	// unmarshalling works correctly (which uses a custom UnmarshalJSON method).
 	t.Skip("YAML unmarshalling doesn't work with private fields; JSON unmarshalling is tested elsewhere")
 
-	_ = test.GopkgYAMLv3Json{}
+	_ = test.GopkgYAMLv3{}
 }
 
 func TestYamlV3UnmarshalInvalidEnum(t *testing.T) {

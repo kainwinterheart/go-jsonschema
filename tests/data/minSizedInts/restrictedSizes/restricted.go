@@ -4,107 +4,108 @@ package test
 
 import "encoding/json"
 import "fmt"
+import yaml "gopkg.in/yaml.v3"
 
-type RestrictedJson struct {
+type Restricted struct {
 	// i16 corresponds to the JSON schema field "i16".
-	i16 int `json:"i16" yaml:"i16" mapstructure:"i16"`
+	i16 int16 `json:"i16" yaml:"i16" mapstructure:"i16"`
 
 	// i32 corresponds to the JSON schema field "i32".
-	i32 int `json:"i32" yaml:"i32" mapstructure:"i32"`
+	i32 int32 `json:"i32" yaml:"i32" mapstructure:"i32"`
 
 	// i64 corresponds to the JSON schema field "i64".
-	i64 int `json:"i64" yaml:"i64" mapstructure:"i64"`
+	i64 int64 `json:"i64" yaml:"i64" mapstructure:"i64"`
 
 	// i8 corresponds to the JSON schema field "i8".
-	i8 int `json:"i8" yaml:"i8" mapstructure:"i8"`
+	i8 int8 `json:"i8" yaml:"i8" mapstructure:"i8"`
 
 	// u16 corresponds to the JSON schema field "u16".
-	u16 int `json:"u16" yaml:"u16" mapstructure:"u16"`
+	u16 uint16 `json:"u16" yaml:"u16" mapstructure:"u16"`
 
 	// u32 corresponds to the JSON schema field "u32".
-	u32 int `json:"u32" yaml:"u32" mapstructure:"u32"`
+	u32 uint32 `json:"u32" yaml:"u32" mapstructure:"u32"`
 
 	// u64 corresponds to the JSON schema field "u64".
-	u64 int `json:"u64" yaml:"u64" mapstructure:"u64"`
+	u64 uint64 `json:"u64" yaml:"u64" mapstructure:"u64"`
 
 	// u8 corresponds to the JSON schema field "u8".
-	u8 int `json:"u8" yaml:"u8" mapstructure:"u8"`
+	u8 uint8 `json:"u8" yaml:"u8" mapstructure:"u8"`
 }
 
-func (o *RestrictedJson) I16() int {
+func (o *Restricted) I16() int16 {
 	return o.i16
 }
 
-func (o *RestrictedJson) I32() int {
+func (o *Restricted) I32() int32 {
 	return o.i32
 }
 
-func (o *RestrictedJson) I64() int {
+func (o *Restricted) I64() int64 {
 	return o.i64
 }
 
-func (o *RestrictedJson) I8() int {
+func (o *Restricted) I8() int8 {
 	return o.i8
 }
 
-func (o *RestrictedJson) U16() int {
+func (o *Restricted) U16() uint16 {
 	return o.u16
 }
 
-func (o *RestrictedJson) U32() int {
+func (o *Restricted) U32() uint32 {
 	return o.u32
 }
 
-func (o *RestrictedJson) U64() int {
+func (o *Restricted) U64() uint64 {
 	return o.u64
 }
 
-func (o *RestrictedJson) U8() int {
+func (o *Restricted) U8() uint8 {
 	return o.u8
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *RestrictedJson) UnmarshalJSON(value []byte) error {
+func (j *Restricted) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["i16"]; raw != nil && !ok {
-		return fmt.Errorf("field i16 in RestrictedJson: required")
+		return fmt.Errorf("field i16 in Restricted: required")
 	}
 	if _, ok := raw["i32"]; raw != nil && !ok {
-		return fmt.Errorf("field i32 in RestrictedJson: required")
+		return fmt.Errorf("field i32 in Restricted: required")
 	}
 	if _, ok := raw["i64"]; raw != nil && !ok {
-		return fmt.Errorf("field i64 in RestrictedJson: required")
+		return fmt.Errorf("field i64 in Restricted: required")
 	}
 	if _, ok := raw["i8"]; raw != nil && !ok {
-		return fmt.Errorf("field i8 in RestrictedJson: required")
+		return fmt.Errorf("field i8 in Restricted: required")
 	}
 	if _, ok := raw["u16"]; raw != nil && !ok {
-		return fmt.Errorf("field u16 in RestrictedJson: required")
+		return fmt.Errorf("field u16 in Restricted: required")
 	}
 	if _, ok := raw["u32"]; raw != nil && !ok {
-		return fmt.Errorf("field u32 in RestrictedJson: required")
+		return fmt.Errorf("field u32 in Restricted: required")
 	}
 	if _, ok := raw["u64"]; raw != nil && !ok {
-		return fmt.Errorf("field u64 in RestrictedJson: required")
+		return fmt.Errorf("field u64 in Restricted: required")
 	}
 	if _, ok := raw["u8"]; raw != nil && !ok {
-		return fmt.Errorf("field u8 in RestrictedJson: required")
+		return fmt.Errorf("field u8 in Restricted: required")
 	}
-	type RestrictedJsonHelper struct {
-		I16 int `json:"i16"`
-		I32 int `json:"i32"`
-		I64 int `json:"i64"`
-		I8  int `json:"i8"`
-		U16 int `json:"u16"`
-		U32 int `json:"u32"`
-		U64 int `json:"u64"`
-		U8  int `json:"u8"`
+	type RestrictedHelper struct {
+		I16 int16  `json:"i16"`
+		I32 int32  `json:"i32"`
+		I64 int64  `json:"i64"`
+		I8  int8   `json:"i8"`
+		U16 uint16 `json:"u16"`
+		U32 uint32 `json:"u32"`
+		U64 uint64 `json:"u64"`
+		U8  uint8  `json:"u8"`
 	}
-	type Plain RestrictedJson
-	var helper RestrictedJsonHelper
+	type Plain Restricted
+	var helper RestrictedHelper
 	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
@@ -129,11 +130,108 @@ func (j *RestrictedJson) UnmarshalJSON(value []byte) error {
 	if -2147483647 > plain.i32 {
 		return fmt.Errorf("field %s: must be >= %v", "i32", -2147483647)
 	}
-	if -9223372036854775808 < plain.i64 {
-		return fmt.Errorf("field %s: must be <= %v", "i64", -9223372036854775808)
+	if 126 < plain.i8 {
+		return fmt.Errorf("field %s: must be <= %v", "i8", 126)
 	}
-	if -9223372036854775808 > plain.i64 {
-		return fmt.Errorf("field %s: must be >= %v", "i64", -9223372036854775808)
+	if -127 > plain.i8 {
+		return fmt.Errorf("field %s: must be >= %v", "i8", -127)
+	}
+	if 65534 < plain.u16 {
+		return fmt.Errorf("field %s: must be <= %v", "u16", 65534)
+	}
+	if 1 > plain.u16 {
+		return fmt.Errorf("field %s: must be >= %v", "u16", 1)
+	}
+	if 4294967294 < plain.u32 {
+		return fmt.Errorf("field %s: must be <= %v", "u32", 4294967294)
+	}
+	if 1 > plain.u32 {
+		return fmt.Errorf("field %s: must be >= %v", "u32", 1)
+	}
+	if 1 > plain.u64 {
+		return fmt.Errorf("field %s: must be >= %v", "u64", 1)
+	}
+	if 254 < plain.u8 {
+		return fmt.Errorf("field %s: must be <= %v", "u8", 254)
+	}
+	if 1 > plain.u8 {
+		return fmt.Errorf("field %s: must be >= %v", "u8", 1)
+	}
+	*j = Restricted(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Restricted) MarshalJSON() ([]byte, error) {
+	type RestrictedMarshalHelper struct {
+		I16 int16  `json:"i16"`
+		I32 int32  `json:"i32"`
+		I64 int64  `json:"i64"`
+		I8  int8   `json:"i8"`
+		U16 uint16 `json:"u16"`
+		U32 uint32 `json:"u32"`
+		U64 uint64 `json:"u64"`
+		U8  uint8  `json:"u8"`
+	}
+	helper := RestrictedMarshalHelper{
+		I16: j.i16,
+		I32: j.i32,
+		I64: j.i64,
+		I8:  j.i8,
+		U16: j.u16,
+		U32: j.u32,
+		U64: j.u64,
+		U8:  j.u8,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Restricted) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["i16"]; raw != nil && !ok {
+		return fmt.Errorf("field i16 in Restricted: required")
+	}
+	if _, ok := raw["i32"]; raw != nil && !ok {
+		return fmt.Errorf("field i32 in Restricted: required")
+	}
+	if _, ok := raw["i64"]; raw != nil && !ok {
+		return fmt.Errorf("field i64 in Restricted: required")
+	}
+	if _, ok := raw["i8"]; raw != nil && !ok {
+		return fmt.Errorf("field i8 in Restricted: required")
+	}
+	if _, ok := raw["u16"]; raw != nil && !ok {
+		return fmt.Errorf("field u16 in Restricted: required")
+	}
+	if _, ok := raw["u32"]; raw != nil && !ok {
+		return fmt.Errorf("field u32 in Restricted: required")
+	}
+	if _, ok := raw["u64"]; raw != nil && !ok {
+		return fmt.Errorf("field u64 in Restricted: required")
+	}
+	if _, ok := raw["u8"]; raw != nil && !ok {
+		return fmt.Errorf("field u8 in Restricted: required")
+	}
+	type Plain Restricted
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if 32766 < plain.i16 {
+		return fmt.Errorf("field %s: must be <= %v", "i16", 32766)
+	}
+	if -32767 > plain.i16 {
+		return fmt.Errorf("field %s: must be >= %v", "i16", -32767)
+	}
+	if 2147483646 < plain.i32 {
+		return fmt.Errorf("field %s: must be <= %v", "i32", 2147483646)
+	}
+	if -2147483647 > plain.i32 {
+		return fmt.Errorf("field %s: must be >= %v", "i32", -2147483647)
 	}
 	if 126 < plain.i8 {
 		return fmt.Errorf("field %s: must be <= %v", "i8", 126)
@@ -153,9 +251,6 @@ func (j *RestrictedJson) UnmarshalJSON(value []byte) error {
 	if 1 > plain.u32 {
 		return fmt.Errorf("field %s: must be >= %v", "u32", 1)
 	}
-	if -9223372036854775808 < plain.u64 {
-		return fmt.Errorf("field %s: must be <= %v", "u64", -9223372036854775808)
-	}
 	if 1 > plain.u64 {
 		return fmt.Errorf("field %s: must be >= %v", "u64", 1)
 	}
@@ -165,6 +260,6 @@ func (j *RestrictedJson) UnmarshalJSON(value []byte) error {
 	if 1 > plain.u8 {
 		return fmt.Errorf("field %s: must be >= %v", "u8", 1)
 	}
-	*j = RestrictedJson(plain)
+	*j = Restricted(plain)
 	return nil
 }

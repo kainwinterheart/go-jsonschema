@@ -2,23 +2,8 @@
 
 package test
 
-type AllOfJson struct {
-	// values corresponds to the JSON schema field "values".
-	values []Value `json:"values,omitempty,omitzero" yaml:"values,omitempty" mapstructure:"values,omitempty"`
-}
-
-func (o *AllOfJson) Values() []Value {
-	return o.values
-}
-
-type ExternalRefJson struct {
-	// values corresponds to the JSON schema field "values".
-	values []Value `json:"values,omitempty,omitzero" yaml:"values,omitempty" mapstructure:"values,omitempty"`
-}
-
-func (o *ExternalRefJson) Values() []Value {
-	return o.values
-}
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
 
 type Thing struct {
 	// values corresponds to the JSON schema field "values".
@@ -29,4 +14,46 @@ func (o *Thing) Values() []Value {
 	return o.values
 }
 
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Thing) UnmarshalJSON(value []byte) error {
+	type ThingHelper struct {
+		Values []Value `json:"values",omitempty`
+	}
+	type Plain Thing
+	var helper ThingHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.values = helper.Values
+	*j = Thing(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Thing) MarshalJSON() ([]byte, error) {
+	type ThingMarshalHelper struct {
+		Values []Value `json:"values",omitempty`
+	}
+	helper := ThingMarshalHelper{
+		Values: j.values,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Thing
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Thing(plain)
+	return nil
+}
+
 type Value float64
+
+type AllOf = Thing
+
+type ExternalRef = Thing
