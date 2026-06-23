@@ -3,47 +3,37 @@
 package test
 
 import "encoding/json"
-import yaml "gopkg.in/yaml.v3"
 
-type ObjectAdditionalProperties struct {
-	// Foo corresponds to the JSON schema field "foo".
-	Foo ObjectAdditionalPropertiesFoo `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
+type ObjectAdditionalPropertiesJson struct {
+	// foo corresponds to the JSON schema field "foo".
+	foo ObjectAdditionalPropertiesJsonfoo `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
 }
 
-type ObjectAdditionalPropertiesFoo map[string]string
+func (o *ObjectAdditionalPropertiesJson) Foo() ObjectAdditionalPropertiesJsonfoo {
+	return o.foo
+}
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ObjectAdditionalProperties) UnmarshalJSON(value []byte) error {
+func (j *ObjectAdditionalPropertiesJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	type Plain ObjectAdditionalProperties
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	type ObjectAdditionalPropertiesJsonHelper struct {
+		Foo ObjectAdditionalPropertiesJsonfoo `json:"foo",omitempty`
+	}
+	type Plain ObjectAdditionalPropertiesJson
+	var helper ObjectAdditionalPropertiesJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.foo = helper.Foo
 	if v, ok := raw["foo"]; !ok || v == nil {
-		plain.Foo = map[string]string{}
+		plain.foo = map[string]string{}
 	}
-	*j = ObjectAdditionalProperties(plain)
+	*j = ObjectAdditionalPropertiesJson(plain)
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *ObjectAdditionalProperties) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	type Plain ObjectAdditionalProperties
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if v, ok := raw["foo"]; !ok || v == nil {
-		plain.Foo = map[string]string{}
-	}
-	*j = ObjectAdditionalProperties(plain)
-	return nil
-}
+type ObjectAdditionalPropertiesJsonfoo map[string]string

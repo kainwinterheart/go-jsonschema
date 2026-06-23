@@ -4,42 +4,34 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 import "regexp"
 
-type Issue378 struct {
+type Issue378Json struct {
 	// An escaped character that would otherwise be wrongly used
-	Memory *string `json:"memory,omitempty,omitzero" yaml:"memory,omitempty" mapstructure:"memory,omitempty"`
+	memory *string `json:"memory,omitempty,omitzero" yaml:"memory,omitempty" mapstructure:"memory,omitempty"`
+}
+
+func (o *Issue378Json) Memory() *string {
+	return o.memory
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *Issue378) UnmarshalJSON(value []byte) error {
-	type Plain Issue378
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+func (j *Issue378Json) UnmarshalJSON(value []byte) error {
+	type Issue378JsonHelper struct {
+		Memory *string `json:"memory",omitempty`
+	}
+	type Plain Issue378Json
+	var helper Issue378JsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
-	if plain.Memory != nil {
-		if matched, _ := regexp.MatchString(`^\d+([tgmk]b)?$`, string(*plain.Memory)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "Memory", `^\d+([tgmk]b)?$`)
-		}
-	}
-	*j = Issue378(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Issue378) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Issue378
 	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.Memory != nil {
-		if matched, _ := regexp.MatchString(`^\d+([tgmk]b)?$`, string(*plain.Memory)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "Memory", `^\d+([tgmk]b)?$`)
+	plain.memory = helper.Memory
+	if plain.memory != nil {
+		if matched, _ := regexp.MatchString(`^\d+([tgmk]b)?$`, string(*plain.memory)); !matched {
+			return fmt.Errorf("field %s pattern match: must match %s", "memory", `^\d+([tgmk]b)?$`)
 		}
 	}
-	*j = Issue378(plain)
+	*j = Issue378Json(plain)
 	return nil
 }

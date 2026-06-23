@@ -2,52 +2,104 @@
 
 package test
 
-type Capitalization struct {
-	// HtMl corresponds to the JSON schema field "html".
-	HtMl *string `json:"html,omitempty,omitzero" yaml:"html,omitempty" mapstructure:"html,omitempty"`
+type CapitalizationJson struct {
+	// html corresponds to the JSON schema field "html".
+	html *string `json:"html,omitempty,omitzero" yaml:"html,omitempty" mapstructure:"html,omitempty"`
 
-	// HtMlSomethingElse corresponds to the JSON schema field "htmlSomethingElse".
-	HtMlSomethingElse *string `json:"htmlSomethingElse,omitempty,omitzero" yaml:"htmlSomethingElse,omitempty" mapstructure:"htmlSomethingElse,omitempty"`
+	// htmlsomethingelse corresponds to the JSON schema field "htmlSomethingElse".
+	htmlsomethingelse *string `json:"htmlSomethingElse,omitempty,omitzero" yaml:"htmlSomethingElse,omitempty" mapstructure:"htmlSomethingElse,omitempty"`
 
-	// HtMl_2 corresponds to the JSON schema field "html__".
-	HtMl_2 *string `json:"html__,omitempty,omitzero" yaml:"html__,omitempty" mapstructure:"html__,omitempty"`
+	// html_2 corresponds to the JSON schema field "html__".
+	html_2 *string `json:"html__,omitempty,omitzero" yaml:"html__,omitempty" mapstructure:"html__,omitempty"`
 
-	// HtMlSomething corresponds to the JSON schema field "html_something".
-	HtMlSomething *string `json:"html_something,omitempty,omitzero" yaml:"html_something,omitempty" mapstructure:"html_something,omitempty"`
+	// htmlsomething corresponds to the JSON schema field "html_something".
+	htmlsomething *string `json:"html_something,omitempty,omitzero" yaml:"html_something,omitempty" mapstructure:"html_something,omitempty"`
 
-	// ID corresponds to the JSON schema field "id".
-	ID *string `json:"id,omitempty,omitzero" yaml:"id,omitempty" mapstructure:"id,omitempty"`
+	// id corresponds to the JSON schema field "id".
+	id *string `json:"id,omitempty,omitzero" yaml:"id,omitempty" mapstructure:"id,omitempty"`
 
-	// IDSomethingElse corresponds to the JSON schema field "idSomethingElse".
-	IDSomethingElse *string `json:"idSomethingElse,omitempty,omitzero" yaml:"idSomethingElse,omitempty" mapstructure:"idSomethingElse,omitempty"`
+	// idsomethingelse corresponds to the JSON schema field "idSomethingElse".
+	idsomethingelse *string `json:"idSomethingElse,omitempty,omitzero" yaml:"idSomethingElse,omitempty" mapstructure:"idSomethingElse,omitempty"`
 
-	// ID_2 corresponds to the JSON schema field "id__".
-	ID_2 *string `json:"id__,omitempty,omitzero" yaml:"id__,omitempty" mapstructure:"id__,omitempty"`
+	// id_2 corresponds to the JSON schema field "id__".
+	id_2 *string `json:"id__,omitempty,omitzero" yaml:"id__,omitempty" mapstructure:"id__,omitempty"`
 
-	// IDSomething corresponds to the JSON schema field "id_something".
-	IDSomething *string `json:"id_something,omitempty,omitzero" yaml:"id_something,omitempty" mapstructure:"id_something,omitempty"`
+	// idsomething corresponds to the JSON schema field "id_something".
+	idsomething *string `json:"id_something,omitempty,omitzero" yaml:"id_something,omitempty" mapstructure:"id_something,omitempty"`
 
-	// URL corresponds to the JSON schema field "url".
-	URL *string `json:"url,omitempty,omitzero" yaml:"url,omitempty" mapstructure:"url,omitempty"`
+	// url corresponds to the JSON schema field "url".
+	url *string `json:"url,omitempty,omitzero" yaml:"url,omitempty" mapstructure:"url,omitempty"`
 
-	// URLSomethingElse corresponds to the JSON schema field "urlSomethingElse".
-	URLSomethingElse *string `json:"urlSomethingElse,omitempty,omitzero" yaml:"urlSomethingElse,omitempty" mapstructure:"urlSomethingElse,omitempty"`
+	// urlsomethingelse corresponds to the JSON schema field "urlSomethingElse".
+	urlsomethingelse *string `json:"urlSomethingElse,omitempty,omitzero" yaml:"urlSomethingElse,omitempty" mapstructure:"urlSomethingElse,omitempty"`
 
-	// URL_2 corresponds to the JSON schema field "url__".
-	URL_2 *string `json:"url__,omitempty,omitzero" yaml:"url__,omitempty" mapstructure:"url__,omitempty"`
+	// url_2 corresponds to the JSON schema field "url__".
+	url_2 *string `json:"url__,omitempty,omitzero" yaml:"url__,omitempty" mapstructure:"url__,omitempty"`
 
-	// URLSomething corresponds to the JSON schema field "url_something".
-	URLSomething *string `json:"url_something,omitempty,omitzero" yaml:"url_something,omitempty" mapstructure:"url_something,omitempty"`
+	// urlsomething corresponds to the JSON schema field "url_something".
+	urlsomething *string `json:"url_something,omitempty,omitzero" yaml:"url_something,omitempty" mapstructure:"url_something,omitempty"`
 
-	// Aアトリビュート corresponds to the JSON schema field "アトリビュート".
-	Aアトリビュート *string `json:"アトリビュート,omitempty,omitzero" yaml:"アトリビュート,omitempty" mapstructure:"アトリビュート,omitempty"`
+	// aアトリビュート corresponds to the JSON schema field "アトリビュート".
+	aアトリビュート *string `json:"アトリビュート,omitempty,omitzero" yaml:"アトリビュート,omitempty" mapstructure:"アトリビュート,omitempty"`
 
-	// A属性 corresponds to the JSON schema field "属性".
-	A属性 *string `json:"属性,omitempty,omitzero" yaml:"属性,omitempty" mapstructure:"属性,omitempty"`
+	// a属性 corresponds to the JSON schema field "属性".
+	a属性 *string `json:"属性,omitempty,omitzero" yaml:"属性,omitempty" mapstructure:"属性,omitempty"`
 
-	// A屬性 corresponds to the JSON schema field "屬性".
-	A屬性 *string `json:"屬性,omitempty,omitzero" yaml:"屬性,omitempty" mapstructure:"屬性,omitempty"`
+	// a屬性 corresponds to the JSON schema field "屬性".
+	a屬性 *string `json:"屬性,omitempty,omitzero" yaml:"屬性,omitempty" mapstructure:"屬性,omitempty"`
 
-	// A속성 corresponds to the JSON schema field "속성".
-	A속성 *string `json:"속성,omitempty,omitzero" yaml:"속성,omitempty" mapstructure:"속성,omitempty"`
+	// a속성 corresponds to the JSON schema field "속성".
+	a속성 *string `json:"속성,omitempty,omitzero" yaml:"속성,omitempty" mapstructure:"속성,omitempty"`
+}
+
+func (o *CapitalizationJson) Aアトリビュート() *string {
+	return o.aアトリビュート
+}
+
+func (o *CapitalizationJson) A属性() *string {
+	return o.a属性
+}
+
+func (o *CapitalizationJson) A屬性() *string {
+	return o.a屬性
+}
+
+func (o *CapitalizationJson) A속성() *string {
+	return o.a속성
+}
+
+func (o *CapitalizationJson) Html() *string {
+	return o.html
+}
+
+func (o *CapitalizationJson) HtmlSomething() *string {
+	return o.htmlsomething
+}
+
+func (o *CapitalizationJson) HtmlSomethingElse() *string {
+	return o.htmlsomethingelse
+}
+
+func (o *CapitalizationJson) Id() *string {
+	return o.id
+}
+
+func (o *CapitalizationJson) IdSomething() *string {
+	return o.idsomething
+}
+
+func (o *CapitalizationJson) IdSomethingElse() *string {
+	return o.idsomethingelse
+}
+
+func (o *CapitalizationJson) Url() *string {
+	return o.url
+}
+
+func (o *CapitalizationJson) UrlSomething() *string {
+	return o.urlsomething
+}
+
+func (o *CapitalizationJson) UrlSomethingElse() *string {
+	return o.urlsomethingelse
 }

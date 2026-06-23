@@ -3,16 +3,28 @@
 package test
 
 type Bar struct {
-	// RefToFoo corresponds to the JSON schema field "refToFoo".
-	RefToFoo *Foo `json:"refToFoo,omitempty,omitzero" yaml:"refToFoo,omitempty" mapstructure:"refToFoo,omitempty"`
+	// reftofoo corresponds to the JSON schema field "refToFoo".
+	reftofoo *Foo `json:"refToFoo,omitempty,omitzero" yaml:"refToFoo,omitempty" mapstructure:"refToFoo,omitempty"`
 }
 
-type Cyclic struct {
-	// A corresponds to the JSON schema field "a".
-	A *Foo `json:"a,omitempty,omitzero" yaml:"a,omitempty" mapstructure:"a,omitempty"`
+func (o *Bar) RefToFoo() *Foo {
+	return o.reftofoo
+}
+
+type CyclicJson struct {
+	// a corresponds to the JSON schema field "a".
+	a *Foo `json:"a,omitempty,omitzero" yaml:"a,omitempty" mapstructure:"a,omitempty"`
+}
+
+func (o *CyclicJson) A() *Foo {
+	return o.a
 }
 
 type Foo struct {
-	// RefToBar corresponds to the JSON schema field "refToBar".
-	RefToBar *Bar `json:"refToBar,omitempty,omitzero" yaml:"refToBar,omitempty" mapstructure:"refToBar,omitempty"`
+	// reftobar corresponds to the JSON schema field "refToBar".
+	reftobar *Bar `json:"refToBar,omitempty,omitzero" yaml:"refToBar,omitempty" mapstructure:"refToBar,omitempty"`
+}
+
+func (o *Foo) RefToBar() *Bar {
+	return o.reftobar
 }

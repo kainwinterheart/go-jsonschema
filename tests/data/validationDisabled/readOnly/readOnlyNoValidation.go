@@ -4,48 +4,47 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
-type ReadOnlyNoValidation struct {
-	// MyReadOnlyString corresponds to the JSON schema field "myReadOnlyString".
-	MyReadOnlyString *string `json:"myReadOnlyString,omitempty,omitzero" yaml:"myReadOnlyString,omitempty" mapstructure:"myReadOnlyString,omitempty"`
+type ReadOnlyNoValidationJson struct {
+	// myreadonlystring corresponds to the JSON schema field "myReadOnlyString".
+	myreadonlystring *string `json:"myReadOnlyString,omitempty,omitzero" yaml:"myReadOnlyString,omitempty" mapstructure:"myReadOnlyString,omitempty"`
 
-	// MyString corresponds to the JSON schema field "myString".
-	MyString string `json:"myString" yaml:"myString" mapstructure:"myString"`
+	// mystring corresponds to the JSON schema field "myString".
+	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
+}
+
+func (o *ReadOnlyNoValidationJson) MyReadOnlyString() *string {
+	return o.myreadonlystring
+}
+
+func (o *ReadOnlyNoValidationJson) MyString() string {
+	return o.mystring
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ReadOnlyNoValidation) UnmarshalJSON(value []byte) error {
+func (j *ReadOnlyNoValidationJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myString"]; raw != nil && !ok {
-		return fmt.Errorf("field myString in ReadOnlyNoValidation: required")
+		return fmt.Errorf("field myString in ReadOnlyNoValidationJson: required")
 	}
-	type Plain ReadOnlyNoValidation
+	if _, ok := raw["myReadOnlyString"]; raw != nil && ok {
+		return fmt.Errorf("field myReadOnlyString in ReadOnlyNoValidationJson: read only")
+	}
+	type ReadOnlyNoValidationJsonHelper struct {
+		Myreadonlystring *string `json:"myReadOnlyString",omitempty`
+		Mystring         string  `json:"myString"`
+	}
+	type Plain ReadOnlyNoValidationJson
+	var helper ReadOnlyNoValidationJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = ReadOnlyNoValidation(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *ReadOnlyNoValidation) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myString"]; raw != nil && !ok {
-		return fmt.Errorf("field myString in ReadOnlyNoValidation: required")
-	}
-	type Plain ReadOnlyNoValidation
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = ReadOnlyNoValidation(plain)
+	plain.myreadonlystring = helper.Myreadonlystring
+	plain.mystring = helper.Mystring
+	*j = ReadOnlyNoValidationJson(plain)
 	return nil
 }

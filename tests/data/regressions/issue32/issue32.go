@@ -4,20 +4,29 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
 type TestObject struct {
-	// Config corresponds to the JSON schema field "config".
-	Config TestObjectConfig `json:"config,omitempty,omitzero" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	// config corresponds to the JSON schema field "config".
+	config TestObjectconfig `json:"config,omitempty,omitzero" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
-	// Name corresponds to the JSON schema field "name".
-	Name string `json:"name" yaml:"name" mapstructure:"name"`
+	// name corresponds to the JSON schema field "name".
+	name string `json:"name" yaml:"name" mapstructure:"name"`
 
-	// Owner corresponds to the JSON schema field "owner".
-	Owner string `json:"owner" yaml:"owner" mapstructure:"owner"`
+	// owner corresponds to the JSON schema field "owner".
+	owner string `json:"owner" yaml:"owner" mapstructure:"owner"`
 }
 
-type TestObjectConfig map[string]interface{}
+func (o *TestObject) Config() TestObjectconfig {
+	return o.config
+}
+
+func (o *TestObject) Name() string {
+	return o.name
+}
+
+func (o *TestObject) Owner() string {
+	return o.owner
+}
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *TestObject) UnmarshalJSON(value []byte) error {
@@ -31,32 +40,22 @@ func (j *TestObject) UnmarshalJSON(value []byte) error {
 	if _, ok := raw["owner"]; raw != nil && !ok {
 		return fmt.Errorf("field owner in TestObject: required")
 	}
+	type TestObjectHelper struct {
+		Config TestObjectconfig `json:"config",omitempty`
+		Name   string           `json:"name"`
+		Owner  string           `json:"owner"`
+	}
 	type Plain TestObject
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	var helper TestObjectHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.config = helper.Config
+	plain.name = helper.Name
+	plain.owner = helper.Owner
 	*j = TestObject(plain)
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *TestObject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["name"]; raw != nil && !ok {
-		return fmt.Errorf("field name in TestObject: required")
-	}
-	if _, ok := raw["owner"]; raw != nil && !ok {
-		return fmt.Errorf("field owner in TestObject: required")
-	}
-	type Plain TestObject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = TestObject(plain)
-	return nil
-}
+type TestObjectconfig map[string]interface{}

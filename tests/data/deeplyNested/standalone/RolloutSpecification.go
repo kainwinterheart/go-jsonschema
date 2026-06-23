@@ -4,760 +4,771 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 import "regexp"
 import "unicode/utf8"
 
-// The details of applications to be deployed.
-type Applications struct {
-	// The list of actions to be performed.
-	Actions []string `json:"actions" yaml:"actions" mapstructure:"actions"`
+// A document that declares what actions are to be taken as part of an update to an
+// Azure Service.
+type RolloutSpecificationJson struct {
+	// The version of the schema that a document conforms to.
+	contentversion string `json:"contentVersion" yaml:"contentVersion" mapstructure:"contentVersion"`
 
-	// The details of the service resources across which the application has to be
-	// deployed.
-	ApplyAcrossServiceResources ApplyAcrossServiceResources `json:"applyAcrossServiceResources" yaml:"applyAcrossServiceResources" mapstructure:"applyAcrossServiceResources"`
+	// The exact sequence of steps that must be executed as part of this rollout.
+	orchestratedsteps []RolloutSpecificationJsonorchestratedstepsElem `json:"orchestratedSteps" yaml:"orchestratedSteps" mapstructure:"orchestratedSteps"`
 
-	// The list of the application instance names..
-	Names []string `json:"names" yaml:"names" mapstructure:"names"`
+	// The metadata associated with this particular rollout.
+	rolloutmetadata RolloutSpecificationJsonrolloutmetadata `json:"rolloutMetadata" yaml:"rolloutMetadata" mapstructure:"rolloutMetadata"`
+}
+
+func (o *RolloutSpecificationJson) ContentVersion() string {
+	return o.contentversion
+}
+
+func (o *RolloutSpecificationJson) OrchestratedSteps() []RolloutSpecificationJsonorchestratedstepsElem {
+	return o.orchestratedsteps
+}
+
+func (o *RolloutSpecificationJson) RolloutMetadata() RolloutSpecificationJsonrolloutmetadata {
+	return o.rolloutmetadata
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *Applications) UnmarshalJSON(value []byte) error {
+func (j *RolloutSpecificationJson) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	if _, ok := raw["contentVersion"]; raw != nil && !ok {
+		return fmt.Errorf("field contentVersion in RolloutSpecificationJson: required")
+	}
+	if _, ok := raw["orchestratedSteps"]; raw != nil && !ok {
+		return fmt.Errorf("field orchestratedSteps in RolloutSpecificationJson: required")
+	}
+	if _, ok := raw["rolloutMetadata"]; raw != nil && !ok {
+		return fmt.Errorf("field rolloutMetadata in RolloutSpecificationJson: required")
+	}
+	type RolloutSpecificationJsonHelper struct {
+		Contentversion    string                                          `json:"contentVersion"`
+		Orchestratedsteps []RolloutSpecificationJsonorchestratedstepsElem `json:"orchestratedSteps"`
+		Rolloutmetadata   RolloutSpecificationJsonrolloutmetadata         `json:"rolloutMetadata"`
+	}
+	type Plain RolloutSpecificationJson
+	var helper RolloutSpecificationJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.contentversion = helper.Contentversion
+	plain.orchestratedsteps = helper.Orchestratedsteps
+	plain.rolloutmetadata = helper.Rolloutmetadata
+	if matched, _ := regexp.MatchString(`^([0-9]+\.)?([0-9]+\.)?([0-9]+\.)?([0-9]+){1}$`, string(plain.contentversion)); !matched {
+		return fmt.Errorf("field %s pattern match: must match %s", "contentversion", `^([0-9]+\.)?([0-9]+\.)?([0-9]+\.)?([0-9]+){1}$`)
+	}
+	*j = RolloutSpecificationJson(plain)
+	return nil
+}
+
+// An individual deployment step in the rollout of an Azure service.
+type RolloutSpecificationJsonorchestratedstepsElem struct {
+	// The actions that must take place as part of this step. The actions will be
+	// executed in the order that they are declared. The action names must be unique.
+	// If this is an Extension action, the name of the extension must exist in the
+	// 'Extensions' block in  RolloutParameters.
+	actions []string `json:"actions,omitempty,omitzero" yaml:"actions,omitempty" mapstructure:"actions,omitempty"`
+
+	// The details of applications to be deployed.
+	applications *RolloutSpecificationJsonorchestratedstepsElemapplications `json:"applications,omitempty,omitzero" yaml:"applications,omitempty" mapstructure:"applications,omitempty"`
+
+	// The names of the rollout steps that must be executed prior to the current step
+	// being executed.
+	dependson []string `json:"dependsOn,omitempty,omitzero" yaml:"dependsOn,omitempty" mapstructure:"dependsOn,omitempty"`
+
+	// The name of the rollout step.
+	name string `json:"name" yaml:"name" mapstructure:"name"`
+
+	// The unique identifier of the target that is to be updated.
+	targetname *string `json:"targetName,omitempty,omitzero" yaml:"targetName,omitempty" mapstructure:"targetName,omitempty"`
+
+	// The type of the intended target of this rollout.
+	targettype string `json:"targetType" yaml:"targetType" mapstructure:"targetType"`
+}
+
+func (o *RolloutSpecificationJsonorchestratedstepsElem) Actions() []string {
+	return o.actions
+}
+
+func (o *RolloutSpecificationJsonorchestratedstepsElem) Applications() *RolloutSpecificationJsonorchestratedstepsElemapplications {
+	return o.applications
+}
+
+func (o *RolloutSpecificationJsonorchestratedstepsElem) DependsOn() []string {
+	return o.dependson
+}
+
+func (o *RolloutSpecificationJsonorchestratedstepsElem) Name() string {
+	return o.name
+}
+
+func (o *RolloutSpecificationJsonorchestratedstepsElem) TargetName() *string {
+	return o.targetname
+}
+
+func (o *RolloutSpecificationJsonorchestratedstepsElem) TargetType() string {
+	return o.targettype
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *RolloutSpecificationJsonorchestratedstepsElem) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	if _, ok := raw["name"]; raw != nil && !ok {
+		return fmt.Errorf("field name in RolloutSpecificationJsonorchestratedstepsElem: required")
+	}
+	if _, ok := raw["targetType"]; raw != nil && !ok {
+		return fmt.Errorf("field targetType in RolloutSpecificationJsonorchestratedstepsElem: required")
+	}
+	type RolloutSpecificationJsonorchestratedstepsElemHelper struct {
+		Actions      []string                                                   `json:"actions",omitempty`
+		Applications *RolloutSpecificationJsonorchestratedstepsElemapplications `json:"applications",omitempty`
+		Dependson    []string                                                   `json:"dependsOn",omitempty`
+		Name         string                                                     `json:"name"`
+		Targetname   *string                                                    `json:"targetName",omitempty`
+		Targettype   string                                                     `json:"targetType"`
+	}
+	type Plain RolloutSpecificationJsonorchestratedstepsElem
+	var helper RolloutSpecificationJsonorchestratedstepsElemHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.actions = helper.Actions
+	plain.applications = helper.Applications
+	plain.dependson = helper.Dependson
+	plain.name = helper.Name
+	plain.targetname = helper.Targetname
+	plain.targettype = helper.Targettype
+	if utf8.RuneCountInString(string(plain.name)) < 1 {
+		return fmt.Errorf("field %s length: must be >= %d", "name", 1)
+	}
+	if plain.targetname != nil && utf8.RuneCountInString(string(*plain.targetname)) < 1 {
+		return fmt.Errorf("field %s length: must be >= %d", "targetName", 1)
+	}
+	if matched, _ := regexp.MatchString(`(?i)(^ServiceResourceGroup$|^ServiceResource$|^Application$)`, string(plain.targettype)); !matched {
+		return fmt.Errorf("field %s pattern match: must match %s", "targettype", `(?i)(^ServiceResourceGroup$|^ServiceResource$|^Application$)`)
+	}
+	*j = RolloutSpecificationJsonorchestratedstepsElem(plain)
+	return nil
+}
+
+// The details of applications to be deployed.
+type RolloutSpecificationJsonorchestratedstepsElemapplications struct {
+	// The list of actions to be performed.
+	actions []string `json:"actions" yaml:"actions" mapstructure:"actions"`
+
+	// The details of the service resources across which the application has to be
+	// deployed.
+	applyacrossserviceresources RolloutSpecificationJsonorchestratedstepsElemapplicationsapplyacrossserviceresources `json:"applyAcrossServiceResources" yaml:"applyAcrossServiceResources" mapstructure:"applyAcrossServiceResources"`
+
+	// The list of the application instance names..
+	names []string `json:"names" yaml:"names" mapstructure:"names"`
+}
+
+func (o *RolloutSpecificationJsonorchestratedstepsElemapplications) Actions() []string {
+	return o.actions
+}
+
+func (o *RolloutSpecificationJsonorchestratedstepsElemapplications) ApplyAcrossServiceResources() RolloutSpecificationJsonorchestratedstepsElemapplicationsapplyacrossserviceresources {
+	return o.applyacrossserviceresources
+}
+
+func (o *RolloutSpecificationJsonorchestratedstepsElemapplications) Names() []string {
+	return o.names
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *RolloutSpecificationJsonorchestratedstepsElemapplications) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["actions"]; raw != nil && !ok {
-		return fmt.Errorf("field actions in Applications: required")
+		return fmt.Errorf("field actions in RolloutSpecificationJsonorchestratedstepsElemapplications: required")
 	}
 	if _, ok := raw["applyAcrossServiceResources"]; raw != nil && !ok {
-		return fmt.Errorf("field applyAcrossServiceResources in Applications: required")
+		return fmt.Errorf("field applyAcrossServiceResources in RolloutSpecificationJsonorchestratedstepsElemapplications: required")
 	}
 	if _, ok := raw["names"]; raw != nil && !ok {
-		return fmt.Errorf("field names in Applications: required")
+		return fmt.Errorf("field names in RolloutSpecificationJsonorchestratedstepsElemapplications: required")
 	}
-	type Plain Applications
+	type RolloutSpecificationJsonorchestratedstepsElemapplicationsHelper struct {
+		Actions                     []string                                                                             `json:"actions"`
+		Applyacrossserviceresources RolloutSpecificationJsonorchestratedstepsElemapplicationsapplyacrossserviceresources `json:"applyAcrossServiceResources"`
+		Names                       []string                                                                             `json:"names"`
+	}
+	type Plain RolloutSpecificationJsonorchestratedstepsElemapplications
+	var helper RolloutSpecificationJsonorchestratedstepsElemapplicationsHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = Applications(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Applications) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["actions"]; raw != nil && !ok {
-		return fmt.Errorf("field actions in Applications: required")
-	}
-	if _, ok := raw["applyAcrossServiceResources"]; raw != nil && !ok {
-		return fmt.Errorf("field applyAcrossServiceResources in Applications: required")
-	}
-	if _, ok := raw["names"]; raw != nil && !ok {
-		return fmt.Errorf("field names in Applications: required")
-	}
-	type Plain Applications
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Applications(plain)
+	plain.actions = helper.Actions
+	plain.applyacrossserviceresources = helper.Applyacrossserviceresources
+	plain.names = helper.Names
+	*j = RolloutSpecificationJsonorchestratedstepsElemapplications(plain)
 	return nil
 }
 
 // The details of the service resources across which the application has to be
 // deployed.
-type ApplyAcrossServiceResources struct {
+type RolloutSpecificationJsonorchestratedstepsElemapplicationsapplyacrossserviceresources struct {
 	// The service resource definition name.
-	DefinitionName string `json:"definitionName" yaml:"definitionName" mapstructure:"definitionName"`
+	definitionname string `json:"definitionName" yaml:"definitionName" mapstructure:"definitionName"`
 
 	// Indicates if the cluster has to be deployed before application deployment.
-	DeployArmResources *bool `json:"deployArmResources,omitempty,omitzero" yaml:"deployArmResources,omitempty" mapstructure:"deployArmResources,omitempty"`
+	deployarmresources *bool `json:"deployArmResources,omitempty,omitzero" yaml:"deployArmResources,omitempty" mapstructure:"deployArmResources,omitempty"`
 
 	// The list of service resource instance names.
-	Names []string `json:"names" yaml:"names" mapstructure:"names"`
+	names []string `json:"names" yaml:"names" mapstructure:"names"`
+}
+
+func (o *RolloutSpecificationJsonorchestratedstepsElemapplicationsapplyacrossserviceresources) DefinitionName() string {
+	return o.definitionname
+}
+
+func (o *RolloutSpecificationJsonorchestratedstepsElemapplicationsapplyacrossserviceresources) DeployArmResources() *bool {
+	return o.deployarmresources
+}
+
+func (o *RolloutSpecificationJsonorchestratedstepsElemapplicationsapplyacrossserviceresources) Names() []string {
+	return o.names
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ApplyAcrossServiceResources) UnmarshalJSON(value []byte) error {
+func (j *RolloutSpecificationJsonorchestratedstepsElemapplicationsapplyacrossserviceresources) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["definitionName"]; raw != nil && !ok {
-		return fmt.Errorf("field definitionName in ApplyAcrossServiceResources: required")
+		return fmt.Errorf("field definitionName in RolloutSpecificationJsonorchestratedstepsElemapplicationsapplyacrossserviceresources: required")
 	}
 	if _, ok := raw["names"]; raw != nil && !ok {
-		return fmt.Errorf("field names in ApplyAcrossServiceResources: required")
+		return fmt.Errorf("field names in RolloutSpecificationJsonorchestratedstepsElemapplicationsapplyacrossserviceresources: required")
 	}
-	type Plain ApplyAcrossServiceResources
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	type RolloutSpecificationJsonorchestratedstepsElemapplicationsapplyacrossserviceresourcesHelper struct {
+		Definitionname     string   `json:"definitionName"`
+		Deployarmresources *bool    `json:"deployArmResources",omitempty`
+		Names              []string `json:"names"`
+	}
+	type Plain RolloutSpecificationJsonorchestratedstepsElemapplicationsapplyacrossserviceresources
+	var helper RolloutSpecificationJsonorchestratedstepsElemapplicationsapplyacrossserviceresourcesHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
-	*j = ApplyAcrossServiceResources(plain)
+	var plain Plain
+	plain.definitionname = helper.Definitionname
+	plain.deployarmresources = helper.Deployarmresources
+	plain.names = helper.Names
+	*j = RolloutSpecificationJsonorchestratedstepsElemapplicationsapplyacrossserviceresources(plain)
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *ApplyAcrossServiceResources) UnmarshalYAML(value *yaml.Node) error {
+// The metadata associated with this particular rollout.
+type RolloutSpecificationJsonrolloutmetadata struct {
+	// The location of the build to use for this particular rollout.
+	buildsource RolloutSpecificationJsonrolloutmetadatabuildsource `json:"buildSource" yaml:"buildSource" mapstructure:"buildSource"`
+
+	// Option to use configuration specification file directly in rollout.
+	configuration *RolloutSpecificationJsonrolloutmetadataconfiguration `json:"configuration,omitempty,omitzero" yaml:"configuration,omitempty" mapstructure:"configuration,omitempty"`
+
+	// The user-specified name of this particular rollout.
+	name string `json:"name" yaml:"name" mapstructure:"name"`
+
+	// Notification definitions
+	notification *RolloutSpecificationJsonrolloutmetadatanotification `json:"notification,omitempty,omitzero" yaml:"notification,omitempty" mapstructure:"notification,omitempty"`
+
+	// The path relative to the Service Group Root that points to the parameter
+	// replacements file.
+	parameterreplacementspath *string `json:"parameterReplacementsPath,omitempty,omitzero" yaml:"parameterReplacementsPath,omitempty" mapstructure:"parameterReplacementsPath,omitempty"`
+
+	// List of rollout policy references to use for the rollout.
+	rolloutpolicyreferences []RolloutSpecificationJsonrolloutmetadatarolloutpolicyreferencesElem `json:"rolloutPolicyReferences,omitempty,omitzero" yaml:"rolloutPolicyReferences,omitempty" mapstructure:"rolloutPolicyReferences,omitempty"`
+
+	// The scope of this particular rollout.
+	rollouttype string `json:"rolloutType" yaml:"rolloutType" mapstructure:"rolloutType"`
+
+	// The path relative to the Service Group Root that points to the service model of
+	// the service that is being updated as part of this rollout.
+	servicemodelpath string `json:"serviceModelPath" yaml:"serviceModelPath" mapstructure:"serviceModelPath"`
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadata) BuildSource() RolloutSpecificationJsonrolloutmetadatabuildsource {
+	return o.buildsource
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadata) Configuration() *RolloutSpecificationJsonrolloutmetadataconfiguration {
+	return o.configuration
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadata) Name() string {
+	return o.name
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadata) Notification() *RolloutSpecificationJsonrolloutmetadatanotification {
+	return o.notification
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadata) ParameterReplacementsPath() *string {
+	return o.parameterreplacementspath
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadata) RolloutPolicyReferences() []RolloutSpecificationJsonrolloutmetadatarolloutpolicyreferencesElem {
+	return o.rolloutpolicyreferences
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadata) RolloutType() string {
+	return o.rollouttype
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadata) ServiceModelPath() string {
+	return o.servicemodelpath
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *RolloutSpecificationJsonrolloutmetadata) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
+	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	if _, ok := raw["definitionName"]; raw != nil && !ok {
-		return fmt.Errorf("field definitionName in ApplyAcrossServiceResources: required")
+	if _, ok := raw["buildSource"]; raw != nil && !ok {
+		return fmt.Errorf("field buildSource in RolloutSpecificationJsonrolloutmetadata: required")
 	}
-	if _, ok := raw["names"]; raw != nil && !ok {
-		return fmt.Errorf("field names in ApplyAcrossServiceResources: required")
+	if _, ok := raw["name"]; raw != nil && !ok {
+		return fmt.Errorf("field name in RolloutSpecificationJsonrolloutmetadata: required")
 	}
-	type Plain ApplyAcrossServiceResources
+	if _, ok := raw["rolloutType"]; raw != nil && !ok {
+		return fmt.Errorf("field rolloutType in RolloutSpecificationJsonrolloutmetadata: required")
+	}
+	if _, ok := raw["serviceModelPath"]; raw != nil && !ok {
+		return fmt.Errorf("field serviceModelPath in RolloutSpecificationJsonrolloutmetadata: required")
+	}
+	type RolloutSpecificationJsonrolloutmetadataHelper struct {
+		Buildsource               RolloutSpecificationJsonrolloutmetadatabuildsource                   `json:"buildSource"`
+		Configuration             *RolloutSpecificationJsonrolloutmetadataconfiguration                `json:"configuration",omitempty`
+		Name                      string                                                               `json:"name"`
+		Notification              *RolloutSpecificationJsonrolloutmetadatanotification                 `json:"notification",omitempty`
+		Parameterreplacementspath *string                                                              `json:"parameterReplacementsPath",omitempty`
+		Rolloutpolicyreferences   []RolloutSpecificationJsonrolloutmetadatarolloutpolicyreferencesElem `json:"rolloutPolicyReferences",omitempty`
+		Rollouttype               string                                                               `json:"rolloutType"`
+		Servicemodelpath          string                                                               `json:"serviceModelPath"`
+	}
+	type Plain RolloutSpecificationJsonrolloutmetadata
+	var helper RolloutSpecificationJsonrolloutmetadataHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
+	plain.buildsource = helper.Buildsource
+	plain.configuration = helper.Configuration
+	plain.name = helper.Name
+	plain.notification = helper.Notification
+	plain.parameterreplacementspath = helper.Parameterreplacementspath
+	plain.rolloutpolicyreferences = helper.Rolloutpolicyreferences
+	plain.rollouttype = helper.Rollouttype
+	plain.servicemodelpath = helper.Servicemodelpath
+	if utf8.RuneCountInString(string(plain.name)) < 1 {
+		return fmt.Errorf("field %s length: must be >= %d", "name", 1)
 	}
-	*j = ApplyAcrossServiceResources(plain)
+	if matched, _ := regexp.MatchString(`(?i)(^Major$|^Minor$|^Hotfix$)`, string(plain.rollouttype)); !matched {
+		return fmt.Errorf("field %s pattern match: must match %s", "rollouttype", `(?i)(^Major$|^Minor$|^Hotfix$)`)
+	}
+	*j = RolloutSpecificationJsonrolloutmetadata(plain)
 	return nil
 }
 
 // The location of the build to use for this particular rollout.
-type BuildSource struct {
+type RolloutSpecificationJsonrolloutmetadatabuildsource struct {
 	// The parameters that define how to access and/or prepare the build from this
 	// build source.
-	Parameters Parameters `json:"parameters" yaml:"parameters" mapstructure:"parameters"`
+	parameters RolloutSpecificationJsonrolloutmetadatabuildsourceparameters `json:"parameters" yaml:"parameters" mapstructure:"parameters"`
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatabuildsource) Parameters() RolloutSpecificationJsonrolloutmetadatabuildsourceparameters {
+	return o.parameters
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *BuildSource) UnmarshalJSON(value []byte) error {
+func (j *RolloutSpecificationJsonrolloutmetadatabuildsource) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["parameters"]; raw != nil && !ok {
-		return fmt.Errorf("field parameters in BuildSource: required")
+		return fmt.Errorf("field parameters in RolloutSpecificationJsonrolloutmetadatabuildsource: required")
 	}
-	type Plain BuildSource
+	type RolloutSpecificationJsonrolloutmetadatabuildsourceHelper struct {
+		Parameters RolloutSpecificationJsonrolloutmetadatabuildsourceparameters `json:"parameters"`
+	}
+	type Plain RolloutSpecificationJsonrolloutmetadatabuildsource
+	var helper RolloutSpecificationJsonrolloutmetadatabuildsourceHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = BuildSource(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *BuildSource) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["parameters"]; raw != nil && !ok {
-		return fmt.Errorf("field parameters in BuildSource: required")
-	}
-	type Plain BuildSource
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = BuildSource(plain)
-	return nil
-}
-
-// Option to use configuration specification file directly in rollout.
-type Configuration struct {
-	// Service scope configuration setting
-	ServiceScope *ServiceScope `json:"serviceScope,omitempty,omitzero" yaml:"serviceScope,omitempty" mapstructure:"serviceScope,omitempty"`
-}
-
-// Email Notification definitions
-type Email struct {
-	// Cc email addresses list separator with ',;'
-	Cc *string `json:"cc,omitempty,omitzero" yaml:"cc,omitempty" mapstructure:"cc,omitempty"`
-
-	// Conditions of when to sending the email, default will send on all start, error,
-	// complete events
-	Options *Options `json:"options,omitempty,omitzero" yaml:"options,omitempty" mapstructure:"options,omitempty"`
-
-	// To email addresses list separator with ',;'
-	To string `json:"to" yaml:"to" mapstructure:"to"`
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Email) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["to"]; raw != nil && !ok {
-		return fmt.Errorf("field to in Email: required")
-	}
-	type Plain Email
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Email(plain)
-	return nil
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Email) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	if _, ok := raw["to"]; raw != nil && !ok {
-		return fmt.Errorf("field to in Email: required")
-	}
-	type Plain Email
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = Email(plain)
-	return nil
-}
-
-// Incident notification definitions
-type Incident struct {
-	// Conditions of when to create incidents, default will send on every error
-	Options *IncidentOptions `json:"options,omitempty,omitzero" yaml:"options,omitempty" mapstructure:"options,omitempty"`
-
-	// The incident properties
-	Properties Properties `json:"properties" yaml:"properties" mapstructure:"properties"`
-
-	// The incident provider type
-	ProviderType string `json:"providerType" yaml:"providerType" mapstructure:"providerType"`
-}
-
-// Conditions of when to create incidents, default will send on every error
-type IncidentOptions struct {
-	// When corresponds to the JSON schema field "when".
-	When []string `json:"when,omitempty,omitzero" yaml:"when,omitempty" mapstructure:"when,omitempty"`
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Incident) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["properties"]; raw != nil && !ok {
-		return fmt.Errorf("field properties in Incident: required")
-	}
-	if _, ok := raw["providerType"]; raw != nil && !ok {
-		return fmt.Errorf("field providerType in Incident: required")
-	}
-	type Plain Incident
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Incident(plain)
-	return nil
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Incident) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	if _, ok := raw["properties"]; raw != nil && !ok {
-		return fmt.Errorf("field properties in Incident: required")
-	}
-	if _, ok := raw["providerType"]; raw != nil && !ok {
-		return fmt.Errorf("field providerType in Incident: required")
-	}
-	type Plain Incident
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = Incident(plain)
-	return nil
-}
-
-// Notification definitions
-type Notification struct {
-	// Email Notification definitions
-	Email *Email `json:"email,omitempty,omitzero" yaml:"email,omitempty" mapstructure:"email,omitempty"`
-
-	// Incident notification definitions
-	Incident *Incident `json:"incident,omitempty,omitzero" yaml:"incident,omitempty" mapstructure:"incident,omitempty"`
-}
-
-// Conditions of when to sending the email, default will send on all start, error,
-// complete events
-type Options struct {
-	// 'All': All rollout information, default behavior, SummaryOnly': Only has
-	// summary table, no resource deployment details, Compact': Only show rows of
-	// failed resource operations.
-	Verbosity *string `json:"verbosity,omitempty,omitzero" yaml:"verbosity,omitempty" mapstructure:"verbosity,omitempty"`
-
-	// When corresponds to the JSON schema field "when".
-	When []string `json:"when,omitempty,omitzero" yaml:"when,omitempty" mapstructure:"when,omitempty"`
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Options) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Options
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.Verbosity != nil {
-		if matched, _ := regexp.MatchString(`(?i)(^All$|^SummaryOnly$|^Compact$)`, string(*plain.Verbosity)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "Verbosity", `(?i)(^All$|^SummaryOnly$|^Compact$)`)
-		}
-	}
-	*j = Options(plain)
-	return nil
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Options) UnmarshalJSON(value []byte) error {
-	type Plain Options
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if plain.Verbosity != nil {
-		if matched, _ := regexp.MatchString(`(?i)(^All$|^SummaryOnly$|^Compact$)`, string(*plain.Verbosity)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "Verbosity", `(?i)(^All$|^SummaryOnly$|^Compact$)`)
-		}
-	}
-	*j = Options(plain)
-	return nil
-}
-
-// An individual deployment step in the rollout of an Azure service.
-type OrchestratedStep struct {
-	// The actions that must take place as part of this step. The actions will be
-	// executed in the order that they are declared. The action names must be unique.
-	// If this is an Extension action, the name of the extension must exist in the
-	// 'Extensions' block in  RolloutParameters.
-	Actions []string `json:"actions,omitempty,omitzero" yaml:"actions,omitempty" mapstructure:"actions,omitempty"`
-
-	// The details of applications to be deployed.
-	Applications *Applications `json:"applications,omitempty,omitzero" yaml:"applications,omitempty" mapstructure:"applications,omitempty"`
-
-	// The names of the rollout steps that must be executed prior to the current step
-	// being executed.
-	DependsOn []string `json:"dependsOn,omitempty,omitzero" yaml:"dependsOn,omitempty" mapstructure:"dependsOn,omitempty"`
-
-	// The name of the rollout step.
-	Name string `json:"name" yaml:"name" mapstructure:"name"`
-
-	// The unique identifier of the target that is to be updated.
-	TargetName *string `json:"targetName,omitempty,omitzero" yaml:"targetName,omitempty" mapstructure:"targetName,omitempty"`
-
-	// The type of the intended target of this rollout.
-	TargetType string `json:"targetType" yaml:"targetType" mapstructure:"targetType"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *OrchestratedStep) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	if _, ok := raw["name"]; raw != nil && !ok {
-		return fmt.Errorf("field name in OrchestratedStep: required")
-	}
-	if _, ok := raw["targetType"]; raw != nil && !ok {
-		return fmt.Errorf("field targetType in OrchestratedStep: required")
-	}
-	type Plain OrchestratedStep
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if utf8.RuneCountInString(string(plain.Name)) < 1 {
-		return fmt.Errorf("field %s length: must be >= %d", "name", 1)
-	}
-	if plain.TargetName != nil && utf8.RuneCountInString(string(*plain.TargetName)) < 1 {
-		return fmt.Errorf("field %s length: must be >= %d", "targetName", 1)
-	}
-	if matched, _ := regexp.MatchString(`(?i)(^ServiceResourceGroup$|^ServiceResource$|^Application$)`, string(plain.TargetType)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "TargetType", `(?i)(^ServiceResourceGroup$|^ServiceResource$|^Application$)`)
-	}
-	*j = OrchestratedStep(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *OrchestratedStep) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["name"]; raw != nil && !ok {
-		return fmt.Errorf("field name in OrchestratedStep: required")
-	}
-	if _, ok := raw["targetType"]; raw != nil && !ok {
-		return fmt.Errorf("field targetType in OrchestratedStep: required")
-	}
-	type Plain OrchestratedStep
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if utf8.RuneCountInString(string(plain.Name)) < 1 {
-		return fmt.Errorf("field %s length: must be >= %d", "name", 1)
-	}
-	if plain.TargetName != nil && utf8.RuneCountInString(string(*plain.TargetName)) < 1 {
-		return fmt.Errorf("field %s length: must be >= %d", "targetName", 1)
-	}
-	if matched, _ := regexp.MatchString(`(?i)(^ServiceResourceGroup$|^ServiceResource$|^Application$)`, string(plain.TargetType)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "TargetType", `(?i)(^ServiceResourceGroup$|^ServiceResource$|^Application$)`)
-	}
-	*j = OrchestratedStep(plain)
+	plain.parameters = helper.Parameters
+	*j = RolloutSpecificationJsonrolloutmetadatabuildsource(plain)
 	return nil
 }
 
 // The parameters that define how to access and/or prepare the build from this
 // build source.
-type Parameters struct {
+type RolloutSpecificationJsonrolloutmetadatabuildsourceparameters struct {
 	// The path relative to the Service Group Root which points to the file whose
 	// contents represent the version of the build being deployed.
-	VersionFile string `json:"versionFile" yaml:"versionFile" mapstructure:"versionFile"`
+	versionfile string `json:"versionFile" yaml:"versionFile" mapstructure:"versionFile"`
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatabuildsourceparameters) VersionFile() string {
+	return o.versionfile
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *Parameters) UnmarshalJSON(value []byte) error {
+func (j *RolloutSpecificationJsonrolloutmetadatabuildsourceparameters) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["versionFile"]; raw != nil && !ok {
-		return fmt.Errorf("field versionFile in Parameters: required")
+		return fmt.Errorf("field versionFile in RolloutSpecificationJsonrolloutmetadatabuildsourceparameters: required")
 	}
-	type Plain Parameters
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	type RolloutSpecificationJsonrolloutmetadatabuildsourceparametersHelper struct {
+		Versionfile string `json:"versionFile"`
+	}
+	type Plain RolloutSpecificationJsonrolloutmetadatabuildsourceparameters
+	var helper RolloutSpecificationJsonrolloutmetadatabuildsourceparametersHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
-	*j = Parameters(plain)
+	var plain Plain
+	plain.versionfile = helper.Versionfile
+	*j = RolloutSpecificationJsonrolloutmetadatabuildsourceparameters(plain)
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Parameters) UnmarshalYAML(value *yaml.Node) error {
+// Option to use configuration specification file directly in rollout.
+type RolloutSpecificationJsonrolloutmetadataconfiguration struct {
+	// Service scope configuration setting
+	servicescope *RolloutSpecificationJsonrolloutmetadataconfigurationservicescope `json:"serviceScope,omitempty,omitzero" yaml:"serviceScope,omitempty" mapstructure:"serviceScope,omitempty"`
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadataconfiguration) ServiceScope() *RolloutSpecificationJsonrolloutmetadataconfigurationservicescope {
+	return o.servicescope
+}
+
+// Service scope configuration setting
+type RolloutSpecificationJsonrolloutmetadataconfigurationservicescope struct {
+	// The path relative to the Service Group Root that points to the service scope
+	// configuration specification.
+	specpath *string `json:"specPath,omitempty,omitzero" yaml:"specPath,omitempty" mapstructure:"specPath,omitempty"`
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadataconfigurationservicescope) SpecPath() *string {
+	return o.specpath
+}
+
+// Notification definitions
+type RolloutSpecificationJsonrolloutmetadatanotification struct {
+	// Email Notification definitions
+	email *RolloutSpecificationJsonrolloutmetadatanotificationemail `json:"email,omitempty,omitzero" yaml:"email,omitempty" mapstructure:"email,omitempty"`
+
+	// Incident notification definitions
+	incident *RolloutSpecificationJsonrolloutmetadatanotificationincident `json:"incident,omitempty,omitzero" yaml:"incident,omitempty" mapstructure:"incident,omitempty"`
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotification) Email() *RolloutSpecificationJsonrolloutmetadatanotificationemail {
+	return o.email
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotification) Incident() *RolloutSpecificationJsonrolloutmetadatanotificationincident {
+	return o.incident
+}
+
+// Email Notification definitions
+type RolloutSpecificationJsonrolloutmetadatanotificationemail struct {
+	// Cc email addresses list separator with ',;'
+	cc *string `json:"cc,omitempty,omitzero" yaml:"cc,omitempty" mapstructure:"cc,omitempty"`
+
+	// Conditions of when to sending the email, default will send on all start, error,
+	// complete events
+	options *RolloutSpecificationJsonrolloutmetadatanotificationemailoptions `json:"options,omitempty,omitzero" yaml:"options,omitempty" mapstructure:"options,omitempty"`
+
+	// To email addresses list separator with ',;'
+	to string `json:"to" yaml:"to" mapstructure:"to"`
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotificationemail) Cc() *string {
+	return o.cc
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotificationemail) Options() *RolloutSpecificationJsonrolloutmetadatanotificationemailoptions {
+	return o.options
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotificationemail) To() string {
+	return o.to
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *RolloutSpecificationJsonrolloutmetadatanotificationemail) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
+	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	if _, ok := raw["versionFile"]; raw != nil && !ok {
-		return fmt.Errorf("field versionFile in Parameters: required")
+	if _, ok := raw["to"]; raw != nil && !ok {
+		return fmt.Errorf("field to in RolloutSpecificationJsonrolloutmetadatanotificationemail: required")
 	}
-	type Plain Parameters
+	type RolloutSpecificationJsonrolloutmetadatanotificationemailHelper struct {
+		Cc      *string                                                          `json:"cc",omitempty`
+		Options *RolloutSpecificationJsonrolloutmetadatanotificationemailoptions `json:"options",omitempty`
+		To      string                                                           `json:"to"`
+	}
+	type Plain RolloutSpecificationJsonrolloutmetadatanotificationemail
+	var helper RolloutSpecificationJsonrolloutmetadatanotificationemailHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	plain.cc = helper.Cc
+	plain.options = helper.Options
+	plain.to = helper.To
+	*j = RolloutSpecificationJsonrolloutmetadatanotificationemail(plain)
+	return nil
+}
+
+// Conditions of when to sending the email, default will send on all start, error,
+// complete events
+type RolloutSpecificationJsonrolloutmetadatanotificationemailoptions struct {
+	// 'All': All rollout information, default behavior, SummaryOnly': Only has
+	// summary table, no resource deployment details, Compact': Only show rows of
+	// failed resource operations.
+	verbosity *string `json:"verbosity,omitempty,omitzero" yaml:"verbosity,omitempty" mapstructure:"verbosity,omitempty"`
+
+	// when corresponds to the JSON schema field "when".
+	when []string `json:"when,omitempty,omitzero" yaml:"when,omitempty" mapstructure:"when,omitempty"`
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotificationemailoptions) Verbosity() *string {
+	return o.verbosity
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotificationemailoptions) When() []string {
+	return o.when
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *RolloutSpecificationJsonrolloutmetadatanotificationemailoptions) UnmarshalJSON(value []byte) error {
+	type RolloutSpecificationJsonrolloutmetadatanotificationemailoptionsHelper struct {
+		Verbosity *string  `json:"verbosity",omitempty`
+		When      []string `json:"when",omitempty`
+	}
+	type Plain RolloutSpecificationJsonrolloutmetadatanotificationemailoptions
+	var helper RolloutSpecificationJsonrolloutmetadatanotificationemailoptionsHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
-	*j = Parameters(plain)
+	var plain Plain
+	plain.verbosity = helper.Verbosity
+	plain.when = helper.When
+	if plain.verbosity != nil {
+		if matched, _ := regexp.MatchString(`(?i)(^All$|^SummaryOnly$|^Compact$)`, string(*plain.verbosity)); !matched {
+			return fmt.Errorf("field %s pattern match: must match %s", "verbosity", `(?i)(^All$|^SummaryOnly$|^Compact$)`)
+		}
+	}
+	*j = RolloutSpecificationJsonrolloutmetadatanotificationemailoptions(plain)
 	return nil
+}
+
+// Incident notification definitions
+type RolloutSpecificationJsonrolloutmetadatanotificationincident struct {
+	// Conditions of when to create incidents, default will send on every error
+	options *RolloutSpecificationJsonrolloutmetadatanotificationincidentoptions `json:"options,omitempty,omitzero" yaml:"options,omitempty" mapstructure:"options,omitempty"`
+
+	// The incident properties
+	properties RolloutSpecificationJsonrolloutmetadatanotificationincidentproperties `json:"properties" yaml:"properties" mapstructure:"properties"`
+
+	// The incident provider type
+	providertype string `json:"providerType" yaml:"providerType" mapstructure:"providerType"`
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotificationincident) Options() *RolloutSpecificationJsonrolloutmetadatanotificationincidentoptions {
+	return o.options
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotificationincident) Properties() RolloutSpecificationJsonrolloutmetadatanotificationincidentproperties {
+	return o.properties
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotificationincident) ProviderType() string {
+	return o.providertype
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *RolloutSpecificationJsonrolloutmetadatanotificationincident) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	if _, ok := raw["properties"]; raw != nil && !ok {
+		return fmt.Errorf("field properties in RolloutSpecificationJsonrolloutmetadatanotificationincident: required")
+	}
+	if _, ok := raw["providerType"]; raw != nil && !ok {
+		return fmt.Errorf("field providerType in RolloutSpecificationJsonrolloutmetadatanotificationincident: required")
+	}
+	type RolloutSpecificationJsonrolloutmetadatanotificationincidentHelper struct {
+		Options      *RolloutSpecificationJsonrolloutmetadatanotificationincidentoptions   `json:"options",omitempty`
+		Properties   RolloutSpecificationJsonrolloutmetadatanotificationincidentproperties `json:"properties"`
+		Providertype string                                                                `json:"providerType"`
+	}
+	type Plain RolloutSpecificationJsonrolloutmetadatanotificationincident
+	var helper RolloutSpecificationJsonrolloutmetadatanotificationincidentHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.options = helper.Options
+	plain.properties = helper.Properties
+	plain.providertype = helper.Providertype
+	*j = RolloutSpecificationJsonrolloutmetadatanotificationincident(plain)
+	return nil
+}
+
+// Conditions of when to create incidents, default will send on every error
+type RolloutSpecificationJsonrolloutmetadatanotificationincidentoptions struct {
+	// when corresponds to the JSON schema field "when".
+	when []string `json:"when,omitempty,omitzero" yaml:"when,omitempty" mapstructure:"when,omitempty"`
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotificationincidentoptions) When() []string {
+	return o.when
 }
 
 // The incident properties
-type Properties struct {
+type RolloutSpecificationJsonrolloutmetadatanotificationincidentproperties struct {
 	// The connector Id for ICM
-	ConnectorId string `json:"connectorId" yaml:"connectorId" mapstructure:"connectorId"`
+	connectorid string `json:"connectorId" yaml:"connectorId" mapstructure:"connectorId"`
 
 	// The incident correlation type.
-	CorrelateBy *string `json:"correlateBy,omitempty,omitzero" yaml:"correlateBy,omitempty" mapstructure:"correlateBy,omitempty"`
+	correlateby *string `json:"correlateBy,omitempty,omitzero" yaml:"correlateBy,omitempty" mapstructure:"correlateBy,omitempty"`
 
 	// The environment of the incidents raising location.
-	Environment *string `json:"environment,omitempty,omitzero" yaml:"environment,omitempty" mapstructure:"environment,omitempty"`
+	environment *string `json:"environment,omitempty,omitzero" yaml:"environment,omitempty" mapstructure:"environment,omitempty"`
 
 	// The routing Id for ICM
-	RoutingId string `json:"routingId" yaml:"routingId" mapstructure:"routingId"`
+	routingid string `json:"routingId" yaml:"routingId" mapstructure:"routingId"`
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotificationincidentproperties) ConnectorId() string {
+	return o.connectorid
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotificationincidentproperties) CorrelateBy() *string {
+	return o.correlateby
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotificationincidentproperties) Environment() *string {
+	return o.environment
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatanotificationincidentproperties) RoutingId() string {
+	return o.routingid
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *Properties) UnmarshalJSON(value []byte) error {
+func (j *RolloutSpecificationJsonrolloutmetadatanotificationincidentproperties) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["connectorId"]; raw != nil && !ok {
-		return fmt.Errorf("field connectorId in Properties: required")
+		return fmt.Errorf("field connectorId in RolloutSpecificationJsonrolloutmetadatanotificationincidentproperties: required")
 	}
 	if _, ok := raw["routingId"]; raw != nil && !ok {
-		return fmt.Errorf("field routingId in Properties: required")
+		return fmt.Errorf("field routingId in RolloutSpecificationJsonrolloutmetadatanotificationincidentproperties: required")
 	}
-	type Plain Properties
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	type RolloutSpecificationJsonrolloutmetadatanotificationincidentpropertiesHelper struct {
+		Connectorid string  `json:"connectorId"`
+		Correlateby *string `json:"correlateBy",omitempty`
+		Environment *string `json:"environment",omitempty`
+		Routingid   string  `json:"routingId"`
+	}
+	type Plain RolloutSpecificationJsonrolloutmetadatanotificationincidentproperties
+	var helper RolloutSpecificationJsonrolloutmetadatanotificationincidentpropertiesHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
-	if plain.CorrelateBy != nil {
-		if matched, _ := regexp.MatchString(`(?i)(^rollout$)`, string(*plain.CorrelateBy)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "CorrelateBy", `(?i)(^rollout$)`)
+	var plain Plain
+	plain.connectorid = helper.Connectorid
+	plain.correlateby = helper.Correlateby
+	plain.environment = helper.Environment
+	plain.routingid = helper.Routingid
+	if plain.correlateby != nil {
+		if matched, _ := regexp.MatchString(`(?i)(^rollout$)`, string(*plain.correlateby)); !matched {
+			return fmt.Errorf("field %s pattern match: must match %s", "correlateby", `(?i)(^rollout$)`)
 		}
 	}
-	if plain.Environment != nil {
-		if matched, _ := regexp.MatchString(`(?i)(^Dogfood$|^Int$|^Ppe$|^Prod$|^Staging$|^Test$)`, string(*plain.Environment)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "Environment", `(?i)(^Dogfood$|^Int$|^Ppe$|^Prod$|^Staging$|^Test$)`)
+	if plain.environment != nil {
+		if matched, _ := regexp.MatchString(`(?i)(^Dogfood$|^Int$|^Ppe$|^Prod$|^Staging$|^Test$)`, string(*plain.environment)); !matched {
+			return fmt.Errorf("field %s pattern match: must match %s", "environment", `(?i)(^Dogfood$|^Int$|^Ppe$|^Prod$|^Staging$|^Test$)`)
 		}
 	}
-	*j = Properties(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Properties) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["connectorId"]; raw != nil && !ok {
-		return fmt.Errorf("field connectorId in Properties: required")
-	}
-	if _, ok := raw["routingId"]; raw != nil && !ok {
-		return fmt.Errorf("field routingId in Properties: required")
-	}
-	type Plain Properties
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.CorrelateBy != nil {
-		if matched, _ := regexp.MatchString(`(?i)(^rollout$)`, string(*plain.CorrelateBy)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "CorrelateBy", `(?i)(^rollout$)`)
-		}
-	}
-	if plain.Environment != nil {
-		if matched, _ := regexp.MatchString(`(?i)(^Dogfood$|^Int$|^Ppe$|^Prod$|^Staging$|^Test$)`, string(*plain.Environment)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "Environment", `(?i)(^Dogfood$|^Int$|^Ppe$|^Prod$|^Staging$|^Test$)`)
-		}
-	}
-	*j = Properties(plain)
-	return nil
-}
-
-// The metadata associated with this particular rollout.
-type RolloutMetadata struct {
-	// The location of the build to use for this particular rollout.
-	BuildSource BuildSource `json:"buildSource" yaml:"buildSource" mapstructure:"buildSource"`
-
-	// Option to use configuration specification file directly in rollout.
-	Configuration *Configuration `json:"configuration,omitempty,omitzero" yaml:"configuration,omitempty" mapstructure:"configuration,omitempty"`
-
-	// The user-specified name of this particular rollout.
-	Name string `json:"name" yaml:"name" mapstructure:"name"`
-
-	// Notification definitions
-	Notification *Notification `json:"notification,omitempty,omitzero" yaml:"notification,omitempty" mapstructure:"notification,omitempty"`
-
-	// The path relative to the Service Group Root that points to the parameter
-	// replacements file.
-	ParameterReplacementsPath *string `json:"parameterReplacementsPath,omitempty,omitzero" yaml:"parameterReplacementsPath,omitempty" mapstructure:"parameterReplacementsPath,omitempty"`
-
-	// List of rollout policy references to use for the rollout.
-	RolloutPolicyReferences []RolloutPolicyReference `json:"rolloutPolicyReferences,omitempty,omitzero" yaml:"rolloutPolicyReferences,omitempty" mapstructure:"rolloutPolicyReferences,omitempty"`
-
-	// The scope of this particular rollout.
-	RolloutType string `json:"rolloutType" yaml:"rolloutType" mapstructure:"rolloutType"`
-
-	// The path relative to the Service Group Root that points to the service model of
-	// the service that is being updated as part of this rollout.
-	ServiceModelPath string `json:"serviceModelPath" yaml:"serviceModelPath" mapstructure:"serviceModelPath"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *RolloutMetadata) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	if _, ok := raw["buildSource"]; raw != nil && !ok {
-		return fmt.Errorf("field buildSource in RolloutMetadata: required")
-	}
-	if _, ok := raw["name"]; raw != nil && !ok {
-		return fmt.Errorf("field name in RolloutMetadata: required")
-	}
-	if _, ok := raw["rolloutType"]; raw != nil && !ok {
-		return fmt.Errorf("field rolloutType in RolloutMetadata: required")
-	}
-	if _, ok := raw["serviceModelPath"]; raw != nil && !ok {
-		return fmt.Errorf("field serviceModelPath in RolloutMetadata: required")
-	}
-	type Plain RolloutMetadata
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if utf8.RuneCountInString(string(plain.Name)) < 1 {
-		return fmt.Errorf("field %s length: must be >= %d", "name", 1)
-	}
-	if matched, _ := regexp.MatchString(`(?i)(^Major$|^Minor$|^Hotfix$)`, string(plain.RolloutType)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "RolloutType", `(?i)(^Major$|^Minor$|^Hotfix$)`)
-	}
-	*j = RolloutMetadata(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RolloutMetadata) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["buildSource"]; raw != nil && !ok {
-		return fmt.Errorf("field buildSource in RolloutMetadata: required")
-	}
-	if _, ok := raw["name"]; raw != nil && !ok {
-		return fmt.Errorf("field name in RolloutMetadata: required")
-	}
-	if _, ok := raw["rolloutType"]; raw != nil && !ok {
-		return fmt.Errorf("field rolloutType in RolloutMetadata: required")
-	}
-	if _, ok := raw["serviceModelPath"]; raw != nil && !ok {
-		return fmt.Errorf("field serviceModelPath in RolloutMetadata: required")
-	}
-	type Plain RolloutMetadata
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if utf8.RuneCountInString(string(plain.Name)) < 1 {
-		return fmt.Errorf("field %s length: must be >= %d", "name", 1)
-	}
-	if matched, _ := regexp.MatchString(`(?i)(^Major$|^Minor$|^Hotfix$)`, string(plain.RolloutType)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "RolloutType", `(?i)(^Major$|^Minor$|^Hotfix$)`)
-	}
-	*j = RolloutMetadata(plain)
+	*j = RolloutSpecificationJsonrolloutmetadatanotificationincidentproperties(plain)
 	return nil
 }
 
 // Policy reference details.
-type RolloutPolicyReference struct {
+type RolloutSpecificationJsonrolloutmetadatarolloutpolicyreferencesElem struct {
 	// The name of the policy.
-	Name string `json:"name" yaml:"name" mapstructure:"name"`
+	name string `json:"name" yaml:"name" mapstructure:"name"`
 
 	// The version of the policy to use. Specify '*' to use the latest registered
 	// version of the policy.
-	Version string `json:"version" yaml:"version" mapstructure:"version"`
+	version string `json:"version" yaml:"version" mapstructure:"version"`
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatarolloutpolicyreferencesElem) Name() string {
+	return o.name
+}
+
+func (o *RolloutSpecificationJsonrolloutmetadatarolloutpolicyreferencesElem) Version() string {
+	return o.version
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *RolloutPolicyReference) UnmarshalJSON(value []byte) error {
+func (j *RolloutSpecificationJsonrolloutmetadatarolloutpolicyreferencesElem) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["name"]; raw != nil && !ok {
-		return fmt.Errorf("field name in RolloutPolicyReference: required")
+		return fmt.Errorf("field name in RolloutSpecificationJsonrolloutmetadatarolloutpolicyreferencesElem: required")
 	}
 	if _, ok := raw["version"]; raw != nil && !ok {
-		return fmt.Errorf("field version in RolloutPolicyReference: required")
+		return fmt.Errorf("field version in RolloutSpecificationJsonrolloutmetadatarolloutpolicyreferencesElem: required")
 	}
-	type Plain RolloutPolicyReference
+	type RolloutSpecificationJsonrolloutmetadatarolloutpolicyreferencesElemHelper struct {
+		Name    string `json:"name"`
+		Version string `json:"version"`
+	}
+	type Plain RolloutSpecificationJsonrolloutmetadatarolloutpolicyreferencesElem
+	var helper RolloutSpecificationJsonrolloutmetadatarolloutpolicyreferencesElemHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = RolloutPolicyReference(plain)
+	plain.name = helper.Name
+	plain.version = helper.Version
+	*j = RolloutSpecificationJsonrolloutmetadatarolloutpolicyreferencesElem(plain)
 	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RolloutPolicyReference) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["name"]; raw != nil && !ok {
-		return fmt.Errorf("field name in RolloutPolicyReference: required")
-	}
-	if _, ok := raw["version"]; raw != nil && !ok {
-		return fmt.Errorf("field version in RolloutPolicyReference: required")
-	}
-	type Plain RolloutPolicyReference
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = RolloutPolicyReference(plain)
-	return nil
-}
-
-// A document that declares what actions are to be taken as part of an update to an
-// Azure Service.
-type RolloutSpecification struct {
-	// The version of the schema that a document conforms to.
-	ContentVersion string `json:"contentVersion" yaml:"contentVersion" mapstructure:"contentVersion"`
-
-	// The exact sequence of steps that must be executed as part of this rollout.
-	OrchestratedSteps []OrchestratedStep `json:"orchestratedSteps" yaml:"orchestratedSteps" mapstructure:"orchestratedSteps"`
-
-	// The metadata associated with this particular rollout.
-	RolloutMetadata RolloutMetadata `json:"rolloutMetadata" yaml:"rolloutMetadata" mapstructure:"rolloutMetadata"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *RolloutSpecification) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	if _, ok := raw["contentVersion"]; raw != nil && !ok {
-		return fmt.Errorf("field contentVersion in RolloutSpecification: required")
-	}
-	if _, ok := raw["orchestratedSteps"]; raw != nil && !ok {
-		return fmt.Errorf("field orchestratedSteps in RolloutSpecification: required")
-	}
-	if _, ok := raw["rolloutMetadata"]; raw != nil && !ok {
-		return fmt.Errorf("field rolloutMetadata in RolloutSpecification: required")
-	}
-	type Plain RolloutSpecification
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if matched, _ := regexp.MatchString(`^([0-9]+\.)?([0-9]+\.)?([0-9]+\.)?([0-9]+){1}$`, string(plain.ContentVersion)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "ContentVersion", `^([0-9]+\.)?([0-9]+\.)?([0-9]+\.)?([0-9]+){1}$`)
-	}
-	*j = RolloutSpecification(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RolloutSpecification) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["contentVersion"]; raw != nil && !ok {
-		return fmt.Errorf("field contentVersion in RolloutSpecification: required")
-	}
-	if _, ok := raw["orchestratedSteps"]; raw != nil && !ok {
-		return fmt.Errorf("field orchestratedSteps in RolloutSpecification: required")
-	}
-	if _, ok := raw["rolloutMetadata"]; raw != nil && !ok {
-		return fmt.Errorf("field rolloutMetadata in RolloutSpecification: required")
-	}
-	type Plain RolloutSpecification
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if matched, _ := regexp.MatchString(`^([0-9]+\.)?([0-9]+\.)?([0-9]+\.)?([0-9]+){1}$`, string(plain.ContentVersion)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "ContentVersion", `^([0-9]+\.)?([0-9]+\.)?([0-9]+\.)?([0-9]+){1}$`)
-	}
-	*j = RolloutSpecification(plain)
-	return nil
-}
-
-// Service scope configuration setting
-type ServiceScope struct {
-	// The path relative to the Service Group Root that points to the service scope
-	// configuration specification.
-	SpecPath *string `json:"specPath,omitempty,omitzero" yaml:"specPath,omitempty" mapstructure:"specPath,omitempty"`
 }

@@ -4,51 +4,45 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 import "net/netip"
 
-type Ip struct {
-	// MyObject corresponds to the JSON schema field "myObject".
-	MyObject *IpMyObject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+type IpJson struct {
+	// myobject corresponds to the JSON schema field "myObject".
+	myobject *IpJsonmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
-type IpMyObject struct {
-	// MyIp corresponds to the JSON schema field "myIp".
-	MyIp netip.Addr `json:"myIp" yaml:"myIp" mapstructure:"myIp"`
+func (o *IpJson) MyObject() *IpJsonmyobject {
+	return o.myobject
+}
+
+type IpJsonmyobject struct {
+	// myip corresponds to the JSON schema field "myIp".
+	myip netip.Addr `json:"myIp" yaml:"myIp" mapstructure:"myIp"`
+}
+
+func (o *IpJsonmyobject) MyIp() netip.Addr {
+	return o.myip
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *IpMyObject) UnmarshalJSON(value []byte) error {
+func (j *IpJsonmyobject) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myIp"]; raw != nil && !ok {
-		return fmt.Errorf("field myIp in IpMyObject: required")
+		return fmt.Errorf("field myIp in IpJsonmyobject: required")
 	}
-	type Plain IpMyObject
+	type IpJsonmyobjectHelper struct {
+		Myip netip.Addr `json:"myIp"`
+	}
+	type Plain IpJsonmyobject
+	var helper IpJsonmyobjectHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = IpMyObject(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *IpMyObject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myIp"]; raw != nil && !ok {
-		return fmt.Errorf("field myIp in IpMyObject: required")
-	}
-	type Plain IpMyObject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = IpMyObject(plain)
+	plain.myip = helper.Myip
+	*j = IpJsonmyobject(plain)
 	return nil
 }

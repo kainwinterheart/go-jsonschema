@@ -4,5 +4,9 @@ package test
 
 type YamlStructNameFromFile struct {
 	// Foo corresponds to the JSON schema field "foo".
-	Foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
+	foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
+}
+
+func (o *YamlStructNameFromFile) Foo() *string {
+	return o.foo
 }

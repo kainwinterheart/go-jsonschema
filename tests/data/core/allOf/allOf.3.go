@@ -4,57 +4,56 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
-type AllOf3 struct {
-	// Bar corresponds to the JSON schema field "bar".
-	Bar float64 `json:"bar" yaml:"bar" mapstructure:"bar"`
+type AllOf3Json struct {
+	// bar corresponds to the JSON schema field "bar".
+	bar float64 `json:"bar" yaml:"bar" mapstructure:"bar"`
 
-	// Configurations corresponds to the JSON schema field "configurations".
-	Configurations []interface{} `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
+	// configurations corresponds to the JSON schema field "configurations".
+	configurations []interface{} `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
 
-	// Foo corresponds to the JSON schema field "foo".
-	Foo string `json:"foo" yaml:"foo" mapstructure:"foo"`
+	// foo corresponds to the JSON schema field "foo".
+	foo string `json:"foo" yaml:"foo" mapstructure:"foo"`
+}
+
+func (o *AllOf3Json) Bar() float64 {
+	return o.bar
+}
+
+func (o *AllOf3Json) Configurations() []interface{} {
+	return o.configurations
+}
+
+func (o *AllOf3Json) Foo() string {
+	return o.foo
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *AllOf3) UnmarshalJSON(value []byte) error {
+func (j *AllOf3Json) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in AllOf3: required")
+		return fmt.Errorf("field bar in AllOf3Json: required")
 	}
 	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AllOf3: required")
+		return fmt.Errorf("field foo in AllOf3Json: required")
 	}
-	type Plain AllOf3
+	type AllOf3JsonHelper struct {
+		Bar            float64       `json:"bar"`
+		Configurations []interface{} `json:"configurations",omitempty`
+		Foo            string        `json:"foo"`
+	}
+	type Plain AllOf3Json
+	var helper AllOf3JsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = AllOf3(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AllOf3) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in AllOf3: required")
-	}
-	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AllOf3: required")
-	}
-	type Plain AllOf3
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AllOf3(plain)
+	plain.bar = helper.Bar
+	plain.configurations = helper.Configurations
+	plain.foo = helper.Foo
+	*j = AllOf3Json(plain)
 	return nil
 }

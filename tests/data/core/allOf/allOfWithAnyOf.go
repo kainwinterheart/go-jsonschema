@@ -5,17 +5,16 @@ package test
 import "encoding/json"
 import "errors"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
 type Agreement struct {
-	// Type corresponds to the JSON schema field "@type".
-	Type string `json:"@type" yaml:"@type" mapstructure:"@type"`
+	// atype corresponds to the JSON schema field "@type".
+	atype string `json:"@type" yaml:"@type" mapstructure:"@type"`
 
-	// Permission corresponds to the JSON schema field "permission".
-	Permission *string `json:"permission,omitempty,omitzero" yaml:"permission,omitempty" mapstructure:"permission,omitempty"`
+	// permission corresponds to the JSON schema field "permission".
+	permission *string `json:"permission,omitempty,omitzero" yaml:"permission,omitempty" mapstructure:"permission,omitempty"`
 
-	// Prohibition corresponds to the JSON schema field "prohibition".
-	Prohibition *float64 `json:"prohibition,omitempty,omitzero" yaml:"prohibition,omitempty" mapstructure:"prohibition,omitempty"`
+	// prohibition corresponds to the JSON schema field "prohibition".
+	prohibition *float64 `json:"prohibition,omitempty,omitzero" yaml:"prohibition,omitempty" mapstructure:"prohibition,omitempty"`
 }
 
 type Agreement_0 map[string]interface{}
@@ -25,17 +24,6 @@ func (j *Agreement_0) UnmarshalJSON(value []byte) error {
 	type Plain Agreement_0
 	var plain Plain
 	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = Agreement_0(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Agreement_0) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Agreement_0
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
 		return err
 	}
 	*j = Agreement_0(plain)
@@ -55,15 +43,16 @@ func (j *Agreement_1) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Agreement_1) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Agreement_1
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Agreement_1(plain)
-	return nil
+func (o *Agreement) AType() string {
+	return o.atype
+}
+
+func (o *Agreement) Permission() *string {
+	return o.permission
+}
+
+func (o *Agreement) Prohibition() *float64 {
+	return o.prohibition
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -84,46 +73,36 @@ func (j *Agreement) UnmarshalJSON(value []byte) error {
 	if len(errs) == 2 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
-	type Plain Agreement
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = Agreement(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Agreement) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	var agreement_0 Agreement_0
-	var agreement_1 Agreement_1
-	var errs []error
-	if err := agreement_0.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if err := agreement_1.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if len(errs) == 2 {
-		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	type AgreementHelper struct {
+		Atype       string   `json:"@type"`
+		Permission  *string  `json:"permission",omitempty`
+		Prohibition *float64 `json:"prohibition",omitempty`
 	}
 	type Plain Agreement
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var helper AgreementHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.atype = helper.Atype
+	plain.permission = helper.Permission
+	plain.prohibition = helper.Prohibition
 	*j = Agreement(plain)
 	return nil
 }
 
 type CommonType struct {
-	// Permission corresponds to the JSON schema field "permission".
-	Permission *string `json:"permission,omitempty,omitzero" yaml:"permission,omitempty" mapstructure:"permission,omitempty"`
+	// permission corresponds to the JSON schema field "permission".
+	permission *string `json:"permission,omitempty,omitzero" yaml:"permission,omitempty" mapstructure:"permission,omitempty"`
 
-	// Prohibition corresponds to the JSON schema field "prohibition".
-	Prohibition *float64 `json:"prohibition,omitempty,omitzero" yaml:"prohibition,omitempty" mapstructure:"prohibition,omitempty"`
+	// prohibition corresponds to the JSON schema field "prohibition".
+	prohibition *float64 `json:"prohibition,omitempty,omitzero" yaml:"prohibition,omitempty" mapstructure:"prohibition,omitempty"`
+}
+
+func (o *CommonType) Permission() *string {
+	return o.permission
+}
+
+func (o *CommonType) Prohibition() *float64 {
+	return o.prohibition
 }

@@ -327,6 +327,25 @@ func (g *schemaGenerator) generateDeclaredType(t *schemas.Type, scope nameScope)
 
 	switch tt := theType.(type) {
 	case *codegen.StructType:
+
+		// Generate public read-only getters for all struct fields.
+		for _, f := range tt.Fields {
+			if f.Name == additionalProperties { continue }
+			getterName := g.caser.Identifierize(f.JSONName)
+			fieldName := f.Name
+			fieldType := f.Type
+			g.output.file.Package.AddDecl(&codegen.Method{
+				Impl: func(out *codegen.Emitter) error {
+					out.Printf("func (o *%s) %s() ", decl.Name, getterName)
+					if err := fieldType.Generate(out); err != nil {
+						return err
+					}
+					out.Printf(" {\n\treturn o.%s\n}", fieldName)
+					return nil
+				},
+				Name: decl.Name + "_" + getterName,
+			})
+		}
 		if t.GetSubSchemaType() == schemas.SubSchemaTypeAnyOf {
 			validators = append(validators, &anyOfValidator{decl.Name, t.GetSubSchemasCount()})
 			g.generateUnmarshaler(&decl, validators)
@@ -339,6 +358,7 @@ func (g *schemaGenerator) generateDeclaredType(t *schemas.Type, scope nameScope)
 		}
 
 		for _, f := range tt.Fields {
+			if f.Name == additionalProperties { continue }
 			if f.DefaultValue != nil {
 				if f.Name == additionalProperties {
 					g.output.file.Package.AddImport("reflect", "")
@@ -849,6 +869,7 @@ func (g *schemaGenerator) addStructField(
 	isRequired := requiredNames[name]
 
 	fieldName := g.caser.Identifierize(name)
+	fieldName = strings.ToLower(fieldName)
 
 	var extraTags []string
 
@@ -858,7 +879,7 @@ func (g *schemaGenerator) addStructField(
 		}
 
 		if ext.Identifier != nil {
-			fieldName = *ext.Identifier
+			fieldName = strings.ToLower(*ext.Identifier)
 		}
 
 		for tagKey, tagVal := range ext.ExtraTags {
@@ -886,6 +907,7 @@ func (g *schemaGenerator) addStructField(
 	if err != nil {
 		return fmt.Errorf("cannot add struct field: %w", err)
 	}
+
 
 	structField := codegen.StructField{
 		Name:         fieldName,
@@ -1344,7 +1366,7 @@ func (g *schemaGenerator) generateEnumType(
 		enumType = &codegen.StructType{
 			Fields: []codegen.StructField{
 				{
-					Name: "Value",
+					Name: "value",
 					Type: enumType,
 				},
 			},

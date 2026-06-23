@@ -4,52 +4,39 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
-type ReadOnlyAndRequired struct {
-	// MyReadOnlyRequiredString corresponds to the JSON schema field
+type ReadOnlyAndRequiredJson struct {
+	// myreadonlyrequiredstring corresponds to the JSON schema field
 	// "myReadOnlyRequiredString".
-	MyReadOnlyRequiredString string `json:"myReadOnlyRequiredString" yaml:"myReadOnlyRequiredString" mapstructure:"myReadOnlyRequiredString"`
+	myreadonlyrequiredstring string `json:"myReadOnlyRequiredString" yaml:"myReadOnlyRequiredString" mapstructure:"myReadOnlyRequiredString"`
+}
+
+func (o *ReadOnlyAndRequiredJson) MyReadOnlyRequiredString() string {
+	return o.myreadonlyrequiredstring
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ReadOnlyAndRequired) UnmarshalJSON(value []byte) error {
+func (j *ReadOnlyAndRequiredJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myReadOnlyRequiredString"]; raw != nil && !ok {
-		return fmt.Errorf("field myReadOnlyRequiredString in ReadOnlyAndRequired: required")
+		return fmt.Errorf("field myReadOnlyRequiredString in ReadOnlyAndRequiredJson: required")
 	}
 	if _, ok := raw["myReadOnlyRequiredString"]; raw != nil && ok {
-		return fmt.Errorf("field myReadOnlyRequiredString in ReadOnlyAndRequired: read only")
+		return fmt.Errorf("field myReadOnlyRequiredString in ReadOnlyAndRequiredJson: read only")
 	}
-	type Plain ReadOnlyAndRequired
+	type ReadOnlyAndRequiredJsonHelper struct {
+		Myreadonlyrequiredstring string `json:"myReadOnlyRequiredString"`
+	}
+	type Plain ReadOnlyAndRequiredJson
+	var helper ReadOnlyAndRequiredJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = ReadOnlyAndRequired(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *ReadOnlyAndRequired) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myReadOnlyRequiredString"]; raw != nil && !ok {
-		return fmt.Errorf("field myReadOnlyRequiredString in ReadOnlyAndRequired: required")
-	}
-	if _, ok := raw["myReadOnlyRequiredString"]; raw != nil && ok {
-		return fmt.Errorf("field myReadOnlyRequiredString in ReadOnlyAndRequired: read only")
-	}
-	type Plain ReadOnlyAndRequired
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = ReadOnlyAndRequired(plain)
+	plain.myreadonlyrequiredstring = helper.Myreadonlyrequiredstring
+	*j = ReadOnlyAndRequiredJson(plain)
 	return nil
 }

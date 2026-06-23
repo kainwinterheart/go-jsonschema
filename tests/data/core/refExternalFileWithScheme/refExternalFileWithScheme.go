@@ -2,24 +2,44 @@
 
 package test
 
-type Ref struct {
-	// MyThing corresponds to the JSON schema field "myThing".
-	MyThing *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
+type RefExternalFileWithSchemeJson struct {
+	// myexternalthing corresponds to the JSON schema field "myExternalThing".
+	myexternalthing *Thing `json:"myExternalThing,omitempty,omitzero" yaml:"myExternalThing,omitempty" mapstructure:"myExternalThing,omitempty"`
 
-	// MyThing2 corresponds to the JSON schema field "myThing2".
-	MyThing2 *Thing `json:"myThing2,omitempty,omitzero" yaml:"myThing2,omitempty" mapstructure:"myThing2,omitempty"`
+	// someotherexternalthing corresponds to the JSON schema field
+	// "someOtherExternalThing".
+	someotherexternalthing *Thing `json:"someOtherExternalThing,omitempty,omitzero" yaml:"someOtherExternalThing,omitempty" mapstructure:"someOtherExternalThing,omitempty"`
 }
 
-type RefExternalFileWithScheme struct {
-	// MyExternalThing corresponds to the JSON schema field "myExternalThing".
-	MyExternalThing *Thing `json:"myExternalThing,omitempty,omitzero" yaml:"myExternalThing,omitempty" mapstructure:"myExternalThing,omitempty"`
+func (o *RefExternalFileWithSchemeJson) MyExternalThing() *Thing {
+	return o.myexternalthing
+}
 
-	// SomeOtherExternalThing corresponds to the JSON schema field
-	// "someOtherExternalThing".
-	SomeOtherExternalThing *Thing `json:"someOtherExternalThing,omitempty,omitzero" yaml:"someOtherExternalThing,omitempty" mapstructure:"someOtherExternalThing,omitempty"`
+func (o *RefExternalFileWithSchemeJson) SomeOtherExternalThing() *Thing {
+	return o.someotherexternalthing
+}
+
+type RefJson struct {
+	// mything corresponds to the JSON schema field "myThing".
+	mything *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
+
+	// mything2 corresponds to the JSON schema field "myThing2".
+	mything2 *Thing `json:"myThing2,omitempty,omitzero" yaml:"myThing2,omitempty" mapstructure:"myThing2,omitempty"`
+}
+
+func (o *RefJson) MyThing() *Thing {
+	return o.mything
+}
+
+func (o *RefJson) MyThing2() *Thing {
+	return o.mything2
 }
 
 type Thing struct {
-	// Name corresponds to the JSON schema field "name".
-	Name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+	// name corresponds to the JSON schema field "name".
+	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+}
+
+func (o *Thing) Name() *string {
+	return o.name
 }

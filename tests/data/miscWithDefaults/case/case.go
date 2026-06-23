@@ -2,22 +2,46 @@
 
 package test
 
-type Case struct {
-	// CapitalCamelField corresponds to the JSON schema field "CapitalCamelField".
-	CapitalCamelField *string `json:"CapitalCamelField,omitempty,omitzero" yaml:"CapitalCamelField,omitempty" mapstructure:"CapitalCamelField,omitempty"`
+type CaseJson struct {
+	// capitalcamelfield corresponds to the JSON schema field "CapitalCamelField".
+	capitalcamelfield *string `json:"CapitalCamelField,omitempty,omitzero" yaml:"CapitalCamelField,omitempty" mapstructure:"CapitalCamelField,omitempty"`
 
-	// UPPERCASEFIELD corresponds to the JSON schema field "UPPERCASEFIELD".
-	UPPERCASEFIELD *string `json:"UPPERCASEFIELD,omitempty,omitzero" yaml:"UPPERCASEFIELD,omitempty" mapstructure:"UPPERCASEFIELD,omitempty"`
+	// uppercasefield corresponds to the JSON schema field "UPPERCASEFIELD".
+	uppercasefield *string `json:"UPPERCASEFIELD,omitempty,omitzero" yaml:"UPPERCASEFIELD,omitempty" mapstructure:"UPPERCASEFIELD,omitempty"`
 
-	// CamelCase corresponds to the JSON schema field "camelCase".
-	CamelCase *string `json:"camelCase,omitempty,omitzero" yaml:"camelCase,omitempty" mapstructure:"camelCase,omitempty"`
+	// camelcase corresponds to the JSON schema field "camelCase".
+	camelcase *string `json:"camelCase,omitempty,omitzero" yaml:"camelCase,omitempty" mapstructure:"camelCase,omitempty"`
 
-	// Lowercase corresponds to the JSON schema field "lowercase".
-	Lowercase *string `json:"lowercase,omitempty,omitzero" yaml:"lowercase,omitempty" mapstructure:"lowercase,omitempty"`
+	// lowercase corresponds to the JSON schema field "lowercase".
+	lowercase *string `json:"lowercase,omitempty,omitzero" yaml:"lowercase,omitempty" mapstructure:"lowercase,omitempty"`
 
-	// SnakeMixedCase corresponds to the JSON schema field "snake_Mixed_Case".
-	SnakeMixedCase *string `json:"snake_Mixed_Case,omitempty,omitzero" yaml:"snake_Mixed_Case,omitempty" mapstructure:"snake_Mixed_Case,omitempty"`
+	// snakemixedcase corresponds to the JSON schema field "snake_Mixed_Case".
+	snakemixedcase *string `json:"snake_Mixed_Case,omitempty,omitzero" yaml:"snake_Mixed_Case,omitempty" mapstructure:"snake_Mixed_Case,omitempty"`
 
-	// SnakeCase corresponds to the JSON schema field "snake_case".
-	SnakeCase *string `json:"snake_case,omitempty,omitzero" yaml:"snake_case,omitempty" mapstructure:"snake_case,omitempty"`
+	// snakecase corresponds to the JSON schema field "snake_case".
+	snakecase *string `json:"snake_case,omitempty,omitzero" yaml:"snake_case,omitempty" mapstructure:"snake_case,omitempty"`
+}
+
+func (o *CaseJson) CamelCase() *string {
+	return o.camelcase
+}
+
+func (o *CaseJson) CapitalCamelField() *string {
+	return o.capitalcamelfield
+}
+
+func (o *CaseJson) Lowercase() *string {
+	return o.lowercase
+}
+
+func (o *CaseJson) SnakeCase() *string {
+	return o.snakecase
+}
+
+func (o *CaseJson) SnakeMixedCase() *string {
+	return o.snakemixedcase
+}
+
+func (o *CaseJson) UPPERCASEFIELD() *string {
+	return o.uppercasefield
 }

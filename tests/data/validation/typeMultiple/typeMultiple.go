@@ -2,20 +2,40 @@
 
 package test
 
-type TypeMultiple struct {
-	// All corresponds to the JSON schema field "all".
-	All interface{} `json:"all,omitempty,omitzero" yaml:"all,omitempty" mapstructure:"all,omitempty"`
+type TypeMultipleJson struct {
+	// all corresponds to the JSON schema field "all".
+	all interface{} `json:"all,omitempty,omitzero" yaml:"all,omitempty" mapstructure:"all,omitempty"`
 
-	// AllPrimitives corresponds to the JSON schema field "allPrimitives".
-	AllPrimitives interface{} `json:"allPrimitives,omitempty,omitzero" yaml:"allPrimitives,omitempty" mapstructure:"allPrimitives,omitempty"`
+	// allprimitives corresponds to the JSON schema field "allPrimitives".
+	allprimitives interface{} `json:"allPrimitives,omitempty,omitzero" yaml:"allPrimitives,omitempty" mapstructure:"allPrimitives,omitempty"`
 
-	// ArrayOfAll corresponds to the JSON schema field "arrayOfAll".
-	ArrayOfAll []interface{} `json:"arrayOfAll,omitempty,omitzero" yaml:"arrayOfAll,omitempty" mapstructure:"arrayOfAll,omitempty"`
+	// arrayofall corresponds to the JSON schema field "arrayOfAll".
+	arrayofall []interface{} `json:"arrayOfAll,omitempty,omitzero" yaml:"arrayOfAll,omitempty" mapstructure:"arrayOfAll,omitempty"`
 
-	// ArrayOfAllPrimitives corresponds to the JSON schema field
+	// arrayofallprimitives corresponds to the JSON schema field
 	// "arrayOfAllPrimitives".
-	ArrayOfAllPrimitives []interface{} `json:"arrayOfAllPrimitives,omitempty,omitzero" yaml:"arrayOfAllPrimitives,omitempty" mapstructure:"arrayOfAllPrimitives,omitempty"`
+	arrayofallprimitives []interface{} `json:"arrayOfAllPrimitives,omitempty,omitzero" yaml:"arrayOfAllPrimitives,omitempty" mapstructure:"arrayOfAllPrimitives,omitempty"`
 
-	// OnlyTwoOptions corresponds to the JSON schema field "onlyTwoOptions".
-	OnlyTwoOptions interface{} `json:"onlyTwoOptions,omitempty,omitzero" yaml:"onlyTwoOptions,omitempty" mapstructure:"onlyTwoOptions,omitempty"`
+	// onlytwooptions corresponds to the JSON schema field "onlyTwoOptions".
+	onlytwooptions interface{} `json:"onlyTwoOptions,omitempty,omitzero" yaml:"onlyTwoOptions,omitempty" mapstructure:"onlyTwoOptions,omitempty"`
+}
+
+func (o *TypeMultipleJson) All() interface{} {
+	return o.all
+}
+
+func (o *TypeMultipleJson) AllPrimitives() interface{} {
+	return o.allprimitives
+}
+
+func (o *TypeMultipleJson) ArrayOfAll() []interface{} {
+	return o.arrayofall
+}
+
+func (o *TypeMultipleJson) ArrayOfAllPrimitives() []interface{} {
+	return o.arrayofallprimitives
+}
+
+func (o *TypeMultipleJson) OnlyTwoOptions() interface{} {
+	return o.onlytwooptions
 }

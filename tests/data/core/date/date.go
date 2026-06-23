@@ -5,50 +5,44 @@ package test
 import "encoding/json"
 import "fmt"
 import "github.com/atombender/go-jsonschema/pkg/types"
-import yaml "gopkg.in/yaml.v3"
 
-type Date struct {
-	// MyObject corresponds to the JSON schema field "myObject".
-	MyObject *DateMyObject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+type DateJson struct {
+	// myobject corresponds to the JSON schema field "myObject".
+	myobject *DateJsonmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
-type DateMyObject struct {
-	// MyDate corresponds to the JSON schema field "myDate".
-	MyDate types.SerializableDate `json:"myDate" yaml:"myDate" mapstructure:"myDate"`
+func (o *DateJson) MyObject() *DateJsonmyobject {
+	return o.myobject
+}
+
+type DateJsonmyobject struct {
+	// mydate corresponds to the JSON schema field "myDate".
+	mydate types.SerializableDate `json:"myDate" yaml:"myDate" mapstructure:"myDate"`
+}
+
+func (o *DateJsonmyobject) MyDate() types.SerializableDate {
+	return o.mydate
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *DateMyObject) UnmarshalJSON(value []byte) error {
+func (j *DateJsonmyobject) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myDate"]; raw != nil && !ok {
-		return fmt.Errorf("field myDate in DateMyObject: required")
+		return fmt.Errorf("field myDate in DateJsonmyobject: required")
 	}
-	type Plain DateMyObject
+	type DateJsonmyobjectHelper struct {
+		Mydate types.SerializableDate `json:"myDate"`
+	}
+	type Plain DateJsonmyobject
+	var helper DateJsonmyobjectHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = DateMyObject(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *DateMyObject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myDate"]; raw != nil && !ok {
-		return fmt.Errorf("field myDate in DateMyObject: required")
-	}
-	type Plain DateMyObject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = DateMyObject(plain)
+	plain.mydate = helper.Mydate
+	*j = DateJsonmyobject(plain)
 	return nil
 }

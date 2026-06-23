@@ -4,85 +4,128 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "time"
 
 // Base definition for all elements in a resource.
 type Element struct {
 	// Additional content defined by implementations.
-	Extension []string `json:"extension,omitempty,omitzero" yaml:"extension,omitempty" mapstructure:"extension,omitempty"`
+	extension []string `json:"extension,omitempty,omitzero" yaml:"extension,omitempty" mapstructure:"extension,omitempty"`
 
 	// Unique id for the element within a resource (for internal references).
-	Id *string `json:"id,omitempty,omitzero" yaml:"id,omitempty" mapstructure:"id,omitempty"`
+	id *string `json:"id,omitempty,omitzero" yaml:"id,omitempty" mapstructure:"id,omitempty"`
 
 	// Name for the element
-	Name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+}
+
+func (o *Element) Extension() []string {
+	return o.extension
+}
+
+func (o *Element) Id() *string {
+	return o.id
+}
+
+func (o *Element) Name() *string {
+	return o.name
 }
 
 // see http://hl7.org/fhir/json.html#schema for information about the FHIR Json
 // Schemas
-type Issue6 struct {
+type Issue6Json struct {
 	// A human's name with the ability to identify parts and usage.
-	Name *Issue6Name `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+	name *Issue6Jsonname `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+}
+
+func (o *Issue6Json) Name() *Issue6Jsonname {
+	return o.name
 }
 
 // A human's name with the ability to identify parts and usage.
-type Issue6Name struct {
+type Issue6Jsonname struct {
 	// Extensions for family
-	Family *Element `json:"_family,omitempty,omitzero" yaml:"_family,omitempty" mapstructure:"_family,omitempty"`
+	family *Element `json:"_family,omitempty,omitzero" yaml:"_family,omitempty" mapstructure:"_family,omitempty"`
 
 	// Extensions for given
-	Given []Element `json:"_given,omitempty,omitzero" yaml:"_given,omitempty" mapstructure:"_given,omitempty"`
+	given []Element `json:"_given,omitempty,omitzero" yaml:"_given,omitempty" mapstructure:"_given,omitempty"`
 
 	// Extensions for prefix
-	Prefix []Element `json:"_prefix,omitempty,omitzero" yaml:"_prefix,omitempty" mapstructure:"_prefix,omitempty"`
+	prefix []Element `json:"_prefix,omitempty,omitzero" yaml:"_prefix,omitempty" mapstructure:"_prefix,omitempty"`
 
 	// Extensions for suffix
-	Suffix []Element `json:"_suffix,omitempty,omitzero" yaml:"_suffix,omitempty" mapstructure:"_suffix,omitempty"`
+	suffix []Element `json:"_suffix,omitempty,omitzero" yaml:"_suffix,omitempty" mapstructure:"_suffix,omitempty"`
 
 	// Extensions for text
-	Text *Element `json:"_text,omitempty,omitzero" yaml:"_text,omitempty" mapstructure:"_text,omitempty"`
+	text *Element `json:"_text,omitempty,omitzero" yaml:"_text,omitempty" mapstructure:"_text,omitempty"`
 
 	// Extensions for use
-	Use *Element `json:"_use,omitempty,omitzero" yaml:"_use,omitempty" mapstructure:"_use,omitempty"`
+	use *Element `json:"_use,omitempty,omitzero" yaml:"_use,omitempty" mapstructure:"_use,omitempty"`
 
 	// The part of a name that links to the genealogy. In some cultures (e.g. Eritrea)
 	// the family name of a son is the first name of his father.
-	Family_2 *string `json:"family,omitempty,omitzero" yaml:"family,omitempty" mapstructure:"family,omitempty"`
+	family_2 *string `json:"family,omitempty,omitzero" yaml:"family,omitempty" mapstructure:"family,omitempty"`
 
 	// Given name.
-	Given_2 []string `json:"given,omitempty,omitzero" yaml:"given,omitempty" mapstructure:"given,omitempty"`
+	given_2 []string `json:"given,omitempty,omitzero" yaml:"given,omitempty" mapstructure:"given,omitempty"`
 
 	// Indicates the period of time when this name was valid for the named person.
-	Period *Period `json:"period,omitempty,omitzero" yaml:"period,omitempty" mapstructure:"period,omitempty"`
+	period *Period `json:"period,omitempty,omitzero" yaml:"period,omitempty" mapstructure:"period,omitempty"`
 
 	// Part of the name that is acquired as a title due to academic, legal, employment
 	// or nobility status, etc. and that appears at the start of the name.
-	Prefix_2 []string `json:"prefix,omitempty,omitzero" yaml:"prefix,omitempty" mapstructure:"prefix,omitempty"`
+	prefix_2 []string `json:"prefix,omitempty,omitzero" yaml:"prefix,omitempty" mapstructure:"prefix,omitempty"`
 
 	// Part of the name that is acquired as a title due to academic, legal, employment
 	// or nobility status, etc. and that appears at the end of the name.
-	Suffix_2 []string `json:"suffix,omitempty,omitzero" yaml:"suffix,omitempty" mapstructure:"suffix,omitempty"`
+	suffix_2 []string `json:"suffix,omitempty,omitzero" yaml:"suffix,omitempty" mapstructure:"suffix,omitempty"`
 
 	// A full text representation of the name.
-	Text_2 *string `json:"text,omitempty,omitzero" yaml:"text,omitempty" mapstructure:"text,omitempty"`
+	text_2 *string `json:"text,omitempty,omitzero" yaml:"text,omitempty" mapstructure:"text,omitempty"`
 
 	// Identifies the purpose for this name.
-	Use_2 *Issue6NameUse_2 `json:"use,omitempty,omitzero" yaml:"use,omitempty" mapstructure:"use,omitempty"`
+	use_2 *Issue6Jsonnameuse_2 `json:"use,omitempty,omitzero" yaml:"use,omitempty" mapstructure:"use,omitempty"`
 }
 
-type Issue6NameUse_2 string
+func (o *Issue6Jsonname) Family() *Element {
+	return o.family
+}
 
-const Issue6NameUse_2_Anonymous Issue6NameUse_2 = "anonymous"
-const Issue6NameUse_2_Maiden Issue6NameUse_2 = "maiden"
-const Issue6NameUse_2_Nickname Issue6NameUse_2 = "nickname"
-const Issue6NameUse_2_Official Issue6NameUse_2 = "official"
-const Issue6NameUse_2_Old Issue6NameUse_2 = "old"
-const Issue6NameUse_2_Temp Issue6NameUse_2 = "temp"
-const Issue6NameUse_2_Usual Issue6NameUse_2 = "usual"
+func (o *Issue6Jsonname) Given() []Element {
+	return o.given
+}
 
-var enumValues_Issue6NameUse_2 = []interface{}{
+func (o *Issue6Jsonname) Period() *Period {
+	return o.period
+}
+
+func (o *Issue6Jsonname) Prefix() []Element {
+	return o.prefix
+}
+
+func (o *Issue6Jsonname) Suffix() []Element {
+	return o.suffix
+}
+
+func (o *Issue6Jsonname) Text() *Element {
+	return o.text
+}
+
+func (o *Issue6Jsonname) Use() *Element {
+	return o.use
+}
+
+type Issue6Jsonnameuse_2 string
+
+const Issue6Jsonnameuse_2_Anonymous Issue6Jsonnameuse_2 = "anonymous"
+const Issue6Jsonnameuse_2_Maiden Issue6Jsonnameuse_2 = "maiden"
+const Issue6Jsonnameuse_2_Nickname Issue6Jsonnameuse_2 = "nickname"
+const Issue6Jsonnameuse_2_Official Issue6Jsonnameuse_2 = "official"
+const Issue6Jsonnameuse_2_Old Issue6Jsonnameuse_2 = "old"
+const Issue6Jsonnameuse_2_Temp Issue6Jsonnameuse_2 = "temp"
+const Issue6Jsonnameuse_2_Usual Issue6Jsonnameuse_2 = "usual"
+
+var enumValues_Issue6Jsonnameuse_2 = []interface{}{
 	"usual",
 	"official",
 	"temp",
@@ -92,43 +135,23 @@ var enumValues_Issue6NameUse_2 = []interface{}{
 	"maiden",
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Issue6NameUse_2) UnmarshalYAML(value *yaml.Node) error {
-	var v string
-	if err := value.Decode(&v); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_Issue6NameUse_2 {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_Issue6NameUse_2, v)
-	}
-	*j = Issue6NameUse_2(v)
-	return nil
-}
-
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *Issue6NameUse_2) UnmarshalJSON(value []byte) error {
+func (j *Issue6Jsonnameuse_2) UnmarshalJSON(value []byte) error {
 	var v string
 	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
-	for _, expected := range enumValues_Issue6NameUse_2 {
+	for _, expected := range enumValues_Issue6Jsonnameuse_2 {
 		if reflect.DeepEqual(v, expected) {
 			ok = true
 			break
 		}
 	}
 	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_Issue6NameUse_2, v)
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_Issue6Jsonnameuse_2, v)
 	}
-	*j = Issue6NameUse_2(v)
+	*j = Issue6Jsonnameuse_2(v)
 	return nil
 }
 
@@ -136,8 +159,16 @@ func (j *Issue6NameUse_2) UnmarshalJSON(value []byte) error {
 type Period struct {
 	// The end of the period. If the end of the period is missing, it means that the
 	// period is ongoing.
-	End *time.Time `json:"end,omitempty,omitzero" yaml:"end,omitempty" mapstructure:"end,omitempty"`
+	end *time.Time `json:"end,omitempty,omitzero" yaml:"end,omitempty" mapstructure:"end,omitempty"`
 
 	// The start of the period. The boundary is inclusive.
-	Start *time.Time `json:"start,omitempty,omitzero" yaml:"start,omitempty" mapstructure:"start,omitempty"`
+	start *time.Time `json:"start,omitempty,omitzero" yaml:"start,omitempty" mapstructure:"start,omitempty"`
+}
+
+func (o *Period) End() *time.Time {
+	return o.end
+}
+
+func (o *Period) Start() *time.Time {
+	return o.start
 }

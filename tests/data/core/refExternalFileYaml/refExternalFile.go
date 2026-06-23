@@ -2,16 +2,28 @@
 
 package test
 
-type RefExternalFile struct {
-	// MyExternalThing corresponds to the JSON schema field "myExternalThing".
-	MyExternalThing *YamlStructNameFromFile `json:"myExternalThing,omitempty,omitzero" yaml:"myExternalThing,omitempty" mapstructure:"myExternalThing,omitempty"`
+type RefExternalFileJson struct {
+	// myexternalthing corresponds to the JSON schema field "myExternalThing".
+	myexternalthing *YamlStructNameFromFileYaml `json:"myExternalThing,omitempty,omitzero" yaml:"myExternalThing,omitempty" mapstructure:"myExternalThing,omitempty"`
 
-	// SomeOtherExternalThing corresponds to the JSON schema field
+	// someotherexternalthing corresponds to the JSON schema field
 	// "someOtherExternalThing".
-	SomeOtherExternalThing *YamlStructNameFromFile `json:"someOtherExternalThing,omitempty,omitzero" yaml:"someOtherExternalThing,omitempty" mapstructure:"someOtherExternalThing,omitempty"`
+	someotherexternalthing *YamlStructNameFromFileYaml `json:"someOtherExternalThing,omitempty,omitzero" yaml:"someOtherExternalThing,omitempty" mapstructure:"someOtherExternalThing,omitempty"`
 }
 
-type YamlStructNameFromFile struct {
-	// Foo corresponds to the JSON schema field "foo".
-	Foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
+func (o *RefExternalFileJson) MyExternalThing() *YamlStructNameFromFileYaml {
+	return o.myexternalthing
+}
+
+func (o *RefExternalFileJson) SomeOtherExternalThing() *YamlStructNameFromFileYaml {
+	return o.someotherexternalthing
+}
+
+type YamlStructNameFromFileYaml struct {
+	// foo corresponds to the JSON schema field "foo".
+	foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
+}
+
+func (o *YamlStructNameFromFileYaml) Foo() *string {
+	return o.foo
 }

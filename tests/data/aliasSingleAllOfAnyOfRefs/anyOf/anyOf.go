@@ -3,35 +3,71 @@
 package test
 
 import "encoding/json"
-import yaml "gopkg.in/yaml.v3"
+import "errors"
+import "fmt"
 
 type Thing struct {
-	// Values corresponds to the JSON schema field "values".
-	Values []Value `json:"values,omitempty,omitzero" yaml:"values,omitempty" mapstructure:"values,omitempty"`
+	// values corresponds to the JSON schema field "values".
+	values []Value `json:"values,omitempty,omitzero" yaml:"values,omitempty" mapstructure:"values,omitempty"`
+}
+
+func (o *Thing) Values() []Value {
+	return o.values
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Thing) UnmarshalJSON(value []byte) error {
+	type ThingHelper struct {
+		Values []Value `json:"values",omitempty`
+	}
 	type Plain Thing
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	var helper ThingHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
-	*j = Thing(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Thing
 	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
+	plain.values = helper.Values
 	*j = Thing(plain)
 	return nil
 }
 
 type Value float64
 
-type AnyOf = Thing
+type AnyOfJson_0 = Thing
+
+type AnyOfJson struct {
+	// values corresponds to the JSON schema field "values".
+	values []Value `json:"values,omitempty,omitzero" yaml:"values,omitempty" mapstructure:"values,omitempty"`
+}
+
+func (o *AnyOfJson) Values() []Value {
+	return o.values
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *AnyOfJson) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	var anyOfJson_0 AnyOfJson_0
+	var errs []error
+	if err := anyOfJson_0.UnmarshalJSON(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 1 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type AnyOfJsonHelper struct {
+		Values []Value `json:"values",omitempty`
+	}
+	type Plain AnyOfJson
+	var helper AnyOfJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.values = helper.Values
+	*j = AnyOfJson(plain)
+	return nil
+}

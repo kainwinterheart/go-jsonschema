@@ -4,97 +4,84 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 import "math"
 
-type MultipleOf struct {
-	// MyInteger corresponds to the JSON schema field "myInteger".
-	MyInteger int `json:"myInteger" yaml:"myInteger" mapstructure:"myInteger"`
+type MultipleOfJson struct {
+	// myinteger corresponds to the JSON schema field "myInteger".
+	myinteger int `json:"myInteger" yaml:"myInteger" mapstructure:"myInteger"`
 
-	// MyNullableInteger corresponds to the JSON schema field "myNullableInteger".
-	MyNullableInteger *int `json:"myNullableInteger,omitempty,omitzero" yaml:"myNullableInteger,omitempty" mapstructure:"myNullableInteger,omitempty"`
+	// mynullableinteger corresponds to the JSON schema field "myNullableInteger".
+	mynullableinteger *int `json:"myNullableInteger,omitempty,omitzero" yaml:"myNullableInteger,omitempty" mapstructure:"myNullableInteger,omitempty"`
 
-	// MyNullableNumber corresponds to the JSON schema field "myNullableNumber".
-	MyNullableNumber *float64 `json:"myNullableNumber,omitempty,omitzero" yaml:"myNullableNumber,omitempty" mapstructure:"myNullableNumber,omitempty"`
+	// mynullablenumber corresponds to the JSON schema field "myNullableNumber".
+	mynullablenumber *float64 `json:"myNullableNumber,omitempty,omitzero" yaml:"myNullableNumber,omitempty" mapstructure:"myNullableNumber,omitempty"`
 
-	// MyNumber corresponds to the JSON schema field "myNumber".
-	MyNumber float64 `json:"myNumber" yaml:"myNumber" mapstructure:"myNumber"`
+	// mynumber corresponds to the JSON schema field "myNumber".
+	mynumber float64 `json:"myNumber" yaml:"myNumber" mapstructure:"myNumber"`
+}
+
+func (o *MultipleOfJson) MyInteger() int {
+	return o.myinteger
+}
+
+func (o *MultipleOfJson) MyNullableInteger() *int {
+	return o.mynullableinteger
+}
+
+func (o *MultipleOfJson) MyNullableNumber() *float64 {
+	return o.mynullablenumber
+}
+
+func (o *MultipleOfJson) MyNumber() float64 {
+	return o.mynumber
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *MultipleOf) UnmarshalJSON(value []byte) error {
+func (j *MultipleOfJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myInteger"]; raw != nil && !ok {
-		return fmt.Errorf("field myInteger in MultipleOf: required")
+		return fmt.Errorf("field myInteger in MultipleOfJson: required")
 	}
 	if _, ok := raw["myNumber"]; raw != nil && !ok {
-		return fmt.Errorf("field myNumber in MultipleOf: required")
+		return fmt.Errorf("field myNumber in MultipleOfJson: required")
 	}
-	type Plain MultipleOf
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	type MultipleOfJsonHelper struct {
+		Myinteger         int      `json:"myInteger"`
+		Mynullableinteger *int     `json:"myNullableInteger",omitempty`
+		Mynullablenumber  *float64 `json:"myNullableNumber",omitempty`
+		Mynumber          float64  `json:"myNumber"`
+	}
+	type Plain MultipleOfJson
+	var helper MultipleOfJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
-	if plain.MyInteger%2 != 0 {
+	var plain Plain
+	plain.myinteger = helper.Myinteger
+	plain.mynullableinteger = helper.Mynullableinteger
+	plain.mynullablenumber = helper.Mynullablenumber
+	plain.mynumber = helper.Mynumber
+	if plain.myinteger%2 != 0 {
 		return fmt.Errorf("field %s: must be a multiple of %v", "myInteger", 2.000000)
 	}
-	if plain.MyNullableInteger != nil && *plain.MyNullableInteger%2 != 0 {
+	if plain.mynullableinteger != nil && *plain.mynullableinteger%2 != 0 {
 		return fmt.Errorf("field %s: must be a multiple of %v", "myNullableInteger", 2.000000)
 	}
-	if plain.MyNullableNumber != nil {
-		remainder := math.Mod(*plain.MyNullableNumber, 0.2)
+	if plain.mynullablenumber != nil {
+		remainder := math.Mod(*plain.mynullablenumber, 0.2)
 		if !(math.Abs(remainder) < 1e-10 || math.Abs(remainder-0.2) < 1e-10) {
 			return fmt.Errorf("field %s: must be a multiple of %v", "myNullableNumber", 0.200000)
 		}
 	}
 	{
-		remainder := math.Mod(plain.MyNumber, 0.2)
+		remainder := math.Mod(plain.mynumber, 0.2)
 		if !(math.Abs(remainder) < 1e-10 || math.Abs(remainder-0.2) < 1e-10) {
 			return fmt.Errorf("field %s: must be a multiple of %v", "myNumber", 0.200000)
 		}
 	}
-	*j = MultipleOf(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *MultipleOf) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myInteger"]; raw != nil && !ok {
-		return fmt.Errorf("field myInteger in MultipleOf: required")
-	}
-	if _, ok := raw["myNumber"]; raw != nil && !ok {
-		return fmt.Errorf("field myNumber in MultipleOf: required")
-	}
-	type Plain MultipleOf
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.MyInteger%2 != 0 {
-		return fmt.Errorf("field %s: must be a multiple of %v", "myInteger", 2.000000)
-	}
-	if plain.MyNullableInteger != nil && *plain.MyNullableInteger%2 != 0 {
-		return fmt.Errorf("field %s: must be a multiple of %v", "myNullableInteger", 2.000000)
-	}
-	if plain.MyNullableNumber != nil {
-		remainder := math.Mod(*plain.MyNullableNumber, 0.2)
-		if !(math.Abs(remainder) < 1e-10 || math.Abs(remainder-0.2) < 1e-10) {
-			return fmt.Errorf("field %s: must be a multiple of %v", "myNullableNumber", 0.200000)
-		}
-	}
-	{
-		remainder := math.Mod(plain.MyNumber, 0.2)
-		if !(math.Abs(remainder) < 1e-10 || math.Abs(remainder-0.2) < 1e-10) {
-			return fmt.Errorf("field %s: must be a multiple of %v", "myNumber", 0.200000)
-		}
-	}
-	*j = MultipleOf(plain)
+	*j = MultipleOfJson(plain)
 	return nil
 }

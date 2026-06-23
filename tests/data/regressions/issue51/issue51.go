@@ -2,9 +2,13 @@
 
 package test
 
-type Issue51 struct {
-	// Name corresponds to the JSON schema field "name".
-	Name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+type Issue51Json struct {
+	// name corresponds to the JSON schema field "name".
+	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
+}
+
+func (o *Issue51Json) Name() *string {
+	return o.name
 }

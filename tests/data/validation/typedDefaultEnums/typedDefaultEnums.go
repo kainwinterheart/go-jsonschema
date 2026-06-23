@@ -4,96 +4,66 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 import "reflect"
 
-type TypedDefaultEnums struct {
-	// Some corresponds to the JSON schema field "some".
-	Some TypedDefaultEnumsSome `json:"some,omitempty,omitzero" yaml:"some,omitempty" mapstructure:"some,omitempty"`
+type TypedDefaultEnumsJson struct {
+	// some corresponds to the JSON schema field "some".
+	some TypedDefaultEnumsJsonsome `json:"some,omitempty,omitzero" yaml:"some,omitempty" mapstructure:"some,omitempty"`
 }
 
-type TypedDefaultEnumsSome string
+func (o *TypedDefaultEnumsJson) Some() TypedDefaultEnumsJsonsome {
+	return o.some
+}
 
-const TypedDefaultEnumsSomeOther TypedDefaultEnumsSome = "other"
-const TypedDefaultEnumsSomeRandom TypedDefaultEnumsSome = "random"
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *TypedDefaultEnumsJson) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	type TypedDefaultEnumsJsonHelper struct {
+		Some TypedDefaultEnumsJsonsome `json:"some",omitempty`
+	}
+	type Plain TypedDefaultEnumsJson
+	var helper TypedDefaultEnumsJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.some = helper.Some
+	if v, ok := raw["some"]; !ok || v == nil {
+		plain.some = "random"
+	}
+	*j = TypedDefaultEnumsJson(plain)
+	return nil
+}
 
-var enumValues_TypedDefaultEnumsSome = []interface{}{
+type TypedDefaultEnumsJsonsome string
+
+const TypedDefaultEnumsJsonsomeOther TypedDefaultEnumsJsonsome = "other"
+const TypedDefaultEnumsJsonsomeRandom TypedDefaultEnumsJsonsome = "random"
+
+var enumValues_TypedDefaultEnumsJsonsome = []interface{}{
 	"random",
 	"other",
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *TypedDefaultEnumsSome) UnmarshalJSON(value []byte) error {
+func (j *TypedDefaultEnumsJsonsome) UnmarshalJSON(value []byte) error {
 	var v string
 	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
-	for _, expected := range enumValues_TypedDefaultEnumsSome {
+	for _, expected := range enumValues_TypedDefaultEnumsJsonsome {
 		if reflect.DeepEqual(v, expected) {
 			ok = true
 			break
 		}
 	}
 	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_TypedDefaultEnumsSome, v)
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_TypedDefaultEnumsJsonsome, v)
 	}
-	*j = TypedDefaultEnumsSome(v)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *TypedDefaultEnumsSome) UnmarshalYAML(value *yaml.Node) error {
-	var v string
-	if err := value.Decode(&v); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_TypedDefaultEnumsSome {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_TypedDefaultEnumsSome, v)
-	}
-	*j = TypedDefaultEnumsSome(v)
-	return nil
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *TypedDefaultEnums) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	type Plain TypedDefaultEnums
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if v, ok := raw["some"]; !ok || v == nil {
-		plain.Some = "random"
-	}
-	*j = TypedDefaultEnums(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *TypedDefaultEnums) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	type Plain TypedDefaultEnums
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if v, ok := raw["some"]; !ok || v == nil {
-		plain.Some = "random"
-	}
-	*j = TypedDefaultEnums(plain)
+	*j = TypedDefaultEnumsJsonsome(v)
 	return nil
 }

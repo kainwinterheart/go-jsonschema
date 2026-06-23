@@ -2,9 +2,13 @@
 
 package test
 
-type Map struct {
-	// MyMap corresponds to the JSON schema field "myMap".
-	MyMap MapMyMap `json:"myMap,omitempty,omitzero" yaml:"myMap,omitempty" mapstructure:"myMap,omitempty"`
+type MapJson struct {
+	// mymap corresponds to the JSON schema field "myMap".
+	mymap MapJsonmymap `json:"myMap,omitempty,omitzero" yaml:"myMap,omitempty" mapstructure:"myMap,omitempty"`
 }
 
-type MapMyMap map[string]float64
+func (o *MapJson) MyMap() MapJsonmymap {
+	return o.mymap
+}
+
+type MapJsonmymap map[string]float64

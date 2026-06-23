@@ -2,7 +2,11 @@
 
 package test
 
-type Nillability struct {
-	// Name corresponds to the JSON schema field "name".
-	Name *map[bool]string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+type NillabilityJson struct {
+	// name corresponds to the JSON schema field "name".
+	name *map[bool]string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+}
+
+func (o *NillabilityJson) Name() *map[bool]string {
+	return o.name
 }

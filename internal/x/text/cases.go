@@ -60,7 +60,7 @@ func (c *Caser) Identifierize(s string) string {
 		return "Undefined"
 	}
 
-	if isGoKeyword(ident) {
+	if isGoKeyword(strings.ToLower(ident)) {
 		return "A" + ident
 	}
 

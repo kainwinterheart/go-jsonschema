@@ -2,7 +2,11 @@
 
 package test
 
-type ExtraTags struct {
-	// Name corresponds to the JSON schema field "name".
-	Name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty" a:"" b:"foo,bar" c:"baz"`
+type ExtraTagsJson struct {
+	// name corresponds to the JSON schema field "name".
+	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty" a:"" b:"foo,bar" c:"baz"`
+}
+
+func (o *ExtraTagsJson) Name() *string {
+	return o.name
 }

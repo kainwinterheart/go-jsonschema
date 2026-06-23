@@ -4,78 +4,67 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 import "regexp"
 
-type Pattern struct {
-	// MyEscapedString corresponds to the JSON schema field "myEscapedString".
-	MyEscapedString *string `json:"myEscapedString,omitempty,omitzero" yaml:"myEscapedString,omitempty" mapstructure:"myEscapedString,omitempty"`
+type PatternJson struct {
+	// myescapedstring corresponds to the JSON schema field "myEscapedString".
+	myescapedstring *string `json:"myEscapedString,omitempty,omitzero" yaml:"myEscapedString,omitempty" mapstructure:"myEscapedString,omitempty"`
 
-	// MyNullableString corresponds to the JSON schema field "myNullableString".
-	MyNullableString *string `json:"myNullableString,omitempty,omitzero" yaml:"myNullableString,omitempty" mapstructure:"myNullableString,omitempty"`
+	// mynullablestring corresponds to the JSON schema field "myNullableString".
+	mynullablestring *string `json:"myNullableString,omitempty,omitzero" yaml:"myNullableString,omitempty" mapstructure:"myNullableString,omitempty"`
 
-	// MyString corresponds to the JSON schema field "myString".
-	MyString string `json:"myString" yaml:"myString" mapstructure:"myString"`
+	// mystring corresponds to the JSON schema field "myString".
+	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
+}
+
+func (o *PatternJson) MyEscapedString() *string {
+	return o.myescapedstring
+}
+
+func (o *PatternJson) MyNullableString() *string {
+	return o.mynullablestring
+}
+
+func (o *PatternJson) MyString() string {
+	return o.mystring
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *Pattern) UnmarshalJSON(value []byte) error {
+func (j *PatternJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myString"]; raw != nil && !ok {
-		return fmt.Errorf("field myString in Pattern: required")
+		return fmt.Errorf("field myString in PatternJson: required")
 	}
-	type Plain Pattern
+	type PatternJsonHelper struct {
+		Myescapedstring  *string `json:"myEscapedString",omitempty`
+		Mynullablestring *string `json:"myNullableString",omitempty`
+		Mystring         string  `json:"myString"`
+	}
+	type Plain PatternJson
+	var helper PatternJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if plain.MyEscapedString != nil {
-		if matched, _ := regexp.MatchString(`^\$\{\{(.|[\r\n])*\}\}$`, string(*plain.MyEscapedString)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "MyEscapedString", `^\$\{\{(.|[\r\n])*\}\}$`)
+	plain.myescapedstring = helper.Myescapedstring
+	plain.mynullablestring = helper.Mynullablestring
+	plain.mystring = helper.Mystring
+	if plain.myescapedstring != nil {
+		if matched, _ := regexp.MatchString(`^\$\{\{(.|[\r\n])*\}\}$`, string(*plain.myescapedstring)); !matched {
+			return fmt.Errorf("field %s pattern match: must match %s", "myescapedstring", `^\$\{\{(.|[\r\n])*\}\}$`)
 		}
 	}
-	if plain.MyNullableString != nil {
-		if matched, _ := regexp.MatchString(`^0x[0-9a-f]{10}$`, string(*plain.MyNullableString)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "MyNullableString", `^0x[0-9a-f]{10}$`)
+	if plain.mynullablestring != nil {
+		if matched, _ := regexp.MatchString(`^0x[0-9a-f]{10}$`, string(*plain.mynullablestring)); !matched {
+			return fmt.Errorf("field %s pattern match: must match %s", "mynullablestring", `^0x[0-9a-f]{10}$`)
 		}
 	}
-	if matched, _ := regexp.MatchString(`^0x[0-9a-f]{10}\.$`, string(plain.MyString)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "MyString", `^0x[0-9a-f]{10}\.$`)
+	if matched, _ := regexp.MatchString(`^0x[0-9a-f]{10}\.$`, string(plain.mystring)); !matched {
+		return fmt.Errorf("field %s pattern match: must match %s", "mystring", `^0x[0-9a-f]{10}\.$`)
 	}
-	*j = Pattern(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Pattern) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myString"]; raw != nil && !ok {
-		return fmt.Errorf("field myString in Pattern: required")
-	}
-	type Plain Pattern
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.MyEscapedString != nil {
-		if matched, _ := regexp.MatchString(`^\$\{\{(.|[\r\n])*\}\}$`, string(*plain.MyEscapedString)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "MyEscapedString", `^\$\{\{(.|[\r\n])*\}\}$`)
-		}
-	}
-	if plain.MyNullableString != nil {
-		if matched, _ := regexp.MatchString(`^0x[0-9a-f]{10}$`, string(*plain.MyNullableString)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "MyNullableString", `^0x[0-9a-f]{10}$`)
-		}
-	}
-	if matched, _ := regexp.MatchString(`^0x[0-9a-f]{10}\.$`, string(plain.MyString)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "MyString", `^0x[0-9a-f]{10}\.$`)
-	}
-	*j = Pattern(plain)
+	*j = PatternJson(plain)
 	return nil
 }

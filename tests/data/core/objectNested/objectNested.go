@@ -2,17 +2,29 @@
 
 package test
 
-type ObjectNested struct {
-	// MyObject corresponds to the JSON schema field "myObject".
-	MyObject *ObjectNestedMyObject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+type ObjectNestedJson struct {
+	// myobject corresponds to the JSON schema field "myObject".
+	myobject *ObjectNestedJsonmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
-type ObjectNestedMyObject struct {
-	// MyObject corresponds to the JSON schema field "myObject".
-	MyObject *ObjectNestedMyObjectMyObject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+func (o *ObjectNestedJson) MyObject() *ObjectNestedJsonmyobject {
+	return o.myobject
 }
 
-type ObjectNestedMyObjectMyObject struct {
-	// MyString corresponds to the JSON schema field "myString".
-	MyString *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
+type ObjectNestedJsonmyobject struct {
+	// myobject corresponds to the JSON schema field "myObject".
+	myobject *ObjectNestedJsonmyobjectmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+}
+
+func (o *ObjectNestedJsonmyobject) MyObject() *ObjectNestedJsonmyobjectmyobject {
+	return o.myobject
+}
+
+type ObjectNestedJsonmyobjectmyobject struct {
+	// mystring corresponds to the JSON schema field "myString".
+	mystring *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
+}
+
+func (o *ObjectNestedJsonmyobjectmyobject) MyString() *string {
+	return o.mystring
 }

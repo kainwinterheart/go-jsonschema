@@ -4,56 +4,48 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
-type MaxItems struct {
-	// MyNestedArray corresponds to the JSON schema field "myNestedArray".
-	MyNestedArray [][]interface{} `json:"myNestedArray,omitempty,omitzero" yaml:"myNestedArray,omitempty" mapstructure:"myNestedArray,omitempty"`
+type MaxItemsJson struct {
+	// mynestedarray corresponds to the JSON schema field "myNestedArray".
+	mynestedarray [][]interface{} `json:"myNestedArray,omitempty,omitzero" yaml:"myNestedArray,omitempty" mapstructure:"myNestedArray,omitempty"`
 
-	// MyStringArray corresponds to the JSON schema field "myStringArray".
-	MyStringArray []string `json:"myStringArray,omitempty,omitzero" yaml:"myStringArray,omitempty" mapstructure:"myStringArray,omitempty"`
+	// mystringarray corresponds to the JSON schema field "myStringArray".
+	mystringarray []string `json:"myStringArray,omitempty,omitzero" yaml:"myStringArray,omitempty" mapstructure:"myStringArray,omitempty"`
+}
+
+func (o *MaxItemsJson) MyNestedArray() [][]interface{} {
+	return o.mynestedarray
+}
+
+func (o *MaxItemsJson) MyStringArray() []string {
+	return o.mystringarray
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *MaxItems) UnmarshalJSON(value []byte) error {
-	type Plain MaxItems
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+func (j *MaxItemsJson) UnmarshalJSON(value []byte) error {
+	type MaxItemsJsonHelper struct {
+		Mynestedarray [][]interface{} `json:"myNestedArray",omitempty`
+		Mystringarray []string        `json:"myStringArray",omitempty`
+	}
+	type Plain MaxItemsJson
+	var helper MaxItemsJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
-	if len(plain.MyNestedArray) > 5 {
+	var plain Plain
+	plain.mynestedarray = helper.Mynestedarray
+	plain.mystringarray = helper.Mystringarray
+	if len(plain.mynestedarray) > 5 {
 		return fmt.Errorf("field %s length: must be <= %d", "myNestedArray", 5)
 	}
-	for i1 := range plain.MyNestedArray {
-		if len(plain.MyNestedArray[i1]) > 5 {
+	for i1 := range plain.mynestedarray {
+		if len(plain.mynestedarray[i1]) > 5 {
 			return fmt.Errorf("field %s length: must be <= %d", fmt.Sprintf("myNestedArray[%d]", i1), 5)
 		}
 	}
-	if len(plain.MyStringArray) > 5 {
+	if len(plain.mystringarray) > 5 {
 		return fmt.Errorf("field %s length: must be <= %d", "myStringArray", 5)
 	}
-	*j = MaxItems(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *MaxItems) UnmarshalYAML(value *yaml.Node) error {
-	type Plain MaxItems
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if len(plain.MyNestedArray) > 5 {
-		return fmt.Errorf("field %s length: must be <= %d", "myNestedArray", 5)
-	}
-	for i1 := range plain.MyNestedArray {
-		if len(plain.MyNestedArray[i1]) > 5 {
-			return fmt.Errorf("field %s length: must be <= %d", fmt.Sprintf("myNestedArray[%d]", i1), 5)
-		}
-	}
-	if len(plain.MyStringArray) > 5 {
-		return fmt.Errorf("field %s length: must be <= %d", "myStringArray", 5)
-	}
-	*j = MaxItems(plain)
+	*j = MaxItemsJson(plain)
 	return nil
 }

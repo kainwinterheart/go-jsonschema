@@ -182,7 +182,7 @@ func (v *defaultValidator) dumpDefaultValueAssignment(out *codegen.Emitter) (any
 				var b strings.Builder
 
 				for _, k := range sortedKeys(dvm) {
-					fmt.Fprintf(&b, "\n%s: %s,", upperFirst(k), litter.Sdump(dvm[k]))
+					fmt.Fprintf(&b, "\n%s: %s,", k, litter.Sdump(dvm[k]))
 				}
 
 				b.WriteString("\n")

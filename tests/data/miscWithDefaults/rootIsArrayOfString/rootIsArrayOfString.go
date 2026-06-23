@@ -2,4 +2,4 @@
 
 package test
 
-type RootIsArrayOfString []string
+type RootIsArrayOfStringJson []string

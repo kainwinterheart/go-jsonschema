@@ -4,50 +4,44 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
-type Object struct {
-	// MyObject corresponds to the JSON schema field "myObject".
-	MyObject *ObjectMyObject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+type ObjectJson struct {
+	// myobject corresponds to the JSON schema field "myObject".
+	myobject *ObjectJsonmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
-type ObjectMyObject struct {
-	// MyString corresponds to the JSON schema field "myString".
-	MyString string `json:"myString" yaml:"myString" mapstructure:"myString"`
+func (o *ObjectJson) MyObject() *ObjectJsonmyobject {
+	return o.myobject
+}
+
+type ObjectJsonmyobject struct {
+	// mystring corresponds to the JSON schema field "myString".
+	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
+}
+
+func (o *ObjectJsonmyobject) MyString() string {
+	return o.mystring
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ObjectMyObject) UnmarshalJSON(value []byte) error {
+func (j *ObjectJsonmyobject) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myString"]; raw != nil && !ok {
-		return fmt.Errorf("field myString in ObjectMyObject: required")
+		return fmt.Errorf("field myString in ObjectJsonmyobject: required")
 	}
-	type Plain ObjectMyObject
+	type ObjectJsonmyobjectHelper struct {
+		Mystring string `json:"myString"`
+	}
+	type Plain ObjectJsonmyobject
+	var helper ObjectJsonmyobjectHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = ObjectMyObject(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *ObjectMyObject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myString"]; raw != nil && !ok {
-		return fmt.Errorf("field myString in ObjectMyObject: required")
-	}
-	type Plain ObjectMyObject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = ObjectMyObject(plain)
+	plain.mystring = helper.Mystring
+	*j = ObjectJsonmyobject(plain)
 	return nil
 }

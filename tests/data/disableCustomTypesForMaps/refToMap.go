@@ -2,7 +2,13 @@
 
 package test
 
-type RefToMap struct {
-	// MyThing corresponds to the JSON schema field "myThing".
-	MyThing map[string]float64 `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
+type RefToMapJson struct {
+	// mything corresponds to the JSON schema field "myThing".
+	mything Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
 }
+
+func (o *RefToMapJson) MyThing() Thing {
+	return o.mything
+}
+
+type Thing map[string]float64

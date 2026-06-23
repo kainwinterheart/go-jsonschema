@@ -4,84 +4,77 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
-type ExclusiveMaximum struct {
-	// MyInteger corresponds to the JSON schema field "myInteger".
-	MyInteger int `json:"myInteger" yaml:"myInteger" mapstructure:"myInteger"`
+type ExclusiveMaximumJson struct {
+	// myinteger corresponds to the JSON schema field "myInteger".
+	myinteger int `json:"myInteger" yaml:"myInteger" mapstructure:"myInteger"`
 
-	// MyNullableInteger corresponds to the JSON schema field "myNullableInteger".
-	MyNullableInteger *int `json:"myNullableInteger,omitempty,omitzero" yaml:"myNullableInteger,omitempty" mapstructure:"myNullableInteger,omitempty"`
+	// mynullableinteger corresponds to the JSON schema field "myNullableInteger".
+	mynullableinteger *int `json:"myNullableInteger,omitempty,omitzero" yaml:"myNullableInteger,omitempty" mapstructure:"myNullableInteger,omitempty"`
 
-	// MyNullableNumber corresponds to the JSON schema field "myNullableNumber".
-	MyNullableNumber *float64 `json:"myNullableNumber,omitempty,omitzero" yaml:"myNullableNumber,omitempty" mapstructure:"myNullableNumber,omitempty"`
+	// mynullablenumber corresponds to the JSON schema field "myNullableNumber".
+	mynullablenumber *float64 `json:"myNullableNumber,omitempty,omitzero" yaml:"myNullableNumber,omitempty" mapstructure:"myNullableNumber,omitempty"`
 
-	// MyNumber corresponds to the JSON schema field "myNumber".
-	MyNumber float64 `json:"myNumber" yaml:"myNumber" mapstructure:"myNumber"`
+	// mynumber corresponds to the JSON schema field "myNumber".
+	mynumber float64 `json:"myNumber" yaml:"myNumber" mapstructure:"myNumber"`
+}
+
+func (o *ExclusiveMaximumJson) MyInteger() int {
+	return o.myinteger
+}
+
+func (o *ExclusiveMaximumJson) MyNullableInteger() *int {
+	return o.mynullableinteger
+}
+
+func (o *ExclusiveMaximumJson) MyNullableNumber() *float64 {
+	return o.mynullablenumber
+}
+
+func (o *ExclusiveMaximumJson) MyNumber() float64 {
+	return o.mynumber
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *ExclusiveMaximum) UnmarshalJSON(value []byte) error {
+func (j *ExclusiveMaximumJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myInteger"]; raw != nil && !ok {
-		return fmt.Errorf("field myInteger in ExclusiveMaximum: required")
+		return fmt.Errorf("field myInteger in ExclusiveMaximumJson: required")
 	}
 	if _, ok := raw["myNumber"]; raw != nil && !ok {
-		return fmt.Errorf("field myNumber in ExclusiveMaximum: required")
+		return fmt.Errorf("field myNumber in ExclusiveMaximumJson: required")
 	}
-	type Plain ExclusiveMaximum
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	type ExclusiveMaximumJsonHelper struct {
+		Myinteger         int      `json:"myInteger"`
+		Mynullableinteger *int     `json:"myNullableInteger",omitempty`
+		Mynullablenumber  *float64 `json:"myNullableNumber",omitempty`
+		Mynumber          float64  `json:"myNumber"`
+	}
+	type Plain ExclusiveMaximumJson
+	var helper ExclusiveMaximumJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
-	if 2 <= plain.MyInteger {
+	var plain Plain
+	plain.myinteger = helper.Myinteger
+	plain.mynullableinteger = helper.Mynullableinteger
+	plain.mynullablenumber = helper.Mynullablenumber
+	plain.mynumber = helper.Mynumber
+	if 2 <= plain.myinteger {
 		return fmt.Errorf("field %s: must be < %v", "myInteger", 2)
 	}
-	if plain.MyNullableInteger != nil && 2 <= *plain.MyNullableInteger {
+	if plain.mynullableinteger != nil && 2 <= *plain.mynullableinteger {
 		return fmt.Errorf("field %s: must be < %v", "myNullableInteger", 2)
 	}
-	if plain.MyNullableNumber != nil && 1.2 <= *plain.MyNullableNumber {
+	if plain.mynullablenumber != nil && 1.2 <= *plain.mynullablenumber {
 		return fmt.Errorf("field %s: must be < %v", "myNullableNumber", 1.2)
 	}
-	if 1.2 <= plain.MyNumber {
+	if 1.2 <= plain.mynumber {
 		return fmt.Errorf("field %s: must be < %v", "myNumber", 1.2)
 	}
-	*j = ExclusiveMaximum(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *ExclusiveMaximum) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myInteger"]; raw != nil && !ok {
-		return fmt.Errorf("field myInteger in ExclusiveMaximum: required")
-	}
-	if _, ok := raw["myNumber"]; raw != nil && !ok {
-		return fmt.Errorf("field myNumber in ExclusiveMaximum: required")
-	}
-	type Plain ExclusiveMaximum
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if 2 <= plain.MyInteger {
-		return fmt.Errorf("field %s: must be < %v", "myInteger", 2)
-	}
-	if plain.MyNullableInteger != nil && 2 <= *plain.MyNullableInteger {
-		return fmt.Errorf("field %s: must be < %v", "myNullableInteger", 2)
-	}
-	if plain.MyNullableNumber != nil && 1.2 <= *plain.MyNullableNumber {
-		return fmt.Errorf("field %s: must be < %v", "myNullableNumber", 1.2)
-	}
-	if 1.2 <= plain.MyNumber {
-		return fmt.Errorf("field %s: must be < %v", "myNumber", 1.2)
-	}
-	*j = ExclusiveMaximum(plain)
+	*j = ExclusiveMaximumJson(plain)
 	return nil
 }

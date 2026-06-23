@@ -64,7 +64,7 @@ func TestMaxStringLength(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			model := testMaxLength.MaxLength{}
+			model := testMaxLength.MaxLengthJson{}
 
 			err := json.Unmarshal([]byte(tC.data), &model)
 
@@ -111,7 +111,7 @@ func TestMinStringLength(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			model := testMinLength.MinLength{}
+			model := testMinLength.MinLengthJson{}
 
 			err := json.Unmarshal([]byte(tC.data), &model)
 
@@ -148,7 +148,7 @@ func TestRequiredFields(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			model := testRequiredFields.RequiredNullable{}
+			model := testRequiredFields.RequiredNullableJson{}
 
 			err := json.Unmarshal([]byte(tC.data), &model)
 
@@ -180,7 +180,7 @@ func TestReadOnlyFields(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			model := testReadOnlyFields.ReadOnly{}
+			model := testReadOnlyFields.ReadOnlyJson{}
 
 			err := json.Unmarshal([]byte(tC.data), &model)
 
@@ -207,7 +207,7 @@ func TestReadOnlyFieldsNoValidation(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			model := testReadOnlyValidationDisabledFields.ReadOnlyNoValidation{}
+			model := testReadOnlyValidationDisabledFields.ReadOnlyNoValidationJson{}
 
 			err := json.Unmarshal([]byte(tC.data), &model)
 
@@ -239,7 +239,7 @@ func TestReadOnlyAndRequiredFields(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			model := testReadOnlyAndRequiredFields.ReadOnlyAndRequired{}
+			model := testReadOnlyAndRequiredFields.ReadOnlyAndRequiredJson{}
 
 			err := json.Unmarshal([]byte(tC.data), &model)
 
@@ -280,7 +280,7 @@ func TestPattern(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			model := testPattern.Pattern{}
+			model := testPattern.PatternJson{}
 
 			err := json.Unmarshal([]byte(tC.data), &model)
 
@@ -312,7 +312,7 @@ func TestPrimitiveDefs(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			prim := testPrimitiveDefs.PrimitiveDefs{}
+			prim := testPrimitiveDefs.PrimitiveDefsJson{}
 
 			err := json.Unmarshal([]byte(tC.data), &prim)
 
@@ -353,7 +353,7 @@ func TestMultipleOf(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			mo := testMultipleOf.MultipleOf{}
+			mo := testMultipleOf.MultipleOfJson{}
 
 			err := json.Unmarshal([]byte(tC.data), &mo)
 
@@ -394,7 +394,7 @@ func TestMaximum(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			mo := testMaximum.Maximum{}
+			mo := testMaximum.MaximumJson{}
 
 			err := json.Unmarshal([]byte(tC.data), &mo)
 
@@ -435,7 +435,7 @@ func TestMinimum(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			mo := testMinimum.Minimum{}
+			mo := testMinimum.MinimumJson{}
 
 			err := json.Unmarshal([]byte(tC.data), &mo)
 
@@ -476,13 +476,13 @@ func TestExclusiveMaximum(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			mo := testExclusiveMaximum.ExclusiveMaximum{}
+			mo := testExclusiveMaximum.ExclusiveMaximumJson{}
 
 			err := json.Unmarshal([]byte(tC.data), &mo)
 
 			helpers.CheckError(t, tC.wantErr, err)
 
-			mo2 := testExclusiveMaximum.ExclusiveMaximumOld{}
+			mo2 := testExclusiveMaximum.ExclusiveMaximumOldJson{}
 
 			err = json.Unmarshal([]byte(tC.data), &mo2)
 
@@ -523,13 +523,13 @@ func TestExclusiveMinimum(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			t.Parallel()
 
-			mo := testExclusiveMinimum.ExclusiveMinimum{}
+			mo := testExclusiveMinimum.ExclusiveMinimumJson{}
 
 			err := json.Unmarshal([]byte(tC.data), &mo)
 
 			helpers.CheckError(t, tC.wantErr, err)
 
-			mo2 := testExclusiveMinimum.ExclusiveMinimumOld{}
+			mo2 := testExclusiveMinimum.ExclusiveMinimumOldJson{}
 
 			err = json.Unmarshal([]byte(tC.data), &mo2)
 

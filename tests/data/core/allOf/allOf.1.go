@@ -4,59 +4,56 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
-type AllOf1 struct {
-	// Configurations corresponds to the JSON schema field "configurations".
-	Configurations []AllOf1ConfigurationsElem `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
+type AllOf1Json struct {
+	// configurations corresponds to the JSON schema field "configurations".
+	configurations []AllOf1JsonconfigurationsElem `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
 }
 
-type AllOf1ConfigurationsElem struct {
-	// Bar corresponds to the JSON schema field "bar".
-	Bar float64 `json:"bar" yaml:"bar" mapstructure:"bar"`
+func (o *AllOf1Json) Configurations() []AllOf1JsonconfigurationsElem {
+	return o.configurations
+}
 
-	// Foo corresponds to the JSON schema field "foo".
-	Foo string `json:"foo" yaml:"foo" mapstructure:"foo"`
+type AllOf1JsonconfigurationsElem struct {
+	// bar corresponds to the JSON schema field "bar".
+	bar float64 `json:"bar" yaml:"bar" mapstructure:"bar"`
+
+	// foo corresponds to the JSON schema field "foo".
+	foo string `json:"foo" yaml:"foo" mapstructure:"foo"`
+}
+
+func (o *AllOf1JsonconfigurationsElem) Bar() float64 {
+	return o.bar
+}
+
+func (o *AllOf1JsonconfigurationsElem) Foo() string {
+	return o.foo
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *AllOf1ConfigurationsElem) UnmarshalJSON(value []byte) error {
+func (j *AllOf1JsonconfigurationsElem) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in AllOf1ConfigurationsElem: required")
+		return fmt.Errorf("field bar in AllOf1JsonconfigurationsElem: required")
 	}
 	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AllOf1ConfigurationsElem: required")
+		return fmt.Errorf("field foo in AllOf1JsonconfigurationsElem: required")
 	}
-	type Plain AllOf1ConfigurationsElem
+	type AllOf1JsonconfigurationsElemHelper struct {
+		Bar float64 `json:"bar"`
+		Foo string  `json:"foo"`
+	}
+	type Plain AllOf1JsonconfigurationsElem
+	var helper AllOf1JsonconfigurationsElemHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = AllOf1ConfigurationsElem(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AllOf1ConfigurationsElem) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in AllOf1ConfigurationsElem: required")
-	}
-	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AllOf1ConfigurationsElem: required")
-	}
-	type Plain AllOf1ConfigurationsElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AllOf1ConfigurationsElem(plain)
+	plain.bar = helper.Bar
+	plain.foo = helper.Foo
+	*j = AllOf1JsonconfigurationsElem(plain)
 	return nil
 }

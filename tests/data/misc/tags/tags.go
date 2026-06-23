@@ -2,13 +2,25 @@
 
 package test
 
-type Tags struct {
-	// Html corresponds to the JSON schema field "html".
-	Html *string `yaml:"html,omitempty"`
+type TagsJson struct {
+	// html corresponds to the JSON schema field "html".
+	html *string `json:"html,omitempty,omitzero" yaml:"html,omitempty" mapstructure:"html,omitempty"`
 
-	// Id corresponds to the JSON schema field "id".
-	Id *string `yaml:"id,omitempty"`
+	// id corresponds to the JSON schema field "id".
+	id *string `json:"id,omitempty,omitzero" yaml:"id,omitempty" mapstructure:"id,omitempty"`
 
-	// Url corresponds to the JSON schema field "url".
-	Url *string `yaml:"url,omitempty"`
+	// url corresponds to the JSON schema field "url".
+	url *string `json:"url,omitempty,omitzero" yaml:"url,omitempty" mapstructure:"url,omitempty"`
+}
+
+func (o *TagsJson) Html() *string {
+	return o.html
+}
+
+func (o *TagsJson) Id() *string {
+	return o.id
+}
+
+func (o *TagsJson) Url() *string {
+	return o.url
 }

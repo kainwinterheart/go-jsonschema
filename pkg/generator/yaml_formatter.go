@@ -83,7 +83,7 @@ func (yf *yamlFormatter) generate(
 
 		if structType, ok := declType.Type.(*codegen.StructType); ok {
 			for _, f := range structType.Fields {
-				if f.Name == "AdditionalProperties" {
+				if f.Name == additionalProperties {
 					out.Printlnf("st := reflect.TypeOf(Plain{})")
 					out.Printlnf("for i := range st.NumField() {")
 					out.Indent(1)
@@ -116,7 +116,7 @@ func (yf *yamlFormatter) enumMarshal(declType *codegen.TypeDecl) func(*codegen.E
 		out.Commentf("Marshal%s implements %s.Marshal.", strings.ToUpper(formatYAML), formatYAML)
 		out.Printlnf("func (j *%s) Marshal%s() (interface{}, error) {", declType.Name, strings.ToUpper(formatYAML))
 		out.Indent(1)
-		out.Printlnf("return %s.Marshal(j.Value)", formatYAML)
+		out.Printlnf("return %s.Marshal(j.value)", formatYAML)
 		out.Indent(-1)
 		out.Printlnf("}")
 
@@ -144,7 +144,7 @@ func (yf *yamlFormatter) enumUnmarshal(
 
 		varName := "v"
 		if wrapInStruct {
-			varName += ".Value"
+			varName += ".value"
 		}
 
 		out.Printlnf("if err := value.Decode(&%s); err != nil { return err }", varName)

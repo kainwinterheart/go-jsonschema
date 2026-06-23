@@ -9,11 +9,19 @@ type YamlMultilineDescriptions struct {
 	//
 	// This may look funky when Go code is generated to a specific line width, though.
 	//
-	Bar *string `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
+	bar *string `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
 
 	// I'm a multiline description in a folded block.
 	// Folded blocks should not have hard line breaks after parsing.
 	// They should also not end in a line break.
 	//
-	Foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
+	foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
+}
+
+func (o *YamlMultilineDescriptions) Bar() *string {
+	return o.bar
+}
+
+func (o *YamlMultilineDescriptions) Foo() *string {
+	return o.foo
 }

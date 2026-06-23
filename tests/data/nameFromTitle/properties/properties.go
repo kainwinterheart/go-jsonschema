@@ -5,30 +5,45 @@ package test
 import "encoding/json"
 import "fmt"
 import "github.com/go-viper/mapstructure/v2"
-import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "strings"
 
 type Alpha struct {
-	// Beta corresponds to the JSON schema field "beta".
-	Beta Beta `json:"beta,omitempty,omitzero" yaml:"beta,omitempty" mapstructure:"beta,omitempty"`
+	// beta corresponds to the JSON schema field "beta".
+	beta Beta `json:"beta,omitempty,omitzero" yaml:"beta,omitempty" mapstructure:"beta,omitempty"`
 
-	// Eta corresponds to the JSON schema field "eta".
-	Eta *Eta `json:"eta,omitempty,omitzero" yaml:"eta,omitempty" mapstructure:"eta,omitempty"`
+	// eta corresponds to the JSON schema field "eta".
+	eta *Eta `json:"eta,omitempty,omitzero" yaml:"eta,omitempty" mapstructure:"eta,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
+}
+
+func (o *Alpha) Beta() Beta {
+	return o.beta
+}
+
+func (o *Alpha) Eta() *Eta {
+	return o.eta
 }
 
 type Beta interface{}
 
 type Eta struct {
-	// Epsilon corresponds to the JSON schema field "epsilon".
-	Epsilon string `json:"epsilon" yaml:"epsilon" mapstructure:"epsilon"`
+	// epsilon corresponds to the JSON schema field "epsilon".
+	epsilon string `json:"epsilon" yaml:"epsilon" mapstructure:"epsilon"`
 
-	// Theta corresponds to the JSON schema field "theta".
-	Theta Theta `json:"theta" yaml:"theta" mapstructure:"theta"`
+	// theta corresponds to the JSON schema field "theta".
+	theta Theta `json:"theta" yaml:"theta" mapstructure:"theta"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
+}
+
+func (o *Eta) Epsilon() string {
+	return o.epsilon
+}
+
+func (o *Eta) Theta() Theta {
+	return o.theta
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -43,40 +58,18 @@ func (j *Eta) UnmarshalJSON(value []byte) error {
 	if _, ok := raw["theta"]; raw != nil && !ok {
 		return fmt.Errorf("field theta in Eta: required")
 	}
-	type Plain Eta
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	st := reflect.TypeOf(Plain{})
-	for i := range st.NumField() {
-		delete(raw, st.Field(i).Name)
-		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
-	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
-		return err
-	}
-	*j = Eta(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Eta) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["epsilon"]; raw != nil && !ok {
-		return fmt.Errorf("field epsilon in Eta: required")
-	}
-	if _, ok := raw["theta"]; raw != nil && !ok {
-		return fmt.Errorf("field theta in Eta: required")
+	type EtaHelper struct {
+		Epsilon string `json:"epsilon"`
+		Theta   Theta  `json:"theta"`
 	}
 	type Plain Eta
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var helper EtaHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.epsilon = helper.Epsilon
+	plain.theta = helper.Theta
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)
@@ -91,65 +84,68 @@ func (j *Eta) UnmarshalYAML(value *yaml.Node) error {
 
 type Iota struct {
 	// DESCRIPTION
-	Kappa *TITLE `json:"kappa,omitempty,omitzero" yaml:"kappa,omitempty" mapstructure:"kappa,omitempty"`
+	kappa *Iotakappa `json:"kappa,omitempty,omitzero" yaml:"kappa,omitempty" mapstructure:"kappa,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
-type IotaKappaLambdaElem struct {
-	// Sigma corresponds to the JSON schema field "sigma".
-	Sigma *Alpha `json:"sigma,omitempty,omitzero" yaml:"sigma,omitempty" mapstructure:"sigma,omitempty"`
+func (o *Iota) Kappa() *Iotakappa {
+	return o.kappa
+}
+
+// DESCRIPTION
+type Iotakappa struct {
+	// lambda corresponds to the JSON schema field "lambda".
+	lambda []IotakappalambdaElem `json:"lambda,omitempty,omitzero" yaml:"lambda,omitempty" mapstructure:"lambda,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
-type Properties struct {
-	// Iota corresponds to the JSON schema field "iota".
-	Iota Iota `json:"iota" yaml:"iota" mapstructure:"iota"`
+func (o *Iotakappa) Lambda() []IotakappalambdaElem {
+	return o.lambda
+}
+
+type IotakappalambdaElem struct {
+	// sigma corresponds to the JSON schema field "sigma".
+	sigma *Alpha `json:"sigma,omitempty,omitzero" yaml:"sigma,omitempty" mapstructure:"sigma,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Properties) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["iota"]; raw != nil && !ok {
-		return fmt.Errorf("field iota in Properties: required")
-	}
-	type Plain Properties
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	st := reflect.TypeOf(Plain{})
-	for i := range st.NumField() {
-		delete(raw, st.Field(i).Name)
-		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
-	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
-		return err
-	}
-	*j = Properties(plain)
-	return nil
+func (o *IotakappalambdaElem) Sigma() *Alpha {
+	return o.sigma
+}
+
+type PropertiesJson struct {
+	// iota corresponds to the JSON schema field "iota".
+	iota Iota `json:"iota" yaml:"iota" mapstructure:"iota"`
+
+	AdditionalProperties interface{} `mapstructure:",remain"`
+}
+
+func (o *PropertiesJson) Iota() Iota {
+	return o.iota
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *Properties) UnmarshalJSON(value []byte) error {
+func (j *PropertiesJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["iota"]; raw != nil && !ok {
-		return fmt.Errorf("field iota in Properties: required")
+		return fmt.Errorf("field iota in PropertiesJson: required")
 	}
-	type Plain Properties
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	type PropertiesJsonHelper struct {
+		Iota Iota `json:"iota"`
+	}
+	type Plain PropertiesJson
+	var helper PropertiesJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.iota = helper.Iota
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)
@@ -158,36 +154,11 @@ func (j *Properties) UnmarshalJSON(value []byte) error {
 	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
 		return err
 	}
-	*j = Properties(plain)
+	*j = PropertiesJson(plain)
 	return nil
-}
-
-// DESCRIPTION
-type TITLE struct {
-	// Lambda corresponds to the JSON schema field "lambda".
-	Lambda []IotaKappaLambdaElem `json:"lambda,omitempty,omitzero" yaml:"lambda,omitempty" mapstructure:"lambda,omitempty"`
-
-	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
 type Theta int
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Theta) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Theta
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if 65535 < plain {
-		return fmt.Errorf("field %s: must be <= %v", "", 65535)
-	}
-	if 0 > plain {
-		return fmt.Errorf("field %s: must be >= %v", "", 0)
-	}
-	*j = Theta(plain)
-	return nil
-}
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Theta) UnmarshalJSON(value []byte) error {

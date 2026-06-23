@@ -4,171 +4,167 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
-type Larger struct {
-	// I16L corresponds to the JSON schema field "i16l".
-	I16L *int16 `json:"i16l,omitempty,omitzero" yaml:"i16l,omitempty" mapstructure:"i16l,omitempty"`
+type LargerJson struct {
+	// i16l corresponds to the JSON schema field "i16l".
+	i16l *int `json:"i16l,omitempty,omitzero" yaml:"i16l,omitempty" mapstructure:"i16l,omitempty"`
 
-	// I16U corresponds to the JSON schema field "i16u".
-	I16U *int16 `json:"i16u,omitempty,omitzero" yaml:"i16u,omitempty" mapstructure:"i16u,omitempty"`
+	// i16u corresponds to the JSON schema field "i16u".
+	i16u *int `json:"i16u,omitempty,omitzero" yaml:"i16u,omitempty" mapstructure:"i16u,omitempty"`
 
-	// I32L corresponds to the JSON schema field "i32l".
-	I32L *int32 `json:"i32l,omitempty,omitzero" yaml:"i32l,omitempty" mapstructure:"i32l,omitempty"`
+	// i32l corresponds to the JSON schema field "i32l".
+	i32l *int `json:"i32l,omitempty,omitzero" yaml:"i32l,omitempty" mapstructure:"i32l,omitempty"`
 
-	// I32U corresponds to the JSON schema field "i32u".
-	I32U *int32 `json:"i32u,omitempty,omitzero" yaml:"i32u,omitempty" mapstructure:"i32u,omitempty"`
+	// i32u corresponds to the JSON schema field "i32u".
+	i32u *int `json:"i32u,omitempty,omitzero" yaml:"i32u,omitempty" mapstructure:"i32u,omitempty"`
 
-	// I64L corresponds to the JSON schema field "i64l".
-	I64L *int64 `json:"i64l,omitempty,omitzero" yaml:"i64l,omitempty" mapstructure:"i64l,omitempty"`
+	// i64l corresponds to the JSON schema field "i64l".
+	i64l *int `json:"i64l,omitempty,omitzero" yaml:"i64l,omitempty" mapstructure:"i64l,omitempty"`
 
-	// I64U corresponds to the JSON schema field "i64u".
-	I64U *int64 `json:"i64u,omitempty,omitzero" yaml:"i64u,omitempty" mapstructure:"i64u,omitempty"`
+	// i64u corresponds to the JSON schema field "i64u".
+	i64u *int `json:"i64u,omitempty,omitzero" yaml:"i64u,omitempty" mapstructure:"i64u,omitempty"`
 
-	// U16 corresponds to the JSON schema field "u16".
-	U16 uint16 `json:"u16" yaml:"u16" mapstructure:"u16"`
+	// u16 corresponds to the JSON schema field "u16".
+	u16 int `json:"u16" yaml:"u16" mapstructure:"u16"`
 
-	// U32 corresponds to the JSON schema field "u32".
-	U32 uint32 `json:"u32" yaml:"u32" mapstructure:"u32"`
+	// u32 corresponds to the JSON schema field "u32".
+	u32 int `json:"u32" yaml:"u32" mapstructure:"u32"`
 
-	// U64 corresponds to the JSON schema field "u64".
-	U64 uint64 `json:"u64" yaml:"u64" mapstructure:"u64"`
+	// u64 corresponds to the JSON schema field "u64".
+	u64 int `json:"u64" yaml:"u64" mapstructure:"u64"`
+}
+
+func (o *LargerJson) I16L() *int {
+	return o.i16l
+}
+
+func (o *LargerJson) I16U() *int {
+	return o.i16u
+}
+
+func (o *LargerJson) I32L() *int {
+	return o.i32l
+}
+
+func (o *LargerJson) I32U() *int {
+	return o.i32u
+}
+
+func (o *LargerJson) I64L() *int {
+	return o.i64l
+}
+
+func (o *LargerJson) I64U() *int {
+	return o.i64u
+}
+
+func (o *LargerJson) U16() int {
+	return o.u16
+}
+
+func (o *LargerJson) U32() int {
+	return o.u32
+}
+
+func (o *LargerJson) U64() int {
+	return o.u64
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *Larger) UnmarshalJSON(value []byte) error {
+func (j *LargerJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["u16"]; raw != nil && !ok {
-		return fmt.Errorf("field u16 in Larger: required")
+		return fmt.Errorf("field u16 in LargerJson: required")
 	}
 	if _, ok := raw["u32"]; raw != nil && !ok {
-		return fmt.Errorf("field u32 in Larger: required")
+		return fmt.Errorf("field u32 in LargerJson: required")
 	}
 	if _, ok := raw["u64"]; raw != nil && !ok {
-		return fmt.Errorf("field u64 in Larger: required")
+		return fmt.Errorf("field u64 in LargerJson: required")
 	}
-	type Plain Larger
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	type LargerJsonHelper struct {
+		I16l *int `json:"i16l",omitempty`
+		I16u *int `json:"i16u",omitempty`
+		I32l *int `json:"i32l",omitempty`
+		I32u *int `json:"i32u",omitempty`
+		I64l *int `json:"i64l",omitempty`
+		I64u *int `json:"i64u",omitempty`
+		U16  int  `json:"u16"`
+		U32  int  `json:"u32"`
+		U64  int  `json:"u64"`
+	}
+	type Plain LargerJson
+	var helper LargerJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
-	if plain.I16L != nil && 127 < *plain.I16L {
+	var plain Plain
+	plain.i16l = helper.I16l
+	plain.i16u = helper.I16u
+	plain.i32l = helper.I32l
+	plain.i32u = helper.I32u
+	plain.i64l = helper.I64l
+	plain.i64u = helper.I64u
+	plain.u16 = helper.U16
+	plain.u32 = helper.U32
+	plain.u64 = helper.U64
+	if plain.i16l != nil && 127 < *plain.i16l {
 		return fmt.Errorf("field %s: must be <= %v", "i16l", 127)
 	}
-	if plain.I16L != nil && -129 > *plain.I16L {
+	if plain.i16l != nil && -129 > *plain.i16l {
 		return fmt.Errorf("field %s: must be >= %v", "i16l", -129)
 	}
-	if plain.I16U != nil && 128 < *plain.I16U {
+	if plain.i16u != nil && 128 < *plain.i16u {
 		return fmt.Errorf("field %s: must be <= %v", "i16u", 128)
 	}
-	if plain.I16U != nil && -128 > *plain.I16U {
+	if plain.i16u != nil && -128 > *plain.i16u {
 		return fmt.Errorf("field %s: must be >= %v", "i16u", -128)
 	}
-	if plain.I32L != nil && 32767 < *plain.I32L {
+	if plain.i32l != nil && 32767 < *plain.i32l {
 		return fmt.Errorf("field %s: must be <= %v", "i32l", 32767)
 	}
-	if plain.I32L != nil && -32769 > *plain.I32L {
+	if plain.i32l != nil && -32769 > *plain.i32l {
 		return fmt.Errorf("field %s: must be >= %v", "i32l", -32769)
 	}
-	if plain.I32U != nil && 32768 < *plain.I32U {
+	if plain.i32u != nil && 32768 < *plain.i32u {
 		return fmt.Errorf("field %s: must be <= %v", "i32u", 32768)
 	}
-	if plain.I32U != nil && -32768 > *plain.I32U {
+	if plain.i32u != nil && -32768 > *plain.i32u {
 		return fmt.Errorf("field %s: must be >= %v", "i32u", -32768)
 	}
-	if plain.I64L != nil && 2147483647 < *plain.I64L {
+	if plain.i64l != nil && 2147483647 < *plain.i64l {
 		return fmt.Errorf("field %s: must be <= %v", "i64l", 2147483647)
 	}
-	if plain.I64L != nil && -2147483649 > *plain.I64L {
+	if plain.i64l != nil && -2147483649 > *plain.i64l {
 		return fmt.Errorf("field %s: must be >= %v", "i64l", -2147483649)
 	}
-	if plain.I64U != nil && 2147483648 < *plain.I64U {
+	if plain.i64u != nil && 2147483648 < *plain.i64u {
 		return fmt.Errorf("field %s: must be <= %v", "i64u", 2147483648)
 	}
-	if plain.I64U != nil && -2147483648 > *plain.I64U {
+	if plain.i64u != nil && -2147483648 > *plain.i64u {
 		return fmt.Errorf("field %s: must be >= %v", "i64u", -2147483648)
 	}
-	if 256 < plain.U16 {
+	if 256 < plain.u16 {
 		return fmt.Errorf("field %s: must be <= %v", "u16", 256)
 	}
-	if 65536 < plain.U32 {
+	if 0 > plain.u16 {
+		return fmt.Errorf("field %s: must be >= %v", "u16", 0)
+	}
+	if 65536 < plain.u32 {
 		return fmt.Errorf("field %s: must be <= %v", "u32", 65536)
 	}
-	if 4294967296 < plain.U64 {
+	if 0 > plain.u32 {
+		return fmt.Errorf("field %s: must be >= %v", "u32", 0)
+	}
+	if 4294967296 < plain.u64 {
 		return fmt.Errorf("field %s: must be <= %v", "u64", 4294967296)
 	}
-	*j = Larger(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Larger) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
+	if 0 > plain.u64 {
+		return fmt.Errorf("field %s: must be >= %v", "u64", 0)
 	}
-	if _, ok := raw["u16"]; raw != nil && !ok {
-		return fmt.Errorf("field u16 in Larger: required")
-	}
-	if _, ok := raw["u32"]; raw != nil && !ok {
-		return fmt.Errorf("field u32 in Larger: required")
-	}
-	if _, ok := raw["u64"]; raw != nil && !ok {
-		return fmt.Errorf("field u64 in Larger: required")
-	}
-	type Plain Larger
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.I16L != nil && 127 < *plain.I16L {
-		return fmt.Errorf("field %s: must be <= %v", "i16l", 127)
-	}
-	if plain.I16L != nil && -129 > *plain.I16L {
-		return fmt.Errorf("field %s: must be >= %v", "i16l", -129)
-	}
-	if plain.I16U != nil && 128 < *plain.I16U {
-		return fmt.Errorf("field %s: must be <= %v", "i16u", 128)
-	}
-	if plain.I16U != nil && -128 > *plain.I16U {
-		return fmt.Errorf("field %s: must be >= %v", "i16u", -128)
-	}
-	if plain.I32L != nil && 32767 < *plain.I32L {
-		return fmt.Errorf("field %s: must be <= %v", "i32l", 32767)
-	}
-	if plain.I32L != nil && -32769 > *plain.I32L {
-		return fmt.Errorf("field %s: must be >= %v", "i32l", -32769)
-	}
-	if plain.I32U != nil && 32768 < *plain.I32U {
-		return fmt.Errorf("field %s: must be <= %v", "i32u", 32768)
-	}
-	if plain.I32U != nil && -32768 > *plain.I32U {
-		return fmt.Errorf("field %s: must be >= %v", "i32u", -32768)
-	}
-	if plain.I64L != nil && 2147483647 < *plain.I64L {
-		return fmt.Errorf("field %s: must be <= %v", "i64l", 2147483647)
-	}
-	if plain.I64L != nil && -2147483649 > *plain.I64L {
-		return fmt.Errorf("field %s: must be >= %v", "i64l", -2147483649)
-	}
-	if plain.I64U != nil && 2147483648 < *plain.I64U {
-		return fmt.Errorf("field %s: must be <= %v", "i64u", 2147483648)
-	}
-	if plain.I64U != nil && -2147483648 > *plain.I64U {
-		return fmt.Errorf("field %s: must be >= %v", "i64u", -2147483648)
-	}
-	if 256 < plain.U16 {
-		return fmt.Errorf("field %s: must be <= %v", "u16", 256)
-	}
-	if 65536 < plain.U32 {
-		return fmt.Errorf("field %s: must be <= %v", "u32", 65536)
-	}
-	if 4294967296 < plain.U64 {
-		return fmt.Errorf("field %s: must be <= %v", "u64", 4294967296)
-	}
-	*j = Larger(plain)
+	*j = LargerJson(plain)
 	return nil
 }

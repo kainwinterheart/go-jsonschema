@@ -2,7 +2,11 @@
 
 package test
 
-type BooleanAsSchema struct {
-	// Id corresponds to the JSON schema field "id".
-	Id *string `json:"id,omitempty,omitzero" yaml:"id,omitempty" mapstructure:"id,omitempty"`
+type BooleanAsSchemaJson struct {
+	// id corresponds to the JSON schema field "id".
+	id *string `json:"id,omitempty,omitzero" yaml:"id,omitempty" mapstructure:"id,omitempty"`
+}
+
+func (o *BooleanAsSchemaJson) Id() *string {
+	return o.id
 }

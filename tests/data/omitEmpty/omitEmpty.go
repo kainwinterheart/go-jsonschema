@@ -4,86 +4,125 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
-type OmitEmpty struct {
-	// MyArray corresponds to the JSON schema field "myArray".
-	MyArray []interface{} `json:"myArray,omitempty"`
+type OmitEmptyJson struct {
+	// myarray corresponds to the JSON schema field "myArray".
+	myarray []interface{} `json:"myArray,omitempty,omitzero" yaml:"myArray,omitempty" mapstructure:"myArray,omitempty"`
 
-	// MyBoolean corresponds to the JSON schema field "myBoolean".
-	MyBoolean *bool `json:"myBoolean,omitempty"`
+	// myboolean corresponds to the JSON schema field "myBoolean".
+	myboolean *bool `json:"myBoolean,omitempty,omitzero" yaml:"myBoolean,omitempty" mapstructure:"myBoolean,omitempty"`
 
-	// MyInteger corresponds to the JSON schema field "myInteger".
-	MyInteger *int `json:"myInteger,omitempty"`
+	// myinteger corresponds to the JSON schema field "myInteger".
+	myinteger *int `json:"myInteger,omitempty,omitzero" yaml:"myInteger,omitempty" mapstructure:"myInteger,omitempty"`
 
-	// MyMap corresponds to the JSON schema field "myMap".
-	MyMap OmitEmptyMyMap `json:"myMap,omitempty"`
+	// mymap corresponds to the JSON schema field "myMap".
+	mymap OmitEmptyJsonmymap `json:"myMap,omitempty,omitzero" yaml:"myMap,omitempty" mapstructure:"myMap,omitempty"`
 
-	// MyNull corresponds to the JSON schema field "myNull".
-	MyNull interface{} `json:"myNull,omitempty"`
+	// mynull corresponds to the JSON schema field "myNull".
+	mynull interface{} `json:"myNull,omitempty,omitzero" yaml:"myNull,omitempty" mapstructure:"myNull,omitempty"`
 
-	// MyNullArray corresponds to the JSON schema field "myNullArray".
-	MyNullArray []interface{} `json:"myNullArray,omitempty"`
+	// mynullarray corresponds to the JSON schema field "myNullArray".
+	mynullarray []interface{} `json:"myNullArray,omitempty,omitzero" yaml:"myNullArray,omitempty" mapstructure:"myNullArray,omitempty"`
 
-	// MyNumber corresponds to the JSON schema field "myNumber".
-	MyNumber *float64 `json:"myNumber,omitempty"`
+	// mynumber corresponds to the JSON schema field "myNumber".
+	mynumber *float64 `json:"myNumber,omitempty,omitzero" yaml:"myNumber,omitempty" mapstructure:"myNumber,omitempty"`
 
-	// MyObjectArray corresponds to the JSON schema field "myObjectArray".
-	MyObjectArray []OmitEmptyMyObjectArrayElem `json:"myObjectArray,omitempty"`
+	// myobjectarray corresponds to the JSON schema field "myObjectArray".
+	myobjectarray []OmitEmptyJsonmyobjectarrayElem `json:"myObjectArray,omitempty,omitzero" yaml:"myObjectArray,omitempty" mapstructure:"myObjectArray,omitempty"`
 
-	// MyString corresponds to the JSON schema field "myString".
-	MyString *string `json:"myString,omitempty"`
+	// mystring corresponds to the JSON schema field "myString".
+	mystring *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
 
-	// MyStringArray corresponds to the JSON schema field "myStringArray".
-	MyStringArray []string `json:"myStringArray,omitempty"`
+	// mystringarray corresponds to the JSON schema field "myStringArray".
+	mystringarray []string `json:"myStringArray,omitempty,omitzero" yaml:"myStringArray,omitempty" mapstructure:"myStringArray,omitempty"`
 }
 
-type OmitEmptyMyMap map[string]float64
+func (o *OmitEmptyJson) MyArray() []interface{} {
+	return o.myarray
+}
 
-type OmitEmptyMyObjectArrayElem map[string]interface{}
+func (o *OmitEmptyJson) MyBoolean() *bool {
+	return o.myboolean
+}
+
+func (o *OmitEmptyJson) MyInteger() *int {
+	return o.myinteger
+}
+
+func (o *OmitEmptyJson) MyMap() OmitEmptyJsonmymap {
+	return o.mymap
+}
+
+func (o *OmitEmptyJson) MyNull() interface{} {
+	return o.mynull
+}
+
+func (o *OmitEmptyJson) MyNullArray() []interface{} {
+	return o.mynullarray
+}
+
+func (o *OmitEmptyJson) MyNumber() *float64 {
+	return o.mynumber
+}
+
+func (o *OmitEmptyJson) MyObjectArray() []OmitEmptyJsonmyobjectarrayElem {
+	return o.myobjectarray
+}
+
+func (o *OmitEmptyJson) MyString() *string {
+	return o.mystring
+}
+
+func (o *OmitEmptyJson) MyStringArray() []string {
+	return o.mystringarray
+}
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *OmitEmpty) UnmarshalJSON(value []byte) error {
+func (j *OmitEmptyJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	type Plain OmitEmpty
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	type OmitEmptyJsonHelper struct {
+		Myarray       []interface{}                    `json:"myArray",omitempty`
+		Myboolean     *bool                            `json:"myBoolean",omitempty`
+		Myinteger     *int                             `json:"myInteger",omitempty`
+		Mymap         OmitEmptyJsonmymap               `json:"myMap",omitempty`
+		Mynull        interface{}                      `json:"myNull",omitempty`
+		Mynullarray   []interface{}                    `json:"myNullArray",omitempty`
+		Mynumber      *float64                         `json:"myNumber",omitempty`
+		Myobjectarray []OmitEmptyJsonmyobjectarrayElem `json:"myObjectArray",omitempty`
+		Mystring      *string                          `json:"myString",omitempty`
+		Mystringarray []string                         `json:"myStringArray",omitempty`
+	}
+	type Plain OmitEmptyJson
+	var helper OmitEmptyJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
-	if plain.MyNull != nil {
+	var plain Plain
+	plain.myarray = helper.Myarray
+	plain.myboolean = helper.Myboolean
+	plain.myinteger = helper.Myinteger
+	plain.mymap = helper.Mymap
+	plain.mynull = helper.Mynull
+	plain.mynullarray = helper.Mynullarray
+	plain.mynumber = helper.Mynumber
+	plain.myobjectarray = helper.Myobjectarray
+	plain.mystring = helper.Mystring
+	plain.mystringarray = helper.Mystringarray
+	if plain.mynull != nil {
 		return fmt.Errorf("field %s: must be null", "myNull")
 	}
-	for i0 := range plain.MyNullArray {
-		if plain.MyNullArray[i0] != nil {
+	for i0 := range plain.mynullarray {
+		if plain.mynullarray[i0] != nil {
 			return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNullArray[%d]", i0))
 		}
 	}
-	*j = OmitEmpty(plain)
+	*j = OmitEmptyJson(plain)
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *OmitEmpty) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	type Plain OmitEmpty
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.MyNull != nil {
-		return fmt.Errorf("field %s: must be null", "myNull")
-	}
-	for i0 := range plain.MyNullArray {
-		if plain.MyNullArray[i0] != nil {
-			return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNullArray[%d]", i0))
-		}
-	}
-	*j = OmitEmpty(plain)
-	return nil
-}
+type OmitEmptyJsonmymap map[string]float64
+
+type OmitEmptyJsonmyobjectarrayElem map[string]interface{}

@@ -2,9 +2,13 @@
 
 package test
 
-type RefToPrimitiveString struct {
-	// MyThing corresponds to the JSON schema field "myThing".
-	MyThing *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
+type RefToPrimitiveStringJson struct {
+	// mything corresponds to the JSON schema field "myThing".
+	mything *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
+}
+
+func (o *RefToPrimitiveStringJson) MyThing() *Thing {
+	return o.mything
 }
 
 type Thing string

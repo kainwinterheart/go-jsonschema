@@ -4,14 +4,22 @@ package test
 
 import "time"
 
-type DateTimeNullable struct {
-	// MyObject corresponds to the JSON schema field "myObject".
-	MyObject *DateTimeNullableMyObject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+type DateTimeNullableJson struct {
+	// myobject corresponds to the JSON schema field "myObject".
+	myobject *DateTimeNullableJsonmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
-type DateTimeNullableMyObject struct {
-	// MyNullableDateTime corresponds to the JSON schema field "myNullableDateTime".
-	MyNullableDateTime DateTimeNullableMyObjectMyNullableDateTime `json:"myNullableDateTime,omitempty,omitzero" yaml:"myNullableDateTime,omitempty" mapstructure:"myNullableDateTime,omitempty"`
+func (o *DateTimeNullableJson) MyObject() *DateTimeNullableJsonmyobject {
+	return o.myobject
 }
 
-type DateTimeNullableMyObjectMyNullableDateTime *time.Time
+type DateTimeNullableJsonmyobject struct {
+	// mynullabledatetime corresponds to the JSON schema field "myNullableDateTime".
+	mynullabledatetime DateTimeNullableJsonmyobjectmynullabledatetime `json:"myNullableDateTime,omitempty,omitzero" yaml:"myNullableDateTime,omitempty" mapstructure:"myNullableDateTime,omitempty"`
+}
+
+func (o *DateTimeNullableJsonmyobject) MyNullableDateTime() DateTimeNullableJsonmyobjectmynullabledatetime {
+	return o.mynullabledatetime
+}
+
+type DateTimeNullableJsonmyobjectmynullabledatetime *time.Time

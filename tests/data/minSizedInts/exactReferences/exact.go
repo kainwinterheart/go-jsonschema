@@ -4,124 +4,271 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
-type Bound16 int16
+type Bound16 int
 
-type Bound32 int32
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Bound16) UnmarshalJSON(value []byte) error {
+	type Plain Bound16
+	var plain Plain
+	if err := json.Unmarshal(value, &plain); err != nil {
+		return err
+	}
+	if 32767 < plain {
+		return fmt.Errorf("field %s: must be <= %v", "", 32767)
+	}
+	if -32768 > plain {
+		return fmt.Errorf("field %s: must be >= %v", "", -32768)
+	}
+	*j = Bound16(plain)
+	return nil
+}
 
-type Bound64 int64
+type Bound32 int
 
-type Bound8 int8
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Bound32) UnmarshalJSON(value []byte) error {
+	type Plain Bound32
+	var plain Plain
+	if err := json.Unmarshal(value, &plain); err != nil {
+		return err
+	}
+	if 2147483647 < plain {
+		return fmt.Errorf("field %s: must be <= %v", "", 2147483647)
+	}
+	if -2147483648 > plain {
+		return fmt.Errorf("field %s: must be >= %v", "", -2147483648)
+	}
+	*j = Bound32(plain)
+	return nil
+}
 
-type Exact struct {
-	// I16 corresponds to the JSON schema field "i16".
-	I16 Bound16 `json:"i16" yaml:"i16" mapstructure:"i16"`
+type Bound64 int
 
-	// I32 corresponds to the JSON schema field "i32".
-	I32 Bound32 `json:"i32" yaml:"i32" mapstructure:"i32"`
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Bound64) UnmarshalJSON(value []byte) error {
+	type Plain Bound64
+	var plain Plain
+	if err := json.Unmarshal(value, &plain); err != nil {
+		return err
+	}
+	if -9223372036854775808 < plain {
+		return fmt.Errorf("field %s: must be <= %v", "", -9223372036854775808)
+	}
+	if -9223372036854775808 > plain {
+		return fmt.Errorf("field %s: must be >= %v", "", -9223372036854775808)
+	}
+	*j = Bound64(plain)
+	return nil
+}
 
-	// I64 corresponds to the JSON schema field "i64".
-	I64 Bound64 `json:"i64" yaml:"i64" mapstructure:"i64"`
+type Bound8 int
 
-	// I8 corresponds to the JSON schema field "i8".
-	I8 Bound8 `json:"i8" yaml:"i8" mapstructure:"i8"`
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Bound8) UnmarshalJSON(value []byte) error {
+	type Plain Bound8
+	var plain Plain
+	if err := json.Unmarshal(value, &plain); err != nil {
+		return err
+	}
+	if 127 < plain {
+		return fmt.Errorf("field %s: must be <= %v", "", 127)
+	}
+	if -128 > plain {
+		return fmt.Errorf("field %s: must be >= %v", "", -128)
+	}
+	*j = Bound8(plain)
+	return nil
+}
 
-	// U16 corresponds to the JSON schema field "u16".
-	U16 UBound16 `json:"u16" yaml:"u16" mapstructure:"u16"`
+type ExactJson struct {
+	// i16 corresponds to the JSON schema field "i16".
+	i16 Bound16 `json:"i16" yaml:"i16" mapstructure:"i16"`
 
-	// U32 corresponds to the JSON schema field "u32".
-	U32 UBound32 `json:"u32" yaml:"u32" mapstructure:"u32"`
+	// i32 corresponds to the JSON schema field "i32".
+	i32 Bound32 `json:"i32" yaml:"i32" mapstructure:"i32"`
 
-	// U64 corresponds to the JSON schema field "u64".
-	U64 UBound64 `json:"u64" yaml:"u64" mapstructure:"u64"`
+	// i64 corresponds to the JSON schema field "i64".
+	i64 Bound64 `json:"i64" yaml:"i64" mapstructure:"i64"`
 
-	// U8 corresponds to the JSON schema field "u8".
-	U8 UBound8 `json:"u8" yaml:"u8" mapstructure:"u8"`
+	// i8 corresponds to the JSON schema field "i8".
+	i8 Bound8 `json:"i8" yaml:"i8" mapstructure:"i8"`
+
+	// u16 corresponds to the JSON schema field "u16".
+	u16 UBound16 `json:"u16" yaml:"u16" mapstructure:"u16"`
+
+	// u32 corresponds to the JSON schema field "u32".
+	u32 UBound32 `json:"u32" yaml:"u32" mapstructure:"u32"`
+
+	// u64 corresponds to the JSON schema field "u64".
+	u64 UBound64 `json:"u64" yaml:"u64" mapstructure:"u64"`
+
+	// u8 corresponds to the JSON schema field "u8".
+	u8 UBound8 `json:"u8" yaml:"u8" mapstructure:"u8"`
+}
+
+func (o *ExactJson) I16() Bound16 {
+	return o.i16
+}
+
+func (o *ExactJson) I32() Bound32 {
+	return o.i32
+}
+
+func (o *ExactJson) I64() Bound64 {
+	return o.i64
+}
+
+func (o *ExactJson) I8() Bound8 {
+	return o.i8
+}
+
+func (o *ExactJson) U16() UBound16 {
+	return o.u16
+}
+
+func (o *ExactJson) U32() UBound32 {
+	return o.u32
+}
+
+func (o *ExactJson) U64() UBound64 {
+	return o.u64
+}
+
+func (o *ExactJson) U8() UBound8 {
+	return o.u8
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *Exact) UnmarshalJSON(value []byte) error {
+func (j *ExactJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["i16"]; raw != nil && !ok {
-		return fmt.Errorf("field i16 in Exact: required")
+		return fmt.Errorf("field i16 in ExactJson: required")
 	}
 	if _, ok := raw["i32"]; raw != nil && !ok {
-		return fmt.Errorf("field i32 in Exact: required")
+		return fmt.Errorf("field i32 in ExactJson: required")
 	}
 	if _, ok := raw["i64"]; raw != nil && !ok {
-		return fmt.Errorf("field i64 in Exact: required")
+		return fmt.Errorf("field i64 in ExactJson: required")
 	}
 	if _, ok := raw["i8"]; raw != nil && !ok {
-		return fmt.Errorf("field i8 in Exact: required")
+		return fmt.Errorf("field i8 in ExactJson: required")
 	}
 	if _, ok := raw["u16"]; raw != nil && !ok {
-		return fmt.Errorf("field u16 in Exact: required")
+		return fmt.Errorf("field u16 in ExactJson: required")
 	}
 	if _, ok := raw["u32"]; raw != nil && !ok {
-		return fmt.Errorf("field u32 in Exact: required")
+		return fmt.Errorf("field u32 in ExactJson: required")
 	}
 	if _, ok := raw["u64"]; raw != nil && !ok {
-		return fmt.Errorf("field u64 in Exact: required")
+		return fmt.Errorf("field u64 in ExactJson: required")
 	}
 	if _, ok := raw["u8"]; raw != nil && !ok {
-		return fmt.Errorf("field u8 in Exact: required")
+		return fmt.Errorf("field u8 in ExactJson: required")
 	}
-	type Plain Exact
+	type ExactJsonHelper struct {
+		I16 Bound16  `json:"i16"`
+		I32 Bound32  `json:"i32"`
+		I64 Bound64  `json:"i64"`
+		I8  Bound8   `json:"i8"`
+		U16 UBound16 `json:"u16"`
+		U32 UBound32 `json:"u32"`
+		U64 UBound64 `json:"u64"`
+		U8  UBound8  `json:"u8"`
+	}
+	type Plain ExactJson
+	var helper ExactJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.i16 = helper.I16
+	plain.i32 = helper.I32
+	plain.i64 = helper.I64
+	plain.i8 = helper.I8
+	plain.u16 = helper.U16
+	plain.u32 = helper.U32
+	plain.u64 = helper.U64
+	plain.u8 = helper.U8
+	*j = ExactJson(plain)
+	return nil
+}
+
+type UBound16 int
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *UBound16) UnmarshalJSON(value []byte) error {
+	type Plain UBound16
 	var plain Plain
 	if err := json.Unmarshal(value, &plain); err != nil {
 		return err
 	}
-	*j = Exact(plain)
+	if 65535 < plain {
+		return fmt.Errorf("field %s: must be <= %v", "", 65535)
+	}
+	if 0 > plain {
+		return fmt.Errorf("field %s: must be >= %v", "", 0)
+	}
+	*j = UBound16(plain)
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Exact) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["i16"]; raw != nil && !ok {
-		return fmt.Errorf("field i16 in Exact: required")
-	}
-	if _, ok := raw["i32"]; raw != nil && !ok {
-		return fmt.Errorf("field i32 in Exact: required")
-	}
-	if _, ok := raw["i64"]; raw != nil && !ok {
-		return fmt.Errorf("field i64 in Exact: required")
-	}
-	if _, ok := raw["i8"]; raw != nil && !ok {
-		return fmt.Errorf("field i8 in Exact: required")
-	}
-	if _, ok := raw["u16"]; raw != nil && !ok {
-		return fmt.Errorf("field u16 in Exact: required")
-	}
-	if _, ok := raw["u32"]; raw != nil && !ok {
-		return fmt.Errorf("field u32 in Exact: required")
-	}
-	if _, ok := raw["u64"]; raw != nil && !ok {
-		return fmt.Errorf("field u64 in Exact: required")
-	}
-	if _, ok := raw["u8"]; raw != nil && !ok {
-		return fmt.Errorf("field u8 in Exact: required")
-	}
-	type Plain Exact
+type UBound32 int
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *UBound32) UnmarshalJSON(value []byte) error {
+	type Plain UBound32
 	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	if err := json.Unmarshal(value, &plain); err != nil {
 		return err
 	}
-	*j = Exact(plain)
+	if 4294967295 < plain {
+		return fmt.Errorf("field %s: must be <= %v", "", 4294967295)
+	}
+	if 0 > plain {
+		return fmt.Errorf("field %s: must be >= %v", "", 0)
+	}
+	*j = UBound32(plain)
 	return nil
 }
 
-type UBound16 uint16
+type UBound64 int
 
-type UBound32 uint32
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *UBound64) UnmarshalJSON(value []byte) error {
+	type Plain UBound64
+	var plain Plain
+	if err := json.Unmarshal(value, &plain); err != nil {
+		return err
+	}
+	if -9223372036854775808 < plain {
+		return fmt.Errorf("field %s: must be <= %v", "", -9223372036854775808)
+	}
+	if 0 > plain {
+		return fmt.Errorf("field %s: must be >= %v", "", 0)
+	}
+	*j = UBound64(plain)
+	return nil
+}
 
-type UBound64 uint64
+type UBound8 int
 
-type UBound8 uint8
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *UBound8) UnmarshalJSON(value []byte) error {
+	type Plain UBound8
+	var plain Plain
+	if err := json.Unmarshal(value, &plain); err != nil {
+		return err
+	}
+	if 255 < plain {
+		return fmt.Errorf("field %s: must be <= %v", "", 255)
+	}
+	if 0 > plain {
+		return fmt.Errorf("field %s: must be >= %v", "", 0)
+	}
+	*j = UBound8(plain)
+	return nil
+}

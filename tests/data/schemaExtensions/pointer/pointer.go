@@ -4,143 +4,161 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 import "time"
 
-type Pointer struct {
-	// BoolWithDefault corresponds to the JSON schema field "boolWithDefault".
-	BoolWithDefault *bool `json:"boolWithDefault,omitempty,omitzero" yaml:"boolWithDefault,omitempty" mapstructure:"boolWithDefault,omitempty"`
+type PointerJson struct {
+	// boolwithdefault corresponds to the JSON schema field "boolWithDefault".
+	boolwithdefault *bool `json:"boolWithDefault,omitempty,omitzero" yaml:"boolWithDefault,omitempty" mapstructure:"boolWithDefault,omitempty"`
 
-	// DurationWithDefault corresponds to the JSON schema field "durationWithDefault".
-	DurationWithDefault *time.Duration `json:"durationWithDefault,omitempty,omitzero" yaml:"durationWithDefault,omitempty" mapstructure:"durationWithDefault,omitempty"`
+	// durationwithdefault corresponds to the JSON schema field "durationWithDefault".
+	durationwithdefault *time.Duration `json:"durationWithDefault,omitempty,omitzero" yaml:"durationWithDefault,omitempty" mapstructure:"durationWithDefault,omitempty"`
 
-	// IntWithDefault corresponds to the JSON schema field "intWithDefault".
-	IntWithDefault *int `json:"intWithDefault,omitempty,omitzero" yaml:"intWithDefault,omitempty" mapstructure:"intWithDefault,omitempty"`
+	// intwithdefault corresponds to the JSON schema field "intWithDefault".
+	intwithdefault *int `json:"intWithDefault,omitempty,omitzero" yaml:"intWithDefault,omitempty" mapstructure:"intWithDefault,omitempty"`
 
-	// NormalDefault corresponds to the JSON schema field "normalDefault".
-	NormalDefault string `json:"normalDefault,omitempty,omitzero" yaml:"normalDefault,omitempty" mapstructure:"normalDefault,omitempty"`
+	// normaldefault corresponds to the JSON schema field "normalDefault".
+	normaldefault string `json:"normalDefault,omitempty,omitzero" yaml:"normalDefault,omitempty" mapstructure:"normalDefault,omitempty"`
 
-	// NormalOptional corresponds to the JSON schema field "normalOptional".
-	NormalOptional *string `json:"normalOptional,omitempty,omitzero" yaml:"normalOptional,omitempty" mapstructure:"normalOptional,omitempty"`
+	// normaloptional corresponds to the JSON schema field "normalOptional".
+	normaloptional *string `json:"normalOptional,omitempty,omitzero" yaml:"normalOptional,omitempty" mapstructure:"normalOptional,omitempty"`
 
-	// OptionalIntNonPointer corresponds to the JSON schema field
+	// optionalintnonpointer corresponds to the JSON schema field
 	// "optionalIntNonPointer".
-	OptionalIntNonPointer int `json:"optionalIntNonPointer,omitempty,omitzero" yaml:"optionalIntNonPointer,omitempty" mapstructure:"optionalIntNonPointer,omitempty"`
+	optionalintnonpointer int `json:"optionalIntNonPointer,omitempty,omitzero" yaml:"optionalIntNonPointer,omitempty" mapstructure:"optionalIntNonPointer,omitempty"`
 
-	// OptionalStringNonPointer corresponds to the JSON schema field
+	// optionalstringnonpointer corresponds to the JSON schema field
 	// "optionalStringNonPointer".
-	OptionalStringNonPointer string `json:"optionalStringNonPointer,omitempty,omitzero" yaml:"optionalStringNonPointer,omitempty" mapstructure:"optionalStringNonPointer,omitempty"`
+	optionalstringnonpointer string `json:"optionalStringNonPointer,omitempty,omitzero" yaml:"optionalStringNonPointer,omitempty" mapstructure:"optionalStringNonPointer,omitempty"`
 
-	// RequiredIntNonPointer corresponds to the JSON schema field
+	// requiredintnonpointer corresponds to the JSON schema field
 	// "requiredIntNonPointer".
-	RequiredIntNonPointer int `json:"requiredIntNonPointer" yaml:"requiredIntNonPointer" mapstructure:"requiredIntNonPointer"`
+	requiredintnonpointer int `json:"requiredIntNonPointer" yaml:"requiredIntNonPointer" mapstructure:"requiredIntNonPointer"`
 
-	// RequiredIntPointer corresponds to the JSON schema field "requiredIntPointer".
-	RequiredIntPointer *int `json:"requiredIntPointer" yaml:"requiredIntPointer" mapstructure:"requiredIntPointer"`
+	// requiredintpointer corresponds to the JSON schema field "requiredIntPointer".
+	requiredintpointer *int `json:"requiredIntPointer" yaml:"requiredIntPointer" mapstructure:"requiredIntPointer"`
 
-	// SliceWithDefault corresponds to the JSON schema field "sliceWithDefault".
-	SliceWithDefault []string `json:"sliceWithDefault,omitempty,omitzero" yaml:"sliceWithDefault,omitempty" mapstructure:"sliceWithDefault,omitempty"`
+	// slicewithdefault corresponds to the JSON schema field "sliceWithDefault".
+	slicewithdefault []string `json:"sliceWithDefault,omitempty,omitzero" yaml:"sliceWithDefault,omitempty" mapstructure:"sliceWithDefault,omitempty"`
 
-	// StringWithDefault corresponds to the JSON schema field "stringWithDefault".
-	StringWithDefault *string `json:"stringWithDefault,omitempty,omitzero" yaml:"stringWithDefault,omitempty" mapstructure:"stringWithDefault,omitempty"`
+	// stringwithdefault corresponds to the JSON schema field "stringWithDefault".
+	stringwithdefault *string `json:"stringWithDefault,omitempty,omitzero" yaml:"stringWithDefault,omitempty" mapstructure:"stringWithDefault,omitempty"`
+}
+
+func (o *PointerJson) BoolWithDefault() *bool {
+	return o.boolwithdefault
+}
+
+func (o *PointerJson) DurationWithDefault() *time.Duration {
+	return o.durationwithdefault
+}
+
+func (o *PointerJson) IntWithDefault() *int {
+	return o.intwithdefault
+}
+
+func (o *PointerJson) NormalDefault() string {
+	return o.normaldefault
+}
+
+func (o *PointerJson) NormalOptional() *string {
+	return o.normaloptional
+}
+
+func (o *PointerJson) OptionalIntNonPointer() int {
+	return o.optionalintnonpointer
+}
+
+func (o *PointerJson) OptionalStringNonPointer() string {
+	return o.optionalstringnonpointer
+}
+
+func (o *PointerJson) RequiredIntNonPointer() int {
+	return o.requiredintnonpointer
+}
+
+func (o *PointerJson) RequiredIntPointer() *int {
+	return o.requiredintpointer
+}
+
+func (o *PointerJson) SliceWithDefault() []string {
+	return o.slicewithdefault
+}
+
+func (o *PointerJson) StringWithDefault() *string {
+	return o.stringwithdefault
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *Pointer) UnmarshalJSON(value []byte) error {
+func (j *PointerJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["requiredIntNonPointer"]; raw != nil && !ok {
-		return fmt.Errorf("field requiredIntNonPointer in Pointer: required")
+		return fmt.Errorf("field requiredIntNonPointer in PointerJson: required")
 	}
 	if _, ok := raw["requiredIntPointer"]; raw != nil && !ok {
-		return fmt.Errorf("field requiredIntPointer in Pointer: required")
+		return fmt.Errorf("field requiredIntPointer in PointerJson: required")
 	}
-	type Plain Pointer
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	type PointerJsonHelper struct {
+		Boolwithdefault          *bool          `json:"boolWithDefault",omitempty`
+		Durationwithdefault      *time.Duration `json:"durationWithDefault",omitempty`
+		Intwithdefault           *int           `json:"intWithDefault",omitempty`
+		Normaldefault            string         `json:"normalDefault",omitempty`
+		Normaloptional           *string        `json:"normalOptional",omitempty`
+		Optionalintnonpointer    int            `json:"optionalIntNonPointer",omitempty`
+		Optionalstringnonpointer string         `json:"optionalStringNonPointer",omitempty`
+		Requiredintnonpointer    int            `json:"requiredIntNonPointer"`
+		Requiredintpointer       *int           `json:"requiredIntPointer"`
+		Slicewithdefault         []string       `json:"sliceWithDefault",omitempty`
+		Stringwithdefault        *string        `json:"stringWithDefault",omitempty`
+	}
+	type Plain PointerJson
+	var helper PointerJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.boolwithdefault = helper.Boolwithdefault
+	plain.durationwithdefault = helper.Durationwithdefault
+	plain.intwithdefault = helper.Intwithdefault
+	plain.normaldefault = helper.Normaldefault
+	plain.normaloptional = helper.Normaloptional
+	plain.optionalintnonpointer = helper.Optionalintnonpointer
+	plain.optionalstringnonpointer = helper.Optionalstringnonpointer
+	plain.requiredintnonpointer = helper.Requiredintnonpointer
+	plain.requiredintpointer = helper.Requiredintpointer
+	plain.slicewithdefault = helper.Slicewithdefault
+	plain.stringwithdefault = helper.Stringwithdefault
 	if v, ok := raw["boolWithDefault"]; !ok || v == nil {
-		var defaultBoolWithDefault bool = true
-		plain.BoolWithDefault = &defaultBoolWithDefault
+		var defaultboolwithdefault bool = true
+		plain.boolwithdefault = &defaultboolwithdefault
 	}
 	if v, ok := raw["durationWithDefault"]; !ok || v == nil {
 		defaultDuration, err := time.ParseDuration("20s")
 		if err != nil {
 			return fmt.Errorf("failed to parse the \"20s\" default value for field durationWithDefault: %w", err)
 		}
-		plain.DurationWithDefault = &defaultDuration
+		plain.durationwithdefault = &defaultDuration
 
 	}
 	if v, ok := raw["intWithDefault"]; !ok || v == nil {
-		var defaultIntWithDefault int = 42
-		plain.IntWithDefault = &defaultIntWithDefault
+		var defaultintwithdefault int = 42
+		plain.intwithdefault = &defaultintwithdefault
 	}
 	if v, ok := raw["normalDefault"]; !ok || v == nil {
-		plain.NormalDefault = "world"
+		plain.normaldefault = "world"
 	}
 	if v, ok := raw["sliceWithDefault"]; !ok || v == nil {
-		plain.SliceWithDefault = []string{
+		plain.slicewithdefault = []string{
 			"a",
 			"b",
 		}
 	}
 	if v, ok := raw["stringWithDefault"]; !ok || v == nil {
-		var defaultStringWithDefault string = "hello"
-		plain.StringWithDefault = &defaultStringWithDefault
+		var defaultstringwithdefault string = "hello"
+		plain.stringwithdefault = &defaultstringwithdefault
 	}
-	*j = Pointer(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Pointer) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["requiredIntNonPointer"]; raw != nil && !ok {
-		return fmt.Errorf("field requiredIntNonPointer in Pointer: required")
-	}
-	if _, ok := raw["requiredIntPointer"]; raw != nil && !ok {
-		return fmt.Errorf("field requiredIntPointer in Pointer: required")
-	}
-	type Plain Pointer
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if v, ok := raw["boolWithDefault"]; !ok || v == nil {
-		var defaultBoolWithDefault bool = true
-		plain.BoolWithDefault = &defaultBoolWithDefault
-	}
-	if v, ok := raw["durationWithDefault"]; !ok || v == nil {
-		defaultDuration, err := time.ParseDuration("20s")
-		if err != nil {
-			return fmt.Errorf("failed to parse the \"20s\" default value for field durationWithDefault: %w", err)
-		}
-		plain.DurationWithDefault = &defaultDuration
-
-	}
-	if v, ok := raw["intWithDefault"]; !ok || v == nil {
-		var defaultIntWithDefault int = 42
-		plain.IntWithDefault = &defaultIntWithDefault
-	}
-	if v, ok := raw["normalDefault"]; !ok || v == nil {
-		plain.NormalDefault = "world"
-	}
-	if v, ok := raw["sliceWithDefault"]; !ok || v == nil {
-		plain.SliceWithDefault = []string{
-			"a",
-			"b",
-		}
-	}
-	if v, ok := raw["stringWithDefault"]; !ok || v == nil {
-		var defaultStringWithDefault string = "hello"
-		plain.StringWithDefault = &defaultStringWithDefault
-	}
-	*j = Pointer(plain)
+	*j = PointerJson(plain)
 	return nil
 }

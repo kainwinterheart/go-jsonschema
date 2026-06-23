@@ -4,111 +4,111 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 import "reflect"
 
-type GopkgYAMLv3 struct {
-	// MyBoolean corresponds to the JSON schema field "myBoolean".
-	MyBoolean *bool `json:"myBoolean,omitempty,omitzero" yaml:"myBoolean,omitempty" mapstructure:"myBoolean,omitempty"`
+type GopkgYAMLv3Json struct {
+	// myboolean corresponds to the JSON schema field "myBoolean".
+	myboolean *bool `json:"myBoolean,omitempty,omitzero" yaml:"myBoolean,omitempty" mapstructure:"myBoolean,omitempty"`
 
-	// MyEnum corresponds to the JSON schema field "myEnum".
-	MyEnum *GopkgYAMLv3MyEnum `json:"myEnum,omitempty,omitzero" yaml:"myEnum,omitempty" mapstructure:"myEnum,omitempty"`
+	// myenum corresponds to the JSON schema field "myEnum".
+	myenum *GopkgYAMLv3Jsonmyenum `json:"myEnum,omitempty,omitzero" yaml:"myEnum,omitempty" mapstructure:"myEnum,omitempty"`
 
-	// MyInteger corresponds to the JSON schema field "myInteger".
-	MyInteger *int `json:"myInteger,omitempty,omitzero" yaml:"myInteger,omitempty" mapstructure:"myInteger,omitempty"`
+	// myinteger corresponds to the JSON schema field "myInteger".
+	myinteger *int `json:"myInteger,omitempty,omitzero" yaml:"myInteger,omitempty" mapstructure:"myInteger,omitempty"`
 
-	// MyNull corresponds to the JSON schema field "myNull".
-	MyNull interface{} `json:"myNull,omitempty,omitzero" yaml:"myNull,omitempty" mapstructure:"myNull,omitempty"`
+	// mynull corresponds to the JSON schema field "myNull".
+	mynull interface{} `json:"myNull,omitempty,omitzero" yaml:"myNull,omitempty" mapstructure:"myNull,omitempty"`
 
-	// MyNumber corresponds to the JSON schema field "myNumber".
-	MyNumber *float64 `json:"myNumber,omitempty,omitzero" yaml:"myNumber,omitempty" mapstructure:"myNumber,omitempty"`
+	// mynumber corresponds to the JSON schema field "myNumber".
+	mynumber *float64 `json:"myNumber,omitempty,omitzero" yaml:"myNumber,omitempty" mapstructure:"myNumber,omitempty"`
 
-	// MyString corresponds to the JSON schema field "myString".
-	MyString *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
+	// mystring corresponds to the JSON schema field "myString".
+	mystring *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
 }
 
-type GopkgYAMLv3MyEnum string
+func (o *GopkgYAMLv3Json) MyBoolean() *bool {
+	return o.myboolean
+}
 
-const GopkgYAMLv3MyEnumX GopkgYAMLv3MyEnum = "x"
-const GopkgYAMLv3MyEnumY GopkgYAMLv3MyEnum = "y"
+func (o *GopkgYAMLv3Json) MyEnum() *GopkgYAMLv3Jsonmyenum {
+	return o.myenum
+}
 
-var enumValues_GopkgYAMLv3MyEnum = []interface{}{
+func (o *GopkgYAMLv3Json) MyInteger() *int {
+	return o.myinteger
+}
+
+func (o *GopkgYAMLv3Json) MyNull() interface{} {
+	return o.mynull
+}
+
+func (o *GopkgYAMLv3Json) MyNumber() *float64 {
+	return o.mynumber
+}
+
+func (o *GopkgYAMLv3Json) MyString() *string {
+	return o.mystring
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *GopkgYAMLv3Json) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	type GopkgYAMLv3JsonHelper struct {
+		Myboolean *bool                  `json:"myBoolean",omitempty`
+		Myenum    *GopkgYAMLv3Jsonmyenum `json:"myEnum",omitempty`
+		Myinteger *int                   `json:"myInteger",omitempty`
+		Mynull    interface{}            `json:"myNull",omitempty`
+		Mynumber  *float64               `json:"myNumber",omitempty`
+		Mystring  *string                `json:"myString",omitempty`
+	}
+	type Plain GopkgYAMLv3Json
+	var helper GopkgYAMLv3JsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.myboolean = helper.Myboolean
+	plain.myenum = helper.Myenum
+	plain.myinteger = helper.Myinteger
+	plain.mynull = helper.Mynull
+	plain.mynumber = helper.Mynumber
+	plain.mystring = helper.Mystring
+	if plain.mynull != nil {
+		return fmt.Errorf("field %s: must be null", "myNull")
+	}
+	*j = GopkgYAMLv3Json(plain)
+	return nil
+}
+
+type GopkgYAMLv3Jsonmyenum string
+
+const GopkgYAMLv3JsonmyenumX GopkgYAMLv3Jsonmyenum = "x"
+const GopkgYAMLv3JsonmyenumY GopkgYAMLv3Jsonmyenum = "y"
+
+var enumValues_GopkgYAMLv3Jsonmyenum = []interface{}{
 	"x",
 	"y",
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *GopkgYAMLv3MyEnum) UnmarshalJSON(value []byte) error {
+func (j *GopkgYAMLv3Jsonmyenum) UnmarshalJSON(value []byte) error {
 	var v string
 	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
-	for _, expected := range enumValues_GopkgYAMLv3MyEnum {
+	for _, expected := range enumValues_GopkgYAMLv3Jsonmyenum {
 		if reflect.DeepEqual(v, expected) {
 			ok = true
 			break
 		}
 	}
 	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_GopkgYAMLv3MyEnum, v)
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_GopkgYAMLv3Jsonmyenum, v)
 	}
-	*j = GopkgYAMLv3MyEnum(v)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *GopkgYAMLv3MyEnum) UnmarshalYAML(value *yaml.Node) error {
-	var v string
-	if err := value.Decode(&v); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_GopkgYAMLv3MyEnum {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_GopkgYAMLv3MyEnum, v)
-	}
-	*j = GopkgYAMLv3MyEnum(v)
-	return nil
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *GopkgYAMLv3) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	type Plain GopkgYAMLv3
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if plain.MyNull != nil {
-		return fmt.Errorf("field %s: must be null", "myNull")
-	}
-	*j = GopkgYAMLv3(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *GopkgYAMLv3) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	type Plain GopkgYAMLv3
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.MyNull != nil {
-		return fmt.Errorf("field %s: must be null", "myNull")
-	}
-	*j = GopkgYAMLv3(plain)
+	*j = GopkgYAMLv3Jsonmyenum(v)
 	return nil
 }

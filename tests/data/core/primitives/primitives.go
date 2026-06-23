@@ -4,57 +4,71 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
-type Primitives struct {
-	// MyBoolean corresponds to the JSON schema field "myBoolean".
-	MyBoolean *bool `json:"myBoolean,omitempty,omitzero" yaml:"myBoolean,omitempty" mapstructure:"myBoolean,omitempty"`
+type PrimitivesJson struct {
+	// myboolean corresponds to the JSON schema field "myBoolean".
+	myboolean *bool `json:"myBoolean,omitempty,omitzero" yaml:"myBoolean,omitempty" mapstructure:"myBoolean,omitempty"`
 
-	// MyInteger corresponds to the JSON schema field "myInteger".
-	MyInteger *int `json:"myInteger,omitempty,omitzero" yaml:"myInteger,omitempty" mapstructure:"myInteger,omitempty"`
+	// myinteger corresponds to the JSON schema field "myInteger".
+	myinteger *int `json:"myInteger,omitempty,omitzero" yaml:"myInteger,omitempty" mapstructure:"myInteger,omitempty"`
 
-	// MyNull corresponds to the JSON schema field "myNull".
-	MyNull interface{} `json:"myNull,omitempty,omitzero" yaml:"myNull,omitempty" mapstructure:"myNull,omitempty"`
+	// mynull corresponds to the JSON schema field "myNull".
+	mynull interface{} `json:"myNull,omitempty,omitzero" yaml:"myNull,omitempty" mapstructure:"myNull,omitempty"`
 
-	// MyNumber corresponds to the JSON schema field "myNumber".
-	MyNumber *float64 `json:"myNumber,omitempty,omitzero" yaml:"myNumber,omitempty" mapstructure:"myNumber,omitempty"`
+	// mynumber corresponds to the JSON schema field "myNumber".
+	mynumber *float64 `json:"myNumber,omitempty,omitzero" yaml:"myNumber,omitempty" mapstructure:"myNumber,omitempty"`
 
-	// MyString corresponds to the JSON schema field "myString".
-	MyString *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
+	// mystring corresponds to the JSON schema field "myString".
+	mystring *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
+}
+
+func (o *PrimitivesJson) MyBoolean() *bool {
+	return o.myboolean
+}
+
+func (o *PrimitivesJson) MyInteger() *int {
+	return o.myinteger
+}
+
+func (o *PrimitivesJson) MyNull() interface{} {
+	return o.mynull
+}
+
+func (o *PrimitivesJson) MyNumber() *float64 {
+	return o.mynumber
+}
+
+func (o *PrimitivesJson) MyString() *string {
+	return o.mystring
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *Primitives) UnmarshalJSON(value []byte) error {
+func (j *PrimitivesJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	type Plain Primitives
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	type PrimitivesJsonHelper struct {
+		Myboolean *bool       `json:"myBoolean",omitempty`
+		Myinteger *int        `json:"myInteger",omitempty`
+		Mynull    interface{} `json:"myNull",omitempty`
+		Mynumber  *float64    `json:"myNumber",omitempty`
+		Mystring  *string     `json:"myString",omitempty`
+	}
+	type Plain PrimitivesJson
+	var helper PrimitivesJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
-	if plain.MyNull != nil {
+	var plain Plain
+	plain.myboolean = helper.Myboolean
+	plain.myinteger = helper.Myinteger
+	plain.mynull = helper.Mynull
+	plain.mynumber = helper.Mynumber
+	plain.mystring = helper.Mystring
+	if plain.mynull != nil {
 		return fmt.Errorf("field %s: must be null", "myNull")
 	}
-	*j = Primitives(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Primitives) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	type Plain Primitives
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.MyNull != nil {
-		return fmt.Errorf("field %s: must be null", "myNull")
-	}
-	*j = Primitives(plain)
+	*j = PrimitivesJson(plain)
 	return nil
 }

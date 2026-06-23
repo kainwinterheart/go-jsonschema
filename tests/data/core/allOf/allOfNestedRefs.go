@@ -4,63 +4,71 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
-type AllOfNestedRefs struct {
-	// Bar corresponds to the JSON schema field "bar".
-	Bar *string `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
+type AllOfNestedRefsJson struct {
+	// bar corresponds to the JSON schema field "bar".
+	bar *string `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
 
-	// Foo corresponds to the JSON schema field "foo".
-	Foo interface{} `json:"foo" yaml:"foo" mapstructure:"foo"`
+	// foo corresponds to the JSON schema field "foo".
+	foo interface{} `json:"foo" yaml:"foo" mapstructure:"foo"`
+}
+
+func (o *AllOfNestedRefsJson) Bar() *string {
+	return o.bar
+}
+
+func (o *AllOfNestedRefsJson) Foo() interface{} {
+	return o.foo
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *AllOfNestedRefs) UnmarshalJSON(value []byte) error {
+func (j *AllOfNestedRefsJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AllOfNestedRefs: required")
+		return fmt.Errorf("field foo in AllOfNestedRefsJson: required")
 	}
-	type Plain AllOfNestedRefs
+	type AllOfNestedRefsJsonHelper struct {
+		Bar *string     `json:"bar",omitempty`
+		Foo interface{} `json:"foo"`
+	}
+	type Plain AllOfNestedRefsJson
+	var helper AllOfNestedRefsJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = AllOfNestedRefs(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AllOfNestedRefs) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AllOfNestedRefs: required")
-	}
-	type Plain AllOfNestedRefs
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AllOfNestedRefs(plain)
+	plain.bar = helper.Bar
+	plain.foo = helper.Foo
+	*j = AllOfNestedRefsJson(plain)
 	return nil
 }
 
 type ExtraProps struct {
-	// Bar corresponds to the JSON schema field "bar".
-	Bar *string `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
+	// bar corresponds to the JSON schema field "bar".
+	bar *string `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
+}
+
+func (o *ExtraProps) Bar() *string {
+	return o.bar
 }
 
 type RootObject struct {
-	// Bar corresponds to the JSON schema field "bar".
-	Bar *string `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
+	// bar corresponds to the JSON schema field "bar".
+	bar *string `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
 
-	// Foo corresponds to the JSON schema field "foo".
-	Foo interface{} `json:"foo" yaml:"foo" mapstructure:"foo"`
+	// foo corresponds to the JSON schema field "foo".
+	foo interface{} `json:"foo" yaml:"foo" mapstructure:"foo"`
+}
+
+func (o *RootObject) Bar() *string {
+	return o.bar
+}
+
+func (o *RootObject) Foo() interface{} {
+	return o.foo
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -72,29 +80,18 @@ func (j *RootObject) UnmarshalJSON(value []byte) error {
 	if _, ok := raw["foo"]; raw != nil && !ok {
 		return fmt.Errorf("field foo in RootObject: required")
 	}
-	type Plain RootObject
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = RootObject(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RootObject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in RootObject: required")
+	type RootObjectHelper struct {
+		Bar *string     `json:"bar",omitempty`
+		Foo interface{} `json:"foo"`
 	}
 	type Plain RootObject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var helper RootObjectHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.bar = helper.Bar
+	plain.foo = helper.Foo
 	*j = RootObject(plain)
 	return nil
 }

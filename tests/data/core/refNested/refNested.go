@@ -4,12 +4,20 @@ package test
 
 type Name string
 
-type RefNested struct {
-	// MyThing corresponds to the JSON schema field "myThing".
-	MyThing *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
+type RefNestedJson struct {
+	// mything corresponds to the JSON schema field "myThing".
+	mything *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
+}
+
+func (o *RefNestedJson) MyThing() *Thing {
+	return o.mything
 }
 
 type Thing struct {
-	// Name corresponds to the JSON schema field "name".
-	Name *Name `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+	// name corresponds to the JSON schema field "name".
+	name *Name `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+}
+
+func (o *Thing) Name() *Name {
+	return o.name
 }

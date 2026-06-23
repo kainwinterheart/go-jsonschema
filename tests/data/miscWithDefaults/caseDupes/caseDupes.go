@@ -2,19 +2,27 @@
 
 package test
 
-type CaseDupes struct {
-	// SomeField corresponds to the JSON schema field "SomeField".
-	SomeField *string `json:"SomeField,omitempty,omitzero" yaml:"SomeField,omitempty" mapstructure:"SomeField,omitempty"`
+type CaseDupesJson struct {
+	// somefield corresponds to the JSON schema field "SomeField".
+	somefield *string `json:"SomeField,omitempty,omitzero" yaml:"SomeField,omitempty" mapstructure:"SomeField,omitempty"`
 
-	// SomeField_2 corresponds to the JSON schema field "someField".
-	SomeField_2 *string `json:"someField,omitempty,omitzero" yaml:"someField,omitempty" mapstructure:"someField,omitempty"`
+	// somefield_2 corresponds to the JSON schema field "someField".
+	somefield_2 *string `json:"someField,omitempty,omitzero" yaml:"someField,omitempty" mapstructure:"someField,omitempty"`
 
-	// SomeField_3 corresponds to the JSON schema field "some_Field".
-	SomeField_3 *string `json:"some_Field,omitempty,omitzero" yaml:"some_Field,omitempty" mapstructure:"some_Field,omitempty"`
+	// somefield_3 corresponds to the JSON schema field "some_Field".
+	somefield_3 *string `json:"some_Field,omitempty,omitzero" yaml:"some_Field,omitempty" mapstructure:"some_Field,omitempty"`
 
-	// SomeField_4 corresponds to the JSON schema field "some_field".
-	SomeField_4 *string `json:"some_field,omitempty,omitzero" yaml:"some_field,omitempty" mapstructure:"some_field,omitempty"`
+	// somefield_4 corresponds to the JSON schema field "some_field".
+	somefield_4 *string `json:"some_field,omitempty,omitzero" yaml:"some_field,omitempty" mapstructure:"some_field,omitempty"`
 
-	// Somefield corresponds to the JSON schema field "somefield".
-	Somefield *string `json:"somefield,omitempty,omitzero" yaml:"somefield,omitempty" mapstructure:"somefield,omitempty"`
+	// somefield_5 corresponds to the JSON schema field "somefield".
+	somefield_5 *string `json:"somefield,omitempty,omitzero" yaml:"somefield,omitempty" mapstructure:"somefield,omitempty"`
+}
+
+func (o *CaseDupesJson) SomeField() *string {
+	return o.somefield
+}
+
+func (o *CaseDupesJson) Somefield() *string {
+	return o.somefield_5
 }

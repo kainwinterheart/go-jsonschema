@@ -5,13 +5,16 @@ package test
 import "encoding/json"
 import "fmt"
 import "github.com/go-viper/mapstructure/v2"
-import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "strings"
 
 type BaseObject struct {
-	// BaseField corresponds to the JSON schema field "BaseField".
-	BaseField string `json:"BaseField" yaml:"BaseField" mapstructure:"BaseField"`
+	// basefield corresponds to the JSON schema field "BaseField".
+	basefield string `json:"BaseField" yaml:"BaseField" mapstructure:"BaseField"`
+}
+
+func (o *BaseObject) BaseField() string {
+	return o.basefield
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -23,41 +26,36 @@ func (j *BaseObject) UnmarshalJSON(value []byte) error {
 	if _, ok := raw["BaseField"]; raw != nil && !ok {
 		return fmt.Errorf("field BaseField in BaseObject: required")
 	}
-	type Plain BaseObject
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = BaseObject(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *BaseObject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["BaseField"]; raw != nil && !ok {
-		return fmt.Errorf("field BaseField in BaseObject: required")
+	type BaseObjectHelper struct {
+		Basefield string `json:"BaseField"`
 	}
 	type Plain BaseObject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var helper BaseObjectHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.basefield = helper.Basefield
 	*j = BaseObject(plain)
 	return nil
 }
 
 type ComposedWithAllOfAndProperties struct {
-	// BaseField corresponds to the JSON schema field "BaseField".
-	BaseField string `json:"BaseField" yaml:"BaseField" mapstructure:"BaseField"`
+	// basefield corresponds to the JSON schema field "BaseField".
+	basefield string `json:"BaseField" yaml:"BaseField" mapstructure:"BaseField"`
 
-	// DirectField corresponds to the JSON schema field "DirectField".
-	DirectField []string `json:"DirectField,omitempty,omitzero" yaml:"DirectField,omitempty" mapstructure:"DirectField,omitempty"`
+	// directfield corresponds to the JSON schema field "DirectField".
+	directfield []string `json:"DirectField,omitempty,omitzero" yaml:"DirectField,omitempty" mapstructure:"DirectField,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
+}
+
+func (o *ComposedWithAllOfAndProperties) BaseField() string {
+	return o.basefield
+}
+
+func (o *ComposedWithAllOfAndProperties) DirectField() []string {
+	return o.directfield
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -69,37 +67,18 @@ func (j *ComposedWithAllOfAndProperties) UnmarshalJSON(value []byte) error {
 	if _, ok := raw["BaseField"]; raw != nil && !ok {
 		return fmt.Errorf("field BaseField in ComposedWithAllOfAndProperties: required")
 	}
-	type Plain ComposedWithAllOfAndProperties
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	st := reflect.TypeOf(Plain{})
-	for i := range st.NumField() {
-		delete(raw, st.Field(i).Name)
-		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
-	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
-		return err
-	}
-	*j = ComposedWithAllOfAndProperties(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *ComposedWithAllOfAndProperties) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["BaseField"]; raw != nil && !ok {
-		return fmt.Errorf("field BaseField in ComposedWithAllOfAndProperties: required")
+	type ComposedWithAllOfAndPropertiesHelper struct {
+		Basefield   string   `json:"BaseField"`
+		Directfield []string `json:"DirectField",omitempty`
 	}
 	type Plain ComposedWithAllOfAndProperties
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var helper ComposedWithAllOfAndPropertiesHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.basefield = helper.Basefield
+	plain.directfield = helper.Directfield
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)

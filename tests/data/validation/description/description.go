@@ -3,11 +3,19 @@
 package test
 
 // A simple schema.
-type Description struct {
-	// MyDescriptionlessField corresponds to the JSON schema field
+type DescriptionJson struct {
+	// mydescriptionlessfield corresponds to the JSON schema field
 	// "myDescriptionlessField".
-	MyDescriptionlessField *string `json:"myDescriptionlessField,omitempty,omitzero" yaml:"myDescriptionlessField,omitempty" mapstructure:"myDescriptionlessField,omitempty"`
+	mydescriptionlessfield *string `json:"myDescriptionlessField,omitempty,omitzero" yaml:"myDescriptionlessField,omitempty" mapstructure:"myDescriptionlessField,omitempty"`
 
 	// A string field.
-	MyField *string `json:"myField,omitempty,omitzero" yaml:"myField,omitempty" mapstructure:"myField,omitempty"`
+	myfield *string `json:"myField,omitempty,omitzero" yaml:"myField,omitempty" mapstructure:"myField,omitempty"`
+}
+
+func (o *DescriptionJson) MyDescriptionlessField() *string {
+	return o.mydescriptionlessfield
+}
+
+func (o *DescriptionJson) MyField() *string {
+	return o.myfield
 }

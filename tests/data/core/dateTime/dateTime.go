@@ -4,51 +4,45 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 import "time"
 
-type DateTime struct {
-	// MyObject corresponds to the JSON schema field "myObject".
-	MyObject *DateTimeMyObject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+type DateTimeJson struct {
+	// myobject corresponds to the JSON schema field "myObject".
+	myobject *DateTimeJsonmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
-type DateTimeMyObject struct {
-	// MyDateTime corresponds to the JSON schema field "myDateTime".
-	MyDateTime time.Time `json:"myDateTime" yaml:"myDateTime" mapstructure:"myDateTime"`
+func (o *DateTimeJson) MyObject() *DateTimeJsonmyobject {
+	return o.myobject
+}
+
+type DateTimeJsonmyobject struct {
+	// mydatetime corresponds to the JSON schema field "myDateTime".
+	mydatetime time.Time `json:"myDateTime" yaml:"myDateTime" mapstructure:"myDateTime"`
+}
+
+func (o *DateTimeJsonmyobject) MyDateTime() time.Time {
+	return o.mydatetime
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *DateTimeMyObject) UnmarshalJSON(value []byte) error {
+func (j *DateTimeJsonmyobject) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["myDateTime"]; raw != nil && !ok {
-		return fmt.Errorf("field myDateTime in DateTimeMyObject: required")
+		return fmt.Errorf("field myDateTime in DateTimeJsonmyobject: required")
 	}
-	type Plain DateTimeMyObject
+	type DateTimeJsonmyobjectHelper struct {
+		Mydatetime time.Time `json:"myDateTime"`
+	}
+	type Plain DateTimeJsonmyobject
+	var helper DateTimeJsonmyobjectHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = DateTimeMyObject(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *DateTimeMyObject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myDateTime"]; raw != nil && !ok {
-		return fmt.Errorf("field myDateTime in DateTimeMyObject: required")
-	}
-	type Plain DateTimeMyObject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = DateTimeMyObject(plain)
+	plain.mydatetime = helper.Mydatetime
+	*j = DateTimeJsonmyobject(plain)
 	return nil
 }

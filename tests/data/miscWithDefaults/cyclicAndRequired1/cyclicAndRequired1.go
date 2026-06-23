@@ -4,21 +4,32 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
 type Bar struct {
-	// RefToFoo corresponds to the JSON schema field "refToFoo".
-	RefToFoo *Foo `json:"refToFoo,omitempty,omitzero" yaml:"refToFoo,omitempty" mapstructure:"refToFoo,omitempty"`
+	// reftofoo corresponds to the JSON schema field "refToFoo".
+	reftofoo *Foo `json:"refToFoo,omitempty,omitzero" yaml:"refToFoo,omitempty" mapstructure:"refToFoo,omitempty"`
 }
 
-type CyclicAndRequired1 struct {
-	// A corresponds to the JSON schema field "a".
-	A *Foo `json:"a,omitempty,omitzero" yaml:"a,omitempty" mapstructure:"a,omitempty"`
+func (o *Bar) RefToFoo() *Foo {
+	return o.reftofoo
+}
+
+type CyclicAndRequired1Json struct {
+	// a corresponds to the JSON schema field "a".
+	a *Foo `json:"a,omitempty,omitzero" yaml:"a,omitempty" mapstructure:"a,omitempty"`
+}
+
+func (o *CyclicAndRequired1Json) A() *Foo {
+	return o.a
 }
 
 type Foo struct {
-	// RefToBar corresponds to the JSON schema field "refToBar".
-	RefToBar Bar `json:"refToBar" yaml:"refToBar" mapstructure:"refToBar"`
+	// reftobar corresponds to the JSON schema field "refToBar".
+	reftobar Bar `json:"refToBar" yaml:"refToBar" mapstructure:"refToBar"`
+}
+
+func (o *Foo) RefToBar() Bar {
+	return o.reftobar
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -30,29 +41,16 @@ func (j *Foo) UnmarshalJSON(value []byte) error {
 	if _, ok := raw["refToBar"]; raw != nil && !ok {
 		return fmt.Errorf("field refToBar in Foo: required")
 	}
-	type Plain Foo
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = Foo(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Foo) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["refToBar"]; raw != nil && !ok {
-		return fmt.Errorf("field refToBar in Foo: required")
+	type FooHelper struct {
+		Reftobar Bar `json:"refToBar"`
 	}
 	type Plain Foo
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var helper FooHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.reftobar = helper.Reftobar
 	*j = Foo(plain)
 	return nil
 }

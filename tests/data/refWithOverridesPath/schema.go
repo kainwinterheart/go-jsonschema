@@ -2,9 +2,13 @@
 
 package test
 
-type Schema struct {
-	// Prop corresponds to the JSON schema field "prop".
-	Prop SchemaBase `json:"prop,omitempty,omitzero" yaml:"prop,omitempty" mapstructure:"prop,omitempty"`
+type SchemaBaseJson []int
+
+type SchemaJson struct {
+	// prop corresponds to the JSON schema field "prop".
+	prop SchemaBaseJson `json:"prop,omitempty,omitzero" yaml:"prop,omitempty" mapstructure:"prop,omitempty"`
 }
 
-type SchemaBase []int
+func (o *SchemaJson) Prop() SchemaBaseJson {
+	return o.prop
+}

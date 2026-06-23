@@ -4,64 +4,59 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 import "time"
 
-type Duration struct {
-	// MyObject corresponds to the JSON schema field "myObject".
-	MyObject *DurationMyObject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+type DurationJson struct {
+	// myobject corresponds to the JSON schema field "myObject".
+	myobject *DurationJsonmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
-type DurationMyObject struct {
-	// WithDefault corresponds to the JSON schema field "withDefault".
-	WithDefault time.Duration `json:"withDefault,omitempty,omitzero" yaml:"withDefault,omitempty" mapstructure:"withDefault,omitempty"`
+func (o *DurationJson) MyObject() *DurationJsonmyobject {
+	return o.myobject
+}
 
-	// WithoutDefault corresponds to the JSON schema field "withoutDefault".
-	WithoutDefault *time.Duration `json:"withoutDefault,omitempty,omitzero" yaml:"withoutDefault,omitempty" mapstructure:"withoutDefault,omitempty"`
+type DurationJsonmyobject struct {
+	// withdefault corresponds to the JSON schema field "withDefault".
+	withdefault time.Duration `json:"withDefault,omitempty,omitzero" yaml:"withDefault,omitempty" mapstructure:"withDefault,omitempty"`
+
+	// withoutdefault corresponds to the JSON schema field "withoutDefault".
+	withoutdefault *time.Duration `json:"withoutDefault,omitempty,omitzero" yaml:"withoutDefault,omitempty" mapstructure:"withoutDefault,omitempty"`
+}
+
+func (o *DurationJsonmyobject) WithDefault() time.Duration {
+	return o.withdefault
+}
+
+func (o *DurationJsonmyobject) WithoutDefault() *time.Duration {
+	return o.withoutdefault
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *DurationMyObject) UnmarshalJSON(value []byte) error {
+func (j *DurationJsonmyobject) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	type Plain DurationMyObject
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	type DurationJsonmyobjectHelper struct {
+		Withdefault    time.Duration  `json:"withDefault",omitempty`
+		Withoutdefault *time.Duration `json:"withoutDefault",omitempty`
+	}
+	type Plain DurationJsonmyobject
+	var helper DurationJsonmyobjectHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.withdefault = helper.Withdefault
+	plain.withoutdefault = helper.Withoutdefault
 	if v, ok := raw["withDefault"]; !ok || v == nil {
 		defaultDuration, err := time.ParseDuration("20s")
 		if err != nil {
 			return fmt.Errorf("failed to parse the \"20s\" default value for field withDefault: %w", err)
 		}
-		plain.WithDefault = defaultDuration
+		plain.withdefault = defaultDuration
 
 	}
-	*j = DurationMyObject(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *DurationMyObject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	type Plain DurationMyObject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if v, ok := raw["withDefault"]; !ok || v == nil {
-		defaultDuration, err := time.ParseDuration("20s")
-		if err != nil {
-			return fmt.Errorf("failed to parse the \"20s\" default value for field withDefault: %w", err)
-		}
-		plain.WithDefault = defaultDuration
-
-	}
-	*j = DurationMyObject(plain)
+	*j = DurationJsonmyobject(plain)
 	return nil
 }

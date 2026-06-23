@@ -8,14 +8,22 @@ type FloatThing *float64
 
 type IntegerThing *int
 
-type NullableType struct {
-	// MyInlineStringValue corresponds to the JSON schema field "MyInlineStringValue".
-	MyInlineStringValue NullableTypeMyInlineStringValue `json:"MyInlineStringValue,omitempty,omitzero" yaml:"MyInlineStringValue,omitempty" mapstructure:"MyInlineStringValue,omitempty"`
+type NullableTypeJson struct {
+	// myinlinestringvalue corresponds to the JSON schema field "MyInlineStringValue".
+	myinlinestringvalue NullableTypeJsonmyinlinestringvalue `json:"MyInlineStringValue,omitempty,omitzero" yaml:"MyInlineStringValue,omitempty" mapstructure:"MyInlineStringValue,omitempty"`
 
-	// MyStringValue corresponds to the JSON schema field "MyStringValue".
-	MyStringValue StringThing `json:"MyStringValue,omitempty,omitzero" yaml:"MyStringValue,omitempty" mapstructure:"MyStringValue,omitempty"`
+	// mystringvalue corresponds to the JSON schema field "MyStringValue".
+	mystringvalue StringThing `json:"MyStringValue,omitempty,omitzero" yaml:"MyStringValue,omitempty" mapstructure:"MyStringValue,omitempty"`
 }
 
-type NullableTypeMyInlineStringValue *string
+func (o *NullableTypeJson) MyInlineStringValue() NullableTypeJsonmyinlinestringvalue {
+	return o.myinlinestringvalue
+}
+
+func (o *NullableTypeJson) MyStringValue() StringThing {
+	return o.mystringvalue
+}
+
+type NullableTypeJsonmyinlinestringvalue *string
 
 type StringThing *string

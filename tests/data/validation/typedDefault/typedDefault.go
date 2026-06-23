@@ -3,55 +3,40 @@
 package test
 
 import "encoding/json"
-import yaml "gopkg.in/yaml.v3"
 
-type TypedDefault struct {
-	// TopLevelDomains corresponds to the JSON schema field "topLevelDomains".
-	TopLevelDomains []string `json:"topLevelDomains,omitempty,omitzero" yaml:"topLevelDomains,omitempty" mapstructure:"topLevelDomains,omitempty"`
+type TypedDefaultJson struct {
+	// topleveldomains corresponds to the JSON schema field "topLevelDomains".
+	topleveldomains []string `json:"topLevelDomains,omitempty,omitzero" yaml:"topLevelDomains,omitempty" mapstructure:"topLevelDomains,omitempty"`
+}
+
+func (o *TypedDefaultJson) TopLevelDomains() []string {
+	return o.topleveldomains
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *TypedDefault) UnmarshalJSON(value []byte) error {
+func (j *TypedDefaultJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	type Plain TypedDefault
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	type TypedDefaultJsonHelper struct {
+		Topleveldomains []string `json:"topLevelDomains",omitempty`
+	}
+	type Plain TypedDefaultJson
+	var helper TypedDefaultJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.topleveldomains = helper.Topleveldomains
 	if v, ok := raw["topLevelDomains"]; !ok || v == nil {
-		plain.TopLevelDomains = []string{
+		plain.topleveldomains = []string{
 			".com",
 			".org",
 			".info",
 			".gov",
 		}
 	}
-	*j = TypedDefault(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *TypedDefault) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	type Plain TypedDefault
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if v, ok := raw["topLevelDomains"]; !ok || v == nil {
-		plain.TopLevelDomains = []string{
-			".com",
-			".org",
-			".info",
-			".gov",
-		}
-	}
-	*j = TypedDefault(plain)
+	*j = TypedDefaultJson(plain)
 	return nil
 }

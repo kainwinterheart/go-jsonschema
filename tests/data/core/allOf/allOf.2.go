@@ -4,69 +4,76 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
-type AllOf2 struct {
-	// Configurations corresponds to the JSON schema field "configurations".
-	Configurations []AllOf2ConfigurationsElem `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
+type AllOf2Json struct {
+	// configurations corresponds to the JSON schema field "configurations".
+	configurations []AllOf2JsonconfigurationsElem `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
 }
 
-type AllOf2ConfigurationsElem struct {
-	// Bar corresponds to the JSON schema field "bar".
-	Bar float64 `json:"bar" yaml:"bar" mapstructure:"bar"`
+func (o *AllOf2Json) Configurations() []AllOf2JsonconfigurationsElem {
+	return o.configurations
+}
 
-	// Baz corresponds to the JSON schema field "baz".
-	Baz *bool `json:"baz,omitempty,omitzero" yaml:"baz,omitempty" mapstructure:"baz,omitempty"`
+type AllOf2JsonconfigurationsElem struct {
+	// bar corresponds to the JSON schema field "bar".
+	bar float64 `json:"bar" yaml:"bar" mapstructure:"bar"`
 
-	// Foo corresponds to the JSON schema field "foo".
-	Foo string `json:"foo" yaml:"foo" mapstructure:"foo"`
+	// baz corresponds to the JSON schema field "baz".
+	baz *bool `json:"baz,omitempty,omitzero" yaml:"baz,omitempty" mapstructure:"baz,omitempty"`
+
+	// foo corresponds to the JSON schema field "foo".
+	foo string `json:"foo" yaml:"foo" mapstructure:"foo"`
+}
+
+func (o *AllOf2JsonconfigurationsElem) Bar() float64 {
+	return o.bar
+}
+
+func (o *AllOf2JsonconfigurationsElem) Baz() *bool {
+	return o.baz
+}
+
+func (o *AllOf2JsonconfigurationsElem) Foo() string {
+	return o.foo
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *AllOf2ConfigurationsElem) UnmarshalJSON(value []byte) error {
+func (j *AllOf2JsonconfigurationsElem) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in AllOf2ConfigurationsElem: required")
+		return fmt.Errorf("field bar in AllOf2JsonconfigurationsElem: required")
 	}
 	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AllOf2ConfigurationsElem: required")
+		return fmt.Errorf("field foo in AllOf2JsonconfigurationsElem: required")
 	}
-	type Plain AllOf2ConfigurationsElem
+	type AllOf2JsonconfigurationsElemHelper struct {
+		Bar float64 `json:"bar"`
+		Baz *bool   `json:"baz",omitempty`
+		Foo string  `json:"foo"`
+	}
+	type Plain AllOf2JsonconfigurationsElem
+	var helper AllOf2JsonconfigurationsElemHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = AllOf2ConfigurationsElem(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AllOf2ConfigurationsElem) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in AllOf2ConfigurationsElem: required")
-	}
-	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AllOf2ConfigurationsElem: required")
-	}
-	type Plain AllOf2ConfigurationsElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AllOf2ConfigurationsElem(plain)
+	plain.bar = helper.Bar
+	plain.baz = helper.Baz
+	plain.foo = helper.Foo
+	*j = AllOf2JsonconfigurationsElem(plain)
 	return nil
 }
 
 type Bar struct {
-	// Bar corresponds to the JSON schema field "bar".
-	Bar float64 `json:"bar" yaml:"bar" mapstructure:"bar"`
+	// bar corresponds to the JSON schema field "bar".
+	bar float64 `json:"bar" yaml:"bar" mapstructure:"bar"`
+}
+
+func (o *Bar) Bar() float64 {
+	return o.bar
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -78,41 +85,36 @@ func (j *Bar) UnmarshalJSON(value []byte) error {
 	if _, ok := raw["bar"]; raw != nil && !ok {
 		return fmt.Errorf("field bar in Bar: required")
 	}
-	type Plain Bar
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = Bar(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Bar) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in Bar: required")
+	type BarHelper struct {
+		Bar float64 `json:"bar"`
 	}
 	type Plain Bar
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var helper BarHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.bar = helper.Bar
 	*j = Bar(plain)
 	return nil
 }
 
 type Baz struct {
-	// Baz corresponds to the JSON schema field "baz".
-	Baz *bool `json:"baz,omitempty,omitzero" yaml:"baz,omitempty" mapstructure:"baz,omitempty"`
+	// baz corresponds to the JSON schema field "baz".
+	baz *bool `json:"baz,omitempty,omitzero" yaml:"baz,omitempty" mapstructure:"baz,omitempty"`
+}
+
+func (o *Baz) Baz() *bool {
+	return o.baz
 }
 
 type Foo struct {
-	// Foo corresponds to the JSON schema field "foo".
-	Foo string `json:"foo" yaml:"foo" mapstructure:"foo"`
+	// foo corresponds to the JSON schema field "foo".
+	foo string `json:"foo" yaml:"foo" mapstructure:"foo"`
+}
+
+func (o *Foo) Foo() string {
+	return o.foo
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -124,29 +126,16 @@ func (j *Foo) UnmarshalJSON(value []byte) error {
 	if _, ok := raw["foo"]; raw != nil && !ok {
 		return fmt.Errorf("field foo in Foo: required")
 	}
-	type Plain Foo
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = Foo(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Foo) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in Foo: required")
+	type FooHelper struct {
+		Foo string `json:"foo"`
 	}
 	type Plain Foo
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var helper FooHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.foo = helper.Foo
 	*j = Foo(plain)
 	return nil
 }

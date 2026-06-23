@@ -64,18 +64,85 @@ func (jf *jsonFormatter) generate(
 			}
 		}
 
-		tp := typePlain
-
-		if tp == declType.Name {
-			for i := 0; !output.isUniqueTypeName(tp) && i < math.MaxInt; i++ {
-				tp = fmt.Sprintf("%s_%d", typePlain, i)
+		// Check if struct has private fields
+		hasPrivateFields := false
+		var structType *codegen.StructType
+		if st, ok := declType.Type.(*codegen.StructType); ok {
+			structType = st
+			for _, f := range st.Fields {
+				if len(f.Name) > 0 && f.Name[0] >= 'a' && f.Name[0] <= 'z' {
+					hasPrivateFields = true
+					break
+				}
 			}
 		}
 
-		out.Printlnf("type %s %s", tp, declType.Name)
-		out.Printlnf("var %s %s", varNamePlainStruct, tp)
-		out.Printlnf("if err := %s.Unmarshal(value, &%s); err != nil { return err }",
-			formatJSON, varNamePlainStruct)
+		if hasPrivateFields {
+			// Generate helper struct with exported fields
+			helperName := declType.Name + "Helper"
+			if helperName == declType.Name {
+				for i := 0; !output.isUniqueTypeName(helperName) && i < math.MaxInt; i++ {
+					helperName = fmt.Sprintf("%s_%d", declType.Name+"Helper", i)
+				}
+			}
+
+			// Also declare Plain type alias for additionalProperties handling
+			plainTypeName := typePlain
+			if plainTypeName == declType.Name {
+				for i := 0; !output.isUniqueTypeName(plainTypeName) && i < math.MaxInt; i++ {
+					plainTypeName = fmt.Sprintf("%s_%d", typePlain, i)
+				}
+			}
+
+			// Declare helper struct type
+			out.Printlnf("type %s struct {", helperName)
+			for _, f := range structType.Fields {
+				if f.Name == additionalProperties {
+					continue
+				}
+				exportedName := strings.ToUpper(f.Name[:1]) + f.Name[1:]
+				out.Printf("\t%s ", exportedName)
+				if err := f.Type.Generate(out); err != nil {
+					return err
+				}
+				tag := fmt.Sprintf(`json:"%s"`, f.JSONName)
+				if !isRequiredField(f, structType) {
+					tag += ",omitempty"
+				}
+				out.Printf("`%s`", tag)
+				out.Newline()
+			}
+			out.Printlnf("}")
+
+			// Declare Plain type alias
+			out.Printlnf("type %s %s", plainTypeName, declType.Name)
+
+			// Unmarshal into helper
+			out.Printlnf("var helper %s", helperName)
+			out.Printlnf("if err := %s.Unmarshal(value, &helper); err != nil { return err }", formatJSON)
+
+			// Copy values from helper to private fields via Plain alias
+			out.Printlnf("var %s %s", varNamePlainStruct, plainTypeName)
+			for _, f := range structType.Fields {
+				if f.Name == additionalProperties {
+					continue
+				}
+				exportedName := strings.ToUpper(f.Name[:1]) + f.Name[1:]
+				out.Printlnf("%s.%s = helper.%s", varNamePlainStruct, f.Name, exportedName)
+			}
+		} else {
+			// Original approach for structs with only exported fields
+			tp := typePlain
+			if tp == declType.Name {
+				for i := 0; !output.isUniqueTypeName(tp) && i < math.MaxInt; i++ {
+					tp = fmt.Sprintf("%s_%d", typePlain, i)
+				}
+			}
+			out.Printlnf("type %s %s", tp, declType.Name)
+			out.Printlnf("var %s %s", varNamePlainStruct, tp)
+			out.Printlnf("if err := %s.Unmarshal(value, &%s); err != nil { return err }",
+				formatJSON, varNamePlainStruct)
+		}
 
 		for _, v := range afterValidators {
 			if err := v.generate(out, "json"); err != nil {
@@ -83,7 +150,7 @@ func (jf *jsonFormatter) generate(
 			}
 		}
 
-		if structType, ok := declType.Type.(*codegen.StructType); ok {
+		if structType != nil {
 			for _, f := range structType.Fields {
 				if f.Name == additionalProperties {
 					out.Printlnf("st := reflect.TypeOf(Plain{})")
@@ -104,7 +171,13 @@ func (jf *jsonFormatter) generate(
 			}
 		}
 
-		out.Printlnf("*j = %s(%s)", declType.Name, varNamePlainStruct)
+		if !hasPrivateFields {
+			out.Printlnf("*j = %s(%s)", declType.Name, varNamePlainStruct)
+		} else {
+			// Copy from Plain to target
+			out.Printlnf("*j = %s(%s)", declType.Name, varNamePlainStruct)
+		}
+
 		out.Printlnf("return nil")
 		out.Indent(-1)
 		out.Printlnf("}")
@@ -113,12 +186,21 @@ func (jf *jsonFormatter) generate(
 	}
 }
 
+func isRequiredField(f codegen.StructField, st *codegen.StructType) bool {
+	for _, req := range st.RequiredJSONFields {
+		if req == f.JSONName {
+			return true
+		}
+	}
+	return false
+}
+
 func (jf *jsonFormatter) enumMarshal(declType *codegen.TypeDecl) func(*codegen.Emitter) error {
 	return func(out *codegen.Emitter) error {
 		out.Commentf("Marshal%s implements %s.Marshaler.", strings.ToUpper(formatJSON), formatJSON)
 		out.Printlnf("func (j *%s) Marshal%s() ([]byte, error) {", declType.Name, strings.ToUpper(formatJSON))
 		out.Indent(1)
-		out.Printlnf("return %s.Marshal(j.Value)", formatJSON)
+		out.Printlnf("return %s.Marshal(j.value)", formatJSON)
 		out.Indent(-1)
 		out.Printlnf("}")
 
@@ -146,7 +228,7 @@ func (jf *jsonFormatter) enumUnmarshal(
 
 		varName := "v"
 		if wrapInStruct {
-			varName += ".Value"
+			varName += ".value"
 		}
 
 		out.Printlnf("if err := json.Unmarshal(value, &%s); err != nil { return err }", varName)
@@ -183,6 +265,6 @@ func (jf *jsonFormatter) addImport(out *codegen.File, declType *codegen.TypeDecl
 	}
 }
 
-func (yf *jsonFormatter) getName() string {
+func (jf *jsonFormatter) getName() string {
 	return "json"
 }

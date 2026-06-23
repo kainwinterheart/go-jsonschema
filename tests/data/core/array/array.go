@@ -4,92 +4,121 @@ package test
 
 import "encoding/json"
 import "fmt"
-import yaml "gopkg.in/yaml.v3"
 
-type Array struct {
-	// MyArray corresponds to the JSON schema field "myArray".
-	MyArray []interface{} `json:"myArray,omitempty,omitzero" yaml:"myArray,omitempty" mapstructure:"myArray,omitempty"`
+type ArrayJson struct {
+	// myarray corresponds to the JSON schema field "myArray".
+	myarray []interface{} `json:"myArray,omitempty,omitzero" yaml:"myArray,omitempty" mapstructure:"myArray,omitempty"`
 
-	// MyBooleanArray corresponds to the JSON schema field "myBooleanArray".
-	MyBooleanArray []bool `json:"myBooleanArray,omitempty,omitzero" yaml:"myBooleanArray,omitempty" mapstructure:"myBooleanArray,omitempty"`
+	// mybooleanarray corresponds to the JSON schema field "myBooleanArray".
+	mybooleanarray []bool `json:"myBooleanArray,omitempty,omitzero" yaml:"myBooleanArray,omitempty" mapstructure:"myBooleanArray,omitempty"`
 
-	// MyIntegerArray corresponds to the JSON schema field "myIntegerArray".
-	MyIntegerArray []int `json:"myIntegerArray,omitempty,omitzero" yaml:"myIntegerArray,omitempty" mapstructure:"myIntegerArray,omitempty"`
+	// myintegerarray corresponds to the JSON schema field "myIntegerArray".
+	myintegerarray []int `json:"myIntegerArray,omitempty,omitzero" yaml:"myIntegerArray,omitempty" mapstructure:"myIntegerArray,omitempty"`
 
-	// MyNestedNullArray corresponds to the JSON schema field "myNestedNullArray".
-	MyNestedNullArray [][]interface{} `json:"myNestedNullArray,omitempty,omitzero" yaml:"myNestedNullArray,omitempty" mapstructure:"myNestedNullArray,omitempty"`
+	// mynestednullarray corresponds to the JSON schema field "myNestedNullArray".
+	mynestednullarray [][]interface{} `json:"myNestedNullArray,omitempty,omitzero" yaml:"myNestedNullArray,omitempty" mapstructure:"myNestedNullArray,omitempty"`
 
-	// MyNullArray corresponds to the JSON schema field "myNullArray".
-	MyNullArray []interface{} `json:"myNullArray,omitempty,omitzero" yaml:"myNullArray,omitempty" mapstructure:"myNullArray,omitempty"`
+	// mynullarray corresponds to the JSON schema field "myNullArray".
+	mynullarray []interface{} `json:"myNullArray,omitempty,omitzero" yaml:"myNullArray,omitempty" mapstructure:"myNullArray,omitempty"`
 
-	// MyNullableUntypedArray corresponds to the JSON schema field
+	// mynullableuntypedarray corresponds to the JSON schema field
 	// "myNullableUntypedArray".
-	MyNullableUntypedArray *ArrayMyNullableUntypedArray `json:"myNullableUntypedArray,omitempty,omitzero" yaml:"myNullableUntypedArray,omitempty" mapstructure:"myNullableUntypedArray,omitempty"`
+	mynullableuntypedarray *ArrayJsonmynullableuntypedarray `json:"myNullableUntypedArray,omitempty,omitzero" yaml:"myNullableUntypedArray,omitempty" mapstructure:"myNullableUntypedArray,omitempty"`
 
-	// MyNumberArray corresponds to the JSON schema field "myNumberArray".
-	MyNumberArray []float64 `json:"myNumberArray,omitempty,omitzero" yaml:"myNumberArray,omitempty" mapstructure:"myNumberArray,omitempty"`
+	// mynumberarray corresponds to the JSON schema field "myNumberArray".
+	mynumberarray []float64 `json:"myNumberArray,omitempty,omitzero" yaml:"myNumberArray,omitempty" mapstructure:"myNumberArray,omitempty"`
 
-	// MyObjectArray corresponds to the JSON schema field "myObjectArray".
-	MyObjectArray []ArrayMyObjectArrayElem `json:"myObjectArray,omitempty,omitzero" yaml:"myObjectArray,omitempty" mapstructure:"myObjectArray,omitempty"`
+	// myobjectarray corresponds to the JSON schema field "myObjectArray".
+	myobjectarray []ArrayJsonmyobjectarrayElem `json:"myObjectArray,omitempty,omitzero" yaml:"myObjectArray,omitempty" mapstructure:"myObjectArray,omitempty"`
 
-	// MyStringArray corresponds to the JSON schema field "myStringArray".
-	MyStringArray []string `json:"myStringArray,omitempty,omitzero" yaml:"myStringArray,omitempty" mapstructure:"myStringArray,omitempty"`
+	// mystringarray corresponds to the JSON schema field "myStringArray".
+	mystringarray []string `json:"myStringArray,omitempty,omitzero" yaml:"myStringArray,omitempty" mapstructure:"myStringArray,omitempty"`
 }
 
-type ArrayMyNullableUntypedArray []interface{}
+func (o *ArrayJson) MyArray() []interface{} {
+	return o.myarray
+}
 
-type ArrayMyObjectArrayElem map[string]interface{}
+func (o *ArrayJson) MyBooleanArray() []bool {
+	return o.mybooleanarray
+}
+
+func (o *ArrayJson) MyIntegerArray() []int {
+	return o.myintegerarray
+}
+
+func (o *ArrayJson) MyNestedNullArray() [][]interface{} {
+	return o.mynestednullarray
+}
+
+func (o *ArrayJson) MyNullArray() []interface{} {
+	return o.mynullarray
+}
+
+func (o *ArrayJson) MyNullableUntypedArray() *ArrayJsonmynullableuntypedarray {
+	return o.mynullableuntypedarray
+}
+
+func (o *ArrayJson) MyNumberArray() []float64 {
+	return o.mynumberarray
+}
+
+func (o *ArrayJson) MyObjectArray() []ArrayJsonmyobjectarrayElem {
+	return o.myobjectarray
+}
+
+func (o *ArrayJson) MyStringArray() []string {
+	return o.mystringarray
+}
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *Array) UnmarshalJSON(value []byte) error {
+func (j *ArrayJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	type Plain Array
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	type ArrayJsonHelper struct {
+		Myarray                []interface{}                    `json:"myArray",omitempty`
+		Mybooleanarray         []bool                           `json:"myBooleanArray",omitempty`
+		Myintegerarray         []int                            `json:"myIntegerArray",omitempty`
+		Mynestednullarray      [][]interface{}                  `json:"myNestedNullArray",omitempty`
+		Mynullarray            []interface{}                    `json:"myNullArray",omitempty`
+		Mynullableuntypedarray *ArrayJsonmynullableuntypedarray `json:"myNullableUntypedArray",omitempty`
+		Mynumberarray          []float64                        `json:"myNumberArray",omitempty`
+		Myobjectarray          []ArrayJsonmyobjectarrayElem     `json:"myObjectArray",omitempty`
+		Mystringarray          []string                         `json:"myStringArray",omitempty`
+	}
+	type Plain ArrayJson
+	var helper ArrayJsonHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
 		return err
 	}
-	for i0 := range plain.MyNestedNullArray {
-		for i1 := range plain.MyNestedNullArray[i0] {
-			if plain.MyNestedNullArray[i0][i1] != nil {
+	var plain Plain
+	plain.myarray = helper.Myarray
+	plain.mybooleanarray = helper.Mybooleanarray
+	plain.myintegerarray = helper.Myintegerarray
+	plain.mynestednullarray = helper.Mynestednullarray
+	plain.mynullarray = helper.Mynullarray
+	plain.mynullableuntypedarray = helper.Mynullableuntypedarray
+	plain.mynumberarray = helper.Mynumberarray
+	plain.myobjectarray = helper.Myobjectarray
+	plain.mystringarray = helper.Mystringarray
+	for i0 := range plain.mynestednullarray {
+		for i1 := range plain.mynestednullarray[i0] {
+			if plain.mynestednullarray[i0][i1] != nil {
 				return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNestedNullArray[%d][%d]", i0, i1))
 			}
 		}
 	}
-	for i0 := range plain.MyNullArray {
-		if plain.MyNullArray[i0] != nil {
+	for i0 := range plain.mynullarray {
+		if plain.mynullarray[i0] != nil {
 			return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNullArray[%d]", i0))
 		}
 	}
-	*j = Array(plain)
+	*j = ArrayJson(plain)
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Array) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	type Plain Array
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	for i0 := range plain.MyNestedNullArray {
-		for i1 := range plain.MyNestedNullArray[i0] {
-			if plain.MyNestedNullArray[i0][i1] != nil {
-				return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNestedNullArray[%d][%d]", i0, i1))
-			}
-		}
-	}
-	for i0 := range plain.MyNullArray {
-		if plain.MyNullArray[i0] != nil {
-			return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNullArray[%d]", i0))
-		}
-	}
-	*j = Array(plain)
-	return nil
-}
+type ArrayJsonmynullableuntypedarray []interface{}
+
+type ArrayJsonmyobjectarrayElem map[string]interface{}

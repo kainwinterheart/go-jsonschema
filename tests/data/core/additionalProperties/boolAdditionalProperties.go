@@ -2,67 +2,13 @@
 
 package test
 
-import "encoding/json"
-import "github.com/go-viper/mapstructure/v2"
-import yaml "gopkg.in/yaml.v3"
-import "reflect"
-import "strings"
-
-type BoolAdditionalProperties struct {
-	// Name corresponds to the JSON schema field "name".
-	Name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+type BoolAdditionalPropertiesJson struct {
+	// name corresponds to the JSON schema field "name".
+	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 
 	AdditionalProperties map[string]bool `mapstructure:",remain"`
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *BoolAdditionalProperties) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	type Plain BoolAdditionalProperties
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if v, ok := raw[""]; !ok || v == nil {
-		plain.AdditionalProperties = map[string]bool{}
-	}
-	st := reflect.TypeOf(Plain{})
-	for i := range st.NumField() {
-		delete(raw, st.Field(i).Name)
-		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
-	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
-		return err
-	}
-	*j = BoolAdditionalProperties(plain)
-	return nil
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *BoolAdditionalProperties) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	type Plain BoolAdditionalProperties
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if v, ok := raw[""]; !ok || v == nil {
-		plain.AdditionalProperties = map[string]bool{}
-	}
-	st := reflect.TypeOf(Plain{})
-	for i := range st.NumField() {
-		delete(raw, st.Field(i).Name)
-		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
-	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
-		return err
-	}
-	*j = BoolAdditionalProperties(plain)
-	return nil
+func (o *BoolAdditionalPropertiesJson) Name() *string {
+	return o.name
 }
