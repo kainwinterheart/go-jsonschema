@@ -105,13 +105,13 @@ formatters:
       sections:
         - standard
         - default
-        - prefix(github.com/atombender)
+        - prefix(github.com/kainwinterheart)
       custom-order: true
     gofumpt:
       extra-rules: true
     goimports:
       local-prefixes:
-        - github.com/atombender
+        - github.com/kainwinterheart
   exclusions:
     generated: lax
     paths:
