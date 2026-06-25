@@ -15,6 +15,21 @@ type BoolAdditionalProperties struct {
 	AdditionalProperties map[string]bool `mapstructure:",remain"`
 }
 
+type BoolAdditionalPropertiesBuilder struct {
+	name *string
+}
+
+func (b *BoolAdditionalPropertiesBuilder) Build() *BoolAdditionalProperties {
+	return &BoolAdditionalProperties{
+		name: b.name,
+	}
+}
+
+func (b *BoolAdditionalPropertiesBuilder) WithName(v *string) *BoolAdditionalPropertiesBuilder {
+	b.name = v
+	return b
+}
+
 func (o *BoolAdditionalProperties) Name() *string {
 	return o.name
 }
@@ -79,4 +94,13 @@ func (j *BoolAdditionalProperties) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = BoolAdditionalProperties(plain)
 	return nil
+}
+
+func NewBoolAdditionalPropertiesBuilder(o *BoolAdditionalProperties) *BoolAdditionalPropertiesBuilder {
+	if o == nil {
+		return &BoolAdditionalPropertiesBuilder{}
+	}
+	return &BoolAdditionalPropertiesBuilder{
+		name: o.name,
+	}
 }

@@ -10,132 +10,6 @@ import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "strings"
 
-type MultipleRequiredBase struct {
-	// basefield corresponds to the JSON schema field "baseField".
-	basefield string `json:"baseField" yaml:"baseField" mapstructure:"baseField"`
-}
-
-func (o *MultipleRequiredBase) BaseField() string {
-	return o.basefield
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *MultipleRequiredBase) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	if _, ok := raw["baseField"]; raw != nil && !ok {
-		return fmt.Errorf("field baseField in MultipleRequiredBase: required")
-	}
-	type MultipleRequiredBaseHelper struct {
-		Basefield string `json:"baseField"`
-	}
-	type Plain MultipleRequiredBase
-	var helper MultipleRequiredBaseHelper
-	if err := json.Unmarshal(value, &helper); err != nil {
-		return err
-	}
-	var plain Plain
-	plain.basefield = helper.Basefield
-	*j = MultipleRequiredBase(plain)
-	return nil
-}
-
-// MarshalJSON implements json.Marshaler.
-func (j *MultipleRequiredBase) MarshalJSON() ([]byte, error) {
-	type MultipleRequiredBaseMarshalHelper struct {
-		Basefield string `json:"baseField"`
-	}
-	helper := MultipleRequiredBaseMarshalHelper{
-		Basefield: j.basefield,
-	}
-	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *MultipleRequiredBase) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["baseField"]; raw != nil && !ok {
-		return fmt.Errorf("field baseField in MultipleRequiredBase: required")
-	}
-	type Plain MultipleRequiredBase
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = MultipleRequiredBase(plain)
-	return nil
-}
-
-type MultipleRequiredMiddle struct {
-	// middlefield corresponds to the JSON schema field "middleField".
-	middlefield float64 `json:"middleField" yaml:"middleField" mapstructure:"middleField"`
-}
-
-func (o *MultipleRequiredMiddle) MiddleField() float64 {
-	return o.middlefield
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *MultipleRequiredMiddle) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	if _, ok := raw["middleField"]; raw != nil && !ok {
-		return fmt.Errorf("field middleField in MultipleRequiredMiddle: required")
-	}
-	type MultipleRequiredMiddleHelper struct {
-		Middlefield float64 `json:"middleField"`
-	}
-	type Plain MultipleRequiredMiddle
-	var helper MultipleRequiredMiddleHelper
-	if err := json.Unmarshal(value, &helper); err != nil {
-		return err
-	}
-	var plain Plain
-	plain.middlefield = helper.Middlefield
-	*j = MultipleRequiredMiddle(plain)
-	return nil
-}
-
-// MarshalJSON implements json.Marshaler.
-func (j *MultipleRequiredMiddle) MarshalJSON() ([]byte, error) {
-	type MultipleRequiredMiddleMarshalHelper struct {
-		Middlefield float64 `json:"middleField"`
-	}
-	helper := MultipleRequiredMiddleMarshalHelper{
-		Middlefield: j.middlefield,
-	}
-	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *MultipleRequiredMiddle) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["middleField"]; raw != nil && !ok {
-		return fmt.Errorf("field middleField in MultipleRequiredMiddle: required")
-	}
-	type Plain MultipleRequiredMiddle
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = MultipleRequiredMiddle(plain)
-	return nil
-}
-
-type ComposedWithMultipleRequired_0 = MultipleRequiredBase
-
-type ComposedWithMultipleRequired_1 = MultipleRequiredMiddle
-
 type ComposedWithMultipleRequired struct {
 	// basefield corresponds to the JSON schema field "baseField".
 	basefield *string `json:"baseField,omitempty,omitzero" yaml:"baseField,omitempty" mapstructure:"baseField,omitempty"`
@@ -147,6 +21,37 @@ type ComposedWithMultipleRequired struct {
 	middlefield *float64 `json:"middleField,omitempty,omitzero" yaml:"middleField,omitempty" mapstructure:"middleField,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
+}
+
+type ComposedWithMultipleRequiredBuilder struct {
+	basefield *string
+
+	directfield bool
+
+	middlefield *float64
+}
+
+func (b *ComposedWithMultipleRequiredBuilder) Build() *ComposedWithMultipleRequired {
+	return &ComposedWithMultipleRequired{
+		basefield:   b.basefield,
+		directfield: b.directfield,
+		middlefield: b.middlefield,
+	}
+}
+
+func (b *ComposedWithMultipleRequiredBuilder) WithBaseField(v *string) *ComposedWithMultipleRequiredBuilder {
+	b.basefield = v
+	return b
+}
+
+func (b *ComposedWithMultipleRequiredBuilder) WithDirectField(v bool) *ComposedWithMultipleRequiredBuilder {
+	b.directfield = v
+	return b
+}
+
+func (b *ComposedWithMultipleRequiredBuilder) WithMiddleField(v *float64) *ComposedWithMultipleRequiredBuilder {
+	b.middlefield = v
+	return b
 }
 
 func (o *ComposedWithMultipleRequired) BaseField() *string {
@@ -253,4 +158,189 @@ func (j *ComposedWithMultipleRequired) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = ComposedWithMultipleRequired(plain)
 	return nil
+}
+
+type MultipleRequiredBase struct {
+	// basefield corresponds to the JSON schema field "baseField".
+	basefield string `json:"baseField" yaml:"baseField" mapstructure:"baseField"`
+}
+
+type MultipleRequiredBaseBuilder struct {
+	basefield string
+}
+
+func (b *MultipleRequiredBaseBuilder) Build() *MultipleRequiredBase {
+	return &MultipleRequiredBase{
+		basefield: b.basefield,
+	}
+}
+
+func (b *MultipleRequiredBaseBuilder) WithBaseField(v string) *MultipleRequiredBaseBuilder {
+	b.basefield = v
+	return b
+}
+
+func (o *MultipleRequiredBase) BaseField() string {
+	return o.basefield
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *MultipleRequiredBase) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["baseField"]; raw != nil && !ok {
+		return fmt.Errorf("field baseField in MultipleRequiredBase: required")
+	}
+	type Plain MultipleRequiredBase
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = MultipleRequiredBase(plain)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *MultipleRequiredBase) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	if _, ok := raw["baseField"]; raw != nil && !ok {
+		return fmt.Errorf("field baseField in MultipleRequiredBase: required")
+	}
+	type MultipleRequiredBaseHelper struct {
+		Basefield string `json:"baseField"`
+	}
+	type Plain MultipleRequiredBase
+	var helper MultipleRequiredBaseHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.basefield = helper.Basefield
+	*j = MultipleRequiredBase(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *MultipleRequiredBase) MarshalJSON() ([]byte, error) {
+	type MultipleRequiredBaseMarshalHelper struct {
+		Basefield string `json:"baseField"`
+	}
+	helper := MultipleRequiredBaseMarshalHelper{
+		Basefield: j.basefield,
+	}
+	return json.Marshal(helper)
+}
+
+type MultipleRequiredMiddle struct {
+	// middlefield corresponds to the JSON schema field "middleField".
+	middlefield float64 `json:"middleField" yaml:"middleField" mapstructure:"middleField"`
+}
+
+type MultipleRequiredMiddleBuilder struct {
+	middlefield float64
+}
+
+func (b *MultipleRequiredMiddleBuilder) Build() *MultipleRequiredMiddle {
+	return &MultipleRequiredMiddle{
+		middlefield: b.middlefield,
+	}
+}
+
+func (b *MultipleRequiredMiddleBuilder) WithMiddleField(v float64) *MultipleRequiredMiddleBuilder {
+	b.middlefield = v
+	return b
+}
+
+func (o *MultipleRequiredMiddle) MiddleField() float64 {
+	return o.middlefield
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *MultipleRequiredMiddle) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	if _, ok := raw["middleField"]; raw != nil && !ok {
+		return fmt.Errorf("field middleField in MultipleRequiredMiddle: required")
+	}
+	type MultipleRequiredMiddleHelper struct {
+		Middlefield float64 `json:"middleField"`
+	}
+	type Plain MultipleRequiredMiddle
+	var helper MultipleRequiredMiddleHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.middlefield = helper.Middlefield
+	*j = MultipleRequiredMiddle(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *MultipleRequiredMiddle) MarshalJSON() ([]byte, error) {
+	type MultipleRequiredMiddleMarshalHelper struct {
+		Middlefield float64 `json:"middleField"`
+	}
+	helper := MultipleRequiredMiddleMarshalHelper{
+		Middlefield: j.middlefield,
+	}
+	return json.Marshal(helper)
+}
+
+func NewComposedWithMultipleRequiredBuilder(o *ComposedWithMultipleRequired) *ComposedWithMultipleRequiredBuilder {
+	if o == nil {
+		return &ComposedWithMultipleRequiredBuilder{}
+	}
+	return &ComposedWithMultipleRequiredBuilder{
+		basefield:   o.basefield,
+		directfield: o.directfield,
+		middlefield: o.middlefield,
+	}
+}
+
+func NewMultipleRequiredMiddleBuilder(o *MultipleRequiredMiddle) *MultipleRequiredMiddleBuilder {
+	if o == nil {
+		return &MultipleRequiredMiddleBuilder{}
+	}
+	return &MultipleRequiredMiddleBuilder{
+		middlefield: o.middlefield,
+	}
+}
+
+type ComposedWithMultipleRequired_1 = MultipleRequiredMiddle
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *MultipleRequiredMiddle) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["middleField"]; raw != nil && !ok {
+		return fmt.Errorf("field middleField in MultipleRequiredMiddle: required")
+	}
+	type Plain MultipleRequiredMiddle
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = MultipleRequiredMiddle(plain)
+	return nil
+}
+
+type ComposedWithMultipleRequired_0 = MultipleRequiredBase
+
+func NewMultipleRequiredBaseBuilder(o *MultipleRequiredBase) *MultipleRequiredBaseBuilder {
+	if o == nil {
+		return &MultipleRequiredBaseBuilder{}
+	}
+	return &MultipleRequiredBaseBuilder{
+		basefield: o.basefield,
+	}
 }

@@ -20,6 +20,45 @@ type AConst struct {
 	mystring *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
 }
 
+type AConstBuilder struct {
+	myboolean *bool
+
+	myinteger *int
+
+	mynumber *float64
+
+	mystring *string
+}
+
+func (b *AConstBuilder) Build() *AConst {
+	return &AConst{
+		myboolean: b.myboolean,
+		myinteger: b.myinteger,
+		mynumber:  b.mynumber,
+		mystring:  b.mystring,
+	}
+}
+
+func (b *AConstBuilder) WithMyBoolean(v *bool) *AConstBuilder {
+	b.myboolean = v
+	return b
+}
+
+func (b *AConstBuilder) WithMyInteger(v *int) *AConstBuilder {
+	b.myinteger = v
+	return b
+}
+
+func (b *AConstBuilder) WithMyNumber(v *float64) *AConstBuilder {
+	b.mynumber = v
+	return b
+}
+
+func (b *AConstBuilder) WithMyString(v *string) *AConstBuilder {
+	b.mystring = v
+	return b
+}
+
 func (o *AConst) MyBoolean() *bool {
 	return o.myboolean
 }
@@ -110,6 +149,30 @@ func (j *AConst) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+func NewAConstBuilder(o *AConst) *AConstBuilder {
+	if o == nil {
+		return &AConstBuilder{}
+	}
+	return &AConstBuilder{
+		myboolean: o.myboolean,
+		myinteger: o.myinteger,
+		mynumber:  o.mynumber,
+		mystring:  o.mystring,
+	}
+}
+
+func NewRequiredBuilder(o *Required) *RequiredBuilder {
+	if o == nil {
+		return &RequiredBuilder{}
+	}
+	return &RequiredBuilder{
+		myboolean: o.myboolean,
+		myinteger: o.myinteger,
+		mynumber:  o.mynumber,
+		mystring:  o.mystring,
+	}
+}
+
 type Required struct {
 	// myboolean corresponds to the JSON schema field "myBoolean".
 	myboolean bool `json:"myBoolean" yaml:"myBoolean" mapstructure:"myBoolean"`
@@ -122,6 +185,45 @@ type Required struct {
 
 	// mystring corresponds to the JSON schema field "myString".
 	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
+}
+
+type RequiredBuilder struct {
+	myboolean bool
+
+	myinteger int
+
+	mynumber float64
+
+	mystring string
+}
+
+func (b *RequiredBuilder) Build() *Required {
+	return &Required{
+		myboolean: b.myboolean,
+		myinteger: b.myinteger,
+		mynumber:  b.mynumber,
+		mystring:  b.mystring,
+	}
+}
+
+func (b *RequiredBuilder) WithMyBoolean(v bool) *RequiredBuilder {
+	b.myboolean = v
+	return b
+}
+
+func (b *RequiredBuilder) WithMyInteger(v int) *RequiredBuilder {
+	b.myinteger = v
+	return b
+}
+
+func (b *RequiredBuilder) WithMyNumber(v float64) *RequiredBuilder {
+	b.mynumber = v
+	return b
+}
+
+func (b *RequiredBuilder) WithMyString(v string) *RequiredBuilder {
+	b.mystring = v
+	return b
 }
 
 func (o *Required) MyBoolean() bool {

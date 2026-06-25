@@ -10,6 +10,21 @@ type BooleanAsSchema struct {
 	id *string `json:"id,omitempty,omitzero" yaml:"id,omitempty" mapstructure:"id,omitempty"`
 }
 
+type BooleanAsSchemaBuilder struct {
+	id *string
+}
+
+func (b *BooleanAsSchemaBuilder) Build() *BooleanAsSchema {
+	return &BooleanAsSchema{
+		id: b.id,
+	}
+}
+
+func (b *BooleanAsSchemaBuilder) WithId(v *string) *BooleanAsSchemaBuilder {
+	b.id = v
+	return b
+}
+
 func (o *BooleanAsSchema) Id() *string {
 	return o.id
 }
@@ -50,4 +65,13 @@ func (j *BooleanAsSchema) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = BooleanAsSchema(plain)
 	return nil
+}
+
+func NewBooleanAsSchemaBuilder(o *BooleanAsSchema) *BooleanAsSchemaBuilder {
+	if o == nil {
+		return &BooleanAsSchemaBuilder{}
+	}
+	return &BooleanAsSchemaBuilder{
+		id: o.id,
+	}
 }

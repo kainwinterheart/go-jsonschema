@@ -11,12 +11,45 @@ type FloatThing *float64
 
 type IntegerThing *int
 
+func NewNullableTypeBuilder(o *NullableType) *NullableTypeBuilder {
+	if o == nil {
+		return &NullableTypeBuilder{}
+	}
+	return &NullableTypeBuilder{
+		myinlinestringvalue: o.myinlinestringvalue,
+		mystringvalue:       o.mystringvalue,
+	}
+}
+
 type NullableType struct {
 	// myinlinestringvalue corresponds to the JSON schema field "MyInlineStringValue".
 	myinlinestringvalue NullableTypemyinlinestringvalue `json:"MyInlineStringValue,omitempty,omitzero" yaml:"MyInlineStringValue,omitempty" mapstructure:"MyInlineStringValue,omitempty"`
 
 	// mystringvalue corresponds to the JSON schema field "MyStringValue".
 	mystringvalue StringThing `json:"MyStringValue,omitempty,omitzero" yaml:"MyStringValue,omitempty" mapstructure:"MyStringValue,omitempty"`
+}
+
+type NullableTypeBuilder struct {
+	myinlinestringvalue NullableTypemyinlinestringvalue
+
+	mystringvalue StringThing
+}
+
+func (b *NullableTypeBuilder) Build() *NullableType {
+	return &NullableType{
+		myinlinestringvalue: b.myinlinestringvalue,
+		mystringvalue:       b.mystringvalue,
+	}
+}
+
+func (b *NullableTypeBuilder) WithMyInlineStringValue(v NullableTypemyinlinestringvalue) *NullableTypeBuilder {
+	b.myinlinestringvalue = v
+	return b
+}
+
+func (b *NullableTypeBuilder) WithMyStringValue(v StringThing) *NullableTypeBuilder {
+	b.mystringvalue = v
+	return b
 }
 
 func (o *NullableType) MyInlineStringValue() NullableTypemyinlinestringvalue {

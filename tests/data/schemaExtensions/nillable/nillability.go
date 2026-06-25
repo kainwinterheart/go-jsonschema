@@ -5,9 +5,33 @@ package test
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewNillabilityBuilder(o *Nillability) *NillabilityBuilder {
+	if o == nil {
+		return &NillabilityBuilder{}
+	}
+	return &NillabilityBuilder{
+		name: o.name,
+	}
+}
+
 type Nillability struct {
 	// name corresponds to the JSON schema field "name".
 	name map[bool]string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+}
+
+type NillabilityBuilder struct {
+	name map[bool]string
+}
+
+func (b *NillabilityBuilder) Build() *Nillability {
+	return &Nillability{
+		name: b.name,
+	}
+}
+
+func (b *NillabilityBuilder) WithName(v map[bool]string) *NillabilityBuilder {
+	b.name = v
+	return b
 }
 
 func (o *Nillability) Name() map[bool]string {

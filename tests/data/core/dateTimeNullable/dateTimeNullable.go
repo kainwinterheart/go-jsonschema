@@ -11,6 +11,21 @@ type DateTimeNullable struct {
 	myobject *DateTimeNullablemyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
+type DateTimeNullableBuilder struct {
+	myobject *DateTimeNullablemyobject
+}
+
+func (b *DateTimeNullableBuilder) Build() *DateTimeNullable {
+	return &DateTimeNullable{
+		myobject: b.myobject,
+	}
+}
+
+func (b *DateTimeNullableBuilder) WithMyObject(v *DateTimeNullablemyobject) *DateTimeNullableBuilder {
+	b.myobject = v
+	return b
+}
+
 func (o *DateTimeNullable) MyObject() *DateTimeNullablemyobject {
 	return o.myobject
 }
@@ -58,8 +73,34 @@ type DateTimeNullablemyobject struct {
 	mynullabledatetime DateTimeNullablemyobjectmynullabledatetime `json:"myNullableDateTime,omitempty,omitzero" yaml:"myNullableDateTime,omitempty" mapstructure:"myNullableDateTime,omitempty"`
 }
 
+type DateTimeNullablemyobjectBuilder struct {
+	mynullabledatetime DateTimeNullablemyobjectmynullabledatetime
+}
+
+func (b *DateTimeNullablemyobjectBuilder) Build() *DateTimeNullablemyobject {
+	return &DateTimeNullablemyobject{
+		mynullabledatetime: b.mynullabledatetime,
+	}
+}
+
+func (b *DateTimeNullablemyobjectBuilder) WithMyNullableDateTime(v DateTimeNullablemyobjectmynullabledatetime) *DateTimeNullablemyobjectBuilder {
+	b.mynullabledatetime = v
+	return b
+}
+
 func (o *DateTimeNullablemyobject) MyNullableDateTime() DateTimeNullablemyobjectmynullabledatetime {
 	return o.mynullabledatetime
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *DateTimeNullablemyobject) UnmarshalYAML(value *yaml.Node) error {
+	type Plain DateTimeNullablemyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = DateTimeNullablemyobject(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -89,15 +130,22 @@ func (j *DateTimeNullablemyobject) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *DateTimeNullablemyobject) UnmarshalYAML(value *yaml.Node) error {
-	type Plain DateTimeNullablemyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
+type DateTimeNullablemyobjectmynullabledatetime *time.Time
+
+func NewDateTimeNullableBuilder(o *DateTimeNullable) *DateTimeNullableBuilder {
+	if o == nil {
+		return &DateTimeNullableBuilder{}
 	}
-	*j = DateTimeNullablemyobject(plain)
-	return nil
+	return &DateTimeNullableBuilder{
+		myobject: o.myobject,
+	}
 }
 
-type DateTimeNullablemyobjectmynullabledatetime *time.Time
+func NewDateTimeNullablemyobjectBuilder(o *DateTimeNullablemyobject) *DateTimeNullablemyobjectBuilder {
+	if o == nil {
+		return &DateTimeNullablemyobjectBuilder{}
+	}
+	return &DateTimeNullablemyobjectBuilder{
+		mynullabledatetime: o.mynullabledatetime,
+	}
+}

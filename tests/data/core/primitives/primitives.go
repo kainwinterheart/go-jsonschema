@@ -6,6 +6,19 @@ import "encoding/json"
 import "fmt"
 import yaml "gopkg.in/yaml.v3"
 
+func NewPrimitivesBuilder(o *Primitives) *PrimitivesBuilder {
+	if o == nil {
+		return &PrimitivesBuilder{}
+	}
+	return &PrimitivesBuilder{
+		myboolean: o.myboolean,
+		myinteger: o.myinteger,
+		mynull:    o.mynull,
+		mynumber:  o.mynumber,
+		mystring:  o.mystring,
+	}
+}
+
 type Primitives struct {
 	// myboolean corresponds to the JSON schema field "myBoolean".
 	myboolean *bool `json:"myBoolean,omitempty,omitzero" yaml:"myBoolean,omitempty" mapstructure:"myBoolean,omitempty"`
@@ -21,6 +34,53 @@ type Primitives struct {
 
 	// mystring corresponds to the JSON schema field "myString".
 	mystring *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
+}
+
+type PrimitivesBuilder struct {
+	myboolean *bool
+
+	myinteger *int
+
+	mynull interface{}
+
+	mynumber *float64
+
+	mystring *string
+}
+
+func (b *PrimitivesBuilder) Build() *Primitives {
+	return &Primitives{
+		myboolean: b.myboolean,
+		myinteger: b.myinteger,
+		mynull:    b.mynull,
+		mynumber:  b.mynumber,
+		mystring:  b.mystring,
+	}
+}
+
+func (b *PrimitivesBuilder) WithMyBoolean(v *bool) *PrimitivesBuilder {
+	b.myboolean = v
+	return b
+}
+
+func (b *PrimitivesBuilder) WithMyInteger(v *int) *PrimitivesBuilder {
+	b.myinteger = v
+	return b
+}
+
+func (b *PrimitivesBuilder) WithMyNull(v interface{}) *PrimitivesBuilder {
+	b.mynull = v
+	return b
+}
+
+func (b *PrimitivesBuilder) WithMyNumber(v *float64) *PrimitivesBuilder {
+	b.mynumber = v
+	return b
+}
+
+func (b *PrimitivesBuilder) WithMyString(v *string) *PrimitivesBuilder {
+	b.mystring = v
+	return b
 }
 
 func (o *Primitives) MyBoolean() *bool {

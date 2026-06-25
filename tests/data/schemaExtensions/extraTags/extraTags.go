@@ -10,6 +10,21 @@ type ExtraTags struct {
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty" a:"" b:"foo,bar" c:"baz"`
 }
 
+type ExtraTagsBuilder struct {
+	name *string
+}
+
+func (b *ExtraTagsBuilder) Build() *ExtraTags {
+	return &ExtraTags{
+		name: b.name,
+	}
+}
+
+func (b *ExtraTagsBuilder) WithName(v *string) *ExtraTagsBuilder {
+	b.name = v
+	return b
+}
+
 func (o *ExtraTags) Name() *string {
 	return o.name
 }
@@ -50,4 +65,13 @@ func (j *ExtraTags) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = ExtraTags(plain)
 	return nil
+}
+
+func NewExtraTagsBuilder(o *ExtraTags) *ExtraTagsBuilder {
+	if o == nil {
+		return &ExtraTagsBuilder{}
+	}
+	return &ExtraTagsBuilder{
+		name: o.name,
+	}
 }

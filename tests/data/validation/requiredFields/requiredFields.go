@@ -6,6 +6,44 @@ import "encoding/json"
 import "fmt"
 import yaml "gopkg.in/yaml.v3"
 
+func NewRequiredFieldsBuilder(o *RequiredFields) *RequiredFieldsBuilder {
+	if o == nil {
+		return &RequiredFieldsBuilder{}
+	}
+	return &RequiredFieldsBuilder{
+		myboolean:      o.myboolean,
+		mybooleanarray: o.mybooleanarray,
+		myinteger:      o.myinteger,
+		myintegerarray: o.myintegerarray,
+		mynull:         o.mynull,
+		mynullarray:    o.mynullarray,
+		mynumber:       o.mynumber,
+		mynumberarray:  o.mynumberarray,
+		myobject:       o.myobject,
+		myobjectarray:  o.myobjectarray,
+		mystring:       o.mystring,
+		mystringarray:  o.mystringarray,
+	}
+}
+
+func NewRequiredFieldsmyobjectBuilder(o *RequiredFieldsmyobject) *RequiredFieldsmyobjectBuilder {
+	if o == nil {
+		return &RequiredFieldsmyobjectBuilder{}
+	}
+	return &RequiredFieldsmyobjectBuilder{
+		mynestedobjectstring: o.mynestedobjectstring,
+	}
+}
+
+func NewRequiredFieldsmyobjectarrayElemBuilder(o *RequiredFieldsmyobjectarrayElem) *RequiredFieldsmyobjectarrayElemBuilder {
+	if o == nil {
+		return &RequiredFieldsmyobjectarrayElemBuilder{}
+	}
+	return &RequiredFieldsmyobjectarrayElemBuilder{
+		mynestedobjectstring: o.mynestedobjectstring,
+	}
+}
+
 type RequiredFields struct {
 	// myboolean corresponds to the JSON schema field "myBoolean".
 	myboolean bool `json:"myBoolean" yaml:"myBoolean" mapstructure:"myBoolean"`
@@ -42,6 +80,109 @@ type RequiredFields struct {
 
 	// mystringarray corresponds to the JSON schema field "myStringArray".
 	mystringarray []string `json:"myStringArray" yaml:"myStringArray" mapstructure:"myStringArray"`
+}
+
+type RequiredFieldsBuilder struct {
+	myboolean bool
+
+	mybooleanarray []bool
+
+	myinteger *int
+
+	myintegerarray []int
+
+	mynull interface{}
+
+	mynullarray []interface{}
+
+	mynumber float64
+
+	mynumberarray []float64
+
+	myobject RequiredFieldsmyobject
+
+	myobjectarray []RequiredFieldsmyobjectarrayElem
+
+	mystring string
+
+	mystringarray []string
+}
+
+func (b *RequiredFieldsBuilder) Build() *RequiredFields {
+	return &RequiredFields{
+		myboolean:      b.myboolean,
+		mybooleanarray: b.mybooleanarray,
+		myinteger:      b.myinteger,
+		myintegerarray: b.myintegerarray,
+		mynull:         b.mynull,
+		mynullarray:    b.mynullarray,
+		mynumber:       b.mynumber,
+		mynumberarray:  b.mynumberarray,
+		myobject:       b.myobject,
+		myobjectarray:  b.myobjectarray,
+		mystring:       b.mystring,
+		mystringarray:  b.mystringarray,
+	}
+}
+
+func (b *RequiredFieldsBuilder) WithMyBoolean(v bool) *RequiredFieldsBuilder {
+	b.myboolean = v
+	return b
+}
+
+func (b *RequiredFieldsBuilder) WithMyBooleanArray(v []bool) *RequiredFieldsBuilder {
+	b.mybooleanarray = v
+	return b
+}
+
+func (b *RequiredFieldsBuilder) WithMyInteger(v *int) *RequiredFieldsBuilder {
+	b.myinteger = v
+	return b
+}
+
+func (b *RequiredFieldsBuilder) WithMyIntegerArray(v []int) *RequiredFieldsBuilder {
+	b.myintegerarray = v
+	return b
+}
+
+func (b *RequiredFieldsBuilder) WithMyNull(v interface{}) *RequiredFieldsBuilder {
+	b.mynull = v
+	return b
+}
+
+func (b *RequiredFieldsBuilder) WithMyNullArray(v []interface{}) *RequiredFieldsBuilder {
+	b.mynullarray = v
+	return b
+}
+
+func (b *RequiredFieldsBuilder) WithMyNumber(v float64) *RequiredFieldsBuilder {
+	b.mynumber = v
+	return b
+}
+
+func (b *RequiredFieldsBuilder) WithMyNumberArray(v []float64) *RequiredFieldsBuilder {
+	b.mynumberarray = v
+	return b
+}
+
+func (b *RequiredFieldsBuilder) WithMyObject(v RequiredFieldsmyobject) *RequiredFieldsBuilder {
+	b.myobject = v
+	return b
+}
+
+func (b *RequiredFieldsBuilder) WithMyObjectArray(v []RequiredFieldsmyobjectarrayElem) *RequiredFieldsBuilder {
+	b.myobjectarray = v
+	return b
+}
+
+func (b *RequiredFieldsBuilder) WithMyString(v string) *RequiredFieldsBuilder {
+	b.mystring = v
+	return b
+}
+
+func (b *RequiredFieldsBuilder) WithMyStringArray(v []string) *RequiredFieldsBuilder {
+	b.mystringarray = v
+	return b
 }
 
 func (o *RequiredFields) MyBoolean() bool {
@@ -264,6 +405,21 @@ type RequiredFieldsmyobject struct {
 	mynestedobjectstring string `json:"myNestedObjectString" yaml:"myNestedObjectString" mapstructure:"myNestedObjectString"`
 }
 
+type RequiredFieldsmyobjectBuilder struct {
+	mynestedobjectstring string
+}
+
+func (b *RequiredFieldsmyobjectBuilder) Build() *RequiredFieldsmyobject {
+	return &RequiredFieldsmyobject{
+		mynestedobjectstring: b.mynestedobjectstring,
+	}
+}
+
+func (b *RequiredFieldsmyobjectBuilder) WithMyNestedObjectString(v string) *RequiredFieldsmyobjectBuilder {
+	b.mynestedobjectstring = v
+	return b
+}
+
 func (o *RequiredFieldsmyobject) MyNestedObjectString() string {
 	return o.mynestedobjectstring
 }
@@ -324,6 +480,21 @@ type RequiredFieldsmyobjectarrayElem struct {
 	// mynestedobjectstring corresponds to the JSON schema field
 	// "myNestedObjectString".
 	mynestedobjectstring string `json:"myNestedObjectString" yaml:"myNestedObjectString" mapstructure:"myNestedObjectString"`
+}
+
+type RequiredFieldsmyobjectarrayElemBuilder struct {
+	mynestedobjectstring string
+}
+
+func (b *RequiredFieldsmyobjectarrayElemBuilder) Build() *RequiredFieldsmyobjectarrayElem {
+	return &RequiredFieldsmyobjectarrayElem{
+		mynestedobjectstring: b.mynestedobjectstring,
+	}
+}
+
+func (b *RequiredFieldsmyobjectarrayElemBuilder) WithMyNestedObjectString(v string) *RequiredFieldsmyobjectarrayElemBuilder {
+	b.mynestedobjectstring = v
+	return b
 }
 
 func (o *RequiredFieldsmyobjectarrayElem) MyNestedObjectString() string {

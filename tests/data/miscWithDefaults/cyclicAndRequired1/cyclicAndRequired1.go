@@ -11,8 +11,34 @@ type Bar struct {
 	reftofoo *Foo `json:"refToFoo,omitempty,omitzero" yaml:"refToFoo,omitempty" mapstructure:"refToFoo,omitempty"`
 }
 
+type BarBuilder struct {
+	reftofoo *Foo
+}
+
+func (b *BarBuilder) Build() *Bar {
+	return &Bar{
+		reftofoo: b.reftofoo,
+	}
+}
+
+func (b *BarBuilder) WithRefToFoo(v *Foo) *BarBuilder {
+	b.reftofoo = v
+	return b
+}
+
 func (o *Bar) RefToFoo() *Foo {
 	return o.reftofoo
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Bar) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Bar
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Bar(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -42,24 +68,39 @@ func (j *Bar) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Bar) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Bar
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Bar(plain)
-	return nil
-}
-
 type CyclicAndRequired1 struct {
 	// a corresponds to the JSON schema field "a".
 	a *Foo `json:"a,omitempty,omitzero" yaml:"a,omitempty" mapstructure:"a,omitempty"`
 }
 
+type CyclicAndRequired1Builder struct {
+	a *Foo
+}
+
+func (b *CyclicAndRequired1Builder) Build() *CyclicAndRequired1 {
+	return &CyclicAndRequired1{
+		a: b.a,
+	}
+}
+
+func (b *CyclicAndRequired1Builder) WithA(v *Foo) *CyclicAndRequired1Builder {
+	b.a = v
+	return b
+}
+
 func (o *CyclicAndRequired1) A() *Foo {
 	return o.a
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *CyclicAndRequired1) UnmarshalYAML(value *yaml.Node) error {
+	type Plain CyclicAndRequired1
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = CyclicAndRequired1(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -89,24 +130,46 @@ func (j *CyclicAndRequired1) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *CyclicAndRequired1) UnmarshalYAML(value *yaml.Node) error {
-	type Plain CyclicAndRequired1
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = CyclicAndRequired1(plain)
-	return nil
-}
-
 type Foo struct {
 	// reftobar corresponds to the JSON schema field "refToBar".
 	reftobar Bar `json:"refToBar" yaml:"refToBar" mapstructure:"refToBar"`
 }
 
+type FooBuilder struct {
+	reftobar Bar
+}
+
+func (b *FooBuilder) Build() *Foo {
+	return &Foo{
+		reftobar: b.reftobar,
+	}
+}
+
+func (b *FooBuilder) WithRefToBar(v Bar) *FooBuilder {
+	b.reftobar = v
+	return b
+}
+
 func (o *Foo) RefToBar() Bar {
 	return o.reftobar
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Foo) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["refToBar"]; raw != nil && !ok {
+		return fmt.Errorf("field refToBar in Foo: required")
+	}
+	type Plain Foo
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Foo(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -143,20 +206,29 @@ func (j *Foo) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Foo) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
+func NewBarBuilder(o *Bar) *BarBuilder {
+	if o == nil {
+		return &BarBuilder{}
 	}
-	if _, ok := raw["refToBar"]; raw != nil && !ok {
-		return fmt.Errorf("field refToBar in Foo: required")
+	return &BarBuilder{
+		reftofoo: o.reftofoo,
 	}
-	type Plain Foo
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
+}
+
+func NewCyclicAndRequired1Builder(o *CyclicAndRequired1) *CyclicAndRequired1Builder {
+	if o == nil {
+		return &CyclicAndRequired1Builder{}
 	}
-	*j = Foo(plain)
-	return nil
+	return &CyclicAndRequired1Builder{
+		a: o.a,
+	}
+}
+
+func NewFooBuilder(o *Foo) *FooBuilder {
+	if o == nil {
+		return &FooBuilder{}
+	}
+	return &FooBuilder{
+		reftobar: o.reftobar,
+	}
 }

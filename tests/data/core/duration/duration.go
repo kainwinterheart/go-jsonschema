@@ -12,8 +12,34 @@ type Duration struct {
 	myobject *Durationmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
+type DurationBuilder struct {
+	myobject *Durationmyobject
+}
+
+func (b *DurationBuilder) Build() *Duration {
+	return &Duration{
+		myobject: b.myobject,
+	}
+}
+
+func (b *DurationBuilder) WithMyObject(v *Durationmyobject) *DurationBuilder {
+	b.myobject = v
+	return b
+}
+
 func (o *Duration) MyObject() *Durationmyobject {
 	return o.myobject
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Duration) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Duration
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Duration(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -43,23 +69,35 @@ func (j *Duration) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Duration) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Duration
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Duration(plain)
-	return nil
-}
-
 type Durationmyobject struct {
 	// withdefault corresponds to the JSON schema field "withDefault".
 	withdefault time.Duration `json:"withDefault,omitempty,omitzero" yaml:"withDefault,omitempty" mapstructure:"withDefault,omitempty"`
 
 	// withoutdefault corresponds to the JSON schema field "withoutDefault".
 	withoutdefault *time.Duration `json:"withoutDefault,omitempty,omitzero" yaml:"withoutDefault,omitempty" mapstructure:"withoutDefault,omitempty"`
+}
+
+type DurationmyobjectBuilder struct {
+	withdefault time.Duration
+
+	withoutdefault *time.Duration
+}
+
+func (b *DurationmyobjectBuilder) Build() *Durationmyobject {
+	return &Durationmyobject{
+		withdefault:    b.withdefault,
+		withoutdefault: b.withoutdefault,
+	}
+}
+
+func (b *DurationmyobjectBuilder) WithWithDefault(v time.Duration) *DurationmyobjectBuilder {
+	b.withdefault = v
+	return b
+}
+
+func (b *DurationmyobjectBuilder) WithWithoutDefault(v *time.Duration) *DurationmyobjectBuilder {
+	b.withoutdefault = v
+	return b
 }
 
 func (o *Durationmyobject) WithDefault() time.Duration {
@@ -134,4 +172,23 @@ func (j *Durationmyobject) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = Durationmyobject(plain)
 	return nil
+}
+
+func NewDurationBuilder(o *Duration) *DurationBuilder {
+	if o == nil {
+		return &DurationBuilder{}
+	}
+	return &DurationBuilder{
+		myobject: o.myobject,
+	}
+}
+
+func NewDurationmyobjectBuilder(o *Durationmyobject) *DurationmyobjectBuilder {
+	if o == nil {
+		return &DurationmyobjectBuilder{}
+	}
+	return &DurationmyobjectBuilder{
+		withdefault:    o.withdefault,
+		withoutdefault: o.withoutdefault,
+	}
 }

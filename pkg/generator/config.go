@@ -20,7 +20,7 @@ type Config struct {
 	StructNameFromTitle bool
 	// Warner provides a handler for warning messages.
 	Warner func(string)
-	// Tags specifies which struct tags should be generated.
+	// Tags specifies which struct tags to generate.
 	Tags []string
 	// OnlyModels configures the generator to omit unmarshal methods, validations, anything but models.
 	OnlyModels bool

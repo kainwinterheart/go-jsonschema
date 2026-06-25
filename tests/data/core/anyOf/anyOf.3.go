@@ -19,9 +19,55 @@ type AnyOf3 struct {
 	foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
 }
 
+type AnyOf3Builder struct {
+	bar *float64
+
+	configurations []interface{}
+
+	foo *string
+}
+
+func (b *AnyOf3Builder) Build() *AnyOf3 {
+	return &AnyOf3{
+		bar:            b.bar,
+		configurations: b.configurations,
+		foo:            b.foo,
+	}
+}
+
+func (b *AnyOf3Builder) WithBar(v *float64) *AnyOf3Builder {
+	b.bar = v
+	return b
+}
+
+func (b *AnyOf3Builder) WithConfigurations(v []interface{}) *AnyOf3Builder {
+	b.configurations = v
+	return b
+}
+
+func (b *AnyOf3Builder) WithFoo(v *string) *AnyOf3Builder {
+	b.foo = v
+	return b
+}
+
 type AnyOf3_0 struct {
 	// foo corresponds to the JSON schema field "foo".
 	foo string `json:"foo" yaml:"foo" mapstructure:"foo"`
+}
+
+type AnyOf3_0Builder struct {
+	foo string
+}
+
+func (b *AnyOf3_0Builder) Build() *AnyOf3_0 {
+	return &AnyOf3_0{
+		foo: b.foo,
+	}
+}
+
+func (b *AnyOf3_0Builder) WithFoo(v string) *AnyOf3_0Builder {
+	b.foo = v
+	return b
 }
 
 func (o *AnyOf3_0) Foo() string {
@@ -85,8 +131,41 @@ type AnyOf3_1 struct {
 	bar float64 `json:"bar" yaml:"bar" mapstructure:"bar"`
 }
 
+type AnyOf3_1Builder struct {
+	bar float64
+}
+
+func (b *AnyOf3_1Builder) Build() *AnyOf3_1 {
+	return &AnyOf3_1{
+		bar: b.bar,
+	}
+}
+
+func (b *AnyOf3_1Builder) WithBar(v float64) *AnyOf3_1Builder {
+	b.bar = v
+	return b
+}
+
 func (o *AnyOf3_1) Bar() float64 {
 	return o.bar
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf3_1) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["bar"]; raw != nil && !ok {
+		return fmt.Errorf("field bar in AnyOf3_1: required")
+	}
+	type Plain AnyOf3_1
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf3_1(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -123,31 +202,39 @@ func (j *AnyOf3_1) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AnyOf3_1) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in AnyOf3_1: required")
-	}
-	type Plain AnyOf3_1
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AnyOf3_1(plain)
-	return nil
-}
-
 type AnyOf3_2 struct {
 	// configurations corresponds to the JSON schema field "configurations".
 	configurations []interface{} `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
 }
 
+type AnyOf3_2Builder struct {
+	configurations []interface{}
+}
+
+func (b *AnyOf3_2Builder) Build() *AnyOf3_2 {
+	return &AnyOf3_2{
+		configurations: b.configurations,
+	}
+}
+
+func (b *AnyOf3_2Builder) WithConfigurations(v []interface{}) *AnyOf3_2Builder {
+	b.configurations = v
+	return b
+}
+
 func (o *AnyOf3_2) Configurations() []interface{} {
 	return o.configurations
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf3_2) UnmarshalYAML(value *yaml.Node) error {
+	type Plain AnyOf3_2
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf3_2(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -175,17 +262,6 @@ func (j *AnyOf3_2) MarshalJSON() ([]byte, error) {
 		Configurations: j.configurations,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AnyOf3_2) UnmarshalYAML(value *yaml.Node) error {
-	type Plain AnyOf3_2
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AnyOf3_2(plain)
-	return nil
 }
 
 func (o *AnyOf3) Bar() *float64 {
@@ -284,4 +360,42 @@ func (j *AnyOf3) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = AnyOf3(plain)
 	return nil
+}
+
+func NewAnyOf3Builder(o *AnyOf3) *AnyOf3Builder {
+	if o == nil {
+		return &AnyOf3Builder{}
+	}
+	return &AnyOf3Builder{
+		bar:            o.bar,
+		configurations: o.configurations,
+		foo:            o.foo,
+	}
+}
+
+func NewAnyOf3_0Builder(o *AnyOf3_0) *AnyOf3_0Builder {
+	if o == nil {
+		return &AnyOf3_0Builder{}
+	}
+	return &AnyOf3_0Builder{
+		foo: o.foo,
+	}
+}
+
+func NewAnyOf3_1Builder(o *AnyOf3_1) *AnyOf3_1Builder {
+	if o == nil {
+		return &AnyOf3_1Builder{}
+	}
+	return &AnyOf3_1Builder{
+		bar: o.bar,
+	}
+}
+
+func NewAnyOf3_2Builder(o *AnyOf3_2) *AnyOf3_2Builder {
+	if o == nil {
+		return &AnyOf3_2Builder{}
+	}
+	return &AnyOf3_2Builder{
+		configurations: o.configurations,
+	}
 }

@@ -15,6 +15,21 @@ type IntAdditionalProperties struct {
 	AdditionalProperties map[string]int `mapstructure:",remain"`
 }
 
+type IntAdditionalPropertiesBuilder struct {
+	name *string
+}
+
+func (b *IntAdditionalPropertiesBuilder) Build() *IntAdditionalProperties {
+	return &IntAdditionalProperties{
+		name: b.name,
+	}
+}
+
+func (b *IntAdditionalPropertiesBuilder) WithName(v *string) *IntAdditionalPropertiesBuilder {
+	b.name = v
+	return b
+}
+
 func (o *IntAdditionalProperties) Name() *string {
 	return o.name
 }
@@ -79,4 +94,13 @@ func (j *IntAdditionalProperties) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = IntAdditionalProperties(plain)
 	return nil
+}
+
+func NewIntAdditionalPropertiesBuilder(o *IntAdditionalProperties) *IntAdditionalPropertiesBuilder {
+	if o == nil {
+		return &IntAdditionalPropertiesBuilder{}
+	}
+	return &IntAdditionalPropertiesBuilder{
+		name: o.name,
+	}
 }

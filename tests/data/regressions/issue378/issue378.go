@@ -12,6 +12,21 @@ type Issue378 struct {
 	memory *string `json:"memory,omitempty,omitzero" yaml:"memory,omitempty" mapstructure:"memory,omitempty"`
 }
 
+type Issue378Builder struct {
+	memory *string
+}
+
+func (b *Issue378Builder) Build() *Issue378 {
+	return &Issue378{
+		memory: b.memory,
+	}
+}
+
+func (b *Issue378Builder) WithMemory(v *string) *Issue378Builder {
+	b.memory = v
+	return b
+}
+
 func (o *Issue378) Memory() *string {
 	return o.memory
 }
@@ -62,4 +77,13 @@ func (j *Issue378) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = Issue378(plain)
 	return nil
+}
+
+func NewIssue378Builder(o *Issue378) *Issue378Builder {
+	if o == nil {
+		return &Issue378Builder{}
+	}
+	return &Issue378Builder{
+		memory: o.memory,
+	}
 }

@@ -5,9 +5,33 @@ package test
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewYamlStructNameFromFileBuilder(o *YamlStructNameFromFile) *YamlStructNameFromFileBuilder {
+	if o == nil {
+		return &YamlStructNameFromFileBuilder{}
+	}
+	return &YamlStructNameFromFileBuilder{
+		foo: o.foo,
+	}
+}
+
 type YamlStructNameFromFile struct {
 	// foo corresponds to the JSON schema field "foo".
 	foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
+}
+
+type YamlStructNameFromFileBuilder struct {
+	foo *string
+}
+
+func (b *YamlStructNameFromFileBuilder) Build() *YamlStructNameFromFile {
+	return &YamlStructNameFromFile{
+		foo: b.foo,
+	}
+}
+
+func (b *YamlStructNameFromFileBuilder) WithFoo(v *string) *YamlStructNameFromFileBuilder {
+	b.foo = v
+	return b
 }
 
 func (o *YamlStructNameFromFile) Foo() *string {

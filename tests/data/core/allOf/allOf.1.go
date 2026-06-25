@@ -11,8 +11,34 @@ type AllOf1 struct {
 	configurations []AllOf1configurationsElem `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
 }
 
+type AllOf1Builder struct {
+	configurations []AllOf1configurationsElem
+}
+
+func (b *AllOf1Builder) Build() *AllOf1 {
+	return &AllOf1{
+		configurations: b.configurations,
+	}
+}
+
+func (b *AllOf1Builder) WithConfigurations(v []AllOf1configurationsElem) *AllOf1Builder {
+	b.configurations = v
+	return b
+}
+
 func (o *AllOf1) Configurations() []AllOf1configurationsElem {
 	return o.configurations
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AllOf1) UnmarshalYAML(value *yaml.Node) error {
+	type Plain AllOf1
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AllOf1(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -42,23 +68,35 @@ func (j *AllOf1) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AllOf1) UnmarshalYAML(value *yaml.Node) error {
-	type Plain AllOf1
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AllOf1(plain)
-	return nil
-}
-
 type AllOf1configurationsElem struct {
 	// bar corresponds to the JSON schema field "bar".
 	bar float64 `json:"bar" yaml:"bar" mapstructure:"bar"`
 
 	// foo corresponds to the JSON schema field "foo".
 	foo string `json:"foo" yaml:"foo" mapstructure:"foo"`
+}
+
+type AllOf1configurationsElemBuilder struct {
+	bar float64
+
+	foo string
+}
+
+func (b *AllOf1configurationsElemBuilder) Build() *AllOf1configurationsElem {
+	return &AllOf1configurationsElem{
+		bar: b.bar,
+		foo: b.foo,
+	}
+}
+
+func (b *AllOf1configurationsElemBuilder) WithBar(v float64) *AllOf1configurationsElemBuilder {
+	b.bar = v
+	return b
+}
+
+func (b *AllOf1configurationsElemBuilder) WithFoo(v string) *AllOf1configurationsElemBuilder {
+	b.foo = v
+	return b
 }
 
 func (o *AllOf1configurationsElem) Bar() float64 {
@@ -129,4 +167,23 @@ func (j *AllOf1configurationsElem) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = AllOf1configurationsElem(plain)
 	return nil
+}
+
+func NewAllOf1Builder(o *AllOf1) *AllOf1Builder {
+	if o == nil {
+		return &AllOf1Builder{}
+	}
+	return &AllOf1Builder{
+		configurations: o.configurations,
+	}
+}
+
+func NewAllOf1configurationsElemBuilder(o *AllOf1configurationsElem) *AllOf1configurationsElemBuilder {
+	if o == nil {
+		return &AllOf1configurationsElemBuilder{}
+	}
+	return &AllOf1configurationsElemBuilder{
+		bar: o.bar,
+		foo: o.foo,
+	}
 }

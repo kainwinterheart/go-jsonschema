@@ -5,9 +5,33 @@ package test
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewRefToPrimitiveStringBuilder(o *RefToPrimitiveString) *RefToPrimitiveStringBuilder {
+	if o == nil {
+		return &RefToPrimitiveStringBuilder{}
+	}
+	return &RefToPrimitiveStringBuilder{
+		mything: o.mything,
+	}
+}
+
 type RefToPrimitiveString struct {
 	// mything corresponds to the JSON schema field "myThing".
 	mything *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
+}
+
+type RefToPrimitiveStringBuilder struct {
+	mything *Thing
+}
+
+func (b *RefToPrimitiveStringBuilder) Build() *RefToPrimitiveString {
+	return &RefToPrimitiveString{
+		mything: b.mything,
+	}
+}
+
+func (b *RefToPrimitiveStringBuilder) WithMyThing(v *Thing) *RefToPrimitiveStringBuilder {
+	b.mything = v
+	return b
 }
 
 func (o *RefToPrimitiveString) MyThing() *Thing {

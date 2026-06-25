@@ -20,6 +20,45 @@ type Maximum struct {
 	mynumber float64 `json:"myNumber" yaml:"myNumber" mapstructure:"myNumber"`
 }
 
+type MaximumBuilder struct {
+	myinteger int
+
+	mynullableinteger *int
+
+	mynullablenumber *float64
+
+	mynumber float64
+}
+
+func (b *MaximumBuilder) Build() *Maximum {
+	return &Maximum{
+		myinteger:         b.myinteger,
+		mynullableinteger: b.mynullableinteger,
+		mynullablenumber:  b.mynullablenumber,
+		mynumber:          b.mynumber,
+	}
+}
+
+func (b *MaximumBuilder) WithMyInteger(v int) *MaximumBuilder {
+	b.myinteger = v
+	return b
+}
+
+func (b *MaximumBuilder) WithMyNullableInteger(v *int) *MaximumBuilder {
+	b.mynullableinteger = v
+	return b
+}
+
+func (b *MaximumBuilder) WithMyNullableNumber(v *float64) *MaximumBuilder {
+	b.mynullablenumber = v
+	return b
+}
+
+func (b *MaximumBuilder) WithMyNumber(v float64) *MaximumBuilder {
+	b.mynumber = v
+	return b
+}
+
 func (o *Maximum) MyInteger() int {
 	return o.myinteger
 }
@@ -128,4 +167,16 @@ func (j *Maximum) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = Maximum(plain)
 	return nil
+}
+
+func NewMaximumBuilder(o *Maximum) *MaximumBuilder {
+	if o == nil {
+		return &MaximumBuilder{}
+	}
+	return &MaximumBuilder{
+		myinteger:         o.myinteger,
+		mynullableinteger: o.mynullableinteger,
+		mynullablenumber:  o.mynullablenumber,
+		mynumber:          o.mynumber,
+	}
 }

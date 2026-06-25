@@ -22,6 +22,38 @@ type CaseDupes struct {
 	somefield_5 *string `json:"somefield,omitempty,omitzero" yaml:"somefield,omitempty" mapstructure:"somefield,omitempty"`
 }
 
+type CaseDupesBuilder struct {
+	somefield *string
+
+	somefield_2 *string
+
+	somefield_3 *string
+
+	somefield_4 *string
+
+	somefield_5 *string
+}
+
+func (b *CaseDupesBuilder) Build() *CaseDupes {
+	return &CaseDupes{
+		somefield:   b.somefield,
+		somefield_2: b.somefield_2,
+		somefield_3: b.somefield_3,
+		somefield_4: b.somefield_4,
+		somefield_5: b.somefield_5,
+	}
+}
+
+func (b *CaseDupesBuilder) WithSomeField(v *string) *CaseDupesBuilder {
+	b.somefield = v
+	return b
+}
+
+func (b *CaseDupesBuilder) WithSomefield(v *string) *CaseDupesBuilder {
+	b.somefield_5 = v
+	return b
+}
+
 func (o *CaseDupes) SomeField() *string {
 	return o.somefield
 }
@@ -82,4 +114,17 @@ func (j *CaseDupes) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = CaseDupes(plain)
 	return nil
+}
+
+func NewCaseDupesBuilder(o *CaseDupes) *CaseDupesBuilder {
+	if o == nil {
+		return &CaseDupesBuilder{}
+	}
+	return &CaseDupesBuilder{
+		somefield:   o.somefield,
+		somefield_2: o.somefield_2,
+		somefield_3: o.somefield_3,
+		somefield_4: o.somefield_4,
+		somefield_5: o.somefield_5,
+	}
 }

@@ -6,10 +6,34 @@ import "encoding/json"
 import "fmt"
 import yaml "gopkg.in/yaml.v3"
 
+func NewReadOnlyAndRequiredBuilder(o *ReadOnlyAndRequired) *ReadOnlyAndRequiredBuilder {
+	if o == nil {
+		return &ReadOnlyAndRequiredBuilder{}
+	}
+	return &ReadOnlyAndRequiredBuilder{
+		myreadonlyrequiredstring: o.myreadonlyrequiredstring,
+	}
+}
+
 type ReadOnlyAndRequired struct {
 	// myreadonlyrequiredstring corresponds to the JSON schema field
 	// "myReadOnlyRequiredString".
 	myreadonlyrequiredstring string `json:"myReadOnlyRequiredString" yaml:"myReadOnlyRequiredString" mapstructure:"myReadOnlyRequiredString"`
+}
+
+type ReadOnlyAndRequiredBuilder struct {
+	myreadonlyrequiredstring string
+}
+
+func (b *ReadOnlyAndRequiredBuilder) Build() *ReadOnlyAndRequired {
+	return &ReadOnlyAndRequired{
+		myreadonlyrequiredstring: b.myreadonlyrequiredstring,
+	}
+}
+
+func (b *ReadOnlyAndRequiredBuilder) WithMyReadOnlyRequiredString(v string) *ReadOnlyAndRequiredBuilder {
+	b.myreadonlyrequiredstring = v
+	return b
 }
 
 func (o *ReadOnlyAndRequired) MyReadOnlyRequiredString() string {

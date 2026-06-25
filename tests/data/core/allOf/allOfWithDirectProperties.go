@@ -14,8 +14,41 @@ type BaseObject struct {
 	basefield string `json:"BaseField" yaml:"BaseField" mapstructure:"BaseField"`
 }
 
+type BaseObjectBuilder struct {
+	basefield string
+}
+
+func (b *BaseObjectBuilder) Build() *BaseObject {
+	return &BaseObject{
+		basefield: b.basefield,
+	}
+}
+
+func (b *BaseObjectBuilder) WithBaseField(v string) *BaseObjectBuilder {
+	b.basefield = v
+	return b
+}
+
 func (o *BaseObject) BaseField() string {
 	return o.basefield
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *BaseObject) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["BaseField"]; raw != nil && !ok {
+		return fmt.Errorf("field BaseField in BaseObject: required")
+	}
+	type Plain BaseObject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = BaseObject(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -52,24 +85,6 @@ func (j *BaseObject) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *BaseObject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["BaseField"]; raw != nil && !ok {
-		return fmt.Errorf("field BaseField in BaseObject: required")
-	}
-	type Plain BaseObject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = BaseObject(plain)
-	return nil
-}
-
 type ComposedWithAllOfAndProperties struct {
 	// basefield corresponds to the JSON schema field "BaseField".
 	basefield string `json:"BaseField" yaml:"BaseField" mapstructure:"BaseField"`
@@ -78,6 +93,29 @@ type ComposedWithAllOfAndProperties struct {
 	directfield []string `json:"DirectField,omitempty,omitzero" yaml:"DirectField,omitempty" mapstructure:"DirectField,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
+}
+
+type ComposedWithAllOfAndPropertiesBuilder struct {
+	basefield string
+
+	directfield []string
+}
+
+func (b *ComposedWithAllOfAndPropertiesBuilder) Build() *ComposedWithAllOfAndProperties {
+	return &ComposedWithAllOfAndProperties{
+		basefield:   b.basefield,
+		directfield: b.directfield,
+	}
+}
+
+func (b *ComposedWithAllOfAndPropertiesBuilder) WithBaseField(v string) *ComposedWithAllOfAndPropertiesBuilder {
+	b.basefield = v
+	return b
+}
+
+func (b *ComposedWithAllOfAndPropertiesBuilder) WithDirectField(v []string) *ComposedWithAllOfAndPropertiesBuilder {
+	b.directfield = v
+	return b
 }
 
 func (o *ComposedWithAllOfAndProperties) BaseField() string {
@@ -158,4 +196,23 @@ func (j *ComposedWithAllOfAndProperties) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = ComposedWithAllOfAndProperties(plain)
 	return nil
+}
+
+func NewBaseObjectBuilder(o *BaseObject) *BaseObjectBuilder {
+	if o == nil {
+		return &BaseObjectBuilder{}
+	}
+	return &BaseObjectBuilder{
+		basefield: o.basefield,
+	}
+}
+
+func NewComposedWithAllOfAndPropertiesBuilder(o *ComposedWithAllOfAndProperties) *ComposedWithAllOfAndPropertiesBuilder {
+	if o == nil {
+		return &ComposedWithAllOfAndPropertiesBuilder{}
+	}
+	return &ComposedWithAllOfAndPropertiesBuilder{
+		basefield:   o.basefield,
+		directfield: o.directfield,
+	}
 }

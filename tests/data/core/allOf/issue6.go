@@ -20,6 +20,37 @@ type Element struct {
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
+type ElementBuilder struct {
+	extension []string
+
+	id *string
+
+	name *string
+}
+
+func (b *ElementBuilder) Build() *Element {
+	return &Element{
+		extension: b.extension,
+		id:        b.id,
+		name:      b.name,
+	}
+}
+
+func (b *ElementBuilder) WithExtension(v []string) *ElementBuilder {
+	b.extension = v
+	return b
+}
+
+func (b *ElementBuilder) WithId(v *string) *ElementBuilder {
+	b.id = v
+	return b
+}
+
+func (b *ElementBuilder) WithName(v *string) *ElementBuilder {
+	b.name = v
+	return b
+}
+
 func (o *Element) Extension() []string {
 	return o.extension
 }
@@ -85,19 +116,23 @@ type Issue6 struct {
 	name *Issue6name `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-func (o *Issue6) Name() *Issue6name {
-	return o.name
+type Issue6Builder struct {
+	name *Issue6name
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Issue6) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Issue6
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
+func (b *Issue6Builder) Build() *Issue6 {
+	return &Issue6{
+		name: b.name,
 	}
-	*j = Issue6(plain)
-	return nil
+}
+
+func (b *Issue6Builder) WithName(v *Issue6name) *Issue6Builder {
+	b.name = v
+	return b
+}
+
+func (o *Issue6) Name() *Issue6name {
+	return o.name
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -125,6 +160,17 @@ func (j *Issue6) MarshalJSON() ([]byte, error) {
 		Name: j.name,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Issue6) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Issue6
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Issue6(plain)
+	return nil
 }
 
 // A human's name with the ability to identify parts and usage.
@@ -172,6 +218,87 @@ type Issue6name struct {
 	use_2 *Issue6nameuse_2 `json:"use,omitempty,omitzero" yaml:"use,omitempty" mapstructure:"use,omitempty"`
 }
 
+type Issue6nameBuilder struct {
+	family *Element
+
+	given []Element
+
+	prefix []Element
+
+	suffix []Element
+
+	text *Element
+
+	use *Element
+
+	family_2 *string
+
+	given_2 []string
+
+	period *Period
+
+	prefix_2 []string
+
+	suffix_2 []string
+
+	text_2 *string
+
+	use_2 *Issue6nameuse_2
+}
+
+func (b *Issue6nameBuilder) Build() *Issue6name {
+	return &Issue6name{
+		family:   b.family,
+		given:    b.given,
+		prefix:   b.prefix,
+		suffix:   b.suffix,
+		text:     b.text,
+		use:      b.use,
+		family_2: b.family_2,
+		given_2:  b.given_2,
+		period:   b.period,
+		prefix_2: b.prefix_2,
+		suffix_2: b.suffix_2,
+		text_2:   b.text_2,
+		use_2:    b.use_2,
+	}
+}
+
+func (b *Issue6nameBuilder) WithFamily(v *Element) *Issue6nameBuilder {
+	b.family = v
+	return b
+}
+
+func (b *Issue6nameBuilder) WithGiven(v []Element) *Issue6nameBuilder {
+	b.given = v
+	return b
+}
+
+func (b *Issue6nameBuilder) WithPeriod(v *Period) *Issue6nameBuilder {
+	b.period = v
+	return b
+}
+
+func (b *Issue6nameBuilder) WithPrefix(v []Element) *Issue6nameBuilder {
+	b.prefix = v
+	return b
+}
+
+func (b *Issue6nameBuilder) WithSuffix(v []Element) *Issue6nameBuilder {
+	b.suffix = v
+	return b
+}
+
+func (b *Issue6nameBuilder) WithText(v *Element) *Issue6nameBuilder {
+	b.text = v
+	return b
+}
+
+func (b *Issue6nameBuilder) WithUse(v *Element) *Issue6nameBuilder {
+	b.use = v
+	return b
+}
+
 func (o *Issue6name) Family() *Element {
 	return o.family
 }
@@ -198,6 +325,17 @@ func (o *Issue6name) Text() *Element {
 
 func (o *Issue6name) Use() *Element {
 	return o.use
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Issue6name) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Issue6name
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Issue6name(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -275,17 +413,6 @@ func (j *Issue6name) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Issue6name) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Issue6name
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Issue6name(plain)
-	return nil
-}
-
 type Issue6nameuse_2 string
 
 const Issue6nameuse_2_Anonymous Issue6nameuse_2 = "anonymous"
@@ -346,6 +473,57 @@ func (j *Issue6nameuse_2) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
+func NewElementBuilder(o *Element) *ElementBuilder {
+	if o == nil {
+		return &ElementBuilder{}
+	}
+	return &ElementBuilder{
+		extension: o.extension,
+		id:        o.id,
+		name:      o.name,
+	}
+}
+
+func NewIssue6Builder(o *Issue6) *Issue6Builder {
+	if o == nil {
+		return &Issue6Builder{}
+	}
+	return &Issue6Builder{
+		name: o.name,
+	}
+}
+
+func NewIssue6nameBuilder(o *Issue6name) *Issue6nameBuilder {
+	if o == nil {
+		return &Issue6nameBuilder{}
+	}
+	return &Issue6nameBuilder{
+		family:   o.family,
+		given:    o.given,
+		prefix:   o.prefix,
+		suffix:   o.suffix,
+		text:     o.text,
+		use:      o.use,
+		family_2: o.family_2,
+		given_2:  o.given_2,
+		period:   o.period,
+		prefix_2: o.prefix_2,
+		suffix_2: o.suffix_2,
+		text_2:   o.text_2,
+		use_2:    o.use_2,
+	}
+}
+
+func NewPeriodBuilder(o *Period) *PeriodBuilder {
+	if o == nil {
+		return &PeriodBuilder{}
+	}
+	return &PeriodBuilder{
+		end:   o.end,
+		start: o.start,
+	}
+}
+
 // Something
 type Period struct {
 	// The end of the period. If the end of the period is missing, it means that the
@@ -356,23 +534,35 @@ type Period struct {
 	start *time.Time `json:"start,omitempty,omitzero" yaml:"start,omitempty" mapstructure:"start,omitempty"`
 }
 
+type PeriodBuilder struct {
+	end *time.Time
+
+	start *time.Time
+}
+
+func (b *PeriodBuilder) Build() *Period {
+	return &Period{
+		end:   b.end,
+		start: b.start,
+	}
+}
+
+func (b *PeriodBuilder) WithEnd(v *time.Time) *PeriodBuilder {
+	b.end = v
+	return b
+}
+
+func (b *PeriodBuilder) WithStart(v *time.Time) *PeriodBuilder {
+	b.start = v
+	return b
+}
+
 func (o *Period) End() *time.Time {
 	return o.end
 }
 
 func (o *Period) Start() *time.Time {
 	return o.start
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Period) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Period
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Period(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -404,4 +594,15 @@ func (j *Period) MarshalJSON() ([]byte, error) {
 		Start: j.start,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Period) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Period
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Period(plain)
+	return nil
 }

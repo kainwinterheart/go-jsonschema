@@ -8,6 +8,43 @@ import yaml "gopkg.in/yaml.v3"
 
 type Name string
 
+func NewSchemaBuilder(o *Schema) *SchemaBuilder {
+	if o == nil {
+		return &SchemaBuilder{}
+	}
+	return &SchemaBuilder{
+		definotherschema: o.definotherschema,
+		definsameschema:  o.definsameschema,
+	}
+}
+
+func NewSchemadefinotherschemaBuilder(o *Schemadefinotherschema) *SchemadefinotherschemaBuilder {
+	if o == nil {
+		return &SchemadefinotherschemaBuilder{}
+	}
+	return &SchemadefinotherschemaBuilder{
+		value: o.value,
+	}
+}
+
+func NewSchemadefinsameschemaBuilder(o *Schemadefinsameschema) *SchemadefinsameschemaBuilder {
+	if o == nil {
+		return &SchemadefinsameschemaBuilder{}
+	}
+	return &SchemadefinsameschemaBuilder{
+		name: o.name,
+	}
+}
+
+func NewThingBuilder(o *Thing) *ThingBuilder {
+	if o == nil {
+		return &ThingBuilder{}
+	}
+	return &ThingBuilder{
+		name: o.name,
+	}
+}
+
 type Schema struct {
 	// definotherschema corresponds to the JSON schema field "defInOtherSchema".
 	definotherschema *Schemadefinotherschema `json:"defInOtherSchema,omitempty,omitzero" yaml:"defInOtherSchema,omitempty" mapstructure:"defInOtherSchema,omitempty"`
@@ -16,23 +53,35 @@ type Schema struct {
 	definsameschema *Schemadefinsameschema `json:"defInSameSchema,omitempty,omitzero" yaml:"defInSameSchema,omitempty" mapstructure:"defInSameSchema,omitempty"`
 }
 
+type SchemaBuilder struct {
+	definotherschema *Schemadefinotherschema
+
+	definsameschema *Schemadefinsameschema
+}
+
+func (b *SchemaBuilder) Build() *Schema {
+	return &Schema{
+		definotherschema: b.definotherschema,
+		definsameschema:  b.definsameschema,
+	}
+}
+
+func (b *SchemaBuilder) WithDefInOtherSchema(v *Schemadefinotherschema) *SchemaBuilder {
+	b.definotherschema = v
+	return b
+}
+
+func (b *SchemaBuilder) WithDefInSameSchema(v *Schemadefinsameschema) *SchemaBuilder {
+	b.definsameschema = v
+	return b
+}
+
 func (o *Schema) DefInOtherSchema() *Schemadefinotherschema {
 	return o.definotherschema
 }
 
 func (o *Schema) DefInSameSchema() *Schemadefinsameschema {
 	return o.definsameschema
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Schema) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Schema
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Schema(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -66,13 +115,50 @@ func (j *Schema) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Schema) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Schema
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Schema(plain)
+	return nil
+}
+
 type Schemadefinotherschema struct {
 	// value corresponds to the JSON schema field "value".
 	value *other.Value `json:"value,omitempty,omitzero" yaml:"value,omitempty" mapstructure:"value,omitempty"`
 }
 
+type SchemadefinotherschemaBuilder struct {
+	value *other.Value
+}
+
+func (b *SchemadefinotherschemaBuilder) Build() *Schemadefinotherschema {
+	return &Schemadefinotherschema{
+		value: b.value,
+	}
+}
+
+func (b *SchemadefinotherschemaBuilder) WithValue(v *other.Value) *SchemadefinotherschemaBuilder {
+	b.value = v
+	return b
+}
+
 func (o *Schemadefinotherschema) Value() *other.Value {
 	return o.value
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Schemadefinotherschema) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Schemadefinotherschema
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Schemadefinotherschema(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -102,20 +188,24 @@ func (j *Schemadefinotherschema) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Schemadefinotherschema) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Schemadefinotherschema
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Schemadefinotherschema(plain)
-	return nil
-}
-
 type Schemadefinsameschema struct {
 	// name corresponds to the JSON schema field "name".
 	name *Name `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+}
+
+type SchemadefinsameschemaBuilder struct {
+	name *Name
+}
+
+func (b *SchemadefinsameschemaBuilder) Build() *Schemadefinsameschema {
+	return &Schemadefinsameschema{
+		name: b.name,
+	}
+}
+
+func (b *SchemadefinsameschemaBuilder) WithName(v *Name) *SchemadefinsameschemaBuilder {
+	b.name = v
+	return b
 }
 
 func (o *Schemadefinsameschema) Name() *Name {
@@ -163,6 +253,21 @@ func (j *Schemadefinsameschema) MarshalJSON() ([]byte, error) {
 type Thing struct {
 	// name corresponds to the JSON schema field "name".
 	name *Name `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+}
+
+type ThingBuilder struct {
+	name *Name
+}
+
+func (b *ThingBuilder) Build() *Thing {
+	return &Thing{
+		name: b.name,
+	}
+}
+
+func (b *ThingBuilder) WithName(v *Name) *ThingBuilder {
+	b.name = v
+	return b
 }
 
 func (o *Thing) Name() *Name {

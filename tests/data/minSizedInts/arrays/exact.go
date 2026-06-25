@@ -32,6 +32,77 @@ type Exact struct {
 	u8 []uint8 `json:"u8" yaml:"u8" mapstructure:"u8"`
 }
 
+type ExactBuilder struct {
+	i16 []int16
+
+	i32 []int32
+
+	i64 []int64
+
+	i8 []int8
+
+	u16 []uint16
+
+	u32 []uint32
+
+	u64 []uint64
+
+	u8 []uint8
+}
+
+func (b *ExactBuilder) Build() *Exact {
+	return &Exact{
+		i16: b.i16,
+		i32: b.i32,
+		i64: b.i64,
+		i8:  b.i8,
+		u16: b.u16,
+		u32: b.u32,
+		u64: b.u64,
+		u8:  b.u8,
+	}
+}
+
+func (b *ExactBuilder) WithI16(v []int16) *ExactBuilder {
+	b.i16 = v
+	return b
+}
+
+func (b *ExactBuilder) WithI32(v []int32) *ExactBuilder {
+	b.i32 = v
+	return b
+}
+
+func (b *ExactBuilder) WithI64(v []int64) *ExactBuilder {
+	b.i64 = v
+	return b
+}
+
+func (b *ExactBuilder) WithI8(v []int8) *ExactBuilder {
+	b.i8 = v
+	return b
+}
+
+func (b *ExactBuilder) WithU16(v []uint16) *ExactBuilder {
+	b.u16 = v
+	return b
+}
+
+func (b *ExactBuilder) WithU32(v []uint32) *ExactBuilder {
+	b.u32 = v
+	return b
+}
+
+func (b *ExactBuilder) WithU64(v []uint64) *ExactBuilder {
+	b.u64 = v
+	return b
+}
+
+func (b *ExactBuilder) WithU8(v []uint8) *ExactBuilder {
+	b.u8 = v
+	return b
+}
+
 func (o *Exact) I16() []int16 {
 	return o.i16
 }
@@ -184,4 +255,20 @@ func (j *Exact) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = Exact(plain)
 	return nil
+}
+
+func NewExactBuilder(o *Exact) *ExactBuilder {
+	if o == nil {
+		return &ExactBuilder{}
+	}
+	return &ExactBuilder{
+		i16: o.i16,
+		i32: o.i32,
+		i64: o.i64,
+		i8:  o.i8,
+		u16: o.u16,
+		u32: o.u32,
+		u64: o.u64,
+		u8:  o.u8,
+	}
 }

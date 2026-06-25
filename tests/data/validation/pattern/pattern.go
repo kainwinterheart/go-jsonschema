@@ -7,6 +7,17 @@ import "fmt"
 import yaml "gopkg.in/yaml.v3"
 import "regexp"
 
+func NewPatternBuilder(o *Pattern) *PatternBuilder {
+	if o == nil {
+		return &PatternBuilder{}
+	}
+	return &PatternBuilder{
+		myescapedstring:  o.myescapedstring,
+		mynullablestring: o.mynullablestring,
+		mystring:         o.mystring,
+	}
+}
+
 type Pattern struct {
 	// myescapedstring corresponds to the JSON schema field "myEscapedString".
 	myescapedstring *string `json:"myEscapedString,omitempty,omitzero" yaml:"myEscapedString,omitempty" mapstructure:"myEscapedString,omitempty"`
@@ -16,6 +27,37 @@ type Pattern struct {
 
 	// mystring corresponds to the JSON schema field "myString".
 	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
+}
+
+type PatternBuilder struct {
+	myescapedstring *string
+
+	mynullablestring *string
+
+	mystring string
+}
+
+func (b *PatternBuilder) Build() *Pattern {
+	return &Pattern{
+		myescapedstring:  b.myescapedstring,
+		mynullablestring: b.mynullablestring,
+		mystring:         b.mystring,
+	}
+}
+
+func (b *PatternBuilder) WithMyEscapedString(v *string) *PatternBuilder {
+	b.myescapedstring = v
+	return b
+}
+
+func (b *PatternBuilder) WithMyNullableString(v *string) *PatternBuilder {
+	b.mynullablestring = v
+	return b
+}
+
+func (b *PatternBuilder) WithMyString(v string) *PatternBuilder {
+	b.mystring = v
+	return b
 }
 
 func (o *Pattern) MyEscapedString() *string {

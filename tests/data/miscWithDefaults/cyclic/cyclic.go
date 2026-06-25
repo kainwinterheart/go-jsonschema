@@ -10,8 +10,34 @@ type Bar struct {
 	reftofoo *Foo `json:"refToFoo,omitempty,omitzero" yaml:"refToFoo,omitempty" mapstructure:"refToFoo,omitempty"`
 }
 
+type BarBuilder struct {
+	reftofoo *Foo
+}
+
+func (b *BarBuilder) Build() *Bar {
+	return &Bar{
+		reftofoo: b.reftofoo,
+	}
+}
+
+func (b *BarBuilder) WithRefToFoo(v *Foo) *BarBuilder {
+	b.reftofoo = v
+	return b
+}
+
 func (o *Bar) RefToFoo() *Foo {
 	return o.reftofoo
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Bar) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Bar
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Bar(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -41,24 +67,39 @@ func (j *Bar) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Bar) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Bar
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Bar(plain)
-	return nil
-}
-
 type Cyclic struct {
 	// a corresponds to the JSON schema field "a".
 	a *Foo `json:"a,omitempty,omitzero" yaml:"a,omitempty" mapstructure:"a,omitempty"`
 }
 
+type CyclicBuilder struct {
+	a *Foo
+}
+
+func (b *CyclicBuilder) Build() *Cyclic {
+	return &Cyclic{
+		a: b.a,
+	}
+}
+
+func (b *CyclicBuilder) WithA(v *Foo) *CyclicBuilder {
+	b.a = v
+	return b
+}
+
 func (o *Cyclic) A() *Foo {
 	return o.a
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Cyclic) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Cyclic
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Cyclic(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -88,24 +129,39 @@ func (j *Cyclic) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Cyclic) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Cyclic
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Cyclic(plain)
-	return nil
-}
-
 type Foo struct {
 	// reftobar corresponds to the JSON schema field "refToBar".
 	reftobar *Bar `json:"refToBar,omitempty,omitzero" yaml:"refToBar,omitempty" mapstructure:"refToBar,omitempty"`
 }
 
+type FooBuilder struct {
+	reftobar *Bar
+}
+
+func (b *FooBuilder) Build() *Foo {
+	return &Foo{
+		reftobar: b.reftobar,
+	}
+}
+
+func (b *FooBuilder) WithRefToBar(v *Bar) *FooBuilder {
+	b.reftobar = v
+	return b
+}
+
 func (o *Foo) RefToBar() *Bar {
 	return o.reftobar
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Foo) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Foo
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Foo(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -135,13 +191,29 @@ func (j *Foo) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Foo) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Foo
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
+func NewBarBuilder(o *Bar) *BarBuilder {
+	if o == nil {
+		return &BarBuilder{}
 	}
-	*j = Foo(plain)
-	return nil
+	return &BarBuilder{
+		reftofoo: o.reftofoo,
+	}
+}
+
+func NewCyclicBuilder(o *Cyclic) *CyclicBuilder {
+	if o == nil {
+		return &CyclicBuilder{}
+	}
+	return &CyclicBuilder{
+		a: o.a,
+	}
+}
+
+func NewFooBuilder(o *Foo) *FooBuilder {
+	if o == nil {
+		return &FooBuilder{}
+	}
+	return &FooBuilder{
+		reftobar: o.reftobar,
+	}
 }

@@ -20,6 +20,45 @@ type ExclusiveMinimum struct {
 	mynumber float64 `json:"myNumber" yaml:"myNumber" mapstructure:"myNumber"`
 }
 
+type ExclusiveMinimumBuilder struct {
+	myinteger int
+
+	mynullableinteger *int
+
+	mynullablenumber *float64
+
+	mynumber float64
+}
+
+func (b *ExclusiveMinimumBuilder) Build() *ExclusiveMinimum {
+	return &ExclusiveMinimum{
+		myinteger:         b.myinteger,
+		mynullableinteger: b.mynullableinteger,
+		mynullablenumber:  b.mynullablenumber,
+		mynumber:          b.mynumber,
+	}
+}
+
+func (b *ExclusiveMinimumBuilder) WithMyInteger(v int) *ExclusiveMinimumBuilder {
+	b.myinteger = v
+	return b
+}
+
+func (b *ExclusiveMinimumBuilder) WithMyNullableInteger(v *int) *ExclusiveMinimumBuilder {
+	b.mynullableinteger = v
+	return b
+}
+
+func (b *ExclusiveMinimumBuilder) WithMyNullableNumber(v *float64) *ExclusiveMinimumBuilder {
+	b.mynullablenumber = v
+	return b
+}
+
+func (b *ExclusiveMinimumBuilder) WithMyNumber(v float64) *ExclusiveMinimumBuilder {
+	b.mynumber = v
+	return b
+}
+
 func (o *ExclusiveMinimum) MyInteger() int {
 	return o.myinteger
 }
@@ -128,4 +167,16 @@ func (j *ExclusiveMinimum) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = ExclusiveMinimum(plain)
 	return nil
+}
+
+func NewExclusiveMinimumBuilder(o *ExclusiveMinimum) *ExclusiveMinimumBuilder {
+	if o == nil {
+		return &ExclusiveMinimumBuilder{}
+	}
+	return &ExclusiveMinimumBuilder{
+		myinteger:         o.myinteger,
+		mynullableinteger: o.mynullableinteger,
+		mynullablenumber:  o.mynullablenumber,
+		mynumber:          o.mynumber,
+	}
 }

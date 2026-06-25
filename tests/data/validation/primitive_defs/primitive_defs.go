@@ -37,12 +37,45 @@ func (j *MinStr) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
+func NewPrimitiveDefsBuilder(o *PrimitiveDefs) *PrimitiveDefsBuilder {
+	if o == nil {
+		return &PrimitiveDefsBuilder{}
+	}
+	return &PrimitiveDefsBuilder{
+		mynullablestring: o.mynullablestring,
+		mystring:         o.mystring,
+	}
+}
+
 type PrimitiveDefs struct {
 	// mynullablestring corresponds to the JSON schema field "myNullableString".
 	mynullablestring *MinStr `json:"myNullableString,omitempty,omitzero" yaml:"myNullableString,omitempty" mapstructure:"myNullableString,omitempty"`
 
 	// mystring corresponds to the JSON schema field "myString".
 	mystring MinStr `json:"myString" yaml:"myString" mapstructure:"myString"`
+}
+
+type PrimitiveDefsBuilder struct {
+	mynullablestring *MinStr
+
+	mystring MinStr
+}
+
+func (b *PrimitiveDefsBuilder) Build() *PrimitiveDefs {
+	return &PrimitiveDefs{
+		mynullablestring: b.mynullablestring,
+		mystring:         b.mystring,
+	}
+}
+
+func (b *PrimitiveDefsBuilder) WithMyNullableString(v *MinStr) *PrimitiveDefsBuilder {
+	b.mynullablestring = v
+	return b
+}
+
+func (b *PrimitiveDefsBuilder) WithMyString(v MinStr) *PrimitiveDefsBuilder {
+	b.mystring = v
+	return b
 }
 
 func (o *PrimitiveDefs) MyNullableString() *MinStr {

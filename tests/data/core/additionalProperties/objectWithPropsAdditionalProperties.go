@@ -8,6 +8,16 @@ import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "strings"
 
+func NewObjectWithPropsAdditionalPropertiesBuilder(o *ObjectWithPropsAdditionalProperties) *ObjectWithPropsAdditionalPropertiesBuilder {
+	if o == nil {
+		return &ObjectWithPropsAdditionalPropertiesBuilder{}
+	}
+	return &ObjectWithPropsAdditionalPropertiesBuilder{
+		bar: o.bar,
+		foo: o.foo,
+	}
+}
+
 type ObjectWithPropsAdditionalProperties struct {
 	// bar corresponds to the JSON schema field "bar".
 	bar *string `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
@@ -16,6 +26,29 @@ type ObjectWithPropsAdditionalProperties struct {
 	foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
 
 	AdditionalProperties map[string]interface{} `mapstructure:",remain"`
+}
+
+type ObjectWithPropsAdditionalPropertiesBuilder struct {
+	bar *string
+
+	foo *string
+}
+
+func (b *ObjectWithPropsAdditionalPropertiesBuilder) Build() *ObjectWithPropsAdditionalProperties {
+	return &ObjectWithPropsAdditionalProperties{
+		bar: b.bar,
+		foo: b.foo,
+	}
+}
+
+func (b *ObjectWithPropsAdditionalPropertiesBuilder) WithBar(v *string) *ObjectWithPropsAdditionalPropertiesBuilder {
+	b.bar = v
+	return b
+}
+
+func (b *ObjectWithPropsAdditionalPropertiesBuilder) WithFoo(v *string) *ObjectWithPropsAdditionalPropertiesBuilder {
+	b.foo = v
+	return b
 }
 
 func (o *ObjectWithPropsAdditionalProperties) Bar() *string {

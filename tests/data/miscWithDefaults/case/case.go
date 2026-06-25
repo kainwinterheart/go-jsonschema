@@ -25,6 +25,61 @@ type ACase struct {
 	snakecase *string `json:"snake_case,omitempty,omitzero" yaml:"snake_case,omitempty" mapstructure:"snake_case,omitempty"`
 }
 
+type ACaseBuilder struct {
+	capitalcamelfield *string
+
+	uppercasefield *string
+
+	camelcase *string
+
+	lowercase *string
+
+	snakemixedcase *string
+
+	snakecase *string
+}
+
+func (b *ACaseBuilder) Build() *ACase {
+	return &ACase{
+		capitalcamelfield: b.capitalcamelfield,
+		uppercasefield:    b.uppercasefield,
+		camelcase:         b.camelcase,
+		lowercase:         b.lowercase,
+		snakemixedcase:    b.snakemixedcase,
+		snakecase:         b.snakecase,
+	}
+}
+
+func (b *ACaseBuilder) WithCamelCase(v *string) *ACaseBuilder {
+	b.camelcase = v
+	return b
+}
+
+func (b *ACaseBuilder) WithCapitalCamelField(v *string) *ACaseBuilder {
+	b.capitalcamelfield = v
+	return b
+}
+
+func (b *ACaseBuilder) WithLowercase(v *string) *ACaseBuilder {
+	b.lowercase = v
+	return b
+}
+
+func (b *ACaseBuilder) WithSnakeCase(v *string) *ACaseBuilder {
+	b.snakecase = v
+	return b
+}
+
+func (b *ACaseBuilder) WithSnakeMixedCase(v *string) *ACaseBuilder {
+	b.snakemixedcase = v
+	return b
+}
+
+func (b *ACaseBuilder) WithUPPERCASEFIELD(v *string) *ACaseBuilder {
+	b.uppercasefield = v
+	return b
+}
+
 func (o *ACase) CamelCase() *string {
 	return o.camelcase
 }
@@ -105,4 +160,18 @@ func (j *ACase) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = ACase(plain)
 	return nil
+}
+
+func NewACaseBuilder(o *ACase) *ACaseBuilder {
+	if o == nil {
+		return &ACaseBuilder{}
+	}
+	return &ACaseBuilder{
+		capitalcamelfield: o.capitalcamelfield,
+		uppercasefield:    o.uppercasefield,
+		camelcase:         o.camelcase,
+		lowercase:         o.lowercase,
+		snakemixedcase:    o.snakemixedcase,
+		snakecase:         o.snakecase,
+	}
 }

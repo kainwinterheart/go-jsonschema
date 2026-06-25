@@ -13,12 +13,46 @@ type ExtRef struct {
 	mything2 *Thing `json:"myThing2,omitempty,omitzero" yaml:"myThing2,omitempty" mapstructure:"myThing2,omitempty"`
 }
 
+type ExtRefBuilder struct {
+	mything *Thing
+
+	mything2 *Thing
+}
+
+func (b *ExtRefBuilder) Build() *ExtRef {
+	return &ExtRef{
+		mything:  b.mything,
+		mything2: b.mything2,
+	}
+}
+
+func (b *ExtRefBuilder) WithMyThing(v *Thing) *ExtRefBuilder {
+	b.mything = v
+	return b
+}
+
+func (b *ExtRefBuilder) WithMyThing2(v *Thing) *ExtRefBuilder {
+	b.mything2 = v
+	return b
+}
+
 func (o *ExtRef) MyThing() *Thing {
 	return o.mything
 }
 
 func (o *ExtRef) MyThing2() *Thing {
 	return o.mything2
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ExtRef) UnmarshalYAML(value *yaml.Node) error {
+	type Plain ExtRef
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ExtRef(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -52,15 +86,23 @@ func (j *ExtRef) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *ExtRef) UnmarshalYAML(value *yaml.Node) error {
-	type Plain ExtRef
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
+func NewExtRefBuilder(o *ExtRef) *ExtRefBuilder {
+	if o == nil {
+		return &ExtRefBuilder{}
 	}
-	*j = ExtRef(plain)
-	return nil
+	return &ExtRefBuilder{
+		mything:  o.mything,
+		mything2: o.mything2,
+	}
+}
+
+func NewThingBuilder(o *Thing) *ThingBuilder {
+	if o == nil {
+		return &ThingBuilder{}
+	}
+	return &ThingBuilder{
+		name: o.name,
+	}
 }
 
 type Thing struct {
@@ -68,8 +110,34 @@ type Thing struct {
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
+type ThingBuilder struct {
+	name *string
+}
+
+func (b *ThingBuilder) Build() *Thing {
+	return &Thing{
+		name: b.name,
+	}
+}
+
+func (b *ThingBuilder) WithName(v *string) *ThingBuilder {
+	b.name = v
+	return b
+}
+
 func (o *Thing) Name() *string {
 	return o.name
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Thing
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Thing(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -97,15 +165,4 @@ func (j *Thing) MarshalJSON() ([]byte, error) {
 		Name: j.name,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Thing
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Thing(plain)
-	return nil
 }

@@ -5,9 +5,33 @@ package test
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewObjectAdditionalPropertiesBuilder(o *ObjectAdditionalProperties) *ObjectAdditionalPropertiesBuilder {
+	if o == nil {
+		return &ObjectAdditionalPropertiesBuilder{}
+	}
+	return &ObjectAdditionalPropertiesBuilder{
+		foo: o.foo,
+	}
+}
+
 type ObjectAdditionalProperties struct {
 	// foo corresponds to the JSON schema field "foo".
 	foo ObjectAdditionalPropertiesfoo `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
+}
+
+type ObjectAdditionalPropertiesBuilder struct {
+	foo ObjectAdditionalPropertiesfoo
+}
+
+func (b *ObjectAdditionalPropertiesBuilder) Build() *ObjectAdditionalProperties {
+	return &ObjectAdditionalProperties{
+		foo: b.foo,
+	}
+}
+
+func (b *ObjectAdditionalPropertiesBuilder) WithFoo(v ObjectAdditionalPropertiesfoo) *ObjectAdditionalPropertiesBuilder {
+	b.foo = v
+	return b
 }
 
 func (o *ObjectAdditionalProperties) Foo() ObjectAdditionalPropertiesfoo {

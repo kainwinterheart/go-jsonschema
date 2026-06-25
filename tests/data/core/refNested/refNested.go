@@ -7,13 +7,57 @@ import yaml "gopkg.in/yaml.v3"
 
 type Name string
 
+func NewRefNestedBuilder(o *RefNested) *RefNestedBuilder {
+	if o == nil {
+		return &RefNestedBuilder{}
+	}
+	return &RefNestedBuilder{
+		mything: o.mything,
+	}
+}
+
+func NewThingBuilder(o *Thing) *ThingBuilder {
+	if o == nil {
+		return &ThingBuilder{}
+	}
+	return &ThingBuilder{
+		name: o.name,
+	}
+}
+
 type RefNested struct {
 	// mything corresponds to the JSON schema field "myThing".
 	mything *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
 }
 
+type RefNestedBuilder struct {
+	mything *Thing
+}
+
+func (b *RefNestedBuilder) Build() *RefNested {
+	return &RefNested{
+		mything: b.mything,
+	}
+}
+
+func (b *RefNestedBuilder) WithMyThing(v *Thing) *RefNestedBuilder {
+	b.mything = v
+	return b
+}
+
 func (o *RefNested) MyThing() *Thing {
 	return o.mything
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RefNested) UnmarshalYAML(value *yaml.Node) error {
+	type Plain RefNested
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RefNested(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -43,24 +87,39 @@ func (j *RefNested) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RefNested) UnmarshalYAML(value *yaml.Node) error {
-	type Plain RefNested
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = RefNested(plain)
-	return nil
-}
-
 type Thing struct {
 	// name corresponds to the JSON schema field "name".
 	name *Name `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
+type ThingBuilder struct {
+	name *Name
+}
+
+func (b *ThingBuilder) Build() *Thing {
+	return &Thing{
+		name: b.name,
+	}
+}
+
+func (b *ThingBuilder) WithName(v *Name) *ThingBuilder {
+	b.name = v
+	return b
+}
+
 func (o *Thing) Name() *Name {
 	return o.name
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Thing
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Thing(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -88,15 +147,4 @@ func (j *Thing) MarshalJSON() ([]byte, error) {
 		Name: j.name,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Thing
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Thing(plain)
-	return nil
 }

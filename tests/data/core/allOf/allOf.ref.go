@@ -12,8 +12,34 @@ type CallToolResult struct {
 	content []CallToolResultcontentElem `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
+type CallToolResultBuilder struct {
+	content []CallToolResultcontentElem
+}
+
+func (b *CallToolResultBuilder) Build() *CallToolResult {
+	return &CallToolResult{
+		content: b.content,
+	}
+}
+
+func (b *CallToolResultBuilder) WithContent(v []CallToolResultcontentElem) *CallToolResultBuilder {
+	b.content = v
+	return b
+}
+
 func (o *CallToolResult) Content() []CallToolResultcontentElem {
 	return o.content
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *CallToolResult) UnmarshalYAML(value *yaml.Node) error {
+	type Plain CallToolResult
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = CallToolResult(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -43,21 +69,25 @@ func (j *CallToolResult) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *CallToolResult) UnmarshalYAML(value *yaml.Node) error {
-	type Plain CallToolResult
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = CallToolResult(plain)
-	return nil
-}
-
 // Text provided to or from an LLM.
 type CallToolResultcontentElem struct {
 	// The text content of the message.
 	text string `json:"text" yaml:"text" mapstructure:"text"`
+}
+
+type CallToolResultcontentElemBuilder struct {
+	text string
+}
+
+func (b *CallToolResultcontentElemBuilder) Build() *CallToolResultcontentElem {
+	return &CallToolResultcontentElem{
+		text: b.text,
+	}
+}
+
+func (b *CallToolResultcontentElemBuilder) WithText(v string) *CallToolResultcontentElemBuilder {
+	b.text = v
+	return b
 }
 
 func (o *CallToolResultcontentElem) Text() string {
@@ -116,14 +146,74 @@ func (j *CallToolResultcontentElem) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
+func NewCallToolResultBuilder(o *CallToolResult) *CallToolResultBuilder {
+	if o == nil {
+		return &CallToolResultBuilder{}
+	}
+	return &CallToolResultBuilder{
+		content: o.content,
+	}
+}
+
+func NewCallToolResultcontentElemBuilder(o *CallToolResultcontentElem) *CallToolResultcontentElemBuilder {
+	if o == nil {
+		return &CallToolResultcontentElemBuilder{}
+	}
+	return &CallToolResultcontentElemBuilder{
+		text: o.text,
+	}
+}
+
+func NewTextContentBuilder(o *TextContent) *TextContentBuilder {
+	if o == nil {
+		return &TextContentBuilder{}
+	}
+	return &TextContentBuilder{
+		text: o.text,
+	}
+}
+
 // Text provided to or from an LLM.
 type TextContent struct {
 	// The text content of the message.
 	text string `json:"text" yaml:"text" mapstructure:"text"`
 }
 
+type TextContentBuilder struct {
+	text string
+}
+
+func (b *TextContentBuilder) Build() *TextContent {
+	return &TextContent{
+		text: b.text,
+	}
+}
+
+func (b *TextContentBuilder) WithText(v string) *TextContentBuilder {
+	b.text = v
+	return b
+}
+
 func (o *TextContent) Text() string {
 	return o.text
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *TextContent) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["text"]; raw != nil && !ok {
+		return fmt.Errorf("field text in TextContent: required")
+	}
+	type Plain TextContent
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = TextContent(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -158,22 +248,4 @@ func (j *TextContent) MarshalJSON() ([]byte, error) {
 		Text: j.text,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *TextContent) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["text"]; raw != nil && !ok {
-		return fmt.Errorf("field text in TextContent: required")
-	}
-	type Plain TextContent
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = TextContent(plain)
-	return nil
 }

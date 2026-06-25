@@ -5,9 +5,33 @@ package other
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewThingBuilder(o *Thing) *ThingBuilder {
+	if o == nil {
+		return &ThingBuilder{}
+	}
+	return &ThingBuilder{
+		value: o.value,
+	}
+}
+
 type Thing struct {
 	// value corresponds to the JSON schema field "value".
 	value *Value `json:"value,omitempty,omitzero" yaml:"value,omitempty" mapstructure:"value,omitempty"`
+}
+
+type ThingBuilder struct {
+	value *Value
+}
+
+func (b *ThingBuilder) Build() *Thing {
+	return &Thing{
+		value: b.value,
+	}
+}
+
+func (b *ThingBuilder) WithValue(v *Value) *ThingBuilder {
+	b.value = v
+	return b
 }
 
 func (o *Thing) Value() *Value {

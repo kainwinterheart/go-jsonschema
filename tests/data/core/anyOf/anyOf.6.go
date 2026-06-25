@@ -12,6 +12,21 @@ type AnyOf6 struct {
 	qux2 []AnyOf6qux2Elem `json:"qux2,omitempty,omitzero" yaml:"qux2,omitempty" mapstructure:"qux2,omitempty"`
 }
 
+type AnyOf6Builder struct {
+	qux2 []AnyOf6qux2Elem
+}
+
+func (b *AnyOf6Builder) Build() *AnyOf6 {
+	return &AnyOf6{
+		qux2: b.qux2,
+	}
+}
+
+func (b *AnyOf6Builder) WithQux2(v []AnyOf6qux2Elem) *AnyOf6Builder {
+	b.qux2 = v
+	return b
+}
+
 func (o *AnyOf6) Qux2() []AnyOf6qux2Elem {
 	return o.qux2
 }
@@ -57,6 +72,21 @@ func (j *AnyOf6) MarshalJSON() ([]byte, error) {
 type AnyOf6qux2Elem struct {
 	// content corresponds to the JSON schema field "content".
 	content []interface{} `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
+}
+
+type AnyOf6qux2ElemBuilder struct {
+	content []interface{}
+}
+
+func (b *AnyOf6qux2ElemBuilder) Build() *AnyOf6qux2Elem {
+	return &AnyOf6qux2Elem{
+		content: b.content,
+	}
+}
+
+func (b *AnyOf6qux2ElemBuilder) WithContent(v []interface{}) *AnyOf6qux2ElemBuilder {
+	b.content = v
+	return b
 }
 
 func (o *AnyOf6qux2Elem) Content() []interface{} {
@@ -146,6 +176,21 @@ type Bar2 struct {
 	content []Bar2contentElem `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
+type Bar2Builder struct {
+	content []Bar2contentElem
+}
+
+func (b *Bar2Builder) Build() *Bar2 {
+	return &Bar2{
+		content: b.content,
+	}
+}
+
+func (b *Bar2Builder) WithContent(v []Bar2contentElem) *Bar2Builder {
+	b.content = v
+	return b
+}
+
 func (o *Bar2) Content() []Bar2contentElem {
 	return o.content
 }
@@ -191,6 +236,21 @@ func (j *Bar2) MarshalJSON() ([]byte, error) {
 type Bar2contentElem struct {
 	// content corresponds to the JSON schema field "content".
 	content []interface{} `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
+}
+
+type Bar2contentElemBuilder struct {
+	content []interface{}
+}
+
+func (b *Bar2contentElemBuilder) Build() *Bar2contentElem {
+	return &Bar2contentElem{
+		content: b.content,
+	}
+}
+
+func (b *Bar2contentElemBuilder) WithContent(v []interface{}) *Bar2contentElemBuilder {
+	b.content = v
+	return b
 }
 
 func (o *Bar2contentElem) Content() []interface{} {
@@ -280,6 +340,21 @@ type Baz2 struct {
 	content []Baz2contentElem `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
+type Baz2Builder struct {
+	content []Baz2contentElem
+}
+
+func (b *Baz2Builder) Build() *Baz2 {
+	return &Baz2{
+		content: b.content,
+	}
+}
+
+func (b *Baz2Builder) WithContent(v []Baz2contentElem) *Baz2Builder {
+	b.content = v
+	return b
+}
+
 func (o *Baz2) Content() []Baz2contentElem {
 	return o.content
 }
@@ -327,39 +402,23 @@ type Baz2contentElem struct {
 	content []interface{} `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
-func (o *Baz2contentElem) Content() []interface{} {
-	return o.content
+type Baz2contentElemBuilder struct {
+	content []interface{}
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Baz2contentElem) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
+func (b *Baz2contentElemBuilder) Build() *Baz2contentElem {
+	return &Baz2contentElem{
+		content: b.content,
 	}
-	var baz2contentElem_0 Baz2contentElem_0
-	var baz2contentElem_1 Baz2contentElem_1
-	var baz2contentElem_2 Baz2contentElem_2
-	var errs []error
-	if err := baz2contentElem_0.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if err := baz2contentElem_1.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if err := baz2contentElem_2.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if len(errs) == 3 {
-		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
-	}
-	type Plain Baz2contentElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Baz2contentElem(plain)
-	return nil
+}
+
+func (b *Baz2contentElemBuilder) WithContent(v []interface{}) *Baz2contentElemBuilder {
+	b.content = v
+	return b
+}
+
+func (o *Baz2contentElem) Content() []interface{} {
+	return o.content
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -409,19 +468,70 @@ func (j *Baz2contentElem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Baz2contentElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var baz2contentElem_0 Baz2contentElem_0
+	var baz2contentElem_1 Baz2contentElem_1
+	var baz2contentElem_2 Baz2contentElem_2
+	var errs []error
+	if err := baz2contentElem_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := baz2contentElem_1.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := baz2contentElem_2.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 3 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain Baz2contentElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Baz2contentElem(plain)
+	return nil
+}
+
 type Foo2 struct {
 	// content corresponds to the JSON schema field "content".
 	content []Foo2contentElem `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
-type AnyOf6qux2Elem_0 = Foo2
+type Foo2Builder struct {
+	content []Foo2contentElem
+}
 
-type Bar2contentElem_2 = Baz2
+func (b *Foo2Builder) Build() *Foo2 {
+	return &Foo2{
+		content: b.content,
+	}
+}
 
-type Bar2contentElem_0 = Foo2
+func (b *Foo2Builder) WithContent(v []Foo2contentElem) *Foo2Builder {
+	b.content = v
+	return b
+}
 
 func (o *Foo2) Content() []Foo2contentElem {
 	return o.content
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Foo2) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Foo2
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Foo2(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -449,6 +559,30 @@ func (j *Foo2) MarshalJSON() ([]byte, error) {
 		Content: j.content,
 	}
 	return json.Marshal(helper)
+}
+
+type Foo2contentElem struct {
+	// content corresponds to the JSON schema field "content".
+	content []interface{} `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
+}
+
+type Foo2contentElemBuilder struct {
+	content []interface{}
+}
+
+func (b *Foo2contentElemBuilder) Build() *Foo2contentElem {
+	return &Foo2contentElem{
+		content: b.content,
+	}
+}
+
+func (b *Foo2contentElemBuilder) WithContent(v []interface{}) *Foo2contentElemBuilder {
+	b.content = v
+	return b
+}
+
+func (o *Foo2contentElem) Content() []interface{} {
+	return o.content
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
@@ -481,6 +615,61 @@ func (j *Foo2contentElem) UnmarshalYAML(value *yaml.Node) error {
 	*j = Foo2contentElem(plain)
 	return nil
 }
+
+type Bar2contentElem_1 = Bar2
+
+func NewBar2Builder(o *Bar2) *Bar2Builder {
+	if o == nil {
+		return &Bar2Builder{}
+	}
+	return &Bar2Builder{
+		content: o.content,
+	}
+}
+
+type AnyOf6qux2Elem_0 = Foo2
+
+type AnyOf6qux2Elem_1 = Bar2
+
+type AnyOf6qux2Elem_2 = Baz2
+
+func NewBar2contentElemBuilder(o *Bar2contentElem) *Bar2contentElemBuilder {
+	if o == nil {
+		return &Bar2contentElemBuilder{}
+	}
+	return &Bar2contentElemBuilder{
+		content: o.content,
+	}
+}
+
+func NewFoo2contentElemBuilder(o *Foo2contentElem) *Foo2contentElemBuilder {
+	if o == nil {
+		return &Foo2contentElemBuilder{}
+	}
+	return &Foo2contentElemBuilder{
+		content: o.content,
+	}
+}
+
+func NewFoo2Builder(o *Foo2) *Foo2Builder {
+	if o == nil {
+		return &Foo2Builder{}
+	}
+	return &Foo2Builder{
+		content: o.content,
+	}
+}
+
+func NewAnyOf6qux2ElemBuilder(o *AnyOf6qux2Elem) *AnyOf6qux2ElemBuilder {
+	if o == nil {
+		return &AnyOf6qux2ElemBuilder{}
+	}
+	return &AnyOf6qux2ElemBuilder{
+		content: o.content,
+	}
+}
+
+type Bar2contentElem_0 = Foo2
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Foo2contentElem) UnmarshalJSON(value []byte) error {
@@ -529,26 +718,38 @@ func (j *Foo2contentElem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-func (o *Foo2contentElem) Content() []interface{} {
-	return o.content
-}
-
-type Bar2contentElem_1 = Bar2
-
-type AnyOf6qux2Elem_1 = Bar2
-
-type AnyOf6qux2Elem_2 = Baz2
-
-type Foo2contentElem struct {
-	// content corresponds to the JSON schema field "content".
-	content []interface{} `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
-}
-
 type Foo2contentElem_2 = Baz2
 
 type Foo2contentElem_1 = Bar2
 
 type Foo2contentElem_0 = Foo2
+
+func NewBaz2Builder(o *Baz2) *Baz2Builder {
+	if o == nil {
+		return &Baz2Builder{}
+	}
+	return &Baz2Builder{
+		content: o.content,
+	}
+}
+
+func NewBaz2contentElemBuilder(o *Baz2contentElem) *Baz2contentElemBuilder {
+	if o == nil {
+		return &Baz2contentElemBuilder{}
+	}
+	return &Baz2contentElemBuilder{
+		content: o.content,
+	}
+}
+
+func NewAnyOf6Builder(o *AnyOf6) *AnyOf6Builder {
+	if o == nil {
+		return &AnyOf6Builder{}
+	}
+	return &AnyOf6Builder{
+		qux2: o.qux2,
+	}
+}
 
 type Baz2contentElem_2 = Baz2
 
@@ -556,13 +757,4 @@ type Baz2contentElem_1 = Bar2
 
 type Baz2contentElem_0 = Foo2
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Foo2) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Foo2
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Foo2(plain)
-	return nil
-}
+type Bar2contentElem_2 = Baz2

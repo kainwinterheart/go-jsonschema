@@ -5,9 +5,33 @@ package test
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewObjectEmptyBuilder(o *ObjectEmpty) *ObjectEmptyBuilder {
+	if o == nil {
+		return &ObjectEmptyBuilder{}
+	}
+	return &ObjectEmptyBuilder{
+		foo: o.foo,
+	}
+}
+
 type ObjectEmpty struct {
 	// foo corresponds to the JSON schema field "foo".
 	foo ObjectEmptyfoo `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
+}
+
+type ObjectEmptyBuilder struct {
+	foo ObjectEmptyfoo
+}
+
+func (b *ObjectEmptyBuilder) Build() *ObjectEmpty {
+	return &ObjectEmpty{
+		foo: b.foo,
+	}
+}
+
+func (b *ObjectEmptyBuilder) WithFoo(v ObjectEmptyfoo) *ObjectEmptyBuilder {
+	b.foo = v
+	return b
 }
 
 func (o *ObjectEmpty) Foo() ObjectEmptyfoo {

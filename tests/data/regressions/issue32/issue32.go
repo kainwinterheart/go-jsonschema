@@ -6,6 +6,17 @@ import "encoding/json"
 import "fmt"
 import yaml "gopkg.in/yaml.v3"
 
+func NewTestObjectBuilder(o *TestObject) *TestObjectBuilder {
+	if o == nil {
+		return &TestObjectBuilder{}
+	}
+	return &TestObjectBuilder{
+		config: o.config,
+		name:   o.name,
+		owner:  o.owner,
+	}
+}
+
 type TestObject struct {
 	// config corresponds to the JSON schema field "config".
 	config TestObjectconfig `json:"config,omitempty,omitzero" yaml:"config,omitempty" mapstructure:"config,omitempty"`
@@ -15,6 +26,37 @@ type TestObject struct {
 
 	// owner corresponds to the JSON schema field "owner".
 	owner string `json:"owner" yaml:"owner" mapstructure:"owner"`
+}
+
+type TestObjectBuilder struct {
+	config TestObjectconfig
+
+	name string
+
+	owner string
+}
+
+func (b *TestObjectBuilder) Build() *TestObject {
+	return &TestObject{
+		config: b.config,
+		name:   b.name,
+		owner:  b.owner,
+	}
+}
+
+func (b *TestObjectBuilder) WithConfig(v TestObjectconfig) *TestObjectBuilder {
+	b.config = v
+	return b
+}
+
+func (b *TestObjectBuilder) WithName(v string) *TestObjectBuilder {
+	b.name = v
+	return b
+}
+
+func (b *TestObjectBuilder) WithOwner(v string) *TestObjectBuilder {
+	b.owner = v
+	return b
 }
 
 func (o *TestObject) Config() TestObjectconfig {

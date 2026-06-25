@@ -18,6 +18,29 @@ type GopkgYAMLv3AdditionalProperties struct {
 	AdditionalProperties map[string]interface{} `mapstructure:",remain"`
 }
 
+type GopkgYAMLv3AdditionalPropertiesBuilder struct {
+	bar *string
+
+	foo *string
+}
+
+func (b *GopkgYAMLv3AdditionalPropertiesBuilder) Build() *GopkgYAMLv3AdditionalProperties {
+	return &GopkgYAMLv3AdditionalProperties{
+		bar: b.bar,
+		foo: b.foo,
+	}
+}
+
+func (b *GopkgYAMLv3AdditionalPropertiesBuilder) WithBar(v *string) *GopkgYAMLv3AdditionalPropertiesBuilder {
+	b.bar = v
+	return b
+}
+
+func (b *GopkgYAMLv3AdditionalPropertiesBuilder) WithFoo(v *string) *GopkgYAMLv3AdditionalPropertiesBuilder {
+	b.foo = v
+	return b
+}
+
 func (o *GopkgYAMLv3AdditionalProperties) Bar() *string {
 	return o.bar
 }
@@ -90,4 +113,14 @@ func (j *GopkgYAMLv3AdditionalProperties) UnmarshalYAML(value *yaml.Node) error 
 	}
 	*j = GopkgYAMLv3AdditionalProperties(plain)
 	return nil
+}
+
+func NewGopkgYAMLv3AdditionalPropertiesBuilder(o *GopkgYAMLv3AdditionalProperties) *GopkgYAMLv3AdditionalPropertiesBuilder {
+	if o == nil {
+		return &GopkgYAMLv3AdditionalPropertiesBuilder{}
+	}
+	return &GopkgYAMLv3AdditionalPropertiesBuilder{
+		bar: o.bar,
+		foo: o.foo,
+	}
 }

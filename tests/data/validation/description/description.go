@@ -15,6 +15,29 @@ type Description struct {
 	myfield *string `json:"myField,omitempty,omitzero" yaml:"myField,omitempty" mapstructure:"myField,omitempty"`
 }
 
+type DescriptionBuilder struct {
+	mydescriptionlessfield *string
+
+	myfield *string
+}
+
+func (b *DescriptionBuilder) Build() *Description {
+	return &Description{
+		mydescriptionlessfield: b.mydescriptionlessfield,
+		myfield:                b.myfield,
+	}
+}
+
+func (b *DescriptionBuilder) WithMyDescriptionlessField(v *string) *DescriptionBuilder {
+	b.mydescriptionlessfield = v
+	return b
+}
+
+func (b *DescriptionBuilder) WithMyField(v *string) *DescriptionBuilder {
+	b.myfield = v
+	return b
+}
+
 func (o *Description) MyDescriptionlessField() *string {
 	return o.mydescriptionlessfield
 }
@@ -63,4 +86,14 @@ func (j *Description) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = Description(plain)
 	return nil
+}
+
+func NewDescriptionBuilder(o *Description) *DescriptionBuilder {
+	if o == nil {
+		return &DescriptionBuilder{}
+	}
+	return &DescriptionBuilder{
+		mydescriptionlessfield: o.mydescriptionlessfield,
+		myfield:                o.myfield,
+	}
 }

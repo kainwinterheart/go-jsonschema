@@ -5,9 +5,33 @@ package test
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewRefToMapBuilder(o *RefToMap) *RefToMapBuilder {
+	if o == nil {
+		return &RefToMapBuilder{}
+	}
+	return &RefToMapBuilder{
+		mything: o.mything,
+	}
+}
+
 type RefToMap struct {
 	// mything corresponds to the JSON schema field "myThing".
 	mything map[string]float64 `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
+}
+
+type RefToMapBuilder struct {
+	mything map[string]float64
+}
+
+func (b *RefToMapBuilder) Build() *RefToMap {
+	return &RefToMap{
+		mything: b.mything,
+	}
+}
+
+func (b *RefToMapBuilder) WithMyThing(v map[string]float64) *RefToMapBuilder {
+	b.mything = v
+	return b
 }
 
 func (o *RefToMap) MyThing() map[string]float64 {

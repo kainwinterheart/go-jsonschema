@@ -43,6 +43,101 @@ type Enum struct {
 	mystringuntypedenum *Enummystringuntypedenum `json:"myStringUntypedEnum,omitempty,omitzero" yaml:"myStringUntypedEnum,omitempty" mapstructure:"myStringUntypedEnum,omitempty"`
 }
 
+type EnumBuilder struct {
+	mybooleantypedenum *Enummybooleantypedenum
+
+	mybooleanuntypedenum *Enummybooleanuntypedenum
+
+	myintegertypedenum *Enummyintegertypedenum
+
+	mymixedtypeenum *Enummymixedtypeenum
+
+	mymixeduntypedenum *Enummymixeduntypedenum
+
+	mynulltypedenum *Enummynulltypedenum
+
+	mynulluntypedenum *Enummynulluntypedenum
+
+	mynumbertypedenum *Enummynumbertypedenum
+
+	mynumberuntypedenum *Enummynumberuntypedenum
+
+	mystringtypedenum *Enummystringtypedenum
+
+	mystringuntypedenum *Enummystringuntypedenum
+}
+
+func (b *EnumBuilder) Build() *Enum {
+	return &Enum{
+		mybooleantypedenum:   b.mybooleantypedenum,
+		mybooleanuntypedenum: b.mybooleanuntypedenum,
+		myintegertypedenum:   b.myintegertypedenum,
+		mymixedtypeenum:      b.mymixedtypeenum,
+		mymixeduntypedenum:   b.mymixeduntypedenum,
+		mynulltypedenum:      b.mynulltypedenum,
+		mynulluntypedenum:    b.mynulluntypedenum,
+		mynumbertypedenum:    b.mynumbertypedenum,
+		mynumberuntypedenum:  b.mynumberuntypedenum,
+		mystringtypedenum:    b.mystringtypedenum,
+		mystringuntypedenum:  b.mystringuntypedenum,
+	}
+}
+
+func (b *EnumBuilder) WithMyBooleanTypedEnum(v *Enummybooleantypedenum) *EnumBuilder {
+	b.mybooleantypedenum = v
+	return b
+}
+
+func (b *EnumBuilder) WithMyBooleanUntypedEnum(v *Enummybooleanuntypedenum) *EnumBuilder {
+	b.mybooleanuntypedenum = v
+	return b
+}
+
+func (b *EnumBuilder) WithMyIntegerTypedEnum(v *Enummyintegertypedenum) *EnumBuilder {
+	b.myintegertypedenum = v
+	return b
+}
+
+func (b *EnumBuilder) WithMyMixedTypeEnum(v *Enummymixedtypeenum) *EnumBuilder {
+	b.mymixedtypeenum = v
+	return b
+}
+
+func (b *EnumBuilder) WithMyMixedUntypedEnum(v *Enummymixeduntypedenum) *EnumBuilder {
+	b.mymixeduntypedenum = v
+	return b
+}
+
+func (b *EnumBuilder) WithMyNullTypedEnum(v *Enummynulltypedenum) *EnumBuilder {
+	b.mynulltypedenum = v
+	return b
+}
+
+func (b *EnumBuilder) WithMyNullUntypedEnum(v *Enummynulluntypedenum) *EnumBuilder {
+	b.mynulluntypedenum = v
+	return b
+}
+
+func (b *EnumBuilder) WithMyNumberTypedEnum(v *Enummynumbertypedenum) *EnumBuilder {
+	b.mynumbertypedenum = v
+	return b
+}
+
+func (b *EnumBuilder) WithMyNumberUntypedEnum(v *Enummynumberuntypedenum) *EnumBuilder {
+	b.mynumberuntypedenum = v
+	return b
+}
+
+func (b *EnumBuilder) WithMyStringTypedEnum(v *Enummystringtypedenum) *EnumBuilder {
+	b.mystringtypedenum = v
+	return b
+}
+
+func (b *EnumBuilder) WithMyStringUntypedEnum(v *Enummystringuntypedenum) *EnumBuilder {
+	b.mystringuntypedenum = v
+	return b
+}
+
 func (o *Enum) MyBooleanTypedEnum() *Enummybooleantypedenum {
 	return o.mybooleantypedenum
 }
@@ -85,17 +180,6 @@ func (o *Enum) MyStringTypedEnum() *Enummystringtypedenum {
 
 func (o *Enum) MyStringUntypedEnum() *Enummystringuntypedenum {
 	return o.mystringuntypedenum
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Enum) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Enum
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Enum(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -165,6 +249,17 @@ func (j *Enum) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Enum) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Enum
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Enum(plain)
+	return nil
+}
+
 type Enummybooleantypedenum bool
 
 var enumValues_Enummybooleantypedenum = []interface{}{
@@ -172,10 +267,10 @@ var enumValues_Enummybooleantypedenum = []interface{}{
 	false,
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Enummybooleantypedenum) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Enummybooleantypedenum) UnmarshalJSON(value []byte) error {
 	var v bool
-	if err := value.Decode(&v); err != nil {
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
@@ -192,10 +287,10 @@ func (j *Enummybooleantypedenum) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Enummybooleantypedenum) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Enummybooleantypedenum) UnmarshalYAML(value *yaml.Node) error {
 	var v bool
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
@@ -219,10 +314,10 @@ var enumValues_Enummybooleanuntypedenum = []interface{}{
 	false,
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Enummybooleanuntypedenum) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Enummybooleanuntypedenum) UnmarshalJSON(value []byte) error {
 	var v bool
-	if err := value.Decode(&v); err != nil {
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
@@ -239,10 +334,10 @@ func (j *Enummybooleanuntypedenum) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Enummybooleanuntypedenum) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Enummybooleanuntypedenum) UnmarshalYAML(value *yaml.Node) error {
 	var v bool
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
@@ -267,10 +362,10 @@ var enumValues_Enummyintegertypedenum = []interface{}{
 	3,
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Enummyintegertypedenum) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Enummyintegertypedenum) UnmarshalJSON(value []byte) error {
 	var v int
-	if err := value.Decode(&v); err != nil {
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
@@ -287,10 +382,10 @@ func (j *Enummyintegertypedenum) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Enummyintegertypedenum) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Enummyintegertypedenum) UnmarshalYAML(value *yaml.Node) error {
 	var v int
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
@@ -326,28 +421,6 @@ var enumValues_Enummymixedtypeenum = []interface{}{
 	"smurf",
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Enummymixedtypeenum) UnmarshalYAML(value *yaml.Node) error {
-	var v struct {
-		value interface{}
-	}
-	if err := value.Decode(&v.value); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_Enummymixedtypeenum {
-		if reflect.DeepEqual(v.value, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_Enummymixedtypeenum, v.value)
-	}
-	*j = Enummymixedtypeenum(v)
-	return nil
-}
-
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Enummymixedtypeenum) UnmarshalJSON(value []byte) error {
 	var v struct {
@@ -370,18 +443,40 @@ func (j *Enummymixedtypeenum) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-type Enummymixeduntypedenum struct {
-	value interface{}
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Enummymixedtypeenum) UnmarshalYAML(value *yaml.Node) error {
+	var v struct {
+		value interface{}
+	}
+	if err := value.Decode(&v.value); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_Enummymixedtypeenum {
+		if reflect.DeepEqual(v.value, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_Enummymixedtypeenum, v.value)
+	}
+	*j = Enummymixedtypeenum(v)
+	return nil
 }
 
-// MarshalJSON implements json.Marshaler.
-func (j *Enummymixeduntypedenum) MarshalJSON() ([]byte, error) {
-	return json.Marshal(j.value)
+type Enummymixeduntypedenum struct {
+	value interface{}
 }
 
 // MarshalYAML implements yaml.Marshal.
 func (j *Enummymixeduntypedenum) MarshalYAML() (interface{}, error) {
 	return yaml.Marshal(j.value)
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Enummymixeduntypedenum) MarshalJSON() ([]byte, error) {
+	return json.Marshal(j.value)
 }
 
 var enumValues_Enummymixeduntypedenum = []interface{}{
@@ -501,40 +596,18 @@ type Enummynulluntypedenum struct {
 	value interface{}
 }
 
-// MarshalYAML implements yaml.Marshal.
-func (j *Enummynulluntypedenum) MarshalYAML() (interface{}, error) {
-	return yaml.Marshal(j.value)
-}
-
 // MarshalJSON implements json.Marshaler.
 func (j *Enummynulluntypedenum) MarshalJSON() ([]byte, error) {
 	return json.Marshal(j.value)
 }
 
-var enumValues_Enummynulluntypedenum = []interface{}{
-	nil,
+// MarshalYAML implements yaml.Marshal.
+func (j *Enummynulluntypedenum) MarshalYAML() (interface{}, error) {
+	return yaml.Marshal(j.value)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Enummynulluntypedenum) UnmarshalYAML(value *yaml.Node) error {
-	var v struct {
-		value interface{}
-	}
-	if err := value.Decode(&v.value); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_Enummynulluntypedenum {
-		if reflect.DeepEqual(v.value, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_Enummynulluntypedenum, v.value)
-	}
-	*j = Enummynulluntypedenum(v)
-	return nil
+var enumValues_Enummynulluntypedenum = []interface{}{
+	nil,
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -559,6 +632,28 @@ func (j *Enummynulluntypedenum) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Enummynulluntypedenum) UnmarshalYAML(value *yaml.Node) error {
+	var v struct {
+		value interface{}
+	}
+	if err := value.Decode(&v.value); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_Enummynulluntypedenum {
+		if reflect.DeepEqual(v.value, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_Enummynulluntypedenum, v.value)
+	}
+	*j = Enummynulluntypedenum(v)
+	return nil
+}
+
 type Enummynumbertypedenum float64
 
 var enumValues_Enummynumbertypedenum = []interface{}{
@@ -567,10 +662,10 @@ var enumValues_Enummynumbertypedenum = []interface{}{
 	3.0,
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Enummynumbertypedenum) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Enummynumbertypedenum) UnmarshalYAML(value *yaml.Node) error {
 	var v float64
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
@@ -587,10 +682,10 @@ func (j *Enummynumbertypedenum) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Enummynumbertypedenum) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Enummynumbertypedenum) UnmarshalJSON(value []byte) error {
 	var v float64
-	if err := value.Decode(&v); err != nil {
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
@@ -667,10 +762,10 @@ var enumValues_Enummystringtypedenum = []interface{}{
 	"green",
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Enummystringtypedenum) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Enummystringtypedenum) UnmarshalJSON(value []byte) error {
 	var v string
-	if err := value.Decode(&v); err != nil {
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
@@ -687,10 +782,10 @@ func (j *Enummystringtypedenum) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Enummystringtypedenum) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Enummystringtypedenum) UnmarshalYAML(value *yaml.Node) error {
 	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
@@ -719,6 +814,26 @@ var enumValues_Enummystringuntypedenum = []interface{}{
 	"green",
 }
 
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Enummystringuntypedenum) UnmarshalJSON(value []byte) error {
+	var v string
+	if err := json.Unmarshal(value, &v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_Enummystringuntypedenum {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_Enummystringuntypedenum, v)
+	}
+	*j = Enummystringuntypedenum(v)
+	return nil
+}
+
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Enummystringuntypedenum) UnmarshalYAML(value *yaml.Node) error {
 	var v string
@@ -739,22 +854,21 @@ func (j *Enummystringuntypedenum) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Enummystringuntypedenum) UnmarshalJSON(value []byte) error {
-	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
-		return err
+func NewEnumBuilder(o *Enum) *EnumBuilder {
+	if o == nil {
+		return &EnumBuilder{}
 	}
-	var ok bool
-	for _, expected := range enumValues_Enummystringuntypedenum {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
+	return &EnumBuilder{
+		mybooleantypedenum:   o.mybooleantypedenum,
+		mybooleanuntypedenum: o.mybooleanuntypedenum,
+		myintegertypedenum:   o.myintegertypedenum,
+		mymixedtypeenum:      o.mymixedtypeenum,
+		mymixeduntypedenum:   o.mymixeduntypedenum,
+		mynulltypedenum:      o.mynulltypedenum,
+		mynulluntypedenum:    o.mynulluntypedenum,
+		mynumbertypedenum:    o.mynumbertypedenum,
+		mynumberuntypedenum:  o.mynumberuntypedenum,
+		mystringtypedenum:    o.mystringtypedenum,
+		mystringuntypedenum:  o.mystringuntypedenum,
 	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_Enummystringuntypedenum, v)
-	}
-	*j = Enummystringuntypedenum(v)
-	return nil
 }

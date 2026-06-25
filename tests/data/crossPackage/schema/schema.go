@@ -6,6 +6,25 @@ import "encoding/json"
 import other "github.com/kainwinterheart/go-jsonschema/tests/data/crossPackage/other"
 import yaml "gopkg.in/yaml.v3"
 
+func NewSchemaBuilder(o *Schema) *SchemaBuilder {
+	if o == nil {
+		return &SchemaBuilder{}
+	}
+	return &SchemaBuilder{
+		definotherschema: o.definotherschema,
+		definsameschema:  o.definsameschema,
+	}
+}
+
+func NewThingBuilder(o *Thing) *ThingBuilder {
+	if o == nil {
+		return &ThingBuilder{}
+	}
+	return &ThingBuilder{
+		s: o.s,
+	}
+}
+
 type Schema struct {
 	// definotherschema corresponds to the JSON schema field "defInOtherSchema".
 	definotherschema *other.Thing `json:"defInOtherSchema,omitempty,omitzero" yaml:"defInOtherSchema,omitempty" mapstructure:"defInOtherSchema,omitempty"`
@@ -14,12 +33,46 @@ type Schema struct {
 	definsameschema *Thing `json:"defInSameSchema,omitempty,omitzero" yaml:"defInSameSchema,omitempty" mapstructure:"defInSameSchema,omitempty"`
 }
 
+type SchemaBuilder struct {
+	definotherschema *other.Thing
+
+	definsameschema *Thing
+}
+
+func (b *SchemaBuilder) Build() *Schema {
+	return &Schema{
+		definotherschema: b.definotherschema,
+		definsameschema:  b.definsameschema,
+	}
+}
+
+func (b *SchemaBuilder) WithDefInOtherSchema(v *other.Thing) *SchemaBuilder {
+	b.definotherschema = v
+	return b
+}
+
+func (b *SchemaBuilder) WithDefInSameSchema(v *Thing) *SchemaBuilder {
+	b.definsameschema = v
+	return b
+}
+
 func (o *Schema) DefInOtherSchema() *other.Thing {
 	return o.definotherschema
 }
 
 func (o *Schema) DefInSameSchema() *Thing {
 	return o.definsameschema
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Schema) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Schema
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Schema(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -53,24 +106,39 @@ func (j *Schema) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Schema) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Schema
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Schema(plain)
-	return nil
-}
-
 type Thing struct {
 	// s corresponds to the JSON schema field "s".
 	s *string `json:"s,omitempty,omitzero" yaml:"s,omitempty" mapstructure:"s,omitempty"`
 }
 
+type ThingBuilder struct {
+	s *string
+}
+
+func (b *ThingBuilder) Build() *Thing {
+	return &Thing{
+		s: b.s,
+	}
+}
+
+func (b *ThingBuilder) WithS(v *string) *ThingBuilder {
+	b.s = v
+	return b
+}
+
 func (o *Thing) S() *string {
 	return o.s
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Thing
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Thing(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -98,15 +166,4 @@ func (j *Thing) MarshalJSON() ([]byte, error) {
 		S: j.s,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Thing
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Thing(plain)
-	return nil
 }

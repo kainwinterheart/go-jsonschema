@@ -35,6 +35,85 @@ type Larger struct {
 	u64 uint64 `json:"u64" yaml:"u64" mapstructure:"u64"`
 }
 
+type LargerBuilder struct {
+	i16l *int16
+
+	i16u *int16
+
+	i32l *int32
+
+	i32u *int32
+
+	i64l *int64
+
+	i64u *int64
+
+	u16 uint16
+
+	u32 uint32
+
+	u64 uint64
+}
+
+func (b *LargerBuilder) Build() *Larger {
+	return &Larger{
+		i16l: b.i16l,
+		i16u: b.i16u,
+		i32l: b.i32l,
+		i32u: b.i32u,
+		i64l: b.i64l,
+		i64u: b.i64u,
+		u16:  b.u16,
+		u32:  b.u32,
+		u64:  b.u64,
+	}
+}
+
+func (b *LargerBuilder) WithI16L(v *int16) *LargerBuilder {
+	b.i16l = v
+	return b
+}
+
+func (b *LargerBuilder) WithI16U(v *int16) *LargerBuilder {
+	b.i16u = v
+	return b
+}
+
+func (b *LargerBuilder) WithI32L(v *int32) *LargerBuilder {
+	b.i32l = v
+	return b
+}
+
+func (b *LargerBuilder) WithI32U(v *int32) *LargerBuilder {
+	b.i32u = v
+	return b
+}
+
+func (b *LargerBuilder) WithI64L(v *int64) *LargerBuilder {
+	b.i64l = v
+	return b
+}
+
+func (b *LargerBuilder) WithI64U(v *int64) *LargerBuilder {
+	b.i64u = v
+	return b
+}
+
+func (b *LargerBuilder) WithU16(v uint16) *LargerBuilder {
+	b.u16 = v
+	return b
+}
+
+func (b *LargerBuilder) WithU32(v uint32) *LargerBuilder {
+	b.u32 = v
+	return b
+}
+
+func (b *LargerBuilder) WithU64(v uint64) *LargerBuilder {
+	b.u64 = v
+	return b
+}
+
 func (o *Larger) I16L() *int16 {
 	return o.i16l
 }
@@ -255,4 +334,21 @@ func (j *Larger) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = Larger(plain)
 	return nil
+}
+
+func NewLargerBuilder(o *Larger) *LargerBuilder {
+	if o == nil {
+		return &LargerBuilder{}
+	}
+	return &LargerBuilder{
+		i16l: o.i16l,
+		i16u: o.i16u,
+		i32l: o.i32l,
+		i32u: o.i32u,
+		i64l: o.i64l,
+		i64u: o.i64u,
+		u16:  o.u16,
+		u32:  o.u32,
+		u64:  o.u64,
+	}
 }

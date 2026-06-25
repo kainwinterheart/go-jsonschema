@@ -7,24 +7,55 @@ import yaml "gopkg.in/yaml.v3"
 
 type Name string
 
+func NewRefExternalFileNestedRefsBuilder(o *RefExternalFileNestedRefs) *RefExternalFileNestedRefsBuilder {
+	if o == nil {
+		return &RefExternalFileNestedRefsBuilder{}
+	}
+	return &RefExternalFileNestedRefsBuilder{
+		myexternalthing: o.myexternalthing,
+	}
+}
+
+func NewRefNestedBuilder(o *RefNested) *RefNestedBuilder {
+	if o == nil {
+		return &RefNestedBuilder{}
+	}
+	return &RefNestedBuilder{
+		mything: o.mything,
+	}
+}
+
+func NewThingBuilder(o *Thing) *ThingBuilder {
+	if o == nil {
+		return &ThingBuilder{}
+	}
+	return &ThingBuilder{
+		name: o.name,
+	}
+}
+
 type RefExternalFileNestedRefs struct {
 	// myexternalthing corresponds to the JSON schema field "myExternalThing".
 	myexternalthing *Thing `json:"myExternalThing,omitempty,omitzero" yaml:"myExternalThing,omitempty" mapstructure:"myExternalThing,omitempty"`
 }
 
-func (o *RefExternalFileNestedRefs) MyExternalThing() *Thing {
-	return o.myexternalthing
+type RefExternalFileNestedRefsBuilder struct {
+	myexternalthing *Thing
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RefExternalFileNestedRefs) UnmarshalYAML(value *yaml.Node) error {
-	type Plain RefExternalFileNestedRefs
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
+func (b *RefExternalFileNestedRefsBuilder) Build() *RefExternalFileNestedRefs {
+	return &RefExternalFileNestedRefs{
+		myexternalthing: b.myexternalthing,
 	}
-	*j = RefExternalFileNestedRefs(plain)
-	return nil
+}
+
+func (b *RefExternalFileNestedRefsBuilder) WithMyExternalThing(v *Thing) *RefExternalFileNestedRefsBuilder {
+	b.myexternalthing = v
+	return b
+}
+
+func (o *RefExternalFileNestedRefs) MyExternalThing() *Thing {
+	return o.myexternalthing
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -54,9 +85,35 @@ func (j *RefExternalFileNestedRefs) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RefExternalFileNestedRefs) UnmarshalYAML(value *yaml.Node) error {
+	type Plain RefExternalFileNestedRefs
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RefExternalFileNestedRefs(plain)
+	return nil
+}
+
 type RefNested struct {
 	// mything corresponds to the JSON schema field "myThing".
 	mything *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
+}
+
+type RefNestedBuilder struct {
+	mything *Thing
+}
+
+func (b *RefNestedBuilder) Build() *RefNested {
+	return &RefNested{
+		mything: b.mything,
+	}
+}
+
+func (b *RefNestedBuilder) WithMyThing(v *Thing) *RefNestedBuilder {
+	b.mything = v
+	return b
 }
 
 func (o *RefNested) MyThing() *Thing {
@@ -106,19 +163,23 @@ type Thing struct {
 	name *Name `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-func (o *Thing) Name() *Name {
-	return o.name
+type ThingBuilder struct {
+	name *Name
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Thing
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
+func (b *ThingBuilder) Build() *Thing {
+	return &Thing{
+		name: b.name,
 	}
-	*j = Thing(plain)
-	return nil
+}
+
+func (b *ThingBuilder) WithName(v *Name) *ThingBuilder {
+	b.name = v
+	return b
+}
+
+func (o *Thing) Name() *Name {
+	return o.name
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -146,4 +207,15 @@ func (j *Thing) MarshalJSON() ([]byte, error) {
 		Name: j.name,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Thing
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Thing(plain)
+	return nil
 }

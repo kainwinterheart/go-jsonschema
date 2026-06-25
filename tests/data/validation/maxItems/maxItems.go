@@ -14,6 +14,29 @@ type MaxItems struct {
 	mystringarray []string `json:"myStringArray,omitempty,omitzero" yaml:"myStringArray,omitempty" mapstructure:"myStringArray,omitempty"`
 }
 
+type MaxItemsBuilder struct {
+	mynestedarray [][]interface{}
+
+	mystringarray []string
+}
+
+func (b *MaxItemsBuilder) Build() *MaxItems {
+	return &MaxItems{
+		mynestedarray: b.mynestedarray,
+		mystringarray: b.mystringarray,
+	}
+}
+
+func (b *MaxItemsBuilder) WithMyNestedArray(v [][]interface{}) *MaxItemsBuilder {
+	b.mynestedarray = v
+	return b
+}
+
+func (b *MaxItemsBuilder) WithMyStringArray(v []string) *MaxItemsBuilder {
+	b.mystringarray = v
+	return b
+}
+
 func (o *MaxItems) MyNestedArray() [][]interface{} {
 	return o.mynestedarray
 }
@@ -84,4 +107,14 @@ func (j *MaxItems) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = MaxItems(plain)
 	return nil
+}
+
+func NewMaxItemsBuilder(o *MaxItems) *MaxItemsBuilder {
+	if o == nil {
+		return &MaxItemsBuilder{}
+	}
+	return &MaxItemsBuilder{
+		mynestedarray: o.mynestedarray,
+		mystringarray: o.mystringarray,
+	}
 }

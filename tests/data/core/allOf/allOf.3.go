@@ -17,6 +17,37 @@ type AllOf3 struct {
 	foo string `json:"foo" yaml:"foo" mapstructure:"foo"`
 }
 
+type AllOf3Builder struct {
+	bar float64
+
+	configurations []interface{}
+
+	foo string
+}
+
+func (b *AllOf3Builder) Build() *AllOf3 {
+	return &AllOf3{
+		bar:            b.bar,
+		configurations: b.configurations,
+		foo:            b.foo,
+	}
+}
+
+func (b *AllOf3Builder) WithBar(v float64) *AllOf3Builder {
+	b.bar = v
+	return b
+}
+
+func (b *AllOf3Builder) WithConfigurations(v []interface{}) *AllOf3Builder {
+	b.configurations = v
+	return b
+}
+
+func (b *AllOf3Builder) WithFoo(v string) *AllOf3Builder {
+	b.foo = v
+	return b
+}
+
 func (o *AllOf3) Bar() float64 {
 	return o.bar
 }
@@ -93,4 +124,15 @@ func (j *AllOf3) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = AllOf3(plain)
 	return nil
+}
+
+func NewAllOf3Builder(o *AllOf3) *AllOf3Builder {
+	if o == nil {
+		return &AllOf3Builder{}
+	}
+	return &AllOf3Builder{
+		bar:            o.bar,
+		configurations: o.configurations,
+		foo:            o.foo,
+	}
 }

@@ -5,6 +5,25 @@ package test
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewRefExternalFileBuilder(o *RefExternalFile) *RefExternalFileBuilder {
+	if o == nil {
+		return &RefExternalFileBuilder{}
+	}
+	return &RefExternalFileBuilder{
+		myexternalthing:        o.myexternalthing,
+		someotherexternalthing: o.someotherexternalthing,
+	}
+}
+
+func NewYamlStructNameFromFileBuilder(o *YamlStructNameFromFile) *YamlStructNameFromFileBuilder {
+	if o == nil {
+		return &YamlStructNameFromFileBuilder{}
+	}
+	return &YamlStructNameFromFileBuilder{
+		foo: o.foo,
+	}
+}
+
 type RefExternalFile struct {
 	// myexternalthing corresponds to the JSON schema field "myExternalThing".
 	myexternalthing *YamlStructNameFromFile `json:"myExternalThing,omitempty,omitzero" yaml:"myExternalThing,omitempty" mapstructure:"myExternalThing,omitempty"`
@@ -14,12 +33,46 @@ type RefExternalFile struct {
 	someotherexternalthing *YamlStructNameFromFile `json:"someOtherExternalThing,omitempty,omitzero" yaml:"someOtherExternalThing,omitempty" mapstructure:"someOtherExternalThing,omitempty"`
 }
 
+type RefExternalFileBuilder struct {
+	myexternalthing *YamlStructNameFromFile
+
+	someotherexternalthing *YamlStructNameFromFile
+}
+
+func (b *RefExternalFileBuilder) Build() *RefExternalFile {
+	return &RefExternalFile{
+		myexternalthing:        b.myexternalthing,
+		someotherexternalthing: b.someotherexternalthing,
+	}
+}
+
+func (b *RefExternalFileBuilder) WithMyExternalThing(v *YamlStructNameFromFile) *RefExternalFileBuilder {
+	b.myexternalthing = v
+	return b
+}
+
+func (b *RefExternalFileBuilder) WithSomeOtherExternalThing(v *YamlStructNameFromFile) *RefExternalFileBuilder {
+	b.someotherexternalthing = v
+	return b
+}
+
 func (o *RefExternalFile) MyExternalThing() *YamlStructNameFromFile {
 	return o.myexternalthing
 }
 
 func (o *RefExternalFile) SomeOtherExternalThing() *YamlStructNameFromFile {
 	return o.someotherexternalthing
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RefExternalFile) UnmarshalYAML(value *yaml.Node) error {
+	type Plain RefExternalFile
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RefExternalFile(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -53,24 +106,39 @@ func (j *RefExternalFile) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RefExternalFile) UnmarshalYAML(value *yaml.Node) error {
-	type Plain RefExternalFile
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = RefExternalFile(plain)
-	return nil
-}
-
 type YamlStructNameFromFile struct {
 	// foo corresponds to the JSON schema field "foo".
 	foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
 }
 
+type YamlStructNameFromFileBuilder struct {
+	foo *string
+}
+
+func (b *YamlStructNameFromFileBuilder) Build() *YamlStructNameFromFile {
+	return &YamlStructNameFromFile{
+		foo: b.foo,
+	}
+}
+
+func (b *YamlStructNameFromFileBuilder) WithFoo(v *string) *YamlStructNameFromFileBuilder {
+	b.foo = v
+	return b
+}
+
 func (o *YamlStructNameFromFile) Foo() *string {
 	return o.foo
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *YamlStructNameFromFile) UnmarshalYAML(value *yaml.Node) error {
+	type Plain YamlStructNameFromFile
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = YamlStructNameFromFile(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -98,15 +166,4 @@ func (j *YamlStructNameFromFile) MarshalJSON() ([]byte, error) {
 		Foo: j.foo,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *YamlStructNameFromFile) UnmarshalYAML(value *yaml.Node) error {
-	type Plain YamlStructNameFromFile
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = YamlStructNameFromFile(plain)
-	return nil
 }

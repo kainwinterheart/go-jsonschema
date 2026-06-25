@@ -12,8 +12,34 @@ type Agreement struct {
 	id *string `json:"id,omitempty,omitzero" yaml:"id,omitempty" mapstructure:"id,omitempty"`
 }
 
+type AgreementBuilder struct {
+	id *string
+}
+
+func (b *AgreementBuilder) Build() *Agreement {
+	return &Agreement{
+		id: b.id,
+	}
+}
+
+func (b *AgreementBuilder) WithId(v *string) *AgreementBuilder {
+	b.id = v
+	return b
+}
+
 func (o *Agreement) Id() *string {
 	return o.id
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Agreement) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Agreement
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Agreement(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -43,17 +69,6 @@ func (j *Agreement) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Agreement) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Agreement
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Agreement(plain)
-	return nil
-}
-
 type AnyOfRef map[string]interface{}
 
 type AnyOfRef_0 struct {
@@ -62,6 +77,29 @@ type AnyOfRef_0 struct {
 
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+}
+
+type AnyOfRef_0Builder struct {
+	id *string
+
+	name *string
+}
+
+func (b *AnyOfRef_0Builder) Build() *AnyOfRef_0 {
+	return &AnyOfRef_0{
+		id:   b.id,
+		name: b.name,
+	}
+}
+
+func (b *AnyOfRef_0Builder) WithId(v *string) *AnyOfRef_0Builder {
+	b.id = v
+	return b
+}
+
+func (b *AnyOfRef_0Builder) WithName(v *string) *AnyOfRef_0Builder {
+	b.name = v
+	return b
 }
 
 func (o *AnyOfRef_0) Id() *string {
@@ -146,14 +184,53 @@ func (j *AnyOfRef_0) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+func NewAgreementBuilder(o *Agreement) *AgreementBuilder {
+	if o == nil {
+		return &AgreementBuilder{}
+	}
+	return &AgreementBuilder{
+		id: o.id,
+	}
+}
+
+func NewAnyOfRef_0Builder(o *AnyOfRef_0) *AnyOfRef_0Builder {
+	if o == nil {
+		return &AnyOfRef_0Builder{}
+	}
+	return &AnyOfRef_0Builder{
+		id:   o.id,
+		name: o.name,
+	}
+}
+
+func NewOfferBuilder(o *Offer) *OfferBuilder {
+	if o == nil {
+		return &OfferBuilder{}
+	}
+	return &OfferBuilder{
+		name: o.name,
+	}
+}
+
 type Offer struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-type AnyOfRef_0_1 = Agreement
+type OfferBuilder struct {
+	name *string
+}
 
-type AnyOfRef_0_0 = Offer
+func (b *OfferBuilder) Build() *Offer {
+	return &Offer{
+		name: b.name,
+	}
+}
+
+func (b *OfferBuilder) WithName(v *string) *OfferBuilder {
+	b.name = v
+	return b
+}
 
 func (o *Offer) Name() *string {
 	return o.name
@@ -196,5 +273,9 @@ func (j *Offer) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(helper)
 }
+
+type AnyOfRef_0_1 = Agreement
+
+type AnyOfRef_0_0 = Offer
 
 type Policy interface{}

@@ -15,6 +15,29 @@ type MinLength struct {
 	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
 }
 
+type MinLengthBuilder struct {
+	mynullablestring *string
+
+	mystring string
+}
+
+func (b *MinLengthBuilder) Build() *MinLength {
+	return &MinLength{
+		mynullablestring: b.mynullablestring,
+		mystring:         b.mystring,
+	}
+}
+
+func (b *MinLengthBuilder) WithMyNullableString(v *string) *MinLengthBuilder {
+	b.mynullablestring = v
+	return b
+}
+
+func (b *MinLengthBuilder) WithMyString(v string) *MinLengthBuilder {
+	b.mystring = v
+	return b
+}
+
 func (o *MinLength) MyNullableString() *string {
 	return o.mynullablestring
 }
@@ -89,4 +112,14 @@ func (j *MinLength) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = MinLength(plain)
 	return nil
+}
+
+func NewMinLengthBuilder(o *MinLength) *MinLengthBuilder {
+	if o == nil {
+		return &MinLengthBuilder{}
+	}
+	return &MinLengthBuilder{
+		mynullablestring: o.mynullablestring,
+		mystring:         o.mystring,
+	}
 }

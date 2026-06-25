@@ -21,6 +21,45 @@ type MultipleOf struct {
 	mynumber float64 `json:"myNumber" yaml:"myNumber" mapstructure:"myNumber"`
 }
 
+type MultipleOfBuilder struct {
+	myinteger int
+
+	mynullableinteger *int
+
+	mynullablenumber *float64
+
+	mynumber float64
+}
+
+func (b *MultipleOfBuilder) Build() *MultipleOf {
+	return &MultipleOf{
+		myinteger:         b.myinteger,
+		mynullableinteger: b.mynullableinteger,
+		mynullablenumber:  b.mynullablenumber,
+		mynumber:          b.mynumber,
+	}
+}
+
+func (b *MultipleOfBuilder) WithMyInteger(v int) *MultipleOfBuilder {
+	b.myinteger = v
+	return b
+}
+
+func (b *MultipleOfBuilder) WithMyNullableInteger(v *int) *MultipleOfBuilder {
+	b.mynullableinteger = v
+	return b
+}
+
+func (b *MultipleOfBuilder) WithMyNullableNumber(v *float64) *MultipleOfBuilder {
+	b.mynullablenumber = v
+	return b
+}
+
+func (b *MultipleOfBuilder) WithMyNumber(v float64) *MultipleOfBuilder {
+	b.mynumber = v
+	return b
+}
+
 func (o *MultipleOf) MyInteger() int {
 	return o.myinteger
 }
@@ -141,4 +180,16 @@ func (j *MultipleOf) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = MultipleOf(plain)
 	return nil
+}
+
+func NewMultipleOfBuilder(o *MultipleOf) *MultipleOfBuilder {
+	if o == nil {
+		return &MultipleOfBuilder{}
+	}
+	return &MultipleOfBuilder{
+		myinteger:         o.myinteger,
+		mynullableinteger: o.mynullableinteger,
+		mynullablenumber:  o.mynullablenumber,
+		mynumber:          o.mynumber,
+	}
 }

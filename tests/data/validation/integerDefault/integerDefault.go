@@ -17,6 +17,37 @@ type IntegerDefault struct {
 	programid int `json:"programId" yaml:"programId" mapstructure:"programId"`
 }
 
+type IntegerDefaultBuilder struct {
+	count int
+
+	nullablecount IntegerDefaultnullablecount
+
+	programid int
+}
+
+func (b *IntegerDefaultBuilder) Build() *IntegerDefault {
+	return &IntegerDefault{
+		count:         b.count,
+		nullablecount: b.nullablecount,
+		programid:     b.programid,
+	}
+}
+
+func (b *IntegerDefaultBuilder) WithCount(v int) *IntegerDefaultBuilder {
+	b.count = v
+	return b
+}
+
+func (b *IntegerDefaultBuilder) WithNullableCount(v IntegerDefaultnullablecount) *IntegerDefaultBuilder {
+	b.nullablecount = v
+	return b
+}
+
+func (b *IntegerDefaultBuilder) WithProgramId(v int) *IntegerDefaultBuilder {
+	b.programid = v
+	return b
+}
+
 func (o *IntegerDefault) Count() int {
 	return o.count
 }
@@ -124,3 +155,14 @@ func (j *IntegerDefault) UnmarshalYAML(value *yaml.Node) error {
 }
 
 type IntegerDefaultnullablecount *int
+
+func NewIntegerDefaultBuilder(o *IntegerDefault) *IntegerDefaultBuilder {
+	if o == nil {
+		return &IntegerDefaultBuilder{}
+	}
+	return &IntegerDefaultBuilder{
+		count:         o.count,
+		nullablecount: o.nullablecount,
+		programid:     o.programid,
+	}
+}

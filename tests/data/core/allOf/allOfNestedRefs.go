@@ -14,6 +14,29 @@ type AllOfNestedRefs struct {
 	foo interface{} `json:"foo" yaml:"foo" mapstructure:"foo"`
 }
 
+type AllOfNestedRefsBuilder struct {
+	bar *string
+
+	foo interface{}
+}
+
+func (b *AllOfNestedRefsBuilder) Build() *AllOfNestedRefs {
+	return &AllOfNestedRefs{
+		bar: b.bar,
+		foo: b.foo,
+	}
+}
+
+func (b *AllOfNestedRefsBuilder) WithBar(v *string) *AllOfNestedRefsBuilder {
+	b.bar = v
+	return b
+}
+
+func (b *AllOfNestedRefsBuilder) WithFoo(v interface{}) *AllOfNestedRefsBuilder {
+	b.foo = v
+	return b
+}
+
 func (o *AllOfNestedRefs) Bar() *string {
 	return o.bar
 }
@@ -83,6 +106,21 @@ type ExtraProps struct {
 	bar *string `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
 }
 
+type ExtraPropsBuilder struct {
+	bar *string
+}
+
+func (b *ExtraPropsBuilder) Build() *ExtraProps {
+	return &ExtraProps{
+		bar: b.bar,
+	}
+}
+
+func (b *ExtraPropsBuilder) WithBar(v *string) *ExtraPropsBuilder {
+	b.bar = v
+	return b
+}
+
 func (o *ExtraProps) Bar() *string {
 	return o.bar
 }
@@ -125,12 +163,64 @@ func (j *ExtraProps) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+func NewAllOfNestedRefsBuilder(o *AllOfNestedRefs) *AllOfNestedRefsBuilder {
+	if o == nil {
+		return &AllOfNestedRefsBuilder{}
+	}
+	return &AllOfNestedRefsBuilder{
+		bar: o.bar,
+		foo: o.foo,
+	}
+}
+
+func NewExtraPropsBuilder(o *ExtraProps) *ExtraPropsBuilder {
+	if o == nil {
+		return &ExtraPropsBuilder{}
+	}
+	return &ExtraPropsBuilder{
+		bar: o.bar,
+	}
+}
+
+func NewRootObjectBuilder(o *RootObject) *RootObjectBuilder {
+	if o == nil {
+		return &RootObjectBuilder{}
+	}
+	return &RootObjectBuilder{
+		bar: o.bar,
+		foo: o.foo,
+	}
+}
+
 type RootObject struct {
 	// bar corresponds to the JSON schema field "bar".
 	bar *string `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
 
 	// foo corresponds to the JSON schema field "foo".
 	foo interface{} `json:"foo" yaml:"foo" mapstructure:"foo"`
+}
+
+type RootObjectBuilder struct {
+	bar *string
+
+	foo interface{}
+}
+
+func (b *RootObjectBuilder) Build() *RootObject {
+	return &RootObject{
+		bar: b.bar,
+		foo: b.foo,
+	}
+}
+
+func (b *RootObjectBuilder) WithBar(v *string) *RootObjectBuilder {
+	b.bar = v
+	return b
+}
+
+func (b *RootObjectBuilder) WithFoo(v interface{}) *RootObjectBuilder {
+	b.foo = v
+	return b
 }
 
 func (o *RootObject) Bar() *string {

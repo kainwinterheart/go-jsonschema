@@ -7,9 +7,42 @@ import "fmt"
 import "github.com/kainwinterheart/go-jsonschema/pkg/types"
 import yaml "gopkg.in/yaml.v3"
 
+func NewTimeBuilder(o *Time) *TimeBuilder {
+	if o == nil {
+		return &TimeBuilder{}
+	}
+	return &TimeBuilder{
+		myobject: o.myobject,
+	}
+}
+
+func NewTimemyobjectBuilder(o *Timemyobject) *TimemyobjectBuilder {
+	if o == nil {
+		return &TimemyobjectBuilder{}
+	}
+	return &TimemyobjectBuilder{
+		mytime: o.mytime,
+	}
+}
+
 type Time struct {
 	// myobject corresponds to the JSON schema field "myObject".
 	myobject *Timemyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+}
+
+type TimeBuilder struct {
+	myobject *Timemyobject
+}
+
+func (b *TimeBuilder) Build() *Time {
+	return &Time{
+		myobject: b.myobject,
+	}
+}
+
+func (b *TimeBuilder) WithMyObject(v *Timemyobject) *TimeBuilder {
+	b.myobject = v
+	return b
 }
 
 func (o *Time) MyObject() *Timemyobject {
@@ -57,6 +90,21 @@ func (j *Time) UnmarshalYAML(value *yaml.Node) error {
 type Timemyobject struct {
 	// mytime corresponds to the JSON schema field "myTime".
 	mytime types.SerializableTime `json:"myTime" yaml:"myTime" mapstructure:"myTime"`
+}
+
+type TimemyobjectBuilder struct {
+	mytime types.SerializableTime
+}
+
+func (b *TimemyobjectBuilder) Build() *Timemyobject {
+	return &Timemyobject{
+		mytime: b.mytime,
+	}
+}
+
+func (b *TimemyobjectBuilder) WithMyTime(v types.SerializableTime) *TimemyobjectBuilder {
+	b.mytime = v
+	return b
 }
 
 func (o *Timemyobject) MyTime() types.SerializableTime {

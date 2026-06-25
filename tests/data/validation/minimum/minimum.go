@@ -20,6 +20,45 @@ type Minimum struct {
 	mynumber float64 `json:"myNumber" yaml:"myNumber" mapstructure:"myNumber"`
 }
 
+type MinimumBuilder struct {
+	myinteger int
+
+	mynullableinteger *int
+
+	mynullablenumber *float64
+
+	mynumber float64
+}
+
+func (b *MinimumBuilder) Build() *Minimum {
+	return &Minimum{
+		myinteger:         b.myinteger,
+		mynullableinteger: b.mynullableinteger,
+		mynullablenumber:  b.mynullablenumber,
+		mynumber:          b.mynumber,
+	}
+}
+
+func (b *MinimumBuilder) WithMyInteger(v int) *MinimumBuilder {
+	b.myinteger = v
+	return b
+}
+
+func (b *MinimumBuilder) WithMyNullableInteger(v *int) *MinimumBuilder {
+	b.mynullableinteger = v
+	return b
+}
+
+func (b *MinimumBuilder) WithMyNullableNumber(v *float64) *MinimumBuilder {
+	b.mynullablenumber = v
+	return b
+}
+
+func (b *MinimumBuilder) WithMyNumber(v float64) *MinimumBuilder {
+	b.mynumber = v
+	return b
+}
+
 func (o *Minimum) MyInteger() int {
 	return o.myinteger
 }
@@ -128,4 +167,16 @@ func (j *Minimum) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = Minimum(plain)
 	return nil
+}
+
+func NewMinimumBuilder(o *Minimum) *MinimumBuilder {
+	if o == nil {
+		return &MinimumBuilder{}
+	}
+	return &MinimumBuilder{
+		myinteger:         o.myinteger,
+		mynullableinteger: o.mynullableinteger,
+		mynullablenumber:  o.mynullablenumber,
+		mynumber:          o.mynumber,
+	}
 }

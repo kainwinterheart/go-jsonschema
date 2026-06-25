@@ -346,6 +346,7 @@ func (g *schemaGenerator) generateDeclaredType(t *schemas.Type, scope nameScope)
 				Name: decl.Name + "_" + getterName,
 			})
 		}
+		g.generateBuilder(&decl, tt)
 		if t.GetSubSchemaType() == schemas.SubSchemaTypeAnyOf {
 			validators = append(validators, &anyOfValidator{decl.Name, t.GetSubSchemasCount()})
 			g.generateUnmarshaler(&decl, validators)
@@ -1566,4 +1567,94 @@ func hasPrivateStructFields(fields []codegen.StructField) bool {
 		}
 	}
 	return false
+}
+
+func (g *schemaGenerator) generateBuilder(decl *codegen.TypeDecl, st *codegen.StructType) {
+	builderName := decl.Name + "Builder"
+
+	type fieldInfo struct {
+		name      string
+		jsonName  string
+		fieldType codegen.Type
+	}
+
+	fields := make([]fieldInfo, 0, len(st.Fields))
+	for _, f := range st.Fields {
+		if f.Name == additionalProperties {
+			continue
+		}
+		fields = append(fields, fieldInfo{
+			name:      f.Name,
+			jsonName:  f.JSONName,
+			fieldType: f.Type,
+		})
+	}
+
+	// Generate builder struct type
+	builderStruct := codegen.TypeDecl{
+		Name: builderName,
+		Type: &codegen.StructType{
+			Fields: make([]codegen.StructField, len(fields)),
+		},
+	}
+	for i, fi := range fields {
+		builderStruct.Type.(*codegen.StructType).Fields[i] = codegen.StructField{
+			Name: fi.name,
+			Type: fi.fieldType,
+		}
+	}
+	g.output.file.Package.AddDecl(&builderStruct)
+
+	// Generate New{Name}Builder constructor
+	constructorName := "New" + decl.Name + "Builder"
+	g.output.file.Package.AddDecl(&codegen.Method{
+		Impl: func(out *codegen.Emitter) error {
+			out.Printf("func %s(o *%s) *%s {\n", constructorName, decl.Name, builderName)
+			out.Printf("\tif o == nil {\n")
+			out.Printf("\t\treturn &%s{}\n", builderName)
+			out.Printf("\t}\n")
+			out.Printf("\treturn &%s{\n", builderName)
+			for _, fi := range fields {
+				out.Printf("\t\t%s: o.%s,\n", fi.name, fi.name)
+			}
+			out.Printf("\t}\n")
+			out.Printf("}\n")
+			return nil
+		},
+		Name: constructorName,
+	})
+
+	// Generate Build() method
+	g.output.file.Package.AddDecl(&codegen.Method{
+		Impl: func(out *codegen.Emitter) error {
+			out.Printf("func (b *%s) Build() *%s {\n", builderName, decl.Name)
+			out.Printf("\treturn &%s{\n", decl.Name)
+			for _, fi := range fields {
+				out.Printf("\t\t%s: b.%s,\n", fi.name, fi.name)
+			}
+			out.Printf("\t}\n")
+			out.Printf("}\n")
+			return nil
+		},
+		Name: builderName + "_Build",
+	})
+
+	// Generate With{FieldName} methods
+	for _, fi := range fields {
+		withName := "With" + g.caser.Identifierize(fi.jsonName)
+		g.output.file.Package.AddDecl(&codegen.Method{
+			Impl: func(out *codegen.Emitter) error {
+				out.Printf("func (b *%s) %s(v ", builderName, withName)
+				if err := fi.fieldType.Generate(out); err != nil {
+					return err
+				}
+				out.Printf(") *%s {\n", builderName)
+				out.Printf("\tb.%s = v\n", fi.name)
+				out.Printf("\treturn b\n")
+				out.Printf("}\n")
+				return nil
+			},
+			Name: builderName + "_" + withName,
+		})
+	}
 }

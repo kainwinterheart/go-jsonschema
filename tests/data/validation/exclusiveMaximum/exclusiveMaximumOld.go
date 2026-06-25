@@ -20,6 +20,45 @@ type ExclusiveMaximumOld struct {
 	mynumber float64 `json:"myNumber" yaml:"myNumber" mapstructure:"myNumber"`
 }
 
+type ExclusiveMaximumOldBuilder struct {
+	myinteger int
+
+	mynullableinteger *int
+
+	mynullablenumber interface{}
+
+	mynumber float64
+}
+
+func (b *ExclusiveMaximumOldBuilder) Build() *ExclusiveMaximumOld {
+	return &ExclusiveMaximumOld{
+		myinteger:         b.myinteger,
+		mynullableinteger: b.mynullableinteger,
+		mynullablenumber:  b.mynullablenumber,
+		mynumber:          b.mynumber,
+	}
+}
+
+func (b *ExclusiveMaximumOldBuilder) WithMyInteger(v int) *ExclusiveMaximumOldBuilder {
+	b.myinteger = v
+	return b
+}
+
+func (b *ExclusiveMaximumOldBuilder) WithMyNullableInteger(v *int) *ExclusiveMaximumOldBuilder {
+	b.mynullableinteger = v
+	return b
+}
+
+func (b *ExclusiveMaximumOldBuilder) WithMyNullableNumber(v interface{}) *ExclusiveMaximumOldBuilder {
+	b.mynullablenumber = v
+	return b
+}
+
+func (b *ExclusiveMaximumOldBuilder) WithMyNumber(v float64) *ExclusiveMaximumOldBuilder {
+	b.mynumber = v
+	return b
+}
+
 func (o *ExclusiveMaximumOld) MyInteger() int {
 	return o.myinteger
 }
@@ -122,4 +161,16 @@ func (j *ExclusiveMaximumOld) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = ExclusiveMaximumOld(plain)
 	return nil
+}
+
+func NewExclusiveMaximumOldBuilder(o *ExclusiveMaximumOld) *ExclusiveMaximumOldBuilder {
+	if o == nil {
+		return &ExclusiveMaximumOldBuilder{}
+	}
+	return &ExclusiveMaximumOldBuilder{
+		myinteger:         o.myinteger,
+		mynullableinteger: o.mynullableinteger,
+		mynullablenumber:  o.mynullablenumber,
+		mynumber:          o.mynumber,
+	}
 }

@@ -14,6 +14,29 @@ type MinItems struct {
 	mystringarray []string `json:"myStringArray,omitempty,omitzero" yaml:"myStringArray,omitempty" mapstructure:"myStringArray,omitempty"`
 }
 
+type MinItemsBuilder struct {
+	mynestedarray [][]interface{}
+
+	mystringarray []string
+}
+
+func (b *MinItemsBuilder) Build() *MinItems {
+	return &MinItems{
+		mynestedarray: b.mynestedarray,
+		mystringarray: b.mystringarray,
+	}
+}
+
+func (b *MinItemsBuilder) WithMyNestedArray(v [][]interface{}) *MinItemsBuilder {
+	b.mynestedarray = v
+	return b
+}
+
+func (b *MinItemsBuilder) WithMyStringArray(v []string) *MinItemsBuilder {
+	b.mystringarray = v
+	return b
+}
+
 func (o *MinItems) MyNestedArray() [][]interface{} {
 	return o.mynestedarray
 }
@@ -84,4 +107,14 @@ func (j *MinItems) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = MinItems(plain)
 	return nil
+}
+
+func NewMinItemsBuilder(o *MinItems) *MinItemsBuilder {
+	if o == nil {
+		return &MinItemsBuilder{}
+	}
+	return &MinItemsBuilder{
+		mynestedarray: o.mynestedarray,
+		mystringarray: o.mystringarray,
+	}
 }

@@ -15,6 +15,21 @@ type ArrayAdditionalProperties struct {
 	AdditionalProperties map[string][]interface{} `mapstructure:",remain"`
 }
 
+type ArrayAdditionalPropertiesBuilder struct {
+	name *string
+}
+
+func (b *ArrayAdditionalPropertiesBuilder) Build() *ArrayAdditionalProperties {
+	return &ArrayAdditionalProperties{
+		name: b.name,
+	}
+}
+
+func (b *ArrayAdditionalPropertiesBuilder) WithName(v *string) *ArrayAdditionalPropertiesBuilder {
+	b.name = v
+	return b
+}
+
 func (o *ArrayAdditionalProperties) Name() *string {
 	return o.name
 }
@@ -79,4 +94,13 @@ func (j *ArrayAdditionalProperties) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = ArrayAdditionalProperties(plain)
 	return nil
+}
+
+func NewArrayAdditionalPropertiesBuilder(o *ArrayAdditionalProperties) *ArrayAdditionalPropertiesBuilder {
+	if o == nil {
+		return &ArrayAdditionalPropertiesBuilder{}
+	}
+	return &ArrayAdditionalPropertiesBuilder{
+		name: o.name,
+	}
 }

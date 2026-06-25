@@ -7,9 +7,33 @@ import "fmt"
 import yaml "gopkg.in/yaml.v3"
 import "reflect"
 
+func NewRefToEnumBuilder(o *RefToEnum) *RefToEnumBuilder {
+	if o == nil {
+		return &RefToEnumBuilder{}
+	}
+	return &RefToEnumBuilder{
+		mything: o.mything,
+	}
+}
+
 type RefToEnum struct {
 	// mything corresponds to the JSON schema field "myThing".
 	mything *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
+}
+
+type RefToEnumBuilder struct {
+	mything *Thing
+}
+
+func (b *RefToEnumBuilder) Build() *RefToEnum {
+	return &RefToEnum{
+		mything: b.mything,
+	}
+}
+
+func (b *RefToEnumBuilder) WithMyThing(v *Thing) *RefToEnumBuilder {
+	b.mything = v
+	return b
 }
 
 func (o *RefToEnum) MyThing() *Thing {

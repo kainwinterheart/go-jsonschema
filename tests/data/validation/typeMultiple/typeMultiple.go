@@ -5,6 +5,19 @@ package test
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewTypeMultipleBuilder(o *TypeMultiple) *TypeMultipleBuilder {
+	if o == nil {
+		return &TypeMultipleBuilder{}
+	}
+	return &TypeMultipleBuilder{
+		all:                  o.all,
+		allprimitives:        o.allprimitives,
+		arrayofall:           o.arrayofall,
+		arrayofallprimitives: o.arrayofallprimitives,
+		onlytwooptions:       o.onlytwooptions,
+	}
+}
+
 type TypeMultiple struct {
 	// all corresponds to the JSON schema field "all".
 	all interface{} `json:"all,omitempty,omitzero" yaml:"all,omitempty" mapstructure:"all,omitempty"`
@@ -21,6 +34,53 @@ type TypeMultiple struct {
 
 	// onlytwooptions corresponds to the JSON schema field "onlyTwoOptions".
 	onlytwooptions interface{} `json:"onlyTwoOptions,omitempty,omitzero" yaml:"onlyTwoOptions,omitempty" mapstructure:"onlyTwoOptions,omitempty"`
+}
+
+type TypeMultipleBuilder struct {
+	all interface{}
+
+	allprimitives interface{}
+
+	arrayofall []interface{}
+
+	arrayofallprimitives []interface{}
+
+	onlytwooptions interface{}
+}
+
+func (b *TypeMultipleBuilder) Build() *TypeMultiple {
+	return &TypeMultiple{
+		all:                  b.all,
+		allprimitives:        b.allprimitives,
+		arrayofall:           b.arrayofall,
+		arrayofallprimitives: b.arrayofallprimitives,
+		onlytwooptions:       b.onlytwooptions,
+	}
+}
+
+func (b *TypeMultipleBuilder) WithAll(v interface{}) *TypeMultipleBuilder {
+	b.all = v
+	return b
+}
+
+func (b *TypeMultipleBuilder) WithAllPrimitives(v interface{}) *TypeMultipleBuilder {
+	b.allprimitives = v
+	return b
+}
+
+func (b *TypeMultipleBuilder) WithArrayOfAll(v []interface{}) *TypeMultipleBuilder {
+	b.arrayofall = v
+	return b
+}
+
+func (b *TypeMultipleBuilder) WithArrayOfAllPrimitives(v []interface{}) *TypeMultipleBuilder {
+	b.arrayofallprimitives = v
+	return b
+}
+
+func (b *TypeMultipleBuilder) WithOnlyTwoOptions(v interface{}) *TypeMultipleBuilder {
+	b.onlytwooptions = v
+	return b
 }
 
 func (o *TypeMultiple) All() interface{} {

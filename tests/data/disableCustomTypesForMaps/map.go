@@ -10,6 +10,21 @@ type AMap struct {
 	mymap map[string]float64 `json:"myMap,omitempty,omitzero" yaml:"myMap,omitempty" mapstructure:"myMap,omitempty"`
 }
 
+type AMapBuilder struct {
+	mymap map[string]float64
+}
+
+func (b *AMapBuilder) Build() *AMap {
+	return &AMap{
+		mymap: b.mymap,
+	}
+}
+
+func (b *AMapBuilder) WithMyMap(v map[string]float64) *AMapBuilder {
+	b.mymap = v
+	return b
+}
+
 func (o *AMap) MyMap() map[string]float64 {
 	return o.mymap
 }
@@ -50,4 +65,13 @@ func (j *AMap) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = AMap(plain)
 	return nil
+}
+
+func NewAMapBuilder(o *AMap) *AMapBuilder {
+	if o == nil {
+		return &AMapBuilder{}
+	}
+	return &AMapBuilder{
+		mymap: o.mymap,
+	}
 }

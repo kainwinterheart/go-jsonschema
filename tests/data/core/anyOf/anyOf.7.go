@@ -18,6 +18,37 @@ type AnyOf7 struct {
 	foo *AnyOf7foo `json:"foo" yaml:"foo" mapstructure:"foo"`
 }
 
+type AnyOf7Builder struct {
+	bar []*AnyOf7barElem
+
+	baz []*AnyOf7bazElem
+
+	foo *AnyOf7foo
+}
+
+func (b *AnyOf7Builder) Build() *AnyOf7 {
+	return &AnyOf7{
+		bar: b.bar,
+		baz: b.baz,
+		foo: b.foo,
+	}
+}
+
+func (b *AnyOf7Builder) WithBar(v []*AnyOf7barElem) *AnyOf7Builder {
+	b.bar = v
+	return b
+}
+
+func (b *AnyOf7Builder) WithBaz(v []*AnyOf7bazElem) *AnyOf7Builder {
+	b.baz = v
+	return b
+}
+
+func (b *AnyOf7Builder) WithFoo(v *AnyOf7foo) *AnyOf7Builder {
+	b.foo = v
+	return b
+}
+
 func (o *AnyOf7) Bar() []*AnyOf7barElem {
 	return o.bar
 }
@@ -28,27 +59,6 @@ func (o *AnyOf7) Baz() []*AnyOf7bazElem {
 
 func (o *AnyOf7) Foo() *AnyOf7foo {
 	return o.foo
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AnyOf7) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in AnyOf7: required")
-	}
-	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AnyOf7: required")
-	}
-	type Plain AnyOf7
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AnyOf7(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -96,13 +106,72 @@ func (j *AnyOf7) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf7) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["bar"]; raw != nil && !ok {
+		return fmt.Errorf("field bar in AnyOf7: required")
+	}
+	if _, ok := raw["foo"]; raw != nil && !ok {
+		return fmt.Errorf("field foo in AnyOf7: required")
+	}
+	type Plain AnyOf7
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf7(plain)
+	return nil
+}
+
 type AnyOf7barElem struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
+type AnyOf7barElemBuilder struct {
+	name *string
+}
+
+func (b *AnyOf7barElemBuilder) Build() *AnyOf7barElem {
+	return &AnyOf7barElem{
+		name: b.name,
+	}
+}
+
+func (b *AnyOf7barElemBuilder) WithName(v *string) *AnyOf7barElemBuilder {
+	b.name = v
+	return b
+}
+
 func (o *AnyOf7barElem) Name() *string {
 	return o.name
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf7barElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var anyOf7barElem_0 AnyOf7barElem_0
+	var errs []error
+	if err := anyOf7barElem_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 1 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain AnyOf7barElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf7barElem(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -144,32 +213,24 @@ func (j *AnyOf7barElem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AnyOf7barElem) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	var anyOf7barElem_0 AnyOf7barElem_0
-	var errs []error
-	if err := anyOf7barElem_0.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if len(errs) == 1 {
-		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
-	}
-	type Plain AnyOf7barElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AnyOf7barElem(plain)
-	return nil
-}
-
 type AnyOf7bazElem struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+}
+
+type AnyOf7bazElemBuilder struct {
+	name *string
+}
+
+func (b *AnyOf7bazElemBuilder) Build() *AnyOf7bazElem {
+	return &AnyOf7bazElem{
+		name: b.name,
+	}
+}
+
+func (b *AnyOf7bazElemBuilder) WithName(v *string) *AnyOf7bazElemBuilder {
+	b.name = v
+	return b
 }
 
 func (o *AnyOf7bazElem) Name() *string {
@@ -238,11 +299,24 @@ func (j *AnyOf7bazElem) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-type AnyOf7foo_0 = Item
-
 type AnyOf7foo struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
+}
+
+type AnyOf7fooBuilder struct {
+	name *string
+}
+
+func (b *AnyOf7fooBuilder) Build() *AnyOf7foo {
+	return &AnyOf7foo{
+		name: b.name,
+	}
+}
+
+func (b *AnyOf7fooBuilder) WithName(v *string) *AnyOf7fooBuilder {
+	b.name = v
+	return b
 }
 
 func (o *AnyOf7foo) Name() *string {
@@ -316,12 +390,41 @@ type Item struct {
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
+type ItemBuilder struct {
+	name *string
+}
+
+func (b *ItemBuilder) Build() *Item {
+	return &Item{
+		name: b.name,
+	}
+}
+
+func NewAnyOf7bazElemBuilder(o *AnyOf7bazElem) *AnyOf7bazElemBuilder {
+	if o == nil {
+		return &AnyOf7bazElemBuilder{}
+	}
+	return &AnyOf7bazElemBuilder{
+		name: o.name,
+	}
+}
+
 type AnyOf7bazElem_0 = Item
+
+func NewAnyOf7barElemBuilder(o *AnyOf7barElem) *AnyOf7barElemBuilder {
+	if o == nil {
+		return &AnyOf7barElemBuilder{}
+	}
+	return &AnyOf7barElemBuilder{
+		name: o.name,
+	}
+}
 
 type AnyOf7barElem_0 = Item
 
-func (o *Item) Name() *string {
-	return o.name
+func (b *ItemBuilder) WithName(v *string) *ItemBuilder {
+	b.name = v
+	return b
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
@@ -360,4 +463,39 @@ func (j *Item) MarshalJSON() ([]byte, error) {
 		Name: j.name,
 	}
 	return json.Marshal(helper)
+}
+
+func NewAnyOf7Builder(o *AnyOf7) *AnyOf7Builder {
+	if o == nil {
+		return &AnyOf7Builder{}
+	}
+	return &AnyOf7Builder{
+		bar: o.bar,
+		baz: o.baz,
+		foo: o.foo,
+	}
+}
+
+func NewAnyOf7fooBuilder(o *AnyOf7foo) *AnyOf7fooBuilder {
+	if o == nil {
+		return &AnyOf7fooBuilder{}
+	}
+	return &AnyOf7fooBuilder{
+		name: o.name,
+	}
+}
+
+func NewItemBuilder(o *Item) *ItemBuilder {
+	if o == nil {
+		return &ItemBuilder{}
+	}
+	return &ItemBuilder{
+		name: o.name,
+	}
+}
+
+type AnyOf7foo_0 = Item
+
+func (o *Item) Name() *string {
+	return o.name
 }

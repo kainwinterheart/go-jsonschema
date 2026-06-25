@@ -12,8 +12,34 @@ type DateTime struct {
 	myobject *DateTimemyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
+type DateTimeBuilder struct {
+	myobject *DateTimemyobject
+}
+
+func (b *DateTimeBuilder) Build() *DateTime {
+	return &DateTime{
+		myobject: b.myobject,
+	}
+}
+
+func (b *DateTimeBuilder) WithMyObject(v *DateTimemyobject) *DateTimeBuilder {
+	b.myobject = v
+	return b
+}
+
 func (o *DateTime) MyObject() *DateTimemyobject {
 	return o.myobject
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *DateTime) UnmarshalYAML(value *yaml.Node) error {
+	type Plain DateTime
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = DateTime(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -43,24 +69,46 @@ func (j *DateTime) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *DateTime) UnmarshalYAML(value *yaml.Node) error {
-	type Plain DateTime
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = DateTime(plain)
-	return nil
-}
-
 type DateTimemyobject struct {
 	// mydatetime corresponds to the JSON schema field "myDateTime".
 	mydatetime time.Time `json:"myDateTime" yaml:"myDateTime" mapstructure:"myDateTime"`
 }
 
+type DateTimemyobjectBuilder struct {
+	mydatetime time.Time
+}
+
+func (b *DateTimemyobjectBuilder) Build() *DateTimemyobject {
+	return &DateTimemyobject{
+		mydatetime: b.mydatetime,
+	}
+}
+
+func (b *DateTimemyobjectBuilder) WithMyDateTime(v time.Time) *DateTimemyobjectBuilder {
+	b.mydatetime = v
+	return b
+}
+
 func (o *DateTimemyobject) MyDateTime() time.Time {
 	return o.mydatetime
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *DateTimemyobject) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myDateTime"]; raw != nil && !ok {
+		return fmt.Errorf("field myDateTime in DateTimemyobject: required")
+	}
+	type Plain DateTimemyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = DateTimemyobject(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -97,20 +145,20 @@ func (j *DateTimemyobject) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *DateTimemyobject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
+func NewDateTimeBuilder(o *DateTime) *DateTimeBuilder {
+	if o == nil {
+		return &DateTimeBuilder{}
 	}
-	if _, ok := raw["myDateTime"]; raw != nil && !ok {
-		return fmt.Errorf("field myDateTime in DateTimemyobject: required")
+	return &DateTimeBuilder{
+		myobject: o.myobject,
 	}
-	type Plain DateTimemyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
+}
+
+func NewDateTimemyobjectBuilder(o *DateTimemyobject) *DateTimemyobjectBuilder {
+	if o == nil {
+		return &DateTimemyobjectBuilder{}
 	}
-	*j = DateTimemyobject(plain)
-	return nil
+	return &DateTimemyobjectBuilder{
+		mydatetime: o.mydatetime,
+	}
 }

@@ -5,12 +5,73 @@ package test
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewRefBuilder(o *Ref) *RefBuilder {
+	if o == nil {
+		return &RefBuilder{}
+	}
+	return &RefBuilder{
+		mything:  o.mything,
+		mything2: o.mything2,
+	}
+}
+
+func NewRefExternalFileWithDupeBuilder(o *RefExternalFileWithDupe) *RefExternalFileWithDupeBuilder {
+	if o == nil {
+		return &RefExternalFileWithDupeBuilder{}
+	}
+	return &RefExternalFileWithDupeBuilder{
+		myexternalthing: o.myexternalthing,
+		mything:         o.mything,
+	}
+}
+
+func NewThingBuilder(o *Thing) *ThingBuilder {
+	if o == nil {
+		return &ThingBuilder{}
+	}
+	return &ThingBuilder{
+		something: o.something,
+	}
+}
+
+func NewThing_1Builder(o *Thing_1) *Thing_1Builder {
+	if o == nil {
+		return &Thing_1Builder{}
+	}
+	return &Thing_1Builder{
+		name: o.name,
+	}
+}
+
 type Ref struct {
 	// mything corresponds to the JSON schema field "myThing".
 	mything *Thing_1 `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
 
 	// mything2 corresponds to the JSON schema field "myThing2".
 	mything2 *Thing_1 `json:"myThing2,omitempty,omitzero" yaml:"myThing2,omitempty" mapstructure:"myThing2,omitempty"`
+}
+
+type RefBuilder struct {
+	mything *Thing_1
+
+	mything2 *Thing_1
+}
+
+func (b *RefBuilder) Build() *Ref {
+	return &Ref{
+		mything:  b.mything,
+		mything2: b.mything2,
+	}
+}
+
+func (b *RefBuilder) WithMyThing(v *Thing_1) *RefBuilder {
+	b.mything = v
+	return b
+}
+
+func (b *RefBuilder) WithMyThing2(v *Thing_1) *RefBuilder {
+	b.mything2 = v
+	return b
 }
 
 type RefExternalFileWithDupe struct {
@@ -21,23 +82,35 @@ type RefExternalFileWithDupe struct {
 	mything *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
 }
 
+type RefExternalFileWithDupeBuilder struct {
+	myexternalthing *Thing_1
+
+	mything *Thing
+}
+
+func (b *RefExternalFileWithDupeBuilder) Build() *RefExternalFileWithDupe {
+	return &RefExternalFileWithDupe{
+		myexternalthing: b.myexternalthing,
+		mything:         b.mything,
+	}
+}
+
+func (b *RefExternalFileWithDupeBuilder) WithMyExternalThing(v *Thing_1) *RefExternalFileWithDupeBuilder {
+	b.myexternalthing = v
+	return b
+}
+
+func (b *RefExternalFileWithDupeBuilder) WithMyThing(v *Thing) *RefExternalFileWithDupeBuilder {
+	b.mything = v
+	return b
+}
+
 func (o *RefExternalFileWithDupe) MyExternalThing() *Thing_1 {
 	return o.myexternalthing
 }
 
 func (o *RefExternalFileWithDupe) MyThing() *Thing {
 	return o.mything
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RefExternalFileWithDupe) UnmarshalYAML(value *yaml.Node) error {
-	type Plain RefExternalFileWithDupe
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = RefExternalFileWithDupe(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -69,6 +142,17 @@ func (j *RefExternalFileWithDupe) MarshalJSON() ([]byte, error) {
 		Mything:         j.mything,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RefExternalFileWithDupe) UnmarshalYAML(value *yaml.Node) error {
+	type Plain RefExternalFileWithDupe
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RefExternalFileWithDupe(plain)
+	return nil
 }
 
 func (o *Ref) MyThing() *Thing_1 {
@@ -126,24 +210,43 @@ type Thing struct {
 	something *string `json:"something,omitempty,omitzero" yaml:"something,omitempty" mapstructure:"something,omitempty"`
 }
 
+type ThingBuilder struct {
+	something *string
+}
+
+func (b *ThingBuilder) Build() *Thing {
+	return &Thing{
+		something: b.something,
+	}
+}
+
+func (b *ThingBuilder) WithSomething(v *string) *ThingBuilder {
+	b.something = v
+	return b
+}
+
 type Thing_1 struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-func (o *Thing_1) Name() *string {
-	return o.name
+type Thing_1Builder struct {
+	name *string
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Thing_1) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Thing_1
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
+func (b *Thing_1Builder) Build() *Thing_1 {
+	return &Thing_1{
+		name: b.name,
 	}
-	*j = Thing_1(plain)
-	return nil
+}
+
+func (b *Thing_1Builder) WithName(v *string) *Thing_1Builder {
+	b.name = v
+	return b
+}
+
+func (o *Thing_1) Name() *string {
+	return o.name
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -171,6 +274,17 @@ func (j *Thing_1) MarshalJSON() ([]byte, error) {
 		Name: j.name,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing_1) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Thing_1
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Thing_1(plain)
+	return nil
 }
 
 func (o *Thing) Something() *string {

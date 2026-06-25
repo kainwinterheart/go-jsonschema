@@ -36,6 +36,85 @@ type Array struct {
 	mystringarray []string `json:"myStringArray,omitempty,omitzero" yaml:"myStringArray,omitempty" mapstructure:"myStringArray,omitempty"`
 }
 
+type ArrayBuilder struct {
+	myarray []interface{}
+
+	mybooleanarray []bool
+
+	myintegerarray []int
+
+	mynestednullarray [][]interface{}
+
+	mynullarray []interface{}
+
+	mynullableuntypedarray *Arraymynullableuntypedarray
+
+	mynumberarray []float64
+
+	myobjectarray []ArraymyobjectarrayElem
+
+	mystringarray []string
+}
+
+func (b *ArrayBuilder) Build() *Array {
+	return &Array{
+		myarray:                b.myarray,
+		mybooleanarray:         b.mybooleanarray,
+		myintegerarray:         b.myintegerarray,
+		mynestednullarray:      b.mynestednullarray,
+		mynullarray:            b.mynullarray,
+		mynullableuntypedarray: b.mynullableuntypedarray,
+		mynumberarray:          b.mynumberarray,
+		myobjectarray:          b.myobjectarray,
+		mystringarray:          b.mystringarray,
+	}
+}
+
+func (b *ArrayBuilder) WithMyArray(v []interface{}) *ArrayBuilder {
+	b.myarray = v
+	return b
+}
+
+func (b *ArrayBuilder) WithMyBooleanArray(v []bool) *ArrayBuilder {
+	b.mybooleanarray = v
+	return b
+}
+
+func (b *ArrayBuilder) WithMyIntegerArray(v []int) *ArrayBuilder {
+	b.myintegerarray = v
+	return b
+}
+
+func (b *ArrayBuilder) WithMyNestedNullArray(v [][]interface{}) *ArrayBuilder {
+	b.mynestednullarray = v
+	return b
+}
+
+func (b *ArrayBuilder) WithMyNullArray(v []interface{}) *ArrayBuilder {
+	b.mynullarray = v
+	return b
+}
+
+func (b *ArrayBuilder) WithMyNullableUntypedArray(v *Arraymynullableuntypedarray) *ArrayBuilder {
+	b.mynullableuntypedarray = v
+	return b
+}
+
+func (b *ArrayBuilder) WithMyNumberArray(v []float64) *ArrayBuilder {
+	b.mynumberarray = v
+	return b
+}
+
+func (b *ArrayBuilder) WithMyObjectArray(v []ArraymyobjectarrayElem) *ArrayBuilder {
+	b.myobjectarray = v
+	return b
+}
+
+func (b *ArrayBuilder) WithMyStringArray(v []string) *ArrayBuilder {
+	b.mystringarray = v
+	return b
+}
+
 func (o *Array) MyArray() []interface{} {
 	return o.myarray
 }
@@ -177,3 +256,20 @@ func (j *Array) UnmarshalYAML(value *yaml.Node) error {
 type Arraymynullableuntypedarray []interface{}
 
 type ArraymyobjectarrayElem map[string]interface{}
+
+func NewArrayBuilder(o *Array) *ArrayBuilder {
+	if o == nil {
+		return &ArrayBuilder{}
+	}
+	return &ArrayBuilder{
+		myarray:                o.myarray,
+		mybooleanarray:         o.mybooleanarray,
+		myintegerarray:         o.myintegerarray,
+		mynestednullarray:      o.mynestednullarray,
+		mynullarray:            o.mynullarray,
+		mynullableuntypedarray: o.mynullableuntypedarray,
+		mynumberarray:          o.mynumberarray,
+		myobjectarray:          o.myobjectarray,
+		mystringarray:          o.mystringarray,
+	}
+}

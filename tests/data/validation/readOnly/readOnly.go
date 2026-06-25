@@ -6,12 +6,45 @@ import "encoding/json"
 import "fmt"
 import yaml "gopkg.in/yaml.v3"
 
+func NewReadOnlyBuilder(o *ReadOnly) *ReadOnlyBuilder {
+	if o == nil {
+		return &ReadOnlyBuilder{}
+	}
+	return &ReadOnlyBuilder{
+		myreadonlystring: o.myreadonlystring,
+		mystring:         o.mystring,
+	}
+}
+
 type ReadOnly struct {
 	// myreadonlystring corresponds to the JSON schema field "myReadOnlyString".
 	myreadonlystring *string `json:"myReadOnlyString,omitempty,omitzero" yaml:"myReadOnlyString,omitempty" mapstructure:"myReadOnlyString,omitempty"`
 
 	// mystring corresponds to the JSON schema field "myString".
 	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
+}
+
+type ReadOnlyBuilder struct {
+	myreadonlystring *string
+
+	mystring string
+}
+
+func (b *ReadOnlyBuilder) Build() *ReadOnly {
+	return &ReadOnly{
+		myreadonlystring: b.myreadonlystring,
+		mystring:         b.mystring,
+	}
+}
+
+func (b *ReadOnlyBuilder) WithMyReadOnlyString(v *string) *ReadOnlyBuilder {
+	b.myreadonlystring = v
+	return b
+}
+
+func (b *ReadOnlyBuilder) WithMyString(v string) *ReadOnlyBuilder {
+	b.mystring = v
+	return b
 }
 
 func (o *ReadOnly) MyReadOnlyString() *string {

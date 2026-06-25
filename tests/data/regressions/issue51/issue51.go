@@ -15,6 +15,21 @@ type Issue51 struct {
 	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
+type Issue51Builder struct {
+	name *string
+}
+
+func (b *Issue51Builder) Build() *Issue51 {
+	return &Issue51{
+		name: b.name,
+	}
+}
+
+func (b *Issue51Builder) WithName(v *string) *Issue51Builder {
+	b.name = v
+	return b
+}
+
 func (o *Issue51) Name() *string {
 	return o.name
 }
@@ -79,4 +94,13 @@ func (j *Issue51) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = Issue51(plain)
 	return nil
+}
+
+func NewIssue51Builder(o *Issue51) *Issue51Builder {
+	if o == nil {
+		return &Issue51Builder{}
+	}
+	return &Issue51Builder{
+		name: o.name,
+	}
 }

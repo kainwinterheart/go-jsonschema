@@ -6,6 +6,24 @@ import "encoding/json"
 import "fmt"
 import yaml "gopkg.in/yaml.v3"
 
+func NewOmitZeroBuilder(o *OmitZero) *OmitZeroBuilder {
+	if o == nil {
+		return &OmitZeroBuilder{}
+	}
+	return &OmitZeroBuilder{
+		myarray:       o.myarray,
+		myboolean:     o.myboolean,
+		myinteger:     o.myinteger,
+		mymap:         o.mymap,
+		mynull:        o.mynull,
+		mynullarray:   o.mynullarray,
+		mynumber:      o.mynumber,
+		myobjectarray: o.myobjectarray,
+		mystring:      o.mystring,
+		mystringarray: o.mystringarray,
+	}
+}
+
 type OmitZero struct {
 	// myarray corresponds to the JSON schema field "myArray".
 	myarray []interface{} `json:"myArray,omitzero"`
@@ -36,6 +54,93 @@ type OmitZero struct {
 
 	// mystringarray corresponds to the JSON schema field "myStringArray".
 	mystringarray []string `json:"myStringArray,omitzero"`
+}
+
+type OmitZeroBuilder struct {
+	myarray []interface{}
+
+	myboolean *bool
+
+	myinteger *int
+
+	mymap OmitZeromymap
+
+	mynull interface{}
+
+	mynullarray []interface{}
+
+	mynumber *float64
+
+	myobjectarray []OmitZeromyobjectarrayElem
+
+	mystring *string
+
+	mystringarray []string
+}
+
+func (b *OmitZeroBuilder) Build() *OmitZero {
+	return &OmitZero{
+		myarray:       b.myarray,
+		myboolean:     b.myboolean,
+		myinteger:     b.myinteger,
+		mymap:         b.mymap,
+		mynull:        b.mynull,
+		mynullarray:   b.mynullarray,
+		mynumber:      b.mynumber,
+		myobjectarray: b.myobjectarray,
+		mystring:      b.mystring,
+		mystringarray: b.mystringarray,
+	}
+}
+
+func (b *OmitZeroBuilder) WithMyArray(v []interface{}) *OmitZeroBuilder {
+	b.myarray = v
+	return b
+}
+
+func (b *OmitZeroBuilder) WithMyBoolean(v *bool) *OmitZeroBuilder {
+	b.myboolean = v
+	return b
+}
+
+func (b *OmitZeroBuilder) WithMyInteger(v *int) *OmitZeroBuilder {
+	b.myinteger = v
+	return b
+}
+
+func (b *OmitZeroBuilder) WithMyMap(v OmitZeromymap) *OmitZeroBuilder {
+	b.mymap = v
+	return b
+}
+
+func (b *OmitZeroBuilder) WithMyNull(v interface{}) *OmitZeroBuilder {
+	b.mynull = v
+	return b
+}
+
+func (b *OmitZeroBuilder) WithMyNullArray(v []interface{}) *OmitZeroBuilder {
+	b.mynullarray = v
+	return b
+}
+
+func (b *OmitZeroBuilder) WithMyNumber(v *float64) *OmitZeroBuilder {
+	b.mynumber = v
+	return b
+}
+
+func (b *OmitZeroBuilder) WithMyObjectArray(v []OmitZeromyobjectarrayElem) *OmitZeroBuilder {
+	b.myobjectarray = v
+	return b
+}
+
+func (b *OmitZeroBuilder) WithMyString(v *string) *OmitZeroBuilder {
+	b.mystring = v
+	return b
+}
+
+func (b *OmitZeroBuilder) WithMyStringArray(v []string) *OmitZeroBuilder {
+	b.mystringarray = v
+	return b
 }
 
 func (o *OmitZero) MyArray() []interface{} {

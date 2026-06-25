@@ -19,35 +19,35 @@ type Alpha struct {
 	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
+type AlphaBuilder struct {
+	beta Beta
+
+	eta *Eta
+}
+
+func (b *AlphaBuilder) Build() *Alpha {
+	return &Alpha{
+		beta: b.beta,
+		eta:  b.eta,
+	}
+}
+
+func (b *AlphaBuilder) WithBeta(v Beta) *AlphaBuilder {
+	b.beta = v
+	return b
+}
+
+func (b *AlphaBuilder) WithEta(v *Eta) *AlphaBuilder {
+	b.eta = v
+	return b
+}
+
 func (o *Alpha) Beta() Beta {
 	return o.beta
 }
 
 func (o *Alpha) Eta() *Eta {
 	return o.eta
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Alpha) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	type Plain Alpha
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	st := reflect.TypeOf(Plain{})
-	for i := range st.NumField() {
-		delete(raw, st.Field(i).Name)
-		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
-	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
-		return err
-	}
-	*j = Alpha(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -93,6 +93,29 @@ func (j *Alpha) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Alpha) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain Alpha
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = Alpha(plain)
+	return nil
+}
+
 type Beta interface{}
 
 type Eta struct {
@@ -103,6 +126,29 @@ type Eta struct {
 	theta Theta `json:"theta" yaml:"theta" mapstructure:"theta"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
+}
+
+type EtaBuilder struct {
+	epsilon string
+
+	theta Theta
+}
+
+func (b *EtaBuilder) Build() *Eta {
+	return &Eta{
+		epsilon: b.epsilon,
+		theta:   b.theta,
+	}
+}
+
+func (b *EtaBuilder) WithEpsilon(v string) *EtaBuilder {
+	b.epsilon = v
+	return b
+}
+
+func (b *EtaBuilder) WithTheta(v Theta) *EtaBuilder {
+	b.theta = v
+	return b
 }
 
 func (o *Eta) Epsilon() string {
@@ -198,6 +244,21 @@ type Iota struct {
 	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
+type IotaBuilder struct {
+	kappa *TITLE
+}
+
+func (b *IotaBuilder) Build() *Iota {
+	return &Iota{
+		kappa: b.kappa,
+	}
+}
+
+func (b *IotaBuilder) WithKappa(v *TITLE) *IotaBuilder {
+	b.kappa = v
+	return b
+}
+
 func (o *Iota) Kappa() *TITLE {
 	return o.kappa
 }
@@ -271,31 +332,23 @@ type IotakappalambdaElem struct {
 	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
-func (o *IotakappalambdaElem) Sigma() *Alpha {
-	return o.sigma
+type IotakappalambdaElemBuilder struct {
+	sigma *Alpha
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *IotakappalambdaElem) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
+func (b *IotakappalambdaElemBuilder) Build() *IotakappalambdaElem {
+	return &IotakappalambdaElem{
+		sigma: b.sigma,
 	}
-	type Plain IotakappalambdaElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	st := reflect.TypeOf(Plain{})
-	for i := range st.NumField() {
-		delete(raw, st.Field(i).Name)
-		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
-	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
-		return err
-	}
-	*j = IotakappalambdaElem(plain)
-	return nil
+}
+
+func (b *IotakappalambdaElemBuilder) WithSigma(v *Alpha) *IotakappalambdaElemBuilder {
+	b.sigma = v
+	return b
+}
+
+func (o *IotakappalambdaElem) Sigma() *Alpha {
+	return o.sigma
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -337,11 +390,105 @@ func (j *IotakappalambdaElem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *IotakappalambdaElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain IotakappalambdaElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = IotakappalambdaElem(plain)
+	return nil
+}
+
+func NewAlphaBuilder(o *Alpha) *AlphaBuilder {
+	if o == nil {
+		return &AlphaBuilder{}
+	}
+	return &AlphaBuilder{
+		beta: o.beta,
+		eta:  o.eta,
+	}
+}
+
+func NewEtaBuilder(o *Eta) *EtaBuilder {
+	if o == nil {
+		return &EtaBuilder{}
+	}
+	return &EtaBuilder{
+		epsilon: o.epsilon,
+		theta:   o.theta,
+	}
+}
+
+func NewIotaBuilder(o *Iota) *IotaBuilder {
+	if o == nil {
+		return &IotaBuilder{}
+	}
+	return &IotaBuilder{
+		kappa: o.kappa,
+	}
+}
+
+func NewIotakappalambdaElemBuilder(o *IotakappalambdaElem) *IotakappalambdaElemBuilder {
+	if o == nil {
+		return &IotakappalambdaElemBuilder{}
+	}
+	return &IotakappalambdaElemBuilder{
+		sigma: o.sigma,
+	}
+}
+
+func NewPropertiesBuilder(o *Properties) *PropertiesBuilder {
+	if o == nil {
+		return &PropertiesBuilder{}
+	}
+	return &PropertiesBuilder{
+		iota: o.iota,
+	}
+}
+
+func NewTITLEBuilder(o *TITLE) *TITLEBuilder {
+	if o == nil {
+		return &TITLEBuilder{}
+	}
+	return &TITLEBuilder{
+		lambda: o.lambda,
+	}
+}
+
 type Properties struct {
 	// iota corresponds to the JSON schema field "iota".
 	iota Iota `json:"iota" yaml:"iota" mapstructure:"iota"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
+}
+
+type PropertiesBuilder struct {
+	iota Iota
+}
+
+func (b *PropertiesBuilder) Build() *Properties {
+	return &Properties{
+		iota: b.iota,
+	}
+}
+
+func (b *PropertiesBuilder) WithIota(v Iota) *PropertiesBuilder {
+	b.iota = v
+	return b
 }
 
 func (o *Properties) Iota() Iota {
@@ -422,6 +569,21 @@ type TITLE struct {
 	lambda []IotakappalambdaElem `json:"lambda,omitempty,omitzero" yaml:"lambda,omitempty" mapstructure:"lambda,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
+}
+
+type TITLEBuilder struct {
+	lambda []IotakappalambdaElem
+}
+
+func (b *TITLEBuilder) Build() *TITLE {
+	return &TITLE{
+		lambda: b.lambda,
+	}
+}
+
+func (b *TITLEBuilder) WithLambda(v []IotakappalambdaElem) *TITLEBuilder {
+	b.lambda = v
+	return b
 }
 
 func (o *TITLE) Lambda() []IotakappalambdaElem {

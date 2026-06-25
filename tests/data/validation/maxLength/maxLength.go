@@ -15,6 +15,29 @@ type MaxLength struct {
 	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
 }
 
+type MaxLengthBuilder struct {
+	mynullablestring *string
+
+	mystring string
+}
+
+func (b *MaxLengthBuilder) Build() *MaxLength {
+	return &MaxLength{
+		mynullablestring: b.mynullablestring,
+		mystring:         b.mystring,
+	}
+}
+
+func (b *MaxLengthBuilder) WithMyNullableString(v *string) *MaxLengthBuilder {
+	b.mynullablestring = v
+	return b
+}
+
+func (b *MaxLengthBuilder) WithMyString(v string) *MaxLengthBuilder {
+	b.mystring = v
+	return b
+}
+
 func (o *MaxLength) MyNullableString() *string {
 	return o.mynullablestring
 }
@@ -89,4 +112,14 @@ func (j *MaxLength) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = MaxLength(plain)
 	return nil
+}
+
+func NewMaxLengthBuilder(o *MaxLength) *MaxLengthBuilder {
+	if o == nil {
+		return &MaxLengthBuilder{}
+	}
+	return &MaxLengthBuilder{
+		mynullablestring: o.mynullablestring,
+		mystring:         o.mystring,
+	}
 }

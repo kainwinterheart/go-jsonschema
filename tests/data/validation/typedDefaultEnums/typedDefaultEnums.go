@@ -7,9 +7,33 @@ import "fmt"
 import yaml "gopkg.in/yaml.v3"
 import "reflect"
 
+func NewTypedDefaultEnumsBuilder(o *TypedDefaultEnums) *TypedDefaultEnumsBuilder {
+	if o == nil {
+		return &TypedDefaultEnumsBuilder{}
+	}
+	return &TypedDefaultEnumsBuilder{
+		some: o.some,
+	}
+}
+
 type TypedDefaultEnums struct {
 	// some corresponds to the JSON schema field "some".
 	some TypedDefaultEnumssome `json:"some,omitempty,omitzero" yaml:"some,omitempty" mapstructure:"some,omitempty"`
+}
+
+type TypedDefaultEnumsBuilder struct {
+	some TypedDefaultEnumssome
+}
+
+func (b *TypedDefaultEnumsBuilder) Build() *TypedDefaultEnums {
+	return &TypedDefaultEnums{
+		some: b.some,
+	}
+}
+
+func (b *TypedDefaultEnumsBuilder) WithSome(v TypedDefaultEnumssome) *TypedDefaultEnumsBuilder {
+	b.some = v
+	return b
 }
 
 func (o *TypedDefaultEnums) Some() TypedDefaultEnumssome {

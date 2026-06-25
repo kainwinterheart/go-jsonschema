@@ -18,6 +18,37 @@ type Agreement struct {
 	prohibition *float64 `json:"prohibition,omitempty,omitzero" yaml:"prohibition,omitempty" mapstructure:"prohibition,omitempty"`
 }
 
+type AgreementBuilder struct {
+	atype string
+
+	permission *string
+
+	prohibition *float64
+}
+
+func (b *AgreementBuilder) Build() *Agreement {
+	return &Agreement{
+		atype:       b.atype,
+		permission:  b.permission,
+		prohibition: b.prohibition,
+	}
+}
+
+func (b *AgreementBuilder) WithAType(v string) *AgreementBuilder {
+	b.atype = v
+	return b
+}
+
+func (b *AgreementBuilder) WithPermission(v *string) *AgreementBuilder {
+	b.permission = v
+	return b
+}
+
+func (b *AgreementBuilder) WithProhibition(v *float64) *AgreementBuilder {
+	b.prohibition = v
+	return b
+}
+
 type Agreement_0 map[string]interface{}
 
 // UnmarshalYAML implements yaml.Unmarshaler.
@@ -164,6 +195,29 @@ type CommonType struct {
 	prohibition *float64 `json:"prohibition,omitempty,omitzero" yaml:"prohibition,omitempty" mapstructure:"prohibition,omitempty"`
 }
 
+type CommonTypeBuilder struct {
+	permission *string
+
+	prohibition *float64
+}
+
+func (b *CommonTypeBuilder) Build() *CommonType {
+	return &CommonType{
+		permission:  b.permission,
+		prohibition: b.prohibition,
+	}
+}
+
+func (b *CommonTypeBuilder) WithPermission(v *string) *CommonTypeBuilder {
+	b.permission = v
+	return b
+}
+
+func (b *CommonTypeBuilder) WithProhibition(v *float64) *CommonTypeBuilder {
+	b.prohibition = v
+	return b
+}
+
 func (o *CommonType) Permission() *string {
 	return o.permission
 }
@@ -212,4 +266,25 @@ func (j *CommonType) MarshalJSON() ([]byte, error) {
 		Prohibition: j.prohibition,
 	}
 	return json.Marshal(helper)
+}
+
+func NewAgreementBuilder(o *Agreement) *AgreementBuilder {
+	if o == nil {
+		return &AgreementBuilder{}
+	}
+	return &AgreementBuilder{
+		atype:       o.atype,
+		permission:  o.permission,
+		prohibition: o.prohibition,
+	}
+}
+
+func NewCommonTypeBuilder(o *CommonType) *CommonTypeBuilder {
+	if o == nil {
+		return &CommonTypeBuilder{}
+	}
+	return &CommonTypeBuilder{
+		permission:  o.permission,
+		prohibition: o.prohibition,
+	}
 }

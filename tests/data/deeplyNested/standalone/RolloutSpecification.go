@@ -8,6 +8,178 @@ import yaml "gopkg.in/yaml.v3"
 import "regexp"
 import "unicode/utf8"
 
+func NewRolloutSpecificationBuilder(o *RolloutSpecification) *RolloutSpecificationBuilder {
+	if o == nil {
+		return &RolloutSpecificationBuilder{}
+	}
+	return &RolloutSpecificationBuilder{
+		contentversion:    o.contentversion,
+		orchestratedsteps: o.orchestratedsteps,
+		rolloutmetadata:   o.rolloutmetadata,
+	}
+}
+
+func NewapplicationsBuilder(o *applications) *applicationsBuilder {
+	if o == nil {
+		return &applicationsBuilder{}
+	}
+	return &applicationsBuilder{
+		actions:                     o.actions,
+		applyacrossserviceresources: o.applyacrossserviceresources,
+		names:                       o.names,
+	}
+}
+
+func NewapplyacrossserviceresourcesBuilder(o *applyacrossserviceresources) *applyacrossserviceresourcesBuilder {
+	if o == nil {
+		return &applyacrossserviceresourcesBuilder{}
+	}
+	return &applyacrossserviceresourcesBuilder{
+		definitionname:     o.definitionname,
+		deployarmresources: o.deployarmresources,
+		names:              o.names,
+	}
+}
+
+func NewbuildsourceBuilder(o *buildsource) *buildsourceBuilder {
+	if o == nil {
+		return &buildsourceBuilder{}
+	}
+	return &buildsourceBuilder{
+		parameters: o.parameters,
+	}
+}
+
+func NewconfigurationBuilder(o *configuration) *configurationBuilder {
+	if o == nil {
+		return &configurationBuilder{}
+	}
+	return &configurationBuilder{
+		servicescope: o.servicescope,
+	}
+}
+
+func NewemailBuilder(o *email) *emailBuilder {
+	if o == nil {
+		return &emailBuilder{}
+	}
+	return &emailBuilder{
+		cc:      o.cc,
+		options: o.options,
+		to:      o.to,
+	}
+}
+
+func NewincidentBuilder(o *incident) *incidentBuilder {
+	if o == nil {
+		return &incidentBuilder{}
+	}
+	return &incidentBuilder{
+		options:      o.options,
+		properties:   o.properties,
+		providertype: o.providertype,
+	}
+}
+
+func NewincidentoptionsBuilder(o *incidentoptions) *incidentoptionsBuilder {
+	if o == nil {
+		return &incidentoptionsBuilder{}
+	}
+	return &incidentoptionsBuilder{
+		when: o.when,
+	}
+}
+
+func NewnotificationBuilder(o *notification) *notificationBuilder {
+	if o == nil {
+		return &notificationBuilder{}
+	}
+	return &notificationBuilder{
+		email:    o.email,
+		incident: o.incident,
+	}
+}
+
+func NewoptionsBuilder(o *options) *optionsBuilder {
+	if o == nil {
+		return &optionsBuilder{}
+	}
+	return &optionsBuilder{
+		verbosity: o.verbosity,
+		when:      o.when,
+	}
+}
+
+func NeworchestratedstepBuilder(o *orchestratedstep) *orchestratedstepBuilder {
+	if o == nil {
+		return &orchestratedstepBuilder{}
+	}
+	return &orchestratedstepBuilder{
+		actions:      o.actions,
+		applications: o.applications,
+		dependson:    o.dependson,
+		name:         o.name,
+		targetname:   o.targetname,
+		targettype:   o.targettype,
+	}
+}
+
+func NewparametersBuilder(o *parameters) *parametersBuilder {
+	if o == nil {
+		return &parametersBuilder{}
+	}
+	return &parametersBuilder{
+		versionfile: o.versionfile,
+	}
+}
+
+func NewpropertiesBuilder(o *properties) *propertiesBuilder {
+	if o == nil {
+		return &propertiesBuilder{}
+	}
+	return &propertiesBuilder{
+		connectorid: o.connectorid,
+		correlateby: o.correlateby,
+		environment: o.environment,
+		routingid:   o.routingid,
+	}
+}
+
+func NewrolloutmetadataBuilder(o *rolloutmetadata) *rolloutmetadataBuilder {
+	if o == nil {
+		return &rolloutmetadataBuilder{}
+	}
+	return &rolloutmetadataBuilder{
+		buildsource:               o.buildsource,
+		configuration:             o.configuration,
+		name:                      o.name,
+		notification:              o.notification,
+		parameterreplacementspath: o.parameterreplacementspath,
+		rolloutpolicyreferences:   o.rolloutpolicyreferences,
+		rollouttype:               o.rollouttype,
+		servicemodelpath:          o.servicemodelpath,
+	}
+}
+
+func NewrolloutpolicyreferenceBuilder(o *rolloutpolicyreference) *rolloutpolicyreferenceBuilder {
+	if o == nil {
+		return &rolloutpolicyreferenceBuilder{}
+	}
+	return &rolloutpolicyreferenceBuilder{
+		name:    o.name,
+		version: o.version,
+	}
+}
+
+func NewservicescopeBuilder(o *servicescope) *servicescopeBuilder {
+	if o == nil {
+		return &servicescopeBuilder{}
+	}
+	return &servicescopeBuilder{
+		specpath: o.specpath,
+	}
+}
+
 // A document that declares what actions are to be taken as part of an update to an
 // Azure Service.
 type RolloutSpecification struct {
@@ -19,6 +191,37 @@ type RolloutSpecification struct {
 
 	// The metadata associated with this particular rollout.
 	rolloutmetadata rolloutmetadata `json:"rolloutMetadata" yaml:"rolloutMetadata" mapstructure:"rolloutMetadata"`
+}
+
+type RolloutSpecificationBuilder struct {
+	contentversion string
+
+	orchestratedsteps []orchestratedstep
+
+	rolloutmetadata rolloutmetadata
+}
+
+func (b *RolloutSpecificationBuilder) Build() *RolloutSpecification {
+	return &RolloutSpecification{
+		contentversion:    b.contentversion,
+		orchestratedsteps: b.orchestratedsteps,
+		rolloutmetadata:   b.rolloutmetadata,
+	}
+}
+
+func (b *RolloutSpecificationBuilder) WithContentVersion(v string) *RolloutSpecificationBuilder {
+	b.contentversion = v
+	return b
+}
+
+func (b *RolloutSpecificationBuilder) WithOrchestratedSteps(v []orchestratedstep) *RolloutSpecificationBuilder {
+	b.orchestratedsteps = v
+	return b
+}
+
+func (b *RolloutSpecificationBuilder) WithRolloutMetadata(v rolloutmetadata) *RolloutSpecificationBuilder {
+	b.rolloutmetadata = v
+	return b
 }
 
 func (o *RolloutSpecification) ContentVersion() string {
@@ -124,6 +327,37 @@ type applications struct {
 	names []string `json:"names" yaml:"names" mapstructure:"names"`
 }
 
+type applicationsBuilder struct {
+	actions []string
+
+	applyacrossserviceresources applyacrossserviceresources
+
+	names []string
+}
+
+func (b *applicationsBuilder) Build() *applications {
+	return &applications{
+		actions:                     b.actions,
+		applyacrossserviceresources: b.applyacrossserviceresources,
+		names:                       b.names,
+	}
+}
+
+func (b *applicationsBuilder) WithActions(v []string) *applicationsBuilder {
+	b.actions = v
+	return b
+}
+
+func (b *applicationsBuilder) WithApplyAcrossServiceResources(v applyacrossserviceresources) *applicationsBuilder {
+	b.applyacrossserviceresources = v
+	return b
+}
+
+func (b *applicationsBuilder) WithNames(v []string) *applicationsBuilder {
+	b.names = v
+	return b
+}
+
 func (o *applications) Actions() []string {
 	return o.actions
 }
@@ -134,6 +368,30 @@ func (o *applications) ApplyAcrossServiceResources() applyacrossserviceresources
 
 func (o *applications) Names() []string {
 	return o.names
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *applications) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["actions"]; raw != nil && !ok {
+		return fmt.Errorf("field actions in applications: required")
+	}
+	if _, ok := raw["applyAcrossServiceResources"]; raw != nil && !ok {
+		return fmt.Errorf("field applyAcrossServiceResources in applications: required")
+	}
+	if _, ok := raw["names"]; raw != nil && !ok {
+		return fmt.Errorf("field names in applications: required")
+	}
+	type Plain applications
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = applications(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -184,30 +442,6 @@ func (j *applications) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *applications) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["actions"]; raw != nil && !ok {
-		return fmt.Errorf("field actions in applications: required")
-	}
-	if _, ok := raw["applyAcrossServiceResources"]; raw != nil && !ok {
-		return fmt.Errorf("field applyAcrossServiceResources in applications: required")
-	}
-	if _, ok := raw["names"]; raw != nil && !ok {
-		return fmt.Errorf("field names in applications: required")
-	}
-	type Plain applications
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = applications(plain)
-	return nil
-}
-
 // The details of the service resources across which the application has to be
 // deployed.
 type applyacrossserviceresources struct {
@@ -221,6 +455,37 @@ type applyacrossserviceresources struct {
 	names []string `json:"names" yaml:"names" mapstructure:"names"`
 }
 
+type applyacrossserviceresourcesBuilder struct {
+	definitionname string
+
+	deployarmresources *bool
+
+	names []string
+}
+
+func (b *applyacrossserviceresourcesBuilder) Build() *applyacrossserviceresources {
+	return &applyacrossserviceresources{
+		definitionname:     b.definitionname,
+		deployarmresources: b.deployarmresources,
+		names:              b.names,
+	}
+}
+
+func (b *applyacrossserviceresourcesBuilder) WithDefinitionName(v string) *applyacrossserviceresourcesBuilder {
+	b.definitionname = v
+	return b
+}
+
+func (b *applyacrossserviceresourcesBuilder) WithDeployArmResources(v *bool) *applyacrossserviceresourcesBuilder {
+	b.deployarmresources = v
+	return b
+}
+
+func (b *applyacrossserviceresourcesBuilder) WithNames(v []string) *applyacrossserviceresourcesBuilder {
+	b.names = v
+	return b
+}
+
 func (o *applyacrossserviceresources) DefinitionName() string {
 	return o.definitionname
 }
@@ -231,27 +496,6 @@ func (o *applyacrossserviceresources) DeployArmResources() *bool {
 
 func (o *applyacrossserviceresources) Names() []string {
 	return o.names
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *applyacrossserviceresources) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["definitionName"]; raw != nil && !ok {
-		return fmt.Errorf("field definitionName in applyacrossserviceresources: required")
-	}
-	if _, ok := raw["names"]; raw != nil && !ok {
-		return fmt.Errorf("field names in applyacrossserviceresources: required")
-	}
-	type Plain applyacrossserviceresources
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = applyacrossserviceresources(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -299,6 +543,27 @@ func (j *applyacrossserviceresources) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *applyacrossserviceresources) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["definitionName"]; raw != nil && !ok {
+		return fmt.Errorf("field definitionName in applyacrossserviceresources: required")
+	}
+	if _, ok := raw["names"]; raw != nil && !ok {
+		return fmt.Errorf("field names in applyacrossserviceresources: required")
+	}
+	type Plain applyacrossserviceresources
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = applyacrossserviceresources(plain)
+	return nil
+}
+
 // The location of the build to use for this particular rollout.
 type buildsource struct {
 	// The parameters that define how to access and/or prepare the build from this
@@ -306,26 +571,23 @@ type buildsource struct {
 	parameters parameters `json:"parameters" yaml:"parameters" mapstructure:"parameters"`
 }
 
-func (o *buildsource) Parameters() parameters {
-	return o.parameters
+type buildsourceBuilder struct {
+	parameters parameters
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *buildsource) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
+func (b *buildsourceBuilder) Build() *buildsource {
+	return &buildsource{
+		parameters: b.parameters,
 	}
-	if _, ok := raw["parameters"]; raw != nil && !ok {
-		return fmt.Errorf("field parameters in buildsource: required")
-	}
-	type Plain buildsource
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = buildsource(plain)
-	return nil
+}
+
+func (b *buildsourceBuilder) WithParameters(v parameters) *buildsourceBuilder {
+	b.parameters = v
+	return b
+}
+
+func (o *buildsource) Parameters() parameters {
+	return o.parameters
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -362,25 +624,47 @@ func (j *buildsource) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *buildsource) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["parameters"]; raw != nil && !ok {
+		return fmt.Errorf("field parameters in buildsource: required")
+	}
+	type Plain buildsource
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = buildsource(plain)
+	return nil
+}
+
 // Option to use configuration specification file directly in rollout.
 type configuration struct {
 	// Service scope configuration setting
 	servicescope *servicescope `json:"serviceScope,omitempty,omitzero" yaml:"serviceScope,omitempty" mapstructure:"serviceScope,omitempty"`
 }
 
-func (o *configuration) ServiceScope() *servicescope {
-	return o.servicescope
+type configurationBuilder struct {
+	servicescope *servicescope
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *configuration) UnmarshalYAML(value *yaml.Node) error {
-	type Plain configuration
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
+func (b *configurationBuilder) Build() *configuration {
+	return &configuration{
+		servicescope: b.servicescope,
 	}
-	*j = configuration(plain)
-	return nil
+}
+
+func (b *configurationBuilder) WithServiceScope(v *servicescope) *configurationBuilder {
+	b.servicescope = v
+	return b
+}
+
+func (o *configuration) ServiceScope() *servicescope {
+	return o.servicescope
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -410,6 +694,17 @@ func (j *configuration) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *configuration) UnmarshalYAML(value *yaml.Node) error {
+	type Plain configuration
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = configuration(plain)
+	return nil
+}
+
 // Email Notification definitions
 type email struct {
 	// Cc email addresses list separator with ',;'
@@ -421,6 +716,37 @@ type email struct {
 
 	// To email addresses list separator with ',;'
 	to string `json:"to" yaml:"to" mapstructure:"to"`
+}
+
+type emailBuilder struct {
+	cc *string
+
+	options *options
+
+	to string
+}
+
+func (b *emailBuilder) Build() *email {
+	return &email{
+		cc:      b.cc,
+		options: b.options,
+		to:      b.to,
+	}
+}
+
+func (b *emailBuilder) WithCc(v *string) *emailBuilder {
+	b.cc = v
+	return b
+}
+
+func (b *emailBuilder) WithOptions(v *options) *emailBuilder {
+	b.options = v
+	return b
+}
+
+func (b *emailBuilder) WithTo(v string) *emailBuilder {
+	b.to = v
+	return b
 }
 
 func (o *email) Cc() *string {
@@ -507,6 +833,37 @@ type incident struct {
 	providertype string `json:"providerType" yaml:"providerType" mapstructure:"providerType"`
 }
 
+type incidentBuilder struct {
+	options *incidentoptions
+
+	properties properties
+
+	providertype string
+}
+
+func (b *incidentBuilder) Build() *incident {
+	return &incident{
+		options:      b.options,
+		properties:   b.properties,
+		providertype: b.providertype,
+	}
+}
+
+func (b *incidentBuilder) WithOptions(v *incidentoptions) *incidentBuilder {
+	b.options = v
+	return b
+}
+
+func (b *incidentBuilder) WithProperties(v properties) *incidentBuilder {
+	b.properties = v
+	return b
+}
+
+func (b *incidentBuilder) WithProviderType(v string) *incidentBuilder {
+	b.providertype = v
+	return b
+}
+
 func (o *incident) Options() *incidentoptions {
 	return o.options
 }
@@ -591,6 +948,21 @@ type incidentoptions struct {
 	when []string `json:"when,omitempty,omitzero" yaml:"when,omitempty" mapstructure:"when,omitempty"`
 }
 
+type incidentoptionsBuilder struct {
+	when []string
+}
+
+func (b *incidentoptionsBuilder) Build() *incidentoptions {
+	return &incidentoptions{
+		when: b.when,
+	}
+}
+
+func (b *incidentoptionsBuilder) WithWhen(v []string) *incidentoptionsBuilder {
+	b.when = v
+	return b
+}
+
 func (o *incidentoptions) When() []string {
 	return o.when
 }
@@ -642,23 +1014,35 @@ type notification struct {
 	incident *incident `json:"incident,omitempty,omitzero" yaml:"incident,omitempty" mapstructure:"incident,omitempty"`
 }
 
+type notificationBuilder struct {
+	email *email
+
+	incident *incident
+}
+
+func (b *notificationBuilder) Build() *notification {
+	return &notification{
+		email:    b.email,
+		incident: b.incident,
+	}
+}
+
+func (b *notificationBuilder) WithEmail(v *email) *notificationBuilder {
+	b.email = v
+	return b
+}
+
+func (b *notificationBuilder) WithIncident(v *incident) *notificationBuilder {
+	b.incident = v
+	return b
+}
+
 func (o *notification) Email() *email {
 	return o.email
 }
 
 func (o *notification) Incident() *incident {
 	return o.incident
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *notification) UnmarshalYAML(value *yaml.Node) error {
-	type Plain notification
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = notification(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -692,6 +1076,17 @@ func (j *notification) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *notification) UnmarshalYAML(value *yaml.Node) error {
+	type Plain notification
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = notification(plain)
+	return nil
+}
+
 // Conditions of when to sending the email, default will send on all start, error,
 // complete events
 type options struct {
@@ -702,6 +1097,29 @@ type options struct {
 
 	// when corresponds to the JSON schema field "when".
 	when []string `json:"when,omitempty,omitzero" yaml:"when,omitempty" mapstructure:"when,omitempty"`
+}
+
+type optionsBuilder struct {
+	verbosity *string
+
+	when []string
+}
+
+func (b *optionsBuilder) Build() *options {
+	return &options{
+		verbosity: b.verbosity,
+		when:      b.when,
+	}
+}
+
+func (b *optionsBuilder) WithVerbosity(v *string) *optionsBuilder {
+	b.verbosity = v
+	return b
+}
+
+func (b *optionsBuilder) WithWhen(v []string) *optionsBuilder {
+	b.when = v
+	return b
 }
 
 func (o *options) Verbosity() *string {
@@ -787,6 +1205,61 @@ type orchestratedstep struct {
 
 	// The type of the intended target of this rollout.
 	targettype string `json:"targetType" yaml:"targetType" mapstructure:"targetType"`
+}
+
+type orchestratedstepBuilder struct {
+	actions []string
+
+	applications *applications
+
+	dependson []string
+
+	name string
+
+	targetname *string
+
+	targettype string
+}
+
+func (b *orchestratedstepBuilder) Build() *orchestratedstep {
+	return &orchestratedstep{
+		actions:      b.actions,
+		applications: b.applications,
+		dependson:    b.dependson,
+		name:         b.name,
+		targetname:   b.targetname,
+		targettype:   b.targettype,
+	}
+}
+
+func (b *orchestratedstepBuilder) WithActions(v []string) *orchestratedstepBuilder {
+	b.actions = v
+	return b
+}
+
+func (b *orchestratedstepBuilder) WithApplications(v *applications) *orchestratedstepBuilder {
+	b.applications = v
+	return b
+}
+
+func (b *orchestratedstepBuilder) WithDependsOn(v []string) *orchestratedstepBuilder {
+	b.dependson = v
+	return b
+}
+
+func (b *orchestratedstepBuilder) WithName(v string) *orchestratedstepBuilder {
+	b.name = v
+	return b
+}
+
+func (b *orchestratedstepBuilder) WithTargetName(v *string) *orchestratedstepBuilder {
+	b.targetname = v
+	return b
+}
+
+func (b *orchestratedstepBuilder) WithTargetType(v string) *orchestratedstepBuilder {
+	b.targettype = v
+	return b
 }
 
 func (o *orchestratedstep) Actions() []string {
@@ -917,6 +1390,21 @@ type parameters struct {
 	versionfile string `json:"versionFile" yaml:"versionFile" mapstructure:"versionFile"`
 }
 
+type parametersBuilder struct {
+	versionfile string
+}
+
+func (b *parametersBuilder) Build() *parameters {
+	return &parameters{
+		versionfile: b.versionfile,
+	}
+}
+
+func (b *parametersBuilder) WithVersionFile(v string) *parametersBuilder {
+	b.versionfile = v
+	return b
+}
+
 func (o *parameters) VersionFile() string {
 	return o.versionfile
 }
@@ -988,6 +1476,45 @@ type properties struct {
 	routingid string `json:"routingId" yaml:"routingId" mapstructure:"routingId"`
 }
 
+type propertiesBuilder struct {
+	connectorid string
+
+	correlateby *string
+
+	environment *string
+
+	routingid string
+}
+
+func (b *propertiesBuilder) Build() *properties {
+	return &properties{
+		connectorid: b.connectorid,
+		correlateby: b.correlateby,
+		environment: b.environment,
+		routingid:   b.routingid,
+	}
+}
+
+func (b *propertiesBuilder) WithConnectorId(v string) *propertiesBuilder {
+	b.connectorid = v
+	return b
+}
+
+func (b *propertiesBuilder) WithCorrelateBy(v *string) *propertiesBuilder {
+	b.correlateby = v
+	return b
+}
+
+func (b *propertiesBuilder) WithEnvironment(v *string) *propertiesBuilder {
+	b.environment = v
+	return b
+}
+
+func (b *propertiesBuilder) WithRoutingId(v string) *propertiesBuilder {
+	b.routingid = v
+	return b
+}
+
 func (o *properties) ConnectorId() string {
 	return o.connectorid
 }
@@ -1002,6 +1529,37 @@ func (o *properties) Environment() *string {
 
 func (o *properties) RoutingId() string {
 	return o.routingid
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *properties) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["connectorId"]; raw != nil && !ok {
+		return fmt.Errorf("field connectorId in properties: required")
+	}
+	if _, ok := raw["routingId"]; raw != nil && !ok {
+		return fmt.Errorf("field routingId in properties: required")
+	}
+	type Plain properties
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.correlateby != nil {
+		if matched, _ := regexp.MatchString(`(?i)(^rollout$)`, string(*plain.correlateby)); !matched {
+			return fmt.Errorf("field %s pattern match: must match %s", "correlateby", `(?i)(^rollout$)`)
+		}
+	}
+	if plain.environment != nil {
+		if matched, _ := regexp.MatchString(`(?i)(^Dogfood$|^Int$|^Ppe$|^Prod$|^Staging$|^Test$)`, string(*plain.environment)); !matched {
+			return fmt.Errorf("field %s pattern match: must match %s", "environment", `(?i)(^Dogfood$|^Int$|^Ppe$|^Prod$|^Staging$|^Test$)`)
+		}
+	}
+	*j = properties(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -1063,37 +1621,6 @@ func (j *properties) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *properties) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["connectorId"]; raw != nil && !ok {
-		return fmt.Errorf("field connectorId in properties: required")
-	}
-	if _, ok := raw["routingId"]; raw != nil && !ok {
-		return fmt.Errorf("field routingId in properties: required")
-	}
-	type Plain properties
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.correlateby != nil {
-		if matched, _ := regexp.MatchString(`(?i)(^rollout$)`, string(*plain.correlateby)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "correlateby", `(?i)(^rollout$)`)
-		}
-	}
-	if plain.environment != nil {
-		if matched, _ := regexp.MatchString(`(?i)(^Dogfood$|^Int$|^Ppe$|^Prod$|^Staging$|^Test$)`, string(*plain.environment)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "environment", `(?i)(^Dogfood$|^Int$|^Ppe$|^Prod$|^Staging$|^Test$)`)
-		}
-	}
-	*j = properties(plain)
-	return nil
-}
-
 // The metadata associated with this particular rollout.
 type rolloutmetadata struct {
 	// The location of the build to use for this particular rollout.
@@ -1121,6 +1648,77 @@ type rolloutmetadata struct {
 	// The path relative to the Service Group Root that points to the service model of
 	// the service that is being updated as part of this rollout.
 	servicemodelpath string `json:"serviceModelPath" yaml:"serviceModelPath" mapstructure:"serviceModelPath"`
+}
+
+type rolloutmetadataBuilder struct {
+	buildsource buildsource
+
+	configuration *configuration
+
+	name string
+
+	notification *notification
+
+	parameterreplacementspath *string
+
+	rolloutpolicyreferences []rolloutpolicyreference
+
+	rollouttype string
+
+	servicemodelpath string
+}
+
+func (b *rolloutmetadataBuilder) Build() *rolloutmetadata {
+	return &rolloutmetadata{
+		buildsource:               b.buildsource,
+		configuration:             b.configuration,
+		name:                      b.name,
+		notification:              b.notification,
+		parameterreplacementspath: b.parameterreplacementspath,
+		rolloutpolicyreferences:   b.rolloutpolicyreferences,
+		rollouttype:               b.rollouttype,
+		servicemodelpath:          b.servicemodelpath,
+	}
+}
+
+func (b *rolloutmetadataBuilder) WithBuildSource(v buildsource) *rolloutmetadataBuilder {
+	b.buildsource = v
+	return b
+}
+
+func (b *rolloutmetadataBuilder) WithConfiguration(v *configuration) *rolloutmetadataBuilder {
+	b.configuration = v
+	return b
+}
+
+func (b *rolloutmetadataBuilder) WithName(v string) *rolloutmetadataBuilder {
+	b.name = v
+	return b
+}
+
+func (b *rolloutmetadataBuilder) WithNotification(v *notification) *rolloutmetadataBuilder {
+	b.notification = v
+	return b
+}
+
+func (b *rolloutmetadataBuilder) WithParameterReplacementsPath(v *string) *rolloutmetadataBuilder {
+	b.parameterreplacementspath = v
+	return b
+}
+
+func (b *rolloutmetadataBuilder) WithRolloutPolicyReferences(v []rolloutpolicyreference) *rolloutmetadataBuilder {
+	b.rolloutpolicyreferences = v
+	return b
+}
+
+func (b *rolloutmetadataBuilder) WithRolloutType(v string) *rolloutmetadataBuilder {
+	b.rollouttype = v
+	return b
+}
+
+func (b *rolloutmetadataBuilder) WithServiceModelPath(v string) *rolloutmetadataBuilder {
+	b.servicemodelpath = v
+	return b
 }
 
 func (o *rolloutmetadata) BuildSource() buildsource {
@@ -1275,6 +1873,29 @@ type rolloutpolicyreference struct {
 	version string `json:"version" yaml:"version" mapstructure:"version"`
 }
 
+type rolloutpolicyreferenceBuilder struct {
+	name string
+
+	version string
+}
+
+func (b *rolloutpolicyreferenceBuilder) Build() *rolloutpolicyreference {
+	return &rolloutpolicyreference{
+		name:    b.name,
+		version: b.version,
+	}
+}
+
+func (b *rolloutpolicyreferenceBuilder) WithName(v string) *rolloutpolicyreferenceBuilder {
+	b.name = v
+	return b
+}
+
+func (b *rolloutpolicyreferenceBuilder) WithVersion(v string) *rolloutpolicyreferenceBuilder {
+	b.version = v
+	return b
+}
+
 func (o *rolloutpolicyreference) Name() string {
 	return o.name
 }
@@ -1350,6 +1971,21 @@ type servicescope struct {
 	// The path relative to the Service Group Root that points to the service scope
 	// configuration specification.
 	specpath *string `json:"specPath,omitempty,omitzero" yaml:"specPath,omitempty" mapstructure:"specPath,omitempty"`
+}
+
+type servicescopeBuilder struct {
+	specpath *string
+}
+
+func (b *servicescopeBuilder) Build() *servicescope {
+	return &servicescope{
+		specpath: b.specpath,
+	}
+}
+
+func (b *servicescopeBuilder) WithSpecPath(v *string) *servicescopeBuilder {
+	b.specpath = v
+	return b
 }
 
 func (o *servicescope) SpecPath() *string {

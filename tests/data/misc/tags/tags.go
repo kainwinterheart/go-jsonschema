@@ -5,6 +5,17 @@ package test
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewTagsBuilder(o *Tags) *TagsBuilder {
+	if o == nil {
+		return &TagsBuilder{}
+	}
+	return &TagsBuilder{
+		html: o.html,
+		id:   o.id,
+		url:  o.url,
+	}
+}
+
 type Tags struct {
 	// html corresponds to the JSON schema field "html".
 	html *string `yaml:"html,omitempty"`
@@ -14,6 +25,37 @@ type Tags struct {
 
 	// url corresponds to the JSON schema field "url".
 	url *string `yaml:"url,omitempty"`
+}
+
+type TagsBuilder struct {
+	html *string
+
+	id *string
+
+	url *string
+}
+
+func (b *TagsBuilder) Build() *Tags {
+	return &Tags{
+		html: b.html,
+		id:   b.id,
+		url:  b.url,
+	}
+}
+
+func (b *TagsBuilder) WithHtml(v *string) *TagsBuilder {
+	b.html = v
+	return b
+}
+
+func (b *TagsBuilder) WithId(v *string) *TagsBuilder {
+	b.id = v
+	return b
+}
+
+func (b *TagsBuilder) WithUrl(v *string) *TagsBuilder {
+	b.url = v
+	return b
 }
 
 func (o *Tags) Html() *string {

@@ -6,12 +6,45 @@ import "encoding/json"
 import "fmt"
 import yaml "gopkg.in/yaml.v3"
 
+func NewReadOnlyNoValidationBuilder(o *ReadOnlyNoValidation) *ReadOnlyNoValidationBuilder {
+	if o == nil {
+		return &ReadOnlyNoValidationBuilder{}
+	}
+	return &ReadOnlyNoValidationBuilder{
+		myreadonlystring: o.myreadonlystring,
+		mystring:         o.mystring,
+	}
+}
+
 type ReadOnlyNoValidation struct {
 	// myreadonlystring corresponds to the JSON schema field "myReadOnlyString".
 	myreadonlystring *string `json:"myReadOnlyString,omitempty,omitzero" yaml:"myReadOnlyString,omitempty" mapstructure:"myReadOnlyString,omitempty"`
 
 	// mystring corresponds to the JSON schema field "myString".
 	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
+}
+
+type ReadOnlyNoValidationBuilder struct {
+	myreadonlystring *string
+
+	mystring string
+}
+
+func (b *ReadOnlyNoValidationBuilder) Build() *ReadOnlyNoValidation {
+	return &ReadOnlyNoValidation{
+		myreadonlystring: b.myreadonlystring,
+		mystring:         b.mystring,
+	}
+}
+
+func (b *ReadOnlyNoValidationBuilder) WithMyReadOnlyString(v *string) *ReadOnlyNoValidationBuilder {
+	b.myreadonlystring = v
+	return b
+}
+
+func (b *ReadOnlyNoValidationBuilder) WithMyString(v string) *ReadOnlyNoValidationBuilder {
+	b.mystring = v
+	return b
 }
 
 func (o *ReadOnlyNoValidation) MyReadOnlyString() *string {

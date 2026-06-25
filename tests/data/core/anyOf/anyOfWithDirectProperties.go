@@ -10,13 +10,35 @@ import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "strings"
 
-type BaseObject struct {
-	// basefield corresponds to the JSON schema field "BaseField".
-	basefield string `json:"BaseField" yaml:"BaseField" mapstructure:"BaseField"`
+type ComposedWithAllOfAndProperties_0 = BaseObject
+
+func (o *ComposedWithAllOfAndProperties) BaseField() string {
+	return o.basefield
 }
 
-func (o *BaseObject) BaseField() string {
-	return o.basefield
+type BaseObjectBuilder struct {
+	basefield string
+}
+
+type ComposedWithAllOfAndProperties struct {
+	// basefield corresponds to the JSON schema field "BaseField".
+	basefield string `json:"BaseField" yaml:"BaseField" mapstructure:"BaseField"`
+
+	// directfield corresponds to the JSON schema field "DirectField".
+	directfield []string `json:"DirectField,omitempty,omitzero" yaml:"DirectField,omitempty" mapstructure:"DirectField,omitempty"`
+
+	AdditionalProperties interface{} `mapstructure:",remain"`
+}
+
+func (b *BaseObjectBuilder) Build() *BaseObject {
+	return &BaseObject{
+		basefield: b.basefield,
+	}
+}
+
+func (b *BaseObjectBuilder) WithBaseField(v string) *BaseObjectBuilder {
+	b.basefield = v
+	return b
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -71,20 +93,36 @@ func (j *BaseObject) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-type ComposedWithAllOfAndProperties_0 = BaseObject
-
-type ComposedWithAllOfAndProperties struct {
-	// basefield corresponds to the JSON schema field "BaseField".
-	basefield string `json:"BaseField" yaml:"BaseField" mapstructure:"BaseField"`
-
-	// directfield corresponds to the JSON schema field "DirectField".
-	directfield []string `json:"DirectField,omitempty,omitzero" yaml:"DirectField,omitempty" mapstructure:"DirectField,omitempty"`
-
-	AdditionalProperties interface{} `mapstructure:",remain"`
+func (o *BaseObject) BaseField() string {
+	return o.basefield
 }
 
-func (o *ComposedWithAllOfAndProperties) BaseField() string {
-	return o.basefield
+type BaseObject struct {
+	// basefield corresponds to the JSON schema field "BaseField".
+	basefield string `json:"BaseField" yaml:"BaseField" mapstructure:"BaseField"`
+}
+
+func (b *ComposedWithAllOfAndPropertiesBuilder) WithDirectField(v []string) *ComposedWithAllOfAndPropertiesBuilder {
+	b.directfield = v
+	return b
+}
+
+func (b *ComposedWithAllOfAndPropertiesBuilder) WithBaseField(v string) *ComposedWithAllOfAndPropertiesBuilder {
+	b.basefield = v
+	return b
+}
+
+type ComposedWithAllOfAndPropertiesBuilder struct {
+	basefield string
+
+	directfield []string
+}
+
+func (b *ComposedWithAllOfAndPropertiesBuilder) Build() *ComposedWithAllOfAndProperties {
+	return &ComposedWithAllOfAndProperties{
+		basefield:   b.basefield,
+		directfield: b.directfield,
+	}
 }
 
 func (o *ComposedWithAllOfAndProperties) DirectField() []string {
@@ -171,4 +209,23 @@ func (j *ComposedWithAllOfAndProperties) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = ComposedWithAllOfAndProperties(plain)
 	return nil
+}
+
+func NewBaseObjectBuilder(o *BaseObject) *BaseObjectBuilder {
+	if o == nil {
+		return &BaseObjectBuilder{}
+	}
+	return &BaseObjectBuilder{
+		basefield: o.basefield,
+	}
+}
+
+func NewComposedWithAllOfAndPropertiesBuilder(o *ComposedWithAllOfAndProperties) *ComposedWithAllOfAndPropertiesBuilder {
+	if o == nil {
+		return &ComposedWithAllOfAndPropertiesBuilder{}
+	}
+	return &ComposedWithAllOfAndPropertiesBuilder{
+		basefield:   o.basefield,
+		directfield: o.directfield,
+	}
 }

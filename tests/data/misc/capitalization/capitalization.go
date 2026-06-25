@@ -55,6 +55,126 @@ type Capitalization struct {
 	a속성 *string `json:"속성,omitempty,omitzero" yaml:"속성,omitempty" mapstructure:"속성,omitempty"`
 }
 
+type CapitalizationBuilder struct {
+	html *string
+
+	htmlsomethingelse *string
+
+	html_2 *string
+
+	htmlsomething *string
+
+	id *string
+
+	idsomethingelse *string
+
+	id_2 *string
+
+	idsomething *string
+
+	url *string
+
+	urlsomethingelse *string
+
+	url_2 *string
+
+	urlsomething *string
+
+	aアトリビュート *string
+
+	a属性 *string
+
+	a屬性 *string
+
+	a속성 *string
+}
+
+func (b *CapitalizationBuilder) Build() *Capitalization {
+	return &Capitalization{
+		html:              b.html,
+		htmlsomethingelse: b.htmlsomethingelse,
+		html_2:            b.html_2,
+		htmlsomething:     b.htmlsomething,
+		id:                b.id,
+		idsomethingelse:   b.idsomethingelse,
+		id_2:              b.id_2,
+		idsomething:       b.idsomething,
+		url:               b.url,
+		urlsomethingelse:  b.urlsomethingelse,
+		url_2:             b.url_2,
+		urlsomething:      b.urlsomething,
+		aアトリビュート:          b.aアトリビュート,
+		a属性:               b.a属性,
+		a屬性:               b.a屬性,
+		a속성:               b.a속성,
+	}
+}
+
+func (b *CapitalizationBuilder) WithAアトリビュート(v *string) *CapitalizationBuilder {
+	b.aアトリビュート = v
+	return b
+}
+
+func (b *CapitalizationBuilder) WithA属性(v *string) *CapitalizationBuilder {
+	b.a属性 = v
+	return b
+}
+
+func (b *CapitalizationBuilder) WithA屬性(v *string) *CapitalizationBuilder {
+	b.a屬性 = v
+	return b
+}
+
+func (b *CapitalizationBuilder) WithA속성(v *string) *CapitalizationBuilder {
+	b.a속성 = v
+	return b
+}
+
+func (b *CapitalizationBuilder) WithHtMl(v *string) *CapitalizationBuilder {
+	b.html = v
+	return b
+}
+
+func (b *CapitalizationBuilder) WithHtMlSomething(v *string) *CapitalizationBuilder {
+	b.htmlsomething = v
+	return b
+}
+
+func (b *CapitalizationBuilder) WithHtMlSomethingElse(v *string) *CapitalizationBuilder {
+	b.htmlsomethingelse = v
+	return b
+}
+
+func (b *CapitalizationBuilder) WithID(v *string) *CapitalizationBuilder {
+	b.id = v
+	return b
+}
+
+func (b *CapitalizationBuilder) WithIDSomething(v *string) *CapitalizationBuilder {
+	b.idsomething = v
+	return b
+}
+
+func (b *CapitalizationBuilder) WithIDSomethingElse(v *string) *CapitalizationBuilder {
+	b.idsomethingelse = v
+	return b
+}
+
+func (b *CapitalizationBuilder) WithURL(v *string) *CapitalizationBuilder {
+	b.url = v
+	return b
+}
+
+func (b *CapitalizationBuilder) WithURLSomething(v *string) *CapitalizationBuilder {
+	b.urlsomething = v
+	return b
+}
+
+func (b *CapitalizationBuilder) WithURLSomethingElse(v *string) *CapitalizationBuilder {
+	b.urlsomethingelse = v
+	return b
+}
+
 func (o *Capitalization) Aアトリビュート() *string {
 	return o.aアトリビュート
 }
@@ -203,4 +323,28 @@ func (j *Capitalization) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = Capitalization(plain)
 	return nil
+}
+
+func NewCapitalizationBuilder(o *Capitalization) *CapitalizationBuilder {
+	if o == nil {
+		return &CapitalizationBuilder{}
+	}
+	return &CapitalizationBuilder{
+		html:              o.html,
+		htmlsomethingelse: o.htmlsomethingelse,
+		html_2:            o.html_2,
+		htmlsomething:     o.htmlsomething,
+		id:                o.id,
+		idsomethingelse:   o.idsomethingelse,
+		id_2:              o.id_2,
+		idsomething:       o.idsomething,
+		url:               o.url,
+		urlsomethingelse:  o.urlsomethingelse,
+		url_2:             o.url_2,
+		urlsomething:      o.urlsomething,
+		aアトリビュート:          o.aアトリビュート,
+		a属性:               o.a属性,
+		a屬性:               o.a屬性,
+		a속성:               o.a속성,
+	}
 }

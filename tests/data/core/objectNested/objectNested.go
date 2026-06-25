@@ -5,13 +5,66 @@ package test
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewObjectNestedBuilder(o *ObjectNested) *ObjectNestedBuilder {
+	if o == nil {
+		return &ObjectNestedBuilder{}
+	}
+	return &ObjectNestedBuilder{
+		myobject: o.myobject,
+	}
+}
+
+func NewObjectNestedmyobjectBuilder(o *ObjectNestedmyobject) *ObjectNestedmyobjectBuilder {
+	if o == nil {
+		return &ObjectNestedmyobjectBuilder{}
+	}
+	return &ObjectNestedmyobjectBuilder{
+		myobject: o.myobject,
+	}
+}
+
+func NewObjectNestedmyobjectmyobjectBuilder(o *ObjectNestedmyobjectmyobject) *ObjectNestedmyobjectmyobjectBuilder {
+	if o == nil {
+		return &ObjectNestedmyobjectmyobjectBuilder{}
+	}
+	return &ObjectNestedmyobjectmyobjectBuilder{
+		mystring: o.mystring,
+	}
+}
+
 type ObjectNested struct {
 	// myobject corresponds to the JSON schema field "myObject".
 	myobject *ObjectNestedmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
 }
 
+type ObjectNestedBuilder struct {
+	myobject *ObjectNestedmyobject
+}
+
+func (b *ObjectNestedBuilder) Build() *ObjectNested {
+	return &ObjectNested{
+		myobject: b.myobject,
+	}
+}
+
+func (b *ObjectNestedBuilder) WithMyObject(v *ObjectNestedmyobject) *ObjectNestedBuilder {
+	b.myobject = v
+	return b
+}
+
 func (o *ObjectNested) MyObject() *ObjectNestedmyobject {
 	return o.myobject
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ObjectNested) UnmarshalYAML(value *yaml.Node) error {
+	type Plain ObjectNested
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ObjectNested(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -41,20 +94,24 @@ func (j *ObjectNested) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *ObjectNested) UnmarshalYAML(value *yaml.Node) error {
-	type Plain ObjectNested
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = ObjectNested(plain)
-	return nil
-}
-
 type ObjectNestedmyobject struct {
 	// myobject corresponds to the JSON schema field "myObject".
 	myobject *ObjectNestedmyobjectmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+}
+
+type ObjectNestedmyobjectBuilder struct {
+	myobject *ObjectNestedmyobjectmyobject
+}
+
+func (b *ObjectNestedmyobjectBuilder) Build() *ObjectNestedmyobject {
+	return &ObjectNestedmyobject{
+		myobject: b.myobject,
+	}
+}
+
+func (b *ObjectNestedmyobjectBuilder) WithMyObject(v *ObjectNestedmyobjectmyobject) *ObjectNestedmyobjectBuilder {
+	b.myobject = v
+	return b
 }
 
 func (o *ObjectNestedmyobject) MyObject() *ObjectNestedmyobjectmyobject {
@@ -104,8 +161,34 @@ type ObjectNestedmyobjectmyobject struct {
 	mystring *string `json:"myString,omitempty,omitzero" yaml:"myString,omitempty" mapstructure:"myString,omitempty"`
 }
 
+type ObjectNestedmyobjectmyobjectBuilder struct {
+	mystring *string
+}
+
+func (b *ObjectNestedmyobjectmyobjectBuilder) Build() *ObjectNestedmyobjectmyobject {
+	return &ObjectNestedmyobjectmyobject{
+		mystring: b.mystring,
+	}
+}
+
+func (b *ObjectNestedmyobjectmyobjectBuilder) WithMyString(v *string) *ObjectNestedmyobjectmyobjectBuilder {
+	b.mystring = v
+	return b
+}
+
 func (o *ObjectNestedmyobjectmyobject) MyString() *string {
 	return o.mystring
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ObjectNestedmyobjectmyobject) UnmarshalYAML(value *yaml.Node) error {
+	type Plain ObjectNestedmyobjectmyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ObjectNestedmyobjectmyobject(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -133,15 +216,4 @@ func (j *ObjectNestedmyobjectmyobject) MarshalJSON() ([]byte, error) {
 		Mystring: j.mystring,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *ObjectNestedmyobjectmyobject) UnmarshalYAML(value *yaml.Node) error {
-	type Plain ObjectNestedmyobjectmyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = ObjectNestedmyobjectmyobject(plain)
-	return nil
 }

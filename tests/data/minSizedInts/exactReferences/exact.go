@@ -40,6 +40,77 @@ type Exact struct {
 	u8 UBound8 `json:"u8" yaml:"u8" mapstructure:"u8"`
 }
 
+type ExactBuilder struct {
+	i16 Bound16
+
+	i32 Bound32
+
+	i64 Bound64
+
+	i8 Bound8
+
+	u16 UBound16
+
+	u32 UBound32
+
+	u64 UBound64
+
+	u8 UBound8
+}
+
+func (b *ExactBuilder) Build() *Exact {
+	return &Exact{
+		i16: b.i16,
+		i32: b.i32,
+		i64: b.i64,
+		i8:  b.i8,
+		u16: b.u16,
+		u32: b.u32,
+		u64: b.u64,
+		u8:  b.u8,
+	}
+}
+
+func (b *ExactBuilder) WithI16(v Bound16) *ExactBuilder {
+	b.i16 = v
+	return b
+}
+
+func (b *ExactBuilder) WithI32(v Bound32) *ExactBuilder {
+	b.i32 = v
+	return b
+}
+
+func (b *ExactBuilder) WithI64(v Bound64) *ExactBuilder {
+	b.i64 = v
+	return b
+}
+
+func (b *ExactBuilder) WithI8(v Bound8) *ExactBuilder {
+	b.i8 = v
+	return b
+}
+
+func (b *ExactBuilder) WithU16(v UBound16) *ExactBuilder {
+	b.u16 = v
+	return b
+}
+
+func (b *ExactBuilder) WithU32(v UBound32) *ExactBuilder {
+	b.u32 = v
+	return b
+}
+
+func (b *ExactBuilder) WithU64(v UBound64) *ExactBuilder {
+	b.u64 = v
+	return b
+}
+
+func (b *ExactBuilder) WithU8(v UBound8) *ExactBuilder {
+	b.u8 = v
+	return b
+}
+
 func (o *Exact) I16() Bound16 {
 	return o.i16
 }
@@ -192,6 +263,22 @@ func (j *Exact) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = Exact(plain)
 	return nil
+}
+
+func NewExactBuilder(o *Exact) *ExactBuilder {
+	if o == nil {
+		return &ExactBuilder{}
+	}
+	return &ExactBuilder{
+		i16: o.i16,
+		i32: o.i32,
+		i64: o.i64,
+		i8:  o.i8,
+		u16: o.u16,
+		u32: o.u32,
+		u64: o.u64,
+		u8:  o.u8,
+	}
 }
 
 type UBound16 uint16

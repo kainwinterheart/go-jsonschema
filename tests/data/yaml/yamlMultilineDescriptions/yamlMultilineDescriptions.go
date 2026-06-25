@@ -5,6 +5,16 @@ package test
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewYamlMultilineDescriptionsBuilder(o *YamlMultilineDescriptions) *YamlMultilineDescriptionsBuilder {
+	if o == nil {
+		return &YamlMultilineDescriptionsBuilder{}
+	}
+	return &YamlMultilineDescriptionsBuilder{
+		bar: o.bar,
+		foo: o.foo,
+	}
+}
+
 type YamlMultilineDescriptions struct {
 	// I'm a multiline description in a literal block. Literal blocks, on the other
 	// hand,
@@ -19,6 +29,29 @@ type YamlMultilineDescriptions struct {
 	// They should also not end in a line break.
 	//
 	foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
+}
+
+type YamlMultilineDescriptionsBuilder struct {
+	bar *string
+
+	foo *string
+}
+
+func (b *YamlMultilineDescriptionsBuilder) Build() *YamlMultilineDescriptions {
+	return &YamlMultilineDescriptions{
+		bar: b.bar,
+		foo: b.foo,
+	}
+}
+
+func (b *YamlMultilineDescriptionsBuilder) WithBar(v *string) *YamlMultilineDescriptionsBuilder {
+	b.bar = v
+	return b
+}
+
+func (b *YamlMultilineDescriptionsBuilder) WithFoo(v *string) *YamlMultilineDescriptionsBuilder {
+	b.foo = v
+	return b
 }
 
 func (o *YamlMultilineDescriptions) Bar() *string {

@@ -9,11 +9,35 @@ import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "strings"
 
+func NewStructWithConstraintsBuilder(o *StructWithConstraints) *StructWithConstraintsBuilder {
+	if o == nil {
+		return &StructWithConstraintsBuilder{}
+	}
+	return &StructWithConstraintsBuilder{
+		prop: o.prop,
+	}
+}
+
 type StructWithConstraints struct {
 	// prop corresponds to the JSON schema field "prop".
 	prop *float64 `json:"prop,omitempty,omitzero" yaml:"prop,omitempty" mapstructure:"prop,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
+}
+
+type StructWithConstraintsBuilder struct {
+	prop *float64
+}
+
+func (b *StructWithConstraintsBuilder) Build() *StructWithConstraints {
+	return &StructWithConstraints{
+		prop: b.prop,
+	}
+}
+
+func (b *StructWithConstraintsBuilder) WithProp(v *float64) *StructWithConstraintsBuilder {
+	b.prop = v
+	return b
 }
 
 func (o *StructWithConstraints) Prop() *float64 {

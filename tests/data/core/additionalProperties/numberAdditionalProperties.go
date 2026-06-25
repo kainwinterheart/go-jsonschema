@@ -8,11 +8,35 @@ import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "strings"
 
+func NewNumberAdditionalPropertiesBuilder(o *NumberAdditionalProperties) *NumberAdditionalPropertiesBuilder {
+	if o == nil {
+		return &NumberAdditionalPropertiesBuilder{}
+	}
+	return &NumberAdditionalPropertiesBuilder{
+		name: o.name,
+	}
+}
+
 type NumberAdditionalProperties struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 
 	AdditionalProperties map[string]float64 `mapstructure:",remain"`
+}
+
+type NumberAdditionalPropertiesBuilder struct {
+	name *string
+}
+
+func (b *NumberAdditionalPropertiesBuilder) Build() *NumberAdditionalProperties {
+	return &NumberAdditionalProperties{
+		name: b.name,
+	}
+}
+
+func (b *NumberAdditionalPropertiesBuilder) WithName(v *string) *NumberAdditionalPropertiesBuilder {
+	b.name = v
+	return b
 }
 
 func (o *NumberAdditionalProperties) Name() *string {

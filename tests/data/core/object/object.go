@@ -6,9 +6,42 @@ import "encoding/json"
 import "fmt"
 import yaml "gopkg.in/yaml.v3"
 
+func NewObjectBuilder(o *Object) *ObjectBuilder {
+	if o == nil {
+		return &ObjectBuilder{}
+	}
+	return &ObjectBuilder{
+		myobject: o.myobject,
+	}
+}
+
+func NewObjectmyobjectBuilder(o *Objectmyobject) *ObjectmyobjectBuilder {
+	if o == nil {
+		return &ObjectmyobjectBuilder{}
+	}
+	return &ObjectmyobjectBuilder{
+		mystring: o.mystring,
+	}
+}
+
 type Object struct {
 	// myobject corresponds to the JSON schema field "myObject".
 	myobject *Objectmyobject `json:"myObject,omitempty,omitzero" yaml:"myObject,omitempty" mapstructure:"myObject,omitempty"`
+}
+
+type ObjectBuilder struct {
+	myobject *Objectmyobject
+}
+
+func (b *ObjectBuilder) Build() *Object {
+	return &Object{
+		myobject: b.myobject,
+	}
+}
+
+func (b *ObjectBuilder) WithMyObject(v *Objectmyobject) *ObjectBuilder {
+	b.myobject = v
+	return b
 }
 
 func (o *Object) MyObject() *Objectmyobject {
@@ -56,6 +89,21 @@ func (j *Object) UnmarshalYAML(value *yaml.Node) error {
 type Objectmyobject struct {
 	// mystring corresponds to the JSON schema field "myString".
 	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
+}
+
+type ObjectmyobjectBuilder struct {
+	mystring string
+}
+
+func (b *ObjectmyobjectBuilder) Build() *Objectmyobject {
+	return &Objectmyobject{
+		mystring: b.mystring,
+	}
+}
+
+func (b *ObjectmyobjectBuilder) WithMyString(v string) *ObjectmyobjectBuilder {
+	b.mystring = v
+	return b
 }
 
 func (o *Objectmyobject) MyString() string {

@@ -7,6 +7,25 @@ import "fmt"
 import yaml "gopkg.in/yaml.v3"
 import "time"
 
+func NewPointerBuilder(o *Pointer) *PointerBuilder {
+	if o == nil {
+		return &PointerBuilder{}
+	}
+	return &PointerBuilder{
+		boolwithdefault:          o.boolwithdefault,
+		durationwithdefault:      o.durationwithdefault,
+		intwithdefault:           o.intwithdefault,
+		normaldefault:            o.normaldefault,
+		normaloptional:           o.normaloptional,
+		optionalintnonpointer:    o.optionalintnonpointer,
+		optionalstringnonpointer: o.optionalstringnonpointer,
+		requiredintnonpointer:    o.requiredintnonpointer,
+		requiredintpointer:       o.requiredintpointer,
+		slicewithdefault:         o.slicewithdefault,
+		stringwithdefault:        o.stringwithdefault,
+	}
+}
+
 type Pointer struct {
 	// boolwithdefault corresponds to the JSON schema field "boolWithDefault".
 	boolwithdefault *bool `json:"boolWithDefault,omitempty,omitzero" yaml:"boolWithDefault,omitempty" mapstructure:"boolWithDefault,omitempty"`
@@ -43,6 +62,101 @@ type Pointer struct {
 
 	// stringwithdefault corresponds to the JSON schema field "stringWithDefault".
 	stringwithdefault *string `json:"stringWithDefault,omitempty,omitzero" yaml:"stringWithDefault,omitempty" mapstructure:"stringWithDefault,omitempty"`
+}
+
+type PointerBuilder struct {
+	boolwithdefault *bool
+
+	durationwithdefault *time.Duration
+
+	intwithdefault *int
+
+	normaldefault string
+
+	normaloptional *string
+
+	optionalintnonpointer int
+
+	optionalstringnonpointer string
+
+	requiredintnonpointer int
+
+	requiredintpointer *int
+
+	slicewithdefault []string
+
+	stringwithdefault *string
+}
+
+func (b *PointerBuilder) Build() *Pointer {
+	return &Pointer{
+		boolwithdefault:          b.boolwithdefault,
+		durationwithdefault:      b.durationwithdefault,
+		intwithdefault:           b.intwithdefault,
+		normaldefault:            b.normaldefault,
+		normaloptional:           b.normaloptional,
+		optionalintnonpointer:    b.optionalintnonpointer,
+		optionalstringnonpointer: b.optionalstringnonpointer,
+		requiredintnonpointer:    b.requiredintnonpointer,
+		requiredintpointer:       b.requiredintpointer,
+		slicewithdefault:         b.slicewithdefault,
+		stringwithdefault:        b.stringwithdefault,
+	}
+}
+
+func (b *PointerBuilder) WithBoolWithDefault(v *bool) *PointerBuilder {
+	b.boolwithdefault = v
+	return b
+}
+
+func (b *PointerBuilder) WithDurationWithDefault(v *time.Duration) *PointerBuilder {
+	b.durationwithdefault = v
+	return b
+}
+
+func (b *PointerBuilder) WithIntWithDefault(v *int) *PointerBuilder {
+	b.intwithdefault = v
+	return b
+}
+
+func (b *PointerBuilder) WithNormalDefault(v string) *PointerBuilder {
+	b.normaldefault = v
+	return b
+}
+
+func (b *PointerBuilder) WithNormalOptional(v *string) *PointerBuilder {
+	b.normaloptional = v
+	return b
+}
+
+func (b *PointerBuilder) WithOptionalIntNonPointer(v int) *PointerBuilder {
+	b.optionalintnonpointer = v
+	return b
+}
+
+func (b *PointerBuilder) WithOptionalStringNonPointer(v string) *PointerBuilder {
+	b.optionalstringnonpointer = v
+	return b
+}
+
+func (b *PointerBuilder) WithRequiredIntNonPointer(v int) *PointerBuilder {
+	b.requiredintnonpointer = v
+	return b
+}
+
+func (b *PointerBuilder) WithRequiredIntPointer(v *int) *PointerBuilder {
+	b.requiredintpointer = v
+	return b
+}
+
+func (b *PointerBuilder) WithSliceWithDefault(v []string) *PointerBuilder {
+	b.slicewithdefault = v
+	return b
+}
+
+func (b *PointerBuilder) WithStringWithDefault(v *string) *PointerBuilder {
+	b.stringwithdefault = v
+	return b
 }
 
 func (o *Pointer) BoolWithDefault() *bool {

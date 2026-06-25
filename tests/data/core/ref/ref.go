@@ -5,6 +5,25 @@ package test
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewRefBuilder(o *Ref) *RefBuilder {
+	if o == nil {
+		return &RefBuilder{}
+	}
+	return &RefBuilder{
+		mything:  o.mything,
+		mything2: o.mything2,
+	}
+}
+
+func NewThingBuilder(o *Thing) *ThingBuilder {
+	if o == nil {
+		return &ThingBuilder{}
+	}
+	return &ThingBuilder{
+		name: o.name,
+	}
+}
+
 type Ref struct {
 	// mything corresponds to the JSON schema field "myThing".
 	mything *Thing `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
@@ -13,12 +32,46 @@ type Ref struct {
 	mything2 *Thing `json:"myThing2,omitempty,omitzero" yaml:"myThing2,omitempty" mapstructure:"myThing2,omitempty"`
 }
 
+type RefBuilder struct {
+	mything *Thing
+
+	mything2 *Thing
+}
+
+func (b *RefBuilder) Build() *Ref {
+	return &Ref{
+		mything:  b.mything,
+		mything2: b.mything2,
+	}
+}
+
+func (b *RefBuilder) WithMyThing(v *Thing) *RefBuilder {
+	b.mything = v
+	return b
+}
+
+func (b *RefBuilder) WithMyThing2(v *Thing) *RefBuilder {
+	b.mything2 = v
+	return b
+}
+
 func (o *Ref) MyThing() *Thing {
 	return o.mything
 }
 
 func (o *Ref) MyThing2() *Thing {
 	return o.mything2
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Ref) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Ref
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Ref(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -52,24 +105,39 @@ func (j *Ref) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Ref) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Ref
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Ref(plain)
-	return nil
-}
-
 type Thing struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
+type ThingBuilder struct {
+	name *string
+}
+
+func (b *ThingBuilder) Build() *Thing {
+	return &Thing{
+		name: b.name,
+	}
+}
+
+func (b *ThingBuilder) WithName(v *string) *ThingBuilder {
+	b.name = v
+	return b
+}
+
 func (o *Thing) Name() *string {
 	return o.name
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Thing
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Thing(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -97,15 +165,4 @@ func (j *Thing) MarshalJSON() ([]byte, error) {
 		Name: j.name,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Thing
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Thing(plain)
-	return nil
 }

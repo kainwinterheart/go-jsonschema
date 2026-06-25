@@ -5,9 +5,33 @@ package test
 import "encoding/json"
 import yaml "gopkg.in/yaml.v3"
 
+func NewTypedDefaultBuilder(o *TypedDefault) *TypedDefaultBuilder {
+	if o == nil {
+		return &TypedDefaultBuilder{}
+	}
+	return &TypedDefaultBuilder{
+		topleveldomains: o.topleveldomains,
+	}
+}
+
 type TypedDefault struct {
 	// topleveldomains corresponds to the JSON schema field "topLevelDomains".
 	topleveldomains []string `json:"topLevelDomains,omitempty,omitzero" yaml:"topLevelDomains,omitempty" mapstructure:"topLevelDomains,omitempty"`
+}
+
+type TypedDefaultBuilder struct {
+	topleveldomains []string
+}
+
+func (b *TypedDefaultBuilder) Build() *TypedDefault {
+	return &TypedDefault{
+		topleveldomains: b.topleveldomains,
+	}
+}
+
+func (b *TypedDefaultBuilder) WithTopLevelDomains(v []string) *TypedDefaultBuilder {
+	b.topleveldomains = v
+	return b
 }
 
 func (o *TypedDefault) TopLevelDomains() []string {

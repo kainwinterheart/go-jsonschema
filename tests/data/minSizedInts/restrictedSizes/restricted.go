@@ -6,6 +6,22 @@ import "encoding/json"
 import "fmt"
 import yaml "gopkg.in/yaml.v3"
 
+func NewRestrictedBuilder(o *Restricted) *RestrictedBuilder {
+	if o == nil {
+		return &RestrictedBuilder{}
+	}
+	return &RestrictedBuilder{
+		i16: o.i16,
+		i32: o.i32,
+		i64: o.i64,
+		i8:  o.i8,
+		u16: o.u16,
+		u32: o.u32,
+		u64: o.u64,
+		u8:  o.u8,
+	}
+}
+
 type Restricted struct {
 	// i16 corresponds to the JSON schema field "i16".
 	i16 int16 `json:"i16" yaml:"i16" mapstructure:"i16"`
@@ -30,6 +46,77 @@ type Restricted struct {
 
 	// u8 corresponds to the JSON schema field "u8".
 	u8 uint8 `json:"u8" yaml:"u8" mapstructure:"u8"`
+}
+
+type RestrictedBuilder struct {
+	i16 int16
+
+	i32 int32
+
+	i64 int64
+
+	i8 int8
+
+	u16 uint16
+
+	u32 uint32
+
+	u64 uint64
+
+	u8 uint8
+}
+
+func (b *RestrictedBuilder) Build() *Restricted {
+	return &Restricted{
+		i16: b.i16,
+		i32: b.i32,
+		i64: b.i64,
+		i8:  b.i8,
+		u16: b.u16,
+		u32: b.u32,
+		u64: b.u64,
+		u8:  b.u8,
+	}
+}
+
+func (b *RestrictedBuilder) WithI16(v int16) *RestrictedBuilder {
+	b.i16 = v
+	return b
+}
+
+func (b *RestrictedBuilder) WithI32(v int32) *RestrictedBuilder {
+	b.i32 = v
+	return b
+}
+
+func (b *RestrictedBuilder) WithI64(v int64) *RestrictedBuilder {
+	b.i64 = v
+	return b
+}
+
+func (b *RestrictedBuilder) WithI8(v int8) *RestrictedBuilder {
+	b.i8 = v
+	return b
+}
+
+func (b *RestrictedBuilder) WithU16(v uint16) *RestrictedBuilder {
+	b.u16 = v
+	return b
+}
+
+func (b *RestrictedBuilder) WithU32(v uint32) *RestrictedBuilder {
+	b.u32 = v
+	return b
+}
+
+func (b *RestrictedBuilder) WithU64(v uint64) *RestrictedBuilder {
+	b.u64 = v
+	return b
+}
+
+func (b *RestrictedBuilder) WithU8(v uint8) *RestrictedBuilder {
+	b.u8 = v
+	return b
 }
 
 func (o *Restricted) I16() int16 {

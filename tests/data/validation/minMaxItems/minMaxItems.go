@@ -14,6 +14,29 @@ type MinMaxItems struct {
 	mystringarray []string `json:"myStringArray,omitempty,omitzero" yaml:"myStringArray,omitempty" mapstructure:"myStringArray,omitempty"`
 }
 
+type MinMaxItemsBuilder struct {
+	mynestedarray [][]interface{}
+
+	mystringarray []string
+}
+
+func (b *MinMaxItemsBuilder) Build() *MinMaxItems {
+	return &MinMaxItems{
+		mynestedarray: b.mynestedarray,
+		mystringarray: b.mystringarray,
+	}
+}
+
+func (b *MinMaxItemsBuilder) WithMyNestedArray(v [][]interface{}) *MinMaxItemsBuilder {
+	b.mynestedarray = v
+	return b
+}
+
+func (b *MinMaxItemsBuilder) WithMyStringArray(v []string) *MinMaxItemsBuilder {
+	b.mystringarray = v
+	return b
+}
+
 func (o *MinMaxItems) MyNestedArray() [][]interface{} {
 	return o.mynestedarray
 }
@@ -102,4 +125,14 @@ func (j *MinMaxItems) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = MinMaxItems(plain)
 	return nil
+}
+
+func NewMinMaxItemsBuilder(o *MinMaxItems) *MinMaxItemsBuilder {
+	if o == nil {
+		return &MinMaxItemsBuilder{}
+	}
+	return &MinMaxItemsBuilder{
+		mynestedarray: o.mynestedarray,
+		mystringarray: o.mystringarray,
+	}
 }
