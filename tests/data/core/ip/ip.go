@@ -27,6 +27,10 @@ func (b *IpBuilder) WithMyObject(v *Ipmyobject) *IpBuilder {
 	return b
 }
 
+func (o *Ip) Clone() *IpBuilder {
+	return NewIpBuilder(o)
+}
+
 func (o *Ip) MyObject() *Ipmyobject {
 	return o.myobject
 }
@@ -87,6 +91,10 @@ func (b *IpmyobjectBuilder) Build() *Ipmyobject {
 func (b *IpmyobjectBuilder) WithMyIp(v netip.Addr) *IpmyobjectBuilder {
 	b.myip = v
 	return b
+}
+
+func (o *Ipmyobject) Clone() *IpmyobjectBuilder {
+	return NewIpmyobjectBuilder(o)
 }
 
 func (o *Ipmyobject) MyIp() netip.Addr {

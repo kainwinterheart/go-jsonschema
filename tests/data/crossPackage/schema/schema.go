@@ -56,23 +56,16 @@ func (b *SchemaBuilder) WithDefInSameSchema(v *Thing) *SchemaBuilder {
 	return b
 }
 
+func (o *Schema) Clone() *SchemaBuilder {
+	return NewSchemaBuilder(o)
+}
+
 func (o *Schema) DefInOtherSchema() *other.Thing {
 	return o.definotherschema
 }
 
 func (o *Schema) DefInSameSchema() *Thing {
 	return o.definsameschema
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Schema) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Schema
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Schema(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -106,6 +99,17 @@ func (j *Schema) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Schema) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Schema
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Schema(plain)
+	return nil
+}
+
 type Thing struct {
 	// s corresponds to the JSON schema field "s".
 	s *string `json:"s,omitempty,omitzero" yaml:"s,omitempty" mapstructure:"s,omitempty"`
@@ -124,6 +128,10 @@ func (b *ThingBuilder) Build() *Thing {
 func (b *ThingBuilder) WithS(v *string) *ThingBuilder {
 	b.s = v
 	return b
+}
+
+func (o *Thing) Clone() *ThingBuilder {
+	return NewThingBuilder(o)
 }
 
 func (o *Thing) S() *string {

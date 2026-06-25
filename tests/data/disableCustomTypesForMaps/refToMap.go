@@ -34,6 +34,10 @@ func (b *RefToMapBuilder) WithMyThing(v map[string]float64) *RefToMapBuilder {
 	return b
 }
 
+func (o *RefToMap) Clone() *RefToMapBuilder {
+	return NewRefToMapBuilder(o)
+}
+
 func (o *RefToMap) MyThing() map[string]float64 {
 	return o.mything
 }

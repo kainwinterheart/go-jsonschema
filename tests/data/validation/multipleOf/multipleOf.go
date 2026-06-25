@@ -60,6 +60,10 @@ func (b *MultipleOfBuilder) WithMyNumber(v float64) *MultipleOfBuilder {
 	return b
 }
 
+func (o *MultipleOf) Clone() *MultipleOfBuilder {
+	return NewMultipleOfBuilder(o)
+}
+
 func (o *MultipleOf) MyInteger() int {
 	return o.myinteger
 }

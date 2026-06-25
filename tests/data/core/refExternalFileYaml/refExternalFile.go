@@ -56,23 +56,16 @@ func (b *RefExternalFileBuilder) WithSomeOtherExternalThing(v *YamlStructNameFro
 	return b
 }
 
+func (o *RefExternalFile) Clone() *RefExternalFileBuilder {
+	return NewRefExternalFileBuilder(o)
+}
+
 func (o *RefExternalFile) MyExternalThing() *YamlStructNameFromFile {
 	return o.myexternalthing
 }
 
 func (o *RefExternalFile) SomeOtherExternalThing() *YamlStructNameFromFile {
 	return o.someotherexternalthing
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RefExternalFile) UnmarshalYAML(value *yaml.Node) error {
-	type Plain RefExternalFile
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = RefExternalFile(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -106,6 +99,17 @@ func (j *RefExternalFile) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RefExternalFile) UnmarshalYAML(value *yaml.Node) error {
+	type Plain RefExternalFile
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RefExternalFile(plain)
+	return nil
+}
+
 type YamlStructNameFromFile struct {
 	// foo corresponds to the JSON schema field "foo".
 	foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
@@ -124,6 +128,10 @@ func (b *YamlStructNameFromFileBuilder) Build() *YamlStructNameFromFile {
 func (b *YamlStructNameFromFileBuilder) WithFoo(v *string) *YamlStructNameFromFileBuilder {
 	b.foo = v
 	return b
+}
+
+func (o *YamlStructNameFromFile) Clone() *YamlStructNameFromFileBuilder {
+	return NewYamlStructNameFromFileBuilder(o)
 }
 
 func (o *YamlStructNameFromFile) Foo() *string {

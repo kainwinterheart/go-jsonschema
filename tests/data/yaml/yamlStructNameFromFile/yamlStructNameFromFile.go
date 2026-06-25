@@ -34,6 +34,10 @@ func (b *YamlStructNameFromFileBuilder) WithFoo(v *string) *YamlStructNameFromFi
 	return b
 }
 
+func (o *YamlStructNameFromFile) Clone() *YamlStructNameFromFileBuilder {
+	return NewYamlStructNameFromFileBuilder(o)
+}
+
 func (o *YamlStructNameFromFile) Foo() *string {
 	return o.foo
 }

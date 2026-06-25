@@ -30,6 +30,10 @@ func (b *IntAdditionalPropertiesBuilder) WithName(v *string) *IntAdditionalPrope
 	return b
 }
 
+func (o *IntAdditionalProperties) Clone() *IntAdditionalPropertiesBuilder {
+	return NewIntAdditionalPropertiesBuilder(o)
+}
+
 func (o *IntAdditionalProperties) Name() *string {
 	return o.name
 }

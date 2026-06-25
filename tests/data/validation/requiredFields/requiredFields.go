@@ -185,6 +185,10 @@ func (b *RequiredFieldsBuilder) WithMyStringArray(v []string) *RequiredFieldsBui
 	return b
 }
 
+func (o *RequiredFields) Clone() *RequiredFieldsBuilder {
+	return NewRequiredFieldsBuilder(o)
+}
+
 func (o *RequiredFields) MyBoolean() bool {
 	return o.myboolean
 }
@@ -231,59 +235,6 @@ func (o *RequiredFields) MyString() string {
 
 func (o *RequiredFields) MyStringArray() []string {
 	return o.mystringarray
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RequiredFields) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myBoolean"]; raw != nil && !ok {
-		return fmt.Errorf("field myBoolean in RequiredFields: required")
-	}
-	if _, ok := raw["myBooleanArray"]; raw != nil && !ok {
-		return fmt.Errorf("field myBooleanArray in RequiredFields: required")
-	}
-	if _, ok := raw["myNull"]; raw != nil && !ok {
-		return fmt.Errorf("field myNull in RequiredFields: required")
-	}
-	if _, ok := raw["myNullArray"]; raw != nil && !ok {
-		return fmt.Errorf("field myNullArray in RequiredFields: required")
-	}
-	if _, ok := raw["myNumber"]; raw != nil && !ok {
-		return fmt.Errorf("field myNumber in RequiredFields: required")
-	}
-	if _, ok := raw["myNumberArray"]; raw != nil && !ok {
-		return fmt.Errorf("field myNumberArray in RequiredFields: required")
-	}
-	if _, ok := raw["myObject"]; raw != nil && !ok {
-		return fmt.Errorf("field myObject in RequiredFields: required")
-	}
-	if _, ok := raw["myObjectArray"]; raw != nil && !ok {
-		return fmt.Errorf("field myObjectArray in RequiredFields: required")
-	}
-	if _, ok := raw["myString"]; raw != nil && !ok {
-		return fmt.Errorf("field myString in RequiredFields: required")
-	}
-	if _, ok := raw["myStringArray"]; raw != nil && !ok {
-		return fmt.Errorf("field myStringArray in RequiredFields: required")
-	}
-	type Plain RequiredFields
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.mynull != nil {
-		return fmt.Errorf("field %s: must be null", "myNull")
-	}
-	for i0 := range plain.mynullarray {
-		if plain.mynullarray[i0] != nil {
-			return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNullArray[%d]", i0))
-		}
-	}
-	*j = RequiredFields(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -399,6 +350,59 @@ func (j *RequiredFields) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RequiredFields) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myBoolean"]; raw != nil && !ok {
+		return fmt.Errorf("field myBoolean in RequiredFields: required")
+	}
+	if _, ok := raw["myBooleanArray"]; raw != nil && !ok {
+		return fmt.Errorf("field myBooleanArray in RequiredFields: required")
+	}
+	if _, ok := raw["myNull"]; raw != nil && !ok {
+		return fmt.Errorf("field myNull in RequiredFields: required")
+	}
+	if _, ok := raw["myNullArray"]; raw != nil && !ok {
+		return fmt.Errorf("field myNullArray in RequiredFields: required")
+	}
+	if _, ok := raw["myNumber"]; raw != nil && !ok {
+		return fmt.Errorf("field myNumber in RequiredFields: required")
+	}
+	if _, ok := raw["myNumberArray"]; raw != nil && !ok {
+		return fmt.Errorf("field myNumberArray in RequiredFields: required")
+	}
+	if _, ok := raw["myObject"]; raw != nil && !ok {
+		return fmt.Errorf("field myObject in RequiredFields: required")
+	}
+	if _, ok := raw["myObjectArray"]; raw != nil && !ok {
+		return fmt.Errorf("field myObjectArray in RequiredFields: required")
+	}
+	if _, ok := raw["myString"]; raw != nil && !ok {
+		return fmt.Errorf("field myString in RequiredFields: required")
+	}
+	if _, ok := raw["myStringArray"]; raw != nil && !ok {
+		return fmt.Errorf("field myStringArray in RequiredFields: required")
+	}
+	type Plain RequiredFields
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.mynull != nil {
+		return fmt.Errorf("field %s: must be null", "myNull")
+	}
+	for i0 := range plain.mynullarray {
+		if plain.mynullarray[i0] != nil {
+			return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNullArray[%d]", i0))
+		}
+	}
+	*j = RequiredFields(plain)
+	return nil
+}
+
 type RequiredFieldsmyobject struct {
 	// mynestedobjectstring corresponds to the JSON schema field
 	// "myNestedObjectString".
@@ -420,8 +424,30 @@ func (b *RequiredFieldsmyobjectBuilder) WithMyNestedObjectString(v string) *Requ
 	return b
 }
 
+func (o *RequiredFieldsmyobject) Clone() *RequiredFieldsmyobjectBuilder {
+	return NewRequiredFieldsmyobjectBuilder(o)
+}
+
 func (o *RequiredFieldsmyobject) MyNestedObjectString() string {
 	return o.mynestedobjectstring
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RequiredFieldsmyobject) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myNestedObjectString"]; raw != nil && !ok {
+		return fmt.Errorf("field myNestedObjectString in RequiredFieldsmyobject: required")
+	}
+	type Plain RequiredFieldsmyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RequiredFieldsmyobject(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -458,24 +484,6 @@ func (j *RequiredFieldsmyobject) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RequiredFieldsmyobject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myNestedObjectString"]; raw != nil && !ok {
-		return fmt.Errorf("field myNestedObjectString in RequiredFieldsmyobject: required")
-	}
-	type Plain RequiredFieldsmyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = RequiredFieldsmyobject(plain)
-	return nil
-}
-
 type RequiredFieldsmyobjectarrayElem struct {
 	// mynestedobjectstring corresponds to the JSON schema field
 	// "myNestedObjectString".
@@ -497,26 +505,12 @@ func (b *RequiredFieldsmyobjectarrayElemBuilder) WithMyNestedObjectString(v stri
 	return b
 }
 
-func (o *RequiredFieldsmyobjectarrayElem) MyNestedObjectString() string {
-	return o.mynestedobjectstring
+func (o *RequiredFieldsmyobjectarrayElem) Clone() *RequiredFieldsmyobjectarrayElemBuilder {
+	return NewRequiredFieldsmyobjectarrayElemBuilder(o)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RequiredFieldsmyobjectarrayElem) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myNestedObjectString"]; raw != nil && !ok {
-		return fmt.Errorf("field myNestedObjectString in RequiredFieldsmyobjectarrayElem: required")
-	}
-	type Plain RequiredFieldsmyobjectarrayElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = RequiredFieldsmyobjectarrayElem(plain)
-	return nil
+func (o *RequiredFieldsmyobjectarrayElem) MyNestedObjectString() string {
+	return o.mynestedobjectstring
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -551,4 +545,22 @@ func (j *RequiredFieldsmyobjectarrayElem) MarshalJSON() ([]byte, error) {
 		Mynestedobjectstring: j.mynestedobjectstring,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RequiredFieldsmyobjectarrayElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myNestedObjectString"]; raw != nil && !ok {
+		return fmt.Errorf("field myNestedObjectString in RequiredFieldsmyobjectarrayElem: required")
+	}
+	type Plain RequiredFieldsmyobjectarrayElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RequiredFieldsmyobjectarrayElem(plain)
+	return nil
 }

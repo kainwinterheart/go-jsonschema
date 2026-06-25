@@ -115,6 +115,10 @@ func (b *ArrayBuilder) WithMyStringArray(v []string) *ArrayBuilder {
 	return b
 }
 
+func (o *Array) Clone() *ArrayBuilder {
+	return NewArrayBuilder(o)
+}
+
 func (o *Array) MyArray() []interface{} {
 	return o.myarray
 }

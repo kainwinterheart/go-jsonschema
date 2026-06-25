@@ -26,19 +26,12 @@ func (b *AllOf2Builder) WithConfigurations(v []AllOf2configurationsElem) *AllOf2
 	return b
 }
 
-func (o *AllOf2) Configurations() []AllOf2configurationsElem {
-	return o.configurations
+func (o *AllOf2) Clone() *AllOf2Builder {
+	return NewAllOf2Builder(o)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AllOf2) UnmarshalYAML(value *yaml.Node) error {
-	type Plain AllOf2
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AllOf2(plain)
-	return nil
+func (o *AllOf2) Configurations() []AllOf2configurationsElem {
+	return o.configurations
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -66,6 +59,17 @@ func (j *AllOf2) MarshalJSON() ([]byte, error) {
 		Configurations: j.configurations,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AllOf2) UnmarshalYAML(value *yaml.Node) error {
+	type Plain AllOf2
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AllOf2(plain)
+	return nil
 }
 
 type AllOf2configurationsElem struct {
@@ -116,6 +120,10 @@ func (o *AllOf2configurationsElem) Bar() float64 {
 
 func (o *AllOf2configurationsElem) Baz() *bool {
 	return o.baz
+}
+
+func (o *AllOf2configurationsElem) Clone() *AllOf2configurationsElemBuilder {
+	return NewAllOf2configurationsElemBuilder(o)
 }
 
 func (o *AllOf2configurationsElem) Foo() string {
@@ -212,6 +220,28 @@ func (o *Bar) Bar() float64 {
 	return o.bar
 }
 
+func (o *Bar) Clone() *BarBuilder {
+	return NewBarBuilder(o)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Bar) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["bar"]; raw != nil && !ok {
+		return fmt.Errorf("field bar in Bar: required")
+	}
+	type Plain Bar
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Bar(plain)
+	return nil
+}
+
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Bar) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
@@ -246,24 +276,6 @@ func (j *Bar) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Bar) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in Bar: required")
-	}
-	type Plain Bar
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Bar(plain)
-	return nil
-}
-
 type Baz struct {
 	// baz corresponds to the JSON schema field "baz".
 	baz *bool `json:"baz,omitempty,omitzero" yaml:"baz,omitempty" mapstructure:"baz,omitempty"`
@@ -286,6 +298,10 @@ func (b *BazBuilder) WithBaz(v *bool) *BazBuilder {
 
 func (o *Baz) Baz() *bool {
 	return o.baz
+}
+
+func (o *Baz) Clone() *BazBuilder {
+	return NewBazBuilder(o)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
@@ -346,8 +362,30 @@ func (b *FooBuilder) WithFoo(v string) *FooBuilder {
 	return b
 }
 
+func (o *Foo) Clone() *FooBuilder {
+	return NewFooBuilder(o)
+}
+
 func (o *Foo) Foo() string {
 	return o.foo
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Foo) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["foo"]; raw != nil && !ok {
+		return fmt.Errorf("field foo in Foo: required")
+	}
+	type Plain Foo
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Foo(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -382,24 +420,6 @@ func (j *Foo) MarshalJSON() ([]byte, error) {
 		Foo: j.foo,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Foo) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in Foo: required")
-	}
-	type Plain Foo
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Foo(plain)
-	return nil
 }
 
 func NewAllOf2Builder(o *AllOf2) *AllOf2Builder {

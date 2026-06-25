@@ -41,26 +41,12 @@ func (o *AllOfNestedRefs) Bar() *string {
 	return o.bar
 }
 
-func (o *AllOfNestedRefs) Foo() interface{} {
-	return o.foo
+func (o *AllOfNestedRefs) Clone() *AllOfNestedRefsBuilder {
+	return NewAllOfNestedRefsBuilder(o)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AllOfNestedRefs) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AllOfNestedRefs: required")
-	}
-	type Plain AllOfNestedRefs
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AllOfNestedRefs(plain)
-	return nil
+func (o *AllOfNestedRefs) Foo() interface{} {
+	return o.foo
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -101,6 +87,24 @@ func (j *AllOfNestedRefs) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AllOfNestedRefs) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["foo"]; raw != nil && !ok {
+		return fmt.Errorf("field foo in AllOfNestedRefs: required")
+	}
+	type Plain AllOfNestedRefs
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AllOfNestedRefs(plain)
+	return nil
+}
+
 type ExtraProps struct {
 	// bar corresponds to the JSON schema field "bar".
 	bar *string `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
@@ -125,15 +129,8 @@ func (o *ExtraProps) Bar() *string {
 	return o.bar
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *ExtraProps) UnmarshalYAML(value *yaml.Node) error {
-	type Plain ExtraProps
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = ExtraProps(plain)
-	return nil
+func (o *ExtraProps) Clone() *ExtraPropsBuilder {
+	return NewExtraPropsBuilder(o)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -161,6 +158,17 @@ func (j *ExtraProps) MarshalJSON() ([]byte, error) {
 		Bar: j.bar,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ExtraProps) UnmarshalYAML(value *yaml.Node) error {
+	type Plain ExtraProps
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = ExtraProps(plain)
+	return nil
 }
 
 func NewAllOfNestedRefsBuilder(o *AllOfNestedRefs) *AllOfNestedRefsBuilder {
@@ -225,6 +233,10 @@ func (b *RootObjectBuilder) WithFoo(v interface{}) *RootObjectBuilder {
 
 func (o *RootObject) Bar() *string {
 	return o.bar
+}
+
+func (o *RootObject) Clone() *RootObjectBuilder {
+	return NewRootObjectBuilder(o)
 }
 
 func (o *RootObject) Foo() interface{} {

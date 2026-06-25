@@ -60,6 +60,10 @@ func (b *PatternBuilder) WithMyString(v string) *PatternBuilder {
 	return b
 }
 
+func (o *Pattern) Clone() *PatternBuilder {
+	return NewPatternBuilder(o)
+}
+
 func (o *Pattern) MyEscapedString() *string {
 	return o.myescapedstring
 }

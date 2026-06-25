@@ -80,11 +80,11 @@ func (j *I16U) UnmarshalYAML(value *yaml.Node) error {
 
 type I32L int32
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *I32L) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *I32L) UnmarshalJSON(value []byte) error {
 	type Plain I32L
 	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	if err := json.Unmarshal(value, &plain); err != nil {
 		return err
 	}
 	if 32767 < plain {
@@ -97,11 +97,11 @@ func (j *I32L) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *I32L) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *I32L) UnmarshalYAML(value *yaml.Node) error {
 	type Plain I32L
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	if err := value.Decode(&plain); err != nil {
 		return err
 	}
 	if 32767 < plain {
@@ -347,6 +347,10 @@ func (b *RestrictedBuilder) WithU64(v U64) *RestrictedBuilder {
 	return b
 }
 
+func (o *Restricted) Clone() *RestrictedBuilder {
+	return NewRestrictedBuilder(o)
+}
+
 func (o *Restricted) I16L() I16L {
 	return o.i16l
 }
@@ -517,11 +521,11 @@ func (j *Restricted) UnmarshalYAML(value *yaml.Node) error {
 
 type U16 uint16
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *U16) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *U16) UnmarshalJSON(value []byte) error {
 	type Plain U16
 	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	if err := json.Unmarshal(value, &plain); err != nil {
 		return err
 	}
 	if 256 < plain {
@@ -531,11 +535,11 @@ func (j *U16) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *U16) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *U16) UnmarshalYAML(value *yaml.Node) error {
 	type Plain U16
 	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
+	if err := value.Decode(&plain); err != nil {
 		return err
 	}
 	if 256 < plain {

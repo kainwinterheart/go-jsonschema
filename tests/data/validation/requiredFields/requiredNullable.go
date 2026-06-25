@@ -69,6 +69,10 @@ func (b *RequiredNullableBuilder) WithMyNullableStringArray(v *RequiredNullablem
 	return b
 }
 
+func (o *RequiredNullable) Clone() *RequiredNullableBuilder {
+	return NewRequiredNullableBuilder(o)
+}
+
 func (o *RequiredNullable) MyNullableObject() *RequiredNullablemynullableobject {
 	return o.mynullableobject
 }
@@ -79,6 +83,30 @@ func (o *RequiredNullable) MyNullableString() RequiredNullablemynullablestring {
 
 func (o *RequiredNullable) MyNullableStringArray() *RequiredNullablemynullablestringarray {
 	return o.mynullablestringarray
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RequiredNullable) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myNullableObject"]; raw != nil && !ok {
+		return fmt.Errorf("field myNullableObject in RequiredNullable: required")
+	}
+	if _, ok := raw["myNullableString"]; raw != nil && !ok {
+		return fmt.Errorf("field myNullableString in RequiredNullable: required")
+	}
+	if _, ok := raw["myNullableStringArray"]; raw != nil && !ok {
+		return fmt.Errorf("field myNullableStringArray in RequiredNullable: required")
+	}
+	type Plain RequiredNullable
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RequiredNullable(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -129,30 +157,6 @@ func (j *RequiredNullable) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RequiredNullable) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myNullableObject"]; raw != nil && !ok {
-		return fmt.Errorf("field myNullableObject in RequiredNullable: required")
-	}
-	if _, ok := raw["myNullableString"]; raw != nil && !ok {
-		return fmt.Errorf("field myNullableString in RequiredNullable: required")
-	}
-	if _, ok := raw["myNullableStringArray"]; raw != nil && !ok {
-		return fmt.Errorf("field myNullableStringArray in RequiredNullable: required")
-	}
-	type Plain RequiredNullable
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = RequiredNullable(plain)
-	return nil
-}
-
 type RequiredNullablemynullableobject struct {
 	// mynestedprop corresponds to the JSON schema field "myNestedProp".
 	mynestedprop string `json:"myNestedProp" yaml:"myNestedProp" mapstructure:"myNestedProp"`
@@ -173,26 +177,12 @@ func (b *RequiredNullablemynullableobjectBuilder) WithMyNestedProp(v string) *Re
 	return b
 }
 
-func (o *RequiredNullablemynullableobject) MyNestedProp() string {
-	return o.mynestedprop
+func (o *RequiredNullablemynullableobject) Clone() *RequiredNullablemynullableobjectBuilder {
+	return NewRequiredNullablemynullableobjectBuilder(o)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RequiredNullablemynullableobject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myNestedProp"]; raw != nil && !ok {
-		return fmt.Errorf("field myNestedProp in RequiredNullablemynullableobject: required")
-	}
-	type Plain RequiredNullablemynullableobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = RequiredNullablemynullableobject(plain)
-	return nil
+func (o *RequiredNullablemynullableobject) MyNestedProp() string {
+	return o.mynestedprop
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -227,6 +217,24 @@ func (j *RequiredNullablemynullableobject) MarshalJSON() ([]byte, error) {
 		Mynestedprop: j.mynestedprop,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RequiredNullablemynullableobject) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myNestedProp"]; raw != nil && !ok {
+		return fmt.Errorf("field myNestedProp in RequiredNullablemynullableobject: required")
+	}
+	type Plain RequiredNullablemynullableobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RequiredNullablemynullableobject(plain)
+	return nil
 }
 
 type RequiredNullablemynullablestring *string

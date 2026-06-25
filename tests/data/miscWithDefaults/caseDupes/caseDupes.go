@@ -54,6 +54,10 @@ func (b *CaseDupesBuilder) WithSomefield(v *string) *CaseDupesBuilder {
 	return b
 }
 
+func (o *CaseDupes) Clone() *CaseDupesBuilder {
+	return NewCaseDupesBuilder(o)
+}
+
 func (o *CaseDupes) SomeField() *string {
 	return o.somefield
 }

@@ -27,6 +27,10 @@ func (b *DateBuilder) WithMyObject(v *Datemyobject) *DateBuilder {
 	return b
 }
 
+func (o *Date) Clone() *DateBuilder {
+	return NewDateBuilder(o)
+}
+
 func (o *Date) MyObject() *Datemyobject {
 	return o.myobject
 }
@@ -87,6 +91,10 @@ func (b *DatemyobjectBuilder) Build() *Datemyobject {
 func (b *DatemyobjectBuilder) WithMyDate(v types.SerializableDate) *DatemyobjectBuilder {
 	b.mydate = v
 	return b
+}
+
+func (o *Datemyobject) Clone() *DatemyobjectBuilder {
+	return NewDatemyobjectBuilder(o)
 }
 
 func (o *Datemyobject) MyDate() types.SerializableDate {

@@ -26,6 +26,10 @@ func (b *BarBuilder) WithRefToFoo(v *Foo) *BarBuilder {
 	return b
 }
 
+func (o *Bar) Clone() *BarBuilder {
+	return NewBarBuilder(o)
+}
+
 func (o *Bar) RefToFoo() *Foo {
 	return o.reftofoo
 }
@@ -92,15 +96,8 @@ func (o *CyclicAndRequired1) A() *Foo {
 	return o.a
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *CyclicAndRequired1) UnmarshalYAML(value *yaml.Node) error {
-	type Plain CyclicAndRequired1
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = CyclicAndRequired1(plain)
-	return nil
+func (o *CyclicAndRequired1) Clone() *CyclicAndRequired1Builder {
+	return NewCyclicAndRequired1Builder(o)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -130,6 +127,17 @@ func (j *CyclicAndRequired1) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *CyclicAndRequired1) UnmarshalYAML(value *yaml.Node) error {
+	type Plain CyclicAndRequired1
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = CyclicAndRequired1(plain)
+	return nil
+}
+
 type Foo struct {
 	// reftobar corresponds to the JSON schema field "refToBar".
 	reftobar Bar `json:"refToBar" yaml:"refToBar" mapstructure:"refToBar"`
@@ -148,6 +156,10 @@ func (b *FooBuilder) Build() *Foo {
 func (b *FooBuilder) WithRefToBar(v Bar) *FooBuilder {
 	b.reftobar = v
 	return b
+}
+
+func (o *Foo) Clone() *FooBuilder {
+	return NewFooBuilder(o)
 }
 
 func (o *Foo) RefToBar() Bar {

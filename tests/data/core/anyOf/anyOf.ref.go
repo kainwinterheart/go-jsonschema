@@ -27,19 +27,12 @@ func (b *AgreementBuilder) WithId(v *string) *AgreementBuilder {
 	return b
 }
 
-func (o *Agreement) Id() *string {
-	return o.id
+func (o *Agreement) Clone() *AgreementBuilder {
+	return NewAgreementBuilder(o)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Agreement) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Agreement
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Agreement(plain)
-	return nil
+func (o *Agreement) Id() *string {
+	return o.id
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -67,6 +60,17 @@ func (j *Agreement) MarshalJSON() ([]byte, error) {
 		Id: j.id,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Agreement) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Agreement
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Agreement(plain)
+	return nil
 }
 
 type AnyOfRef map[string]interface{}
@@ -100,6 +104,10 @@ func (b *AnyOfRef_0Builder) WithId(v *string) *AnyOfRef_0Builder {
 func (b *AnyOfRef_0Builder) WithName(v *string) *AnyOfRef_0Builder {
 	b.name = v
 	return b
+}
+
+func (o *AnyOfRef_0) Clone() *AnyOfRef_0Builder {
+	return NewAnyOfRef_0Builder(o)
 }
 
 func (o *AnyOfRef_0) Id() *string {
@@ -232,9 +240,17 @@ func (b *OfferBuilder) WithName(v *string) *OfferBuilder {
 	return b
 }
 
+func (o *Offer) Clone() *OfferBuilder {
+	return NewOfferBuilder(o)
+}
+
 func (o *Offer) Name() *string {
 	return o.name
 }
+
+type AnyOfRef_0_1 = Agreement
+
+type AnyOfRef_0_0 = Offer
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Offer) UnmarshalYAML(value *yaml.Node) error {
@@ -273,9 +289,5 @@ func (j *Offer) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(helper)
 }
-
-type AnyOfRef_0_1 = Agreement
-
-type AnyOfRef_0_0 = Offer
 
 type Policy interface{}

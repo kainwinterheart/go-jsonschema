@@ -34,6 +34,10 @@ func (b *RefToPrimitiveStringBuilder) WithMyThing(v *Thing) *RefToPrimitiveStrin
 	return b
 }
 
+func (o *RefToPrimitiveString) Clone() *RefToPrimitiveStringBuilder {
+	return NewRefToPrimitiveStringBuilder(o)
+}
+
 func (o *RefToPrimitiveString) MyThing() *Thing {
 	return o.mything
 }

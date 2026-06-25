@@ -45,6 +45,10 @@ func (b *TimeBuilder) WithMyObject(v *Timemyobject) *TimeBuilder {
 	return b
 }
 
+func (o *Time) Clone() *TimeBuilder {
+	return NewTimeBuilder(o)
+}
+
 func (o *Time) MyObject() *Timemyobject {
 	return o.myobject
 }
@@ -107,8 +111,30 @@ func (b *TimemyobjectBuilder) WithMyTime(v types.SerializableTime) *Timemyobject
 	return b
 }
 
+func (o *Timemyobject) Clone() *TimemyobjectBuilder {
+	return NewTimemyobjectBuilder(o)
+}
+
 func (o *Timemyobject) MyTime() types.SerializableTime {
 	return o.mytime
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Timemyobject) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myTime"]; raw != nil && !ok {
+		return fmt.Errorf("field myTime in Timemyobject: required")
+	}
+	type Plain Timemyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Timemyobject(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -143,22 +169,4 @@ func (j *Timemyobject) MarshalJSON() ([]byte, error) {
 		Mytime: j.mytime,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Timemyobject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myTime"]; raw != nil && !ok {
-		return fmt.Errorf("field myTime in Timemyobject: required")
-	}
-	type Plain Timemyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Timemyobject(plain)
-	return nil
 }

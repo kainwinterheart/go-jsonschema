@@ -26,8 +26,23 @@ func (b *DateTimeNullableBuilder) WithMyObject(v *DateTimeNullablemyobject) *Dat
 	return b
 }
 
+func (o *DateTimeNullable) Clone() *DateTimeNullableBuilder {
+	return NewDateTimeNullableBuilder(o)
+}
+
 func (o *DateTimeNullable) MyObject() *DateTimeNullablemyobject {
 	return o.myobject
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *DateTimeNullable) UnmarshalYAML(value *yaml.Node) error {
+	type Plain DateTimeNullable
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = DateTimeNullable(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -57,17 +72,6 @@ func (j *DateTimeNullable) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *DateTimeNullable) UnmarshalYAML(value *yaml.Node) error {
-	type Plain DateTimeNullable
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = DateTimeNullable(plain)
-	return nil
-}
-
 type DateTimeNullablemyobject struct {
 	// mynullabledatetime corresponds to the JSON schema field "myNullableDateTime".
 	mynullabledatetime DateTimeNullablemyobjectmynullabledatetime `json:"myNullableDateTime,omitempty,omitzero" yaml:"myNullableDateTime,omitempty" mapstructure:"myNullableDateTime,omitempty"`
@@ -88,19 +92,12 @@ func (b *DateTimeNullablemyobjectBuilder) WithMyNullableDateTime(v DateTimeNulla
 	return b
 }
 
-func (o *DateTimeNullablemyobject) MyNullableDateTime() DateTimeNullablemyobjectmynullabledatetime {
-	return o.mynullabledatetime
+func (o *DateTimeNullablemyobject) Clone() *DateTimeNullablemyobjectBuilder {
+	return NewDateTimeNullablemyobjectBuilder(o)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *DateTimeNullablemyobject) UnmarshalYAML(value *yaml.Node) error {
-	type Plain DateTimeNullablemyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = DateTimeNullablemyobject(plain)
-	return nil
+func (o *DateTimeNullablemyobject) MyNullableDateTime() DateTimeNullablemyobjectmynullabledatetime {
+	return o.mynullabledatetime
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -128,6 +125,17 @@ func (j *DateTimeNullablemyobject) MarshalJSON() ([]byte, error) {
 		Mynullabledatetime: j.mynullabledatetime,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *DateTimeNullablemyobject) UnmarshalYAML(value *yaml.Node) error {
+	type Plain DateTimeNullablemyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = DateTimeNullablemyobject(plain)
+	return nil
 }
 
 type DateTimeNullablemyobjectmynullabledatetime *time.Time

@@ -103,6 +103,10 @@ func (b *ExactBuilder) WithU8(v []uint8) *ExactBuilder {
 	return b
 }
 
+func (o *Exact) Clone() *ExactBuilder {
+	return NewExactBuilder(o)
+}
+
 func (o *Exact) I16() []int16 {
 	return o.i16
 }

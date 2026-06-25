@@ -36,6 +36,10 @@ func (b *ReadOnlyAndRequiredBuilder) WithMyReadOnlyRequiredString(v string) *Rea
 	return b
 }
 
+func (o *ReadOnlyAndRequired) Clone() *ReadOnlyAndRequiredBuilder {
+	return NewReadOnlyAndRequiredBuilder(o)
+}
+
 func (o *ReadOnlyAndRequired) MyReadOnlyRequiredString() string {
 	return o.myreadonlyrequiredstring
 }

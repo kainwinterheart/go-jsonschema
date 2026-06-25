@@ -58,12 +58,51 @@ func (o *ComposedWithMultipleRequired) BaseField() *string {
 	return o.basefield
 }
 
+func (o *ComposedWithMultipleRequired) Clone() *ComposedWithMultipleRequiredBuilder {
+	return NewComposedWithMultipleRequiredBuilder(o)
+}
+
 func (o *ComposedWithMultipleRequired) DirectField() bool {
 	return o.directfield
 }
 
 func (o *ComposedWithMultipleRequired) MiddleField() *float64 {
 	return o.middlefield
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *ComposedWithMultipleRequired) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var composedWithMultipleRequired_0 ComposedWithMultipleRequired_0
+	var composedWithMultipleRequired_1 ComposedWithMultipleRequired_1
+	var errs []error
+	if err := composedWithMultipleRequired_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := composedWithMultipleRequired_1.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 2 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain ComposedWithMultipleRequired
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = ComposedWithMultipleRequired(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -125,41 +164,6 @@ func (j *ComposedWithMultipleRequired) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *ComposedWithMultipleRequired) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	var composedWithMultipleRequired_0 ComposedWithMultipleRequired_0
-	var composedWithMultipleRequired_1 ComposedWithMultipleRequired_1
-	var errs []error
-	if err := composedWithMultipleRequired_0.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if err := composedWithMultipleRequired_1.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if len(errs) == 2 {
-		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
-	}
-	type Plain ComposedWithMultipleRequired
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	st := reflect.TypeOf(Plain{})
-	for i := range st.NumField() {
-		delete(raw, st.Field(i).Name)
-		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
-	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
-		return err
-	}
-	*j = ComposedWithMultipleRequired(plain)
-	return nil
-}
-
 type MultipleRequiredBase struct {
 	// basefield corresponds to the JSON schema field "baseField".
 	basefield string `json:"baseField" yaml:"baseField" mapstructure:"baseField"`
@@ -182,6 +186,10 @@ func (b *MultipleRequiredBaseBuilder) WithBaseField(v string) *MultipleRequiredB
 
 func (o *MultipleRequiredBase) BaseField() string {
 	return o.basefield
+}
+
+func (o *MultipleRequiredBase) Clone() *MultipleRequiredBaseBuilder {
+	return NewMultipleRequiredBaseBuilder(o)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
@@ -254,6 +262,10 @@ func (b *MultipleRequiredMiddleBuilder) Build() *MultipleRequiredMiddle {
 func (b *MultipleRequiredMiddleBuilder) WithMiddleField(v float64) *MultipleRequiredMiddleBuilder {
 	b.middlefield = v
 	return b
+}
+
+func (o *MultipleRequiredMiddle) Clone() *MultipleRequiredMiddleBuilder {
+	return NewMultipleRequiredMiddleBuilder(o)
 }
 
 func (o *MultipleRequiredMiddle) MiddleField() float64 {

@@ -37,6 +37,10 @@ func (b *MaxItemsBuilder) WithMyStringArray(v []string) *MaxItemsBuilder {
 	return b
 }
 
+func (o *MaxItems) Clone() *MaxItemsBuilder {
+	return NewMaxItemsBuilder(o)
+}
+
 func (o *MaxItems) MyNestedArray() [][]interface{} {
 	return o.mynestedarray
 }

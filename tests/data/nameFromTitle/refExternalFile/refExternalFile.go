@@ -36,6 +36,10 @@ func (b *ExtRefBuilder) WithMyThing2(v *Thing) *ExtRefBuilder {
 	return b
 }
 
+func (o *ExtRef) Clone() *ExtRefBuilder {
+	return NewExtRefBuilder(o)
+}
+
 func (o *ExtRef) MyThing() *Thing {
 	return o.mything
 }
@@ -147,6 +151,10 @@ func (b *RefExternalFileBuilder) WithSomeOtherExternalThing(v *Thing) *RefExtern
 	return b
 }
 
+func (o *RefExternalFile) Clone() *RefExternalFileBuilder {
+	return NewRefExternalFileBuilder(o)
+}
+
 func (o *RefExternalFile) MyExternalThing() *Thing {
 	return o.myexternalthing
 }
@@ -215,6 +223,10 @@ func (b *ThingBuilder) Build() *Thing {
 func (b *ThingBuilder) WithName(v *string) *ThingBuilder {
 	b.name = v
 	return b
+}
+
+func (o *Thing) Clone() *ThingBuilder {
+	return NewThingBuilder(o)
 }
 
 func (o *Thing) Name() *string {

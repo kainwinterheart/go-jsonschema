@@ -45,6 +45,10 @@ func (o *GopkgYAMLv3AdditionalProperties) Bar() *string {
 	return o.bar
 }
 
+func (o *GopkgYAMLv3AdditionalProperties) Clone() *GopkgYAMLv3AdditionalPropertiesBuilder {
+	return NewGopkgYAMLv3AdditionalPropertiesBuilder(o)
+}
+
 func (o *GopkgYAMLv3AdditionalProperties) Foo() *string {
 	return o.foo
 }

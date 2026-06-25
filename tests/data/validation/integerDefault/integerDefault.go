@@ -48,6 +48,10 @@ func (b *IntegerDefaultBuilder) WithProgramId(v int) *IntegerDefaultBuilder {
 	return b
 }
 
+func (o *IntegerDefault) Clone() *IntegerDefaultBuilder {
+	return NewIntegerDefaultBuilder(o)
+}
+
 func (o *IntegerDefault) Count() int {
 	return o.count
 }

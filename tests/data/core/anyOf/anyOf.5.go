@@ -28,8 +28,23 @@ func (b *CallToolResultBuilder) WithContent(v []CallToolResultcontentElem) *Call
 	return b
 }
 
+func (o *CallToolResult) Clone() *CallToolResultBuilder {
+	return NewCallToolResultBuilder(o)
+}
+
 func (o *CallToolResult) Content() []CallToolResultcontentElem {
 	return o.content
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *CallToolResult) UnmarshalYAML(value *yaml.Node) error {
+	type Plain CallToolResult
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = CallToolResult(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -59,17 +74,6 @@ func (j *CallToolResult) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *CallToolResult) UnmarshalYAML(value *yaml.Node) error {
-	type Plain CallToolResult
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = CallToolResult(plain)
-	return nil
-}
-
 // Text provided to or from an LLM.
 type CallToolResultcontentElem struct {
 	// The text content of the message.
@@ -89,6 +93,10 @@ func (b *CallToolResultcontentElemBuilder) Build() *CallToolResultcontentElem {
 func (b *CallToolResultcontentElemBuilder) WithText(v string) *CallToolResultcontentElemBuilder {
 	b.text = v
 	return b
+}
+
+func (o *CallToolResultcontentElem) Clone() *CallToolResultcontentElemBuilder {
+	return NewCallToolResultcontentElemBuilder(o)
 }
 
 func (o *CallToolResultcontentElem) Text() string {
@@ -166,6 +174,8 @@ func NewCallToolResultBuilder(o *CallToolResult) *CallToolResultBuilder {
 	}
 }
 
+type CallToolResultcontentElem_0 = TextContent
+
 func NewCallToolResultcontentElemBuilder(o *CallToolResultcontentElem) *CallToolResultcontentElemBuilder {
 	if o == nil {
 		return &CallToolResultcontentElemBuilder{}
@@ -175,14 +185,6 @@ func NewCallToolResultcontentElemBuilder(o *CallToolResultcontentElem) *CallTool
 	}
 }
 
-// Text provided to or from an LLM.
-type TextContent struct {
-	// The text content of the message.
-	text string `json:"text" yaml:"text" mapstructure:"text"`
-}
-
-type CallToolResultcontentElem_0 = TextContent
-
 func NewTextContentBuilder(o *TextContent) *TextContentBuilder {
 	if o == nil {
 		return &TextContentBuilder{}
@@ -190,6 +192,12 @@ func NewTextContentBuilder(o *TextContent) *TextContentBuilder {
 	return &TextContentBuilder{
 		text: o.text,
 	}
+}
+
+// Text provided to or from an LLM.
+type TextContent struct {
+	// The text content of the message.
+	text string `json:"text" yaml:"text" mapstructure:"text"`
 }
 
 type TextContentBuilder struct {
@@ -205,6 +213,10 @@ func (b *TextContentBuilder) Build() *TextContent {
 func (b *TextContentBuilder) WithText(v string) *TextContentBuilder {
 	b.text = v
 	return b
+}
+
+func (o *TextContent) Clone() *TextContentBuilder {
+	return NewTextContentBuilder(o)
 }
 
 func (o *TextContent) Text() string {

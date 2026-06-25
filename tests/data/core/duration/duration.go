@@ -27,6 +27,10 @@ func (b *DurationBuilder) WithMyObject(v *Durationmyobject) *DurationBuilder {
 	return b
 }
 
+func (o *Duration) Clone() *DurationBuilder {
+	return NewDurationBuilder(o)
+}
+
 func (o *Duration) MyObject() *Durationmyobject {
 	return o.myobject
 }
@@ -100,12 +104,39 @@ func (b *DurationmyobjectBuilder) WithWithoutDefault(v *time.Duration) *Duration
 	return b
 }
 
+func (o *Durationmyobject) Clone() *DurationmyobjectBuilder {
+	return NewDurationmyobjectBuilder(o)
+}
+
 func (o *Durationmyobject) WithDefault() time.Duration {
 	return o.withdefault
 }
 
 func (o *Durationmyobject) WithoutDefault() *time.Duration {
 	return o.withoutdefault
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Durationmyobject) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	type Plain Durationmyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if v, ok := raw["withDefault"]; !ok || v == nil {
+		defaultDuration, err := time.ParseDuration("20s")
+		if err != nil {
+			return fmt.Errorf("failed to parse the \"20s\" default value for field withDefault: %w", err)
+		}
+		plain.withdefault = defaultDuration
+
+	}
+	*j = Durationmyobject(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -149,29 +180,6 @@ func (j *Durationmyobject) MarshalJSON() ([]byte, error) {
 		Withoutdefault: j.withoutdefault,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Durationmyobject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	type Plain Durationmyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if v, ok := raw["withDefault"]; !ok || v == nil {
-		defaultDuration, err := time.ParseDuration("20s")
-		if err != nil {
-			return fmt.Errorf("failed to parse the \"20s\" default value for field withDefault: %w", err)
-		}
-		plain.withdefault = defaultDuration
-
-	}
-	*j = Durationmyobject(plain)
-	return nil
 }
 
 func NewDurationBuilder(o *Duration) *DurationBuilder {

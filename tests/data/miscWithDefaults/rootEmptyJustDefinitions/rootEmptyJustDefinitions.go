@@ -34,6 +34,10 @@ func (b *ThingBuilder) WithName(v *string) *ThingBuilder {
 	return b
 }
 
+func (o *Thing) Clone() *ThingBuilder {
+	return NewThingBuilder(o)
+}
+
 func (o *Thing) Name() *string {
 	return o.name
 }

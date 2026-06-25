@@ -39,6 +39,10 @@ func (b *ObjectAdditionalPropertiesBuilder) WithName(v *string) *ObjectAdditiona
 	return b
 }
 
+func (o *ObjectAdditionalProperties) Clone() *ObjectAdditionalPropertiesBuilder {
+	return NewObjectAdditionalPropertiesBuilder(o)
+}
+
 func (o *ObjectAdditionalProperties) Name() *string {
 	return o.name
 }

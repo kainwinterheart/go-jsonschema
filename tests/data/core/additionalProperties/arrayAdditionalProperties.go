@@ -30,6 +30,10 @@ func (b *ArrayAdditionalPropertiesBuilder) WithName(v *string) *ArrayAdditionalP
 	return b
 }
 
+func (o *ArrayAdditionalProperties) Clone() *ArrayAdditionalPropertiesBuilder {
+	return NewArrayAdditionalPropertiesBuilder(o)
+}
+
 func (o *ArrayAdditionalProperties) Name() *string {
 	return o.name
 }

@@ -88,6 +88,10 @@ func (o *ACase) CapitalCamelField() *string {
 	return o.capitalcamelfield
 }
 
+func (o *ACase) Clone() *ACaseBuilder {
+	return NewACaseBuilder(o)
+}
+
 func (o *ACase) Lowercase() *string {
 	return o.lowercase
 }

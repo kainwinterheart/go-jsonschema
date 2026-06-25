@@ -58,6 +58,10 @@ func (b *TagsBuilder) WithUrl(v *string) *TagsBuilder {
 	return b
 }
 
+func (o *Tags) Clone() *TagsBuilder {
+	return NewTagsBuilder(o)
+}
+
 func (o *Tags) Html() *string {
 	return o.html
 }

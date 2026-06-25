@@ -52,6 +52,10 @@ func (b *NullableTypeBuilder) WithMyStringValue(v StringThing) *NullableTypeBuil
 	return b
 }
 
+func (o *NullableType) Clone() *NullableTypeBuilder {
+	return NewNullableTypeBuilder(o)
+}
+
 func (o *NullableType) MyInlineStringValue() NullableTypemyinlinestringvalue {
 	return o.myinlinestringvalue
 }

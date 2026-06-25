@@ -40,6 +40,10 @@ func (b *StructWithConstraintsBuilder) WithProp(v *float64) *StructWithConstrain
 	return b
 }
 
+func (o *StructWithConstraints) Clone() *StructWithConstraintsBuilder {
+	return NewStructWithConstraintsBuilder(o)
+}
+
 func (o *StructWithConstraints) Prop() *float64 {
 	return o.prop
 }

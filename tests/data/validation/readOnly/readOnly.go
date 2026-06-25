@@ -47,6 +47,10 @@ func (b *ReadOnlyBuilder) WithMyString(v string) *ReadOnlyBuilder {
 	return b
 }
 
+func (o *ReadOnly) Clone() *ReadOnlyBuilder {
+	return NewReadOnlyBuilder(o)
+}
+
 func (o *ReadOnly) MyReadOnlyString() *string {
 	return o.myreadonlystring
 }

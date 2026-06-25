@@ -27,6 +27,10 @@ func (b *DateTimeBuilder) WithMyObject(v *DateTimemyobject) *DateTimeBuilder {
 	return b
 }
 
+func (o *DateTime) Clone() *DateTimeBuilder {
+	return NewDateTimeBuilder(o)
+}
+
 func (o *DateTime) MyObject() *DateTimemyobject {
 	return o.myobject
 }
@@ -87,6 +91,10 @@ func (b *DateTimemyobjectBuilder) Build() *DateTimemyobject {
 func (b *DateTimemyobjectBuilder) WithMyDateTime(v time.Time) *DateTimemyobjectBuilder {
 	b.mydatetime = v
 	return b
+}
+
+func (o *DateTimemyobject) Clone() *DateTimemyobjectBuilder {
+	return NewDateTimemyobjectBuilder(o)
 }
 
 func (o *DateTimemyobject) MyDateTime() time.Time {

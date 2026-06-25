@@ -1624,6 +1624,17 @@ func (g *schemaGenerator) generateBuilder(decl *codegen.TypeDecl, st *codegen.St
 		Name: constructorName,
 	})
 
+	// Generate Clone() method on the struct
+	g.output.file.Package.AddDecl(&codegen.Method{
+		Impl: func(out *codegen.Emitter) error {
+			out.Printf("func (o *%s) Clone() *%s {\n", decl.Name, builderName)
+			out.Printf("\treturn %s(o)\n", constructorName)
+			out.Printf("}\n")
+			return nil
+		},
+		Name: decl.Name + "_Clone",
+	})
+
 	// Generate Build() method
 	g.output.file.Package.AddDecl(&codegen.Method{
 		Impl: func(out *codegen.Emitter) error {

@@ -38,6 +38,10 @@ func (b *MinLengthBuilder) WithMyString(v string) *MinLengthBuilder {
 	return b
 }
 
+func (o *MinLength) Clone() *MinLengthBuilder {
+	return NewMinLengthBuilder(o)
+}
+
 func (o *MinLength) MyNullableString() *string {
 	return o.mynullablestring
 }

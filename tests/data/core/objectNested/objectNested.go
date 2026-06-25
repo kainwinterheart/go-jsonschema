@@ -52,6 +52,10 @@ func (b *ObjectNestedBuilder) WithMyObject(v *ObjectNestedmyobject) *ObjectNeste
 	return b
 }
 
+func (o *ObjectNested) Clone() *ObjectNestedBuilder {
+	return NewObjectNestedBuilder(o)
+}
+
 func (o *ObjectNested) MyObject() *ObjectNestedmyobject {
 	return o.myobject
 }
@@ -114,6 +118,10 @@ func (b *ObjectNestedmyobjectBuilder) WithMyObject(v *ObjectNestedmyobjectmyobje
 	return b
 }
 
+func (o *ObjectNestedmyobject) Clone() *ObjectNestedmyobjectBuilder {
+	return NewObjectNestedmyobjectBuilder(o)
+}
+
 func (o *ObjectNestedmyobject) MyObject() *ObjectNestedmyobjectmyobject {
 	return o.myobject
 }
@@ -174,6 +182,10 @@ func (b *ObjectNestedmyobjectmyobjectBuilder) Build() *ObjectNestedmyobjectmyobj
 func (b *ObjectNestedmyobjectmyobjectBuilder) WithMyString(v *string) *ObjectNestedmyobjectmyobjectBuilder {
 	b.mystring = v
 	return b
+}
+
+func (o *ObjectNestedmyobjectmyobject) Clone() *ObjectNestedmyobjectmyobjectBuilder {
+	return NewObjectNestedmyobjectmyobjectBuilder(o)
 }
 
 func (o *ObjectNestedmyobjectmyobject) MyString() *string {

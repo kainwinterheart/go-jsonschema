@@ -59,6 +59,10 @@ func (b *TestObjectBuilder) WithOwner(v string) *TestObjectBuilder {
 	return b
 }
 
+func (o *TestObject) Clone() *TestObjectBuilder {
+	return NewTestObjectBuilder(o)
+}
+
 func (o *TestObject) Config() TestObjectconfig {
 	return o.config
 }

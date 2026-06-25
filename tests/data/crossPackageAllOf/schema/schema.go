@@ -76,6 +76,10 @@ func (b *SchemaBuilder) WithDefInSameSchema(v *Schemadefinsameschema) *SchemaBui
 	return b
 }
 
+func (o *Schema) Clone() *SchemaBuilder {
+	return NewSchemaBuilder(o)
+}
+
 func (o *Schema) DefInOtherSchema() *Schemadefinotherschema {
 	return o.definotherschema
 }
@@ -146,6 +150,10 @@ func (b *SchemadefinotherschemaBuilder) WithValue(v *other.Value) *Schemadefinot
 	return b
 }
 
+func (o *Schemadefinotherschema) Clone() *SchemadefinotherschemaBuilder {
+	return NewSchemadefinotherschemaBuilder(o)
+}
+
 func (o *Schemadefinotherschema) Value() *other.Value {
 	return o.value
 }
@@ -208,6 +216,10 @@ func (b *SchemadefinsameschemaBuilder) WithName(v *Name) *SchemadefinsameschemaB
 	return b
 }
 
+func (o *Schemadefinsameschema) Clone() *SchemadefinsameschemaBuilder {
+	return NewSchemadefinsameschemaBuilder(o)
+}
+
 func (o *Schemadefinsameschema) Name() *Name {
 	return o.name
 }
@@ -268,6 +280,10 @@ func (b *ThingBuilder) Build() *Thing {
 func (b *ThingBuilder) WithName(v *Name) *ThingBuilder {
 	b.name = v
 	return b
+}
+
+func (o *Thing) Clone() *ThingBuilder {
+	return NewThingBuilder(o)
 }
 
 func (o *Thing) Name() *Name {

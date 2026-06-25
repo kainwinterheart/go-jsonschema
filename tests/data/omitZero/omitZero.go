@@ -143,6 +143,10 @@ func (b *OmitZeroBuilder) WithMyStringArray(v []string) *OmitZeroBuilder {
 	return b
 }
 
+func (o *OmitZero) Clone() *OmitZeroBuilder {
+	return NewOmitZeroBuilder(o)
+}
+
 func (o *OmitZero) MyArray() []interface{} {
 	return o.myarray
 }

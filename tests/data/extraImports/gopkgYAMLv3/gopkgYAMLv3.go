@@ -82,6 +82,10 @@ func (b *GopkgYAMLv3Builder) WithMyString(v *string) *GopkgYAMLv3Builder {
 	return b
 }
 
+func (o *GopkgYAMLv3) Clone() *GopkgYAMLv3Builder {
+	return NewGopkgYAMLv3Builder(o)
+}
+
 func (o *GopkgYAMLv3) MyBoolean() *bool {
 	return o.myboolean
 }
@@ -188,10 +192,10 @@ var enumValues_GopkgYAMLv3myenum = []interface{}{
 	"y",
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *GopkgYAMLv3myenum) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *GopkgYAMLv3myenum) UnmarshalYAML(value *yaml.Node) error {
 	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
@@ -208,10 +212,10 @@ func (j *GopkgYAMLv3myenum) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *GopkgYAMLv3myenum) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *GopkgYAMLv3myenum) UnmarshalJSON(value []byte) error {
 	var v string
-	if err := value.Decode(&v); err != nil {
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool

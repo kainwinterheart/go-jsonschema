@@ -114,6 +114,10 @@ func (b *LargerBuilder) WithU64(v uint64) *LargerBuilder {
 	return b
 }
 
+func (o *Larger) Clone() *LargerBuilder {
+	return NewLargerBuilder(o)
+}
+
 func (o *Larger) I16L() *int16 {
 	return o.i16l
 }

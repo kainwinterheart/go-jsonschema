@@ -57,6 +57,10 @@ func (o *AnyOf7) Baz() []*AnyOf7bazElem {
 	return o.baz
 }
 
+func (o *AnyOf7) Clone() *AnyOf7Builder {
+	return NewAnyOf7Builder(o)
+}
+
 func (o *AnyOf7) Foo() *AnyOf7foo {
 	return o.foo
 }
@@ -147,6 +151,10 @@ func (b *AnyOf7barElemBuilder) WithName(v *string) *AnyOf7barElemBuilder {
 	return b
 }
 
+func (o *AnyOf7barElem) Clone() *AnyOf7barElemBuilder {
+	return NewAnyOf7barElemBuilder(o)
+}
+
 func (o *AnyOf7barElem) Name() *string {
 	return o.name
 }
@@ -231,6 +239,10 @@ func (b *AnyOf7bazElemBuilder) Build() *AnyOf7bazElem {
 func (b *AnyOf7bazElemBuilder) WithName(v *string) *AnyOf7bazElemBuilder {
 	b.name = v
 	return b
+}
+
+func (o *AnyOf7bazElem) Clone() *AnyOf7bazElemBuilder {
+	return NewAnyOf7bazElemBuilder(o)
 }
 
 func (o *AnyOf7bazElem) Name() *string {
@@ -319,6 +331,10 @@ func (b *AnyOf7fooBuilder) WithName(v *string) *AnyOf7fooBuilder {
 	return b
 }
 
+func (o *AnyOf7foo) Clone() *AnyOf7fooBuilder {
+	return NewAnyOf7fooBuilder(o)
+}
+
 func (o *AnyOf7foo) Name() *string {
 	return o.name
 }
@@ -400,32 +416,18 @@ func (b *ItemBuilder) Build() *Item {
 	}
 }
 
-func NewAnyOf7bazElemBuilder(o *AnyOf7bazElem) *AnyOf7bazElemBuilder {
-	if o == nil {
-		return &AnyOf7bazElemBuilder{}
-	}
-	return &AnyOf7bazElemBuilder{
-		name: o.name,
-	}
-}
-
-type AnyOf7bazElem_0 = Item
-
-func NewAnyOf7barElemBuilder(o *AnyOf7barElem) *AnyOf7barElemBuilder {
-	if o == nil {
-		return &AnyOf7barElemBuilder{}
-	}
-	return &AnyOf7barElemBuilder{
-		name: o.name,
-	}
-}
-
-type AnyOf7barElem_0 = Item
-
 func (b *ItemBuilder) WithName(v *string) *ItemBuilder {
 	b.name = v
 	return b
 }
+
+func (o *Item) Clone() *ItemBuilder {
+	return NewItemBuilder(o)
+}
+
+type AnyOf7bazElem_0 = Item
+
+type AnyOf7barElem_0 = Item
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Item) UnmarshalYAML(value *yaml.Node) error {
@@ -473,6 +475,24 @@ func NewAnyOf7Builder(o *AnyOf7) *AnyOf7Builder {
 		bar: o.bar,
 		baz: o.baz,
 		foo: o.foo,
+	}
+}
+
+func NewAnyOf7barElemBuilder(o *AnyOf7barElem) *AnyOf7barElemBuilder {
+	if o == nil {
+		return &AnyOf7barElemBuilder{}
+	}
+	return &AnyOf7barElemBuilder{
+		name: o.name,
+	}
+}
+
+func NewAnyOf7bazElemBuilder(o *AnyOf7bazElem) *AnyOf7bazElemBuilder {
+	if o == nil {
+		return &AnyOf7bazElemBuilder{}
+	}
+	return &AnyOf7bazElemBuilder{
+		name: o.name,
 	}
 }
 

@@ -34,6 +34,10 @@ func (b *ObjectEmptyBuilder) WithFoo(v ObjectEmptyfoo) *ObjectEmptyBuilder {
 	return b
 }
 
+func (o *ObjectEmpty) Clone() *ObjectEmptyBuilder {
+	return NewObjectEmptyBuilder(o)
+}
+
 func (o *ObjectEmpty) Foo() ObjectEmptyfoo {
 	return o.foo
 }

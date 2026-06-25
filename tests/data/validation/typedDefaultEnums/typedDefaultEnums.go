@@ -36,6 +36,10 @@ func (b *TypedDefaultEnumsBuilder) WithSome(v TypedDefaultEnumssome) *TypedDefau
 	return b
 }
 
+func (o *TypedDefaultEnums) Clone() *TypedDefaultEnumsBuilder {
+	return NewTypedDefaultEnumsBuilder(o)
+}
+
 func (o *TypedDefaultEnums) Some() TypedDefaultEnumssome {
 	return o.some
 }
@@ -102,10 +106,10 @@ var enumValues_TypedDefaultEnumssome = []interface{}{
 	"other",
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *TypedDefaultEnumssome) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *TypedDefaultEnumssome) UnmarshalYAML(value *yaml.Node) error {
 	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
@@ -122,10 +126,10 @@ func (j *TypedDefaultEnumssome) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *TypedDefaultEnumssome) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *TypedDefaultEnumssome) UnmarshalJSON(value []byte) error {
 	var v string
-	if err := value.Decode(&v); err != nil {
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool

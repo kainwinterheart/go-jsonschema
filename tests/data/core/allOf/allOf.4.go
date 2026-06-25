@@ -75,6 +75,10 @@ func (b *AllOf4ElemBuilder) WithTarget(v Embeddedlinkrelationtarget) *AllOf4Elem
 	return b
 }
 
+func (o *AllOf4Elem) Clone() *AllOf4ElemBuilder {
+	return NewAllOf4ElemBuilder(o)
+}
+
 func (o *AllOf4Elem) From() Embeddedlinkendfrom {
 	return o.from
 }
@@ -230,6 +234,10 @@ func (b *EmbeddedlinkendBuilder) WithTags(v Embeddedlinkendtags) *Embeddedlinken
 	return b
 }
 
+func (o *Embeddedlinkend) Clone() *EmbeddedlinkendBuilder {
+	return NewEmbeddedlinkendBuilder(o)
+}
+
 func (o *Embeddedlinkend) From() *Embeddedlinkendfrom {
 	return o.from
 }
@@ -324,8 +332,33 @@ func (b *EmbeddedlinkendfromBuilder) WithContextId(v string) *Embeddedlinkendfro
 	return b
 }
 
+func (o *Embeddedlinkendfrom) Clone() *EmbeddedlinkendfromBuilder {
+	return NewEmbeddedlinkendfromBuilder(o)
+}
+
 func (o *Embeddedlinkendfrom) ContextId() string {
 	return o.contextid
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Embeddedlinkendfrom) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["contextId"]; raw != nil && !ok {
+		return fmt.Errorf("field contextId in Embeddedlinkendfrom: required")
+	}
+	type Plain Embeddedlinkendfrom
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if utf8.RuneCountInString(string(plain.contextid)) < 1 {
+		return fmt.Errorf("field %s length: must be >= %d", "contextId", 1)
+	}
+	*j = Embeddedlinkendfrom(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -365,27 +398,6 @@ func (j *Embeddedlinkendfrom) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Embeddedlinkendfrom) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["contextId"]; raw != nil && !ok {
-		return fmt.Errorf("field contextId in Embeddedlinkendfrom: required")
-	}
-	type Plain Embeddedlinkendfrom
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if utf8.RuneCountInString(string(plain.contextid)) < 1 {
-		return fmt.Errorf("field %s length: must be >= %d", "contextId", 1)
-	}
-	*j = Embeddedlinkendfrom(plain)
-	return nil
-}
-
 type Embeddedlinkendlinktype string
 
 const EmbeddedlinkendlinktypeEND Embeddedlinkendlinktype = "END"
@@ -394,10 +406,10 @@ var enumValues_Embeddedlinkendlinktype = []interface{}{
 	"END",
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Embeddedlinkendlinktype) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Embeddedlinkendlinktype) UnmarshalJSON(value []byte) error {
 	var v string
-	if err := value.Decode(&v); err != nil {
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
@@ -414,10 +426,10 @@ func (j *Embeddedlinkendlinktype) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Embeddedlinkendlinktype) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Embeddedlinkendlinktype) UnmarshalYAML(value *yaml.Node) error {
 	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
@@ -479,6 +491,10 @@ func (b *EmbeddedlinkpathBuilder) WithTags(v Embeddedlinkpathtags) *Embeddedlink
 	return b
 }
 
+func (o *Embeddedlinkpath) Clone() *EmbeddedlinkpathBuilder {
+	return NewEmbeddedlinkpathBuilder(o)
+}
+
 func (o *Embeddedlinkpath) From() Embeddedlinkpathfrom {
 	return o.from
 }
@@ -489,27 +505,6 @@ func (o *Embeddedlinkpath) LinkType() Embeddedlinkpathlinktype {
 
 func (o *Embeddedlinkpath) Tags() Embeddedlinkpathtags {
 	return o.tags
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Embeddedlinkpath) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["from"]; raw != nil && !ok {
-		return fmt.Errorf("field from in Embeddedlinkpath: required")
-	}
-	if _, ok := raw["linkType"]; raw != nil && !ok {
-		return fmt.Errorf("field linkType in Embeddedlinkpath: required")
-	}
-	type Plain Embeddedlinkpath
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Embeddedlinkpath(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -557,6 +552,27 @@ func (j *Embeddedlinkpath) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Embeddedlinkpath) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["from"]; raw != nil && !ok {
+		return fmt.Errorf("field from in Embeddedlinkpath: required")
+	}
+	if _, ok := raw["linkType"]; raw != nil && !ok {
+		return fmt.Errorf("field linkType in Embeddedlinkpath: required")
+	}
+	type Plain Embeddedlinkpath
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Embeddedlinkpath(plain)
+	return nil
+}
+
 // When consuming a CDEvent, you are consuming a parent event. So, when looking at
 // the 'from' key, this is the parent's parent.
 type Embeddedlinkpathfrom struct {
@@ -577,6 +593,10 @@ func (b *EmbeddedlinkpathfromBuilder) Build() *Embeddedlinkpathfrom {
 func (b *EmbeddedlinkpathfromBuilder) WithContextId(v string) *EmbeddedlinkpathfromBuilder {
 	b.contextid = v
 	return b
+}
+
+func (o *Embeddedlinkpathfrom) Clone() *EmbeddedlinkpathfromBuilder {
+	return NewEmbeddedlinkpathfromBuilder(o)
 }
 
 func (o *Embeddedlinkpathfrom) ContextId() string {
@@ -742,6 +762,10 @@ func (b *EmbeddedlinkrelationBuilder) WithTags(v Embeddedlinkrelationtags) *Embe
 func (b *EmbeddedlinkrelationBuilder) WithTarget(v Embeddedlinkrelationtarget) *EmbeddedlinkrelationBuilder {
 	b.target = v
 	return b
+}
+
+func (o *Embeddedlinkrelation) Clone() *EmbeddedlinkrelationBuilder {
+	return NewEmbeddedlinkrelationBuilder(o)
 }
 
 func (o *Embeddedlinkrelation) LinkKind() string {
@@ -912,8 +936,26 @@ func (b *EmbeddedlinkrelationtargetBuilder) WithContextId(v *string) *Embeddedli
 	return b
 }
 
+func (o *Embeddedlinkrelationtarget) Clone() *EmbeddedlinkrelationtargetBuilder {
+	return NewEmbeddedlinkrelationtargetBuilder(o)
+}
+
 func (o *Embeddedlinkrelationtarget) ContextId() *string {
 	return o.contextid
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Embeddedlinkrelationtarget) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Embeddedlinkrelationtarget
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.contextid != nil && utf8.RuneCountInString(string(*plain.contextid)) < 1 {
+		return fmt.Errorf("field %s length: must be >= %d", "contextId", 1)
+	}
+	*j = Embeddedlinkrelationtarget(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -944,20 +986,6 @@ func (j *Embeddedlinkrelationtarget) MarshalJSON() ([]byte, error) {
 		Contextid: j.contextid,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Embeddedlinkrelationtarget) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Embeddedlinkrelationtarget
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.contextid != nil && utf8.RuneCountInString(string(*plain.contextid)) < 1 {
-		return fmt.Errorf("field %s length: must be >= %d", "contextId", 1)
-	}
-	*j = Embeddedlinkrelationtarget(plain)
-	return nil
 }
 
 func NewAllOf4ElemBuilder(o *AllOf4Elem) *AllOf4ElemBuilder {

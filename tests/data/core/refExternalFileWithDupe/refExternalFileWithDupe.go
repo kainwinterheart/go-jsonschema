@@ -105,6 +105,10 @@ func (b *RefExternalFileWithDupeBuilder) WithMyThing(v *Thing) *RefExternalFileW
 	return b
 }
 
+func (o *RefExternalFileWithDupe) Clone() *RefExternalFileWithDupeBuilder {
+	return NewRefExternalFileWithDupeBuilder(o)
+}
+
 func (o *RefExternalFileWithDupe) MyExternalThing() *Thing_1 {
 	return o.myexternalthing
 }
@@ -155,23 +159,16 @@ func (j *RefExternalFileWithDupe) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
+func (o *Ref) Clone() *RefBuilder {
+	return NewRefBuilder(o)
+}
+
 func (o *Ref) MyThing() *Thing_1 {
 	return o.mything
 }
 
 func (o *Ref) MyThing2() *Thing_1 {
 	return o.mything2
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Ref) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Ref
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Ref(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -203,6 +200,17 @@ func (j *Ref) MarshalJSON() ([]byte, error) {
 		Mything2: j.mything2,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Ref) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Ref
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Ref(plain)
+	return nil
 }
 
 type Thing struct {
@@ -245,6 +253,10 @@ func (b *Thing_1Builder) WithName(v *string) *Thing_1Builder {
 	return b
 }
 
+func (o *Thing_1) Clone() *Thing_1Builder {
+	return NewThing_1Builder(o)
+}
+
 func (o *Thing_1) Name() *string {
 	return o.name
 }
@@ -285,6 +297,10 @@ func (j *Thing_1) UnmarshalYAML(value *yaml.Node) error {
 	}
 	*j = Thing_1(plain)
 	return nil
+}
+
+func (o *Thing) Clone() *ThingBuilder {
+	return NewThingBuilder(o)
 }
 
 func (o *Thing) Something() *string {

@@ -34,6 +34,10 @@ func (b *ThingBuilder) WithValues(v []Value) *ThingBuilder {
 	return b
 }
 
+func (o *Thing) Clone() *ThingBuilder {
+	return NewThingBuilder(o)
+}
+
 func (o *Thing) Values() []Value {
 	return o.values
 }

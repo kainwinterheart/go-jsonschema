@@ -39,6 +39,10 @@ func (b *StringAdditionalPropertiesBuilder) WithName(v *string) *StringAdditiona
 	return b
 }
 
+func (o *StringAdditionalProperties) Clone() *StringAdditionalPropertiesBuilder {
+	return NewStringAdditionalPropertiesBuilder(o)
+}
+
 func (o *StringAdditionalProperties) Name() *string {
 	return o.name
 }

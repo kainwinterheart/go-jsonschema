@@ -25,6 +25,10 @@ func (b *ExtraTagsBuilder) WithName(v *string) *ExtraTagsBuilder {
 	return b
 }
 
+func (o *ExtraTags) Clone() *ExtraTagsBuilder {
+	return NewExtraTagsBuilder(o)
+}
+
 func (o *ExtraTags) Name() *string {
 	return o.name
 }

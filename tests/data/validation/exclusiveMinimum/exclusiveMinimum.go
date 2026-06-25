@@ -59,6 +59,10 @@ func (b *ExclusiveMinimumBuilder) WithMyNumber(v float64) *ExclusiveMinimumBuild
 	return b
 }
 
+func (o *ExclusiveMinimum) Clone() *ExclusiveMinimumBuilder {
+	return NewExclusiveMinimumBuilder(o)
+}
+
 func (o *ExclusiveMinimum) MyInteger() int {
 	return o.myinteger
 }

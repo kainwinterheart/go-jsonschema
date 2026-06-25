@@ -39,6 +39,10 @@ func (b *AnyOf1Builder) WithFlags(v interface{}) *AnyOf1Builder {
 	return b
 }
 
+func (o *AnyOf1) Clone() *AnyOf1Builder {
+	return NewAnyOf1Builder(o)
+}
+
 func (o *AnyOf1) Configurations() []AnyOf1configurationsElem {
 	return o.configurations
 }
@@ -151,26 +155,12 @@ func (b *AnyOf1configurationsElem_0Builder) WithFoo(v string) *AnyOf1configurati
 	return b
 }
 
-func (o *AnyOf1configurationsElem_0) Foo() string {
-	return o.foo
+func (o *AnyOf1configurationsElem_0) Clone() *AnyOf1configurationsElem_0Builder {
+	return NewAnyOf1configurationsElem_0Builder(o)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AnyOf1configurationsElem_0) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AnyOf1configurationsElem_0: required")
-	}
-	type Plain AnyOf1configurationsElem_0
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AnyOf1configurationsElem_0(plain)
-	return nil
+func (o *AnyOf1configurationsElem_0) Foo() string {
+	return o.foo
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -207,6 +197,24 @@ func (j *AnyOf1configurationsElem_0) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf1configurationsElem_0) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["foo"]; raw != nil && !ok {
+		return fmt.Errorf("field foo in AnyOf1configurationsElem_0: required")
+	}
+	type Plain AnyOf1configurationsElem_0
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf1configurationsElem_0(plain)
+	return nil
+}
+
 type AnyOf1configurationsElem_1 struct {
 	// bar corresponds to the JSON schema field "bar".
 	bar float64 `json:"bar" yaml:"bar" mapstructure:"bar"`
@@ -231,22 +239,8 @@ func (o *AnyOf1configurationsElem_1) Bar() float64 {
 	return o.bar
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AnyOf1configurationsElem_1) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in AnyOf1configurationsElem_1: required")
-	}
-	type Plain AnyOf1configurationsElem_1
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AnyOf1configurationsElem_1(plain)
-	return nil
+func (o *AnyOf1configurationsElem_1) Clone() *AnyOf1configurationsElem_1Builder {
+	return NewAnyOf1configurationsElem_1Builder(o)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -283,6 +277,24 @@ func (j *AnyOf1configurationsElem_1) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf1configurationsElem_1) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["bar"]; raw != nil && !ok {
+		return fmt.Errorf("field bar in AnyOf1configurationsElem_1: required")
+	}
+	type Plain AnyOf1configurationsElem_1
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf1configurationsElem_1(plain)
+	return nil
+}
+
 type AnyOf1configurationsElem_2 struct {
 	// baz corresponds to the JSON schema field "baz".
 	baz *bool `json:"baz,omitempty,omitzero" yaml:"baz,omitempty" mapstructure:"baz,omitempty"`
@@ -305,6 +317,21 @@ func (b *AnyOf1configurationsElem_2Builder) WithBaz(v *bool) *AnyOf1configuratio
 
 func (o *AnyOf1configurationsElem_2) Baz() *bool {
 	return o.baz
+}
+
+func (o *AnyOf1configurationsElem_2) Clone() *AnyOf1configurationsElem_2Builder {
+	return NewAnyOf1configurationsElem_2Builder(o)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf1configurationsElem_2) UnmarshalYAML(value *yaml.Node) error {
+	type Plain AnyOf1configurationsElem_2
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf1configurationsElem_2(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -334,23 +361,16 @@ func (j *AnyOf1configurationsElem_2) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AnyOf1configurationsElem_2) UnmarshalYAML(value *yaml.Node) error {
-	type Plain AnyOf1configurationsElem_2
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AnyOf1configurationsElem_2(plain)
-	return nil
-}
-
 func (o *AnyOf1configurationsElem) Bar() *float64 {
 	return o.bar
 }
 
 func (o *AnyOf1configurationsElem) Baz() *bool {
 	return o.baz
+}
+
+func (o *AnyOf1configurationsElem) Clone() *AnyOf1configurationsElemBuilder {
+	return NewAnyOf1configurationsElemBuilder(o)
 }
 
 func (o *AnyOf1configurationsElem) Foo() *string {

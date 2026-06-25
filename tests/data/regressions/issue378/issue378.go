@@ -27,6 +27,10 @@ func (b *Issue378Builder) WithMemory(v *string) *Issue378Builder {
 	return b
 }
 
+func (o *Issue378) Clone() *Issue378Builder {
+	return NewIssue378Builder(o)
+}
+
 func (o *Issue378) Memory() *string {
 	return o.memory
 }

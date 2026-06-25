@@ -27,6 +27,10 @@ func (b *AnyOf6Builder) WithQux2(v []AnyOf6qux2Elem) *AnyOf6Builder {
 	return b
 }
 
+func (o *AnyOf6) Clone() *AnyOf6Builder {
+	return NewAnyOf6Builder(o)
+}
+
 func (o *AnyOf6) Qux2() []AnyOf6qux2Elem {
 	return o.qux2
 }
@@ -89,8 +93,43 @@ func (b *AnyOf6qux2ElemBuilder) WithContent(v []interface{}) *AnyOf6qux2ElemBuil
 	return b
 }
 
+func (o *AnyOf6qux2Elem) Clone() *AnyOf6qux2ElemBuilder {
+	return NewAnyOf6qux2ElemBuilder(o)
+}
+
 func (o *AnyOf6qux2Elem) Content() []interface{} {
 	return o.content
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf6qux2Elem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var anyOf6qux2Elem_0 AnyOf6qux2Elem_0
+	var anyOf6qux2Elem_1 AnyOf6qux2Elem_1
+	var anyOf6qux2Elem_2 AnyOf6qux2Elem_2
+	var errs []error
+	if err := anyOf6qux2Elem_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := anyOf6qux2Elem_1.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := anyOf6qux2Elem_2.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 3 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain AnyOf6qux2Elem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf6qux2Elem(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -140,37 +179,6 @@ func (j *AnyOf6qux2Elem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AnyOf6qux2Elem) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	var anyOf6qux2Elem_0 AnyOf6qux2Elem_0
-	var anyOf6qux2Elem_1 AnyOf6qux2Elem_1
-	var anyOf6qux2Elem_2 AnyOf6qux2Elem_2
-	var errs []error
-	if err := anyOf6qux2Elem_0.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if err := anyOf6qux2Elem_1.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if err := anyOf6qux2Elem_2.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if len(errs) == 3 {
-		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
-	}
-	type Plain AnyOf6qux2Elem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AnyOf6qux2Elem(plain)
-	return nil
-}
-
 type Bar2 struct {
 	// content corresponds to the JSON schema field "content".
 	content []Bar2contentElem `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
@@ -191,19 +199,12 @@ func (b *Bar2Builder) WithContent(v []Bar2contentElem) *Bar2Builder {
 	return b
 }
 
-func (o *Bar2) Content() []Bar2contentElem {
-	return o.content
+func (o *Bar2) Clone() *Bar2Builder {
+	return NewBar2Builder(o)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Bar2) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Bar2
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Bar2(plain)
-	return nil
+func (o *Bar2) Content() []Bar2contentElem {
+	return o.content
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -233,6 +234,17 @@ func (j *Bar2) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Bar2) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Bar2
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Bar2(plain)
+	return nil
+}
+
 type Bar2contentElem struct {
 	// content corresponds to the JSON schema field "content".
 	content []interface{} `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
@@ -253,39 +265,12 @@ func (b *Bar2contentElemBuilder) WithContent(v []interface{}) *Bar2contentElemBu
 	return b
 }
 
-func (o *Bar2contentElem) Content() []interface{} {
-	return o.content
+func (o *Bar2contentElem) Clone() *Bar2contentElemBuilder {
+	return NewBar2contentElemBuilder(o)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Bar2contentElem) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	var bar2contentElem_0 Bar2contentElem_0
-	var bar2contentElem_1 Bar2contentElem_1
-	var bar2contentElem_2 Bar2contentElem_2
-	var errs []error
-	if err := bar2contentElem_0.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if err := bar2contentElem_1.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if err := bar2contentElem_2.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if len(errs) == 3 {
-		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
-	}
-	type Plain Bar2contentElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Bar2contentElem(plain)
-	return nil
+func (o *Bar2contentElem) Content() []interface{} {
+	return o.content
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -335,6 +320,37 @@ func (j *Bar2contentElem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Bar2contentElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var bar2contentElem_0 Bar2contentElem_0
+	var bar2contentElem_1 Bar2contentElem_1
+	var bar2contentElem_2 Bar2contentElem_2
+	var errs []error
+	if err := bar2contentElem_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := bar2contentElem_1.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := bar2contentElem_2.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 3 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain Bar2contentElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Bar2contentElem(plain)
+	return nil
+}
+
 type Baz2 struct {
 	// content corresponds to the JSON schema field "content".
 	content []Baz2contentElem `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
@@ -353,6 +369,10 @@ func (b *Baz2Builder) Build() *Baz2 {
 func (b *Baz2Builder) WithContent(v []Baz2contentElem) *Baz2Builder {
 	b.content = v
 	return b
+}
+
+func (o *Baz2) Clone() *Baz2Builder {
+	return NewBaz2Builder(o)
 }
 
 func (o *Baz2) Content() []Baz2contentElem {
@@ -415,6 +435,10 @@ func (b *Baz2contentElemBuilder) Build() *Baz2contentElem {
 func (b *Baz2contentElemBuilder) WithContent(v []interface{}) *Baz2contentElemBuilder {
 	b.content = v
 	return b
+}
+
+func (o *Baz2contentElem) Clone() *Baz2contentElemBuilder {
+	return NewBaz2contentElemBuilder(o)
 }
 
 func (o *Baz2contentElem) Content() []interface{} {
@@ -519,6 +543,10 @@ func (b *Foo2Builder) WithContent(v []Foo2contentElem) *Foo2Builder {
 	return b
 }
 
+func (o *Foo2) Clone() *Foo2Builder {
+	return NewFoo2Builder(o)
+}
+
 func (o *Foo2) Content() []Foo2contentElem {
 	return o.content
 }
@@ -581,92 +609,8 @@ func (b *Foo2contentElemBuilder) WithContent(v []interface{}) *Foo2contentElemBu
 	return b
 }
 
-func (o *Foo2contentElem) Content() []interface{} {
-	return o.content
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Foo2contentElem) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	var foo2contentElem_0 Foo2contentElem_0
-	var foo2contentElem_1 Foo2contentElem_1
-	var foo2contentElem_2 Foo2contentElem_2
-	var errs []error
-	if err := foo2contentElem_0.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if err := foo2contentElem_1.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if err := foo2contentElem_2.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if len(errs) == 3 {
-		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
-	}
-	type Plain Foo2contentElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Foo2contentElem(plain)
-	return nil
-}
-
-type Bar2contentElem_1 = Bar2
-
-func NewBar2Builder(o *Bar2) *Bar2Builder {
-	if o == nil {
-		return &Bar2Builder{}
-	}
-	return &Bar2Builder{
-		content: o.content,
-	}
-}
-
-type AnyOf6qux2Elem_0 = Foo2
-
-type AnyOf6qux2Elem_1 = Bar2
-
-type AnyOf6qux2Elem_2 = Baz2
-
-func NewBar2contentElemBuilder(o *Bar2contentElem) *Bar2contentElemBuilder {
-	if o == nil {
-		return &Bar2contentElemBuilder{}
-	}
-	return &Bar2contentElemBuilder{
-		content: o.content,
-	}
-}
-
-func NewFoo2contentElemBuilder(o *Foo2contentElem) *Foo2contentElemBuilder {
-	if o == nil {
-		return &Foo2contentElemBuilder{}
-	}
-	return &Foo2contentElemBuilder{
-		content: o.content,
-	}
-}
-
-func NewFoo2Builder(o *Foo2) *Foo2Builder {
-	if o == nil {
-		return &Foo2Builder{}
-	}
-	return &Foo2Builder{
-		content: o.content,
-	}
-}
-
-func NewAnyOf6qux2ElemBuilder(o *AnyOf6qux2Elem) *AnyOf6qux2ElemBuilder {
-	if o == nil {
-		return &AnyOf6qux2ElemBuilder{}
-	}
-	return &AnyOf6qux2ElemBuilder{
-		content: o.content,
-	}
+func (o *Foo2contentElem) Clone() *Foo2contentElemBuilder {
+	return NewFoo2contentElemBuilder(o)
 }
 
 type Bar2contentElem_0 = Foo2
@@ -718,6 +662,94 @@ func (j *Foo2contentElem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+type AnyOf6qux2Elem_0 = Foo2
+
+type AnyOf6qux2Elem_1 = Bar2
+
+type AnyOf6qux2Elem_2 = Baz2
+
+func NewBar2Builder(o *Bar2) *Bar2Builder {
+	if o == nil {
+		return &Bar2Builder{}
+	}
+	return &Bar2Builder{
+		content: o.content,
+	}
+}
+
+func NewFoo2Builder(o *Foo2) *Foo2Builder {
+	if o == nil {
+		return &Foo2Builder{}
+	}
+	return &Foo2Builder{
+		content: o.content,
+	}
+}
+
+func NewBar2contentElemBuilder(o *Bar2contentElem) *Bar2contentElemBuilder {
+	if o == nil {
+		return &Bar2contentElemBuilder{}
+	}
+	return &Bar2contentElemBuilder{
+		content: o.content,
+	}
+}
+
+func NewAnyOf6qux2ElemBuilder(o *AnyOf6qux2Elem) *AnyOf6qux2ElemBuilder {
+	if o == nil {
+		return &AnyOf6qux2ElemBuilder{}
+	}
+	return &AnyOf6qux2ElemBuilder{
+		content: o.content,
+	}
+}
+
+func NewFoo2contentElemBuilder(o *Foo2contentElem) *Foo2contentElemBuilder {
+	if o == nil {
+		return &Foo2contentElemBuilder{}
+	}
+	return &Foo2contentElemBuilder{
+		content: o.content,
+	}
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Foo2contentElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var foo2contentElem_0 Foo2contentElem_0
+	var foo2contentElem_1 Foo2contentElem_1
+	var foo2contentElem_2 Foo2contentElem_2
+	var errs []error
+	if err := foo2contentElem_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := foo2contentElem_1.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := foo2contentElem_2.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 3 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain Foo2contentElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Foo2contentElem(plain)
+	return nil
+}
+
+func (o *Foo2contentElem) Content() []interface{} {
+	return o.content
+}
+
+type Bar2contentElem_1 = Bar2
+
 type Foo2contentElem_2 = Baz2
 
 type Foo2contentElem_1 = Bar2
@@ -733,21 +765,21 @@ func NewBaz2Builder(o *Baz2) *Baz2Builder {
 	}
 }
 
-func NewBaz2contentElemBuilder(o *Baz2contentElem) *Baz2contentElemBuilder {
-	if o == nil {
-		return &Baz2contentElemBuilder{}
-	}
-	return &Baz2contentElemBuilder{
-		content: o.content,
-	}
-}
-
 func NewAnyOf6Builder(o *AnyOf6) *AnyOf6Builder {
 	if o == nil {
 		return &AnyOf6Builder{}
 	}
 	return &AnyOf6Builder{
 		qux2: o.qux2,
+	}
+}
+
+func NewBaz2contentElemBuilder(o *Baz2contentElem) *Baz2contentElemBuilder {
+	if o == nil {
+		return &Baz2contentElemBuilder{}
+	}
+	return &Baz2contentElemBuilder{
+		content: o.content,
 	}
 }
 

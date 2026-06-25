@@ -44,6 +44,10 @@ func (b *ObjectBuilder) WithMyObject(v *Objectmyobject) *ObjectBuilder {
 	return b
 }
 
+func (o *Object) Clone() *ObjectBuilder {
+	return NewObjectBuilder(o)
+}
+
 func (o *Object) MyObject() *Objectmyobject {
 	return o.myobject
 }
@@ -106,8 +110,30 @@ func (b *ObjectmyobjectBuilder) WithMyString(v string) *ObjectmyobjectBuilder {
 	return b
 }
 
+func (o *Objectmyobject) Clone() *ObjectmyobjectBuilder {
+	return NewObjectmyobjectBuilder(o)
+}
+
 func (o *Objectmyobject) MyString() string {
 	return o.mystring
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Objectmyobject) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["myString"]; raw != nil && !ok {
+		return fmt.Errorf("field myString in Objectmyobject: required")
+	}
+	type Plain Objectmyobject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Objectmyobject(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -142,22 +168,4 @@ func (j *Objectmyobject) MarshalJSON() ([]byte, error) {
 		Mystring: j.mystring,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Objectmyobject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["myString"]; raw != nil && !ok {
-		return fmt.Errorf("field myString in Objectmyobject: required")
-	}
-	type Plain Objectmyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Objectmyobject(plain)
-	return nil
 }

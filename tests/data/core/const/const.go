@@ -59,6 +59,10 @@ func (b *AConstBuilder) WithMyString(v *string) *AConstBuilder {
 	return b
 }
 
+func (o *AConst) Clone() *AConstBuilder {
+	return NewAConstBuilder(o)
+}
+
 func (o *AConst) MyBoolean() *bool {
 	return o.myboolean
 }
@@ -73,29 +77,6 @@ func (o *AConst) MyNumber() *float64 {
 
 func (o *AConst) MyString() *string {
 	return o.mystring
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AConst) UnmarshalYAML(value *yaml.Node) error {
-	type Plain AConst
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.myboolean != nil && *plain.myboolean != true {
-		return fmt.Errorf("field %s: must be equal to %t", "myBoolean", true)
-	}
-	if plain.myinteger != nil && *plain.myinteger != 42 {
-		return fmt.Errorf("field %s: must be equal to %v", "myInteger", 42)
-	}
-	if plain.mynumber != nil && *plain.mynumber != 4.2 {
-		return fmt.Errorf("field %s: must be equal to %v", "myNumber", 4.2)
-	}
-	if plain.mystring != nil && *plain.mystring != "foo" {
-		return fmt.Errorf("field %s: must be equal to %s", "myString", "foo")
-	}
-	*j = AConst(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -147,6 +128,29 @@ func (j *AConst) MarshalJSON() ([]byte, error) {
 		Mystring:  j.mystring,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AConst) UnmarshalYAML(value *yaml.Node) error {
+	type Plain AConst
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.myboolean != nil && *plain.myboolean != true {
+		return fmt.Errorf("field %s: must be equal to %t", "myBoolean", true)
+	}
+	if plain.myinteger != nil && *plain.myinteger != 42 {
+		return fmt.Errorf("field %s: must be equal to %v", "myInteger", 42)
+	}
+	if plain.mynumber != nil && *plain.mynumber != 4.2 {
+		return fmt.Errorf("field %s: must be equal to %v", "myNumber", 4.2)
+	}
+	if plain.mystring != nil && *plain.mystring != "foo" {
+		return fmt.Errorf("field %s: must be equal to %s", "myString", "foo")
+	}
+	*j = AConst(plain)
+	return nil
 }
 
 func NewAConstBuilder(o *AConst) *AConstBuilder {
@@ -224,6 +228,10 @@ func (b *RequiredBuilder) WithMyNumber(v float64) *RequiredBuilder {
 func (b *RequiredBuilder) WithMyString(v string) *RequiredBuilder {
 	b.mystring = v
 	return b
+}
+
+func (o *Required) Clone() *RequiredBuilder {
+	return NewRequiredBuilder(o)
 }
 
 func (o *Required) MyBoolean() bool {

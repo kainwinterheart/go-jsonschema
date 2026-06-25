@@ -47,6 +47,10 @@ func (b *ReadOnlyNoValidationBuilder) WithMyString(v string) *ReadOnlyNoValidati
 	return b
 }
 
+func (o *ReadOnlyNoValidation) Clone() *ReadOnlyNoValidationBuilder {
+	return NewReadOnlyNoValidationBuilder(o)
+}
+
 func (o *ReadOnlyNoValidation) MyReadOnlyString() *string {
 	return o.myreadonlystring
 }

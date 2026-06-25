@@ -99,6 +99,10 @@ func (o *TypeMultiple) ArrayOfAllPrimitives() []interface{} {
 	return o.arrayofallprimitives
 }
 
+func (o *TypeMultiple) Clone() *TypeMultipleBuilder {
+	return NewTypeMultipleBuilder(o)
+}
+
 func (o *TypeMultiple) OnlyTwoOptions() interface{} {
 	return o.onlytwooptions
 }

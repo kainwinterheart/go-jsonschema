@@ -224,6 +224,10 @@ func (b *RolloutSpecificationBuilder) WithRolloutMetadata(v rolloutmetadata) *Ro
 	return b
 }
 
+func (o *RolloutSpecification) Clone() *RolloutSpecificationBuilder {
+	return NewRolloutSpecificationBuilder(o)
+}
+
 func (o *RolloutSpecification) ContentVersion() string {
 	return o.contentversion
 }
@@ -366,6 +370,10 @@ func (o *applications) ApplyAcrossServiceResources() applyacrossserviceresources
 	return o.applyacrossserviceresources
 }
 
+func (o *applications) Clone() *applicationsBuilder {
+	return NewapplicationsBuilder(o)
+}
+
 func (o *applications) Names() []string {
 	return o.names
 }
@@ -486,6 +494,10 @@ func (b *applyacrossserviceresourcesBuilder) WithNames(v []string) *applyacrosss
 	return b
 }
 
+func (o *applyacrossserviceresources) Clone() *applyacrossserviceresourcesBuilder {
+	return NewapplyacrossserviceresourcesBuilder(o)
+}
+
 func (o *applyacrossserviceresources) DefinitionName() string {
 	return o.definitionname
 }
@@ -586,6 +598,10 @@ func (b *buildsourceBuilder) WithParameters(v parameters) *buildsourceBuilder {
 	return b
 }
 
+func (o *buildsource) Clone() *buildsourceBuilder {
+	return NewbuildsourceBuilder(o)
+}
+
 func (o *buildsource) Parameters() parameters {
 	return o.parameters
 }
@@ -663,8 +679,23 @@ func (b *configurationBuilder) WithServiceScope(v *servicescope) *configurationB
 	return b
 }
 
+func (o *configuration) Clone() *configurationBuilder {
+	return NewconfigurationBuilder(o)
+}
+
 func (o *configuration) ServiceScope() *servicescope {
 	return o.servicescope
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *configuration) UnmarshalYAML(value *yaml.Node) error {
+	type Plain configuration
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = configuration(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -692,17 +723,6 @@ func (j *configuration) MarshalJSON() ([]byte, error) {
 		Servicescope: j.servicescope,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *configuration) UnmarshalYAML(value *yaml.Node) error {
-	type Plain configuration
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = configuration(plain)
-	return nil
 }
 
 // Email Notification definitions
@@ -753,12 +773,34 @@ func (o *email) Cc() *string {
 	return o.cc
 }
 
+func (o *email) Clone() *emailBuilder {
+	return NewemailBuilder(o)
+}
+
 func (o *email) Options() *options {
 	return o.options
 }
 
 func (o *email) To() string {
 	return o.to
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *email) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["to"]; raw != nil && !ok {
+		return fmt.Errorf("field to in email: required")
+	}
+	type Plain email
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = email(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -803,24 +845,6 @@ func (j *email) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *email) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["to"]; raw != nil && !ok {
-		return fmt.Errorf("field to in email: required")
-	}
-	type Plain email
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = email(plain)
-	return nil
-}
-
 // Incident notification definitions
 type incident struct {
 	// Conditions of when to create incidents, default will send on every error
@@ -862,6 +886,10 @@ func (b *incidentBuilder) WithProperties(v properties) *incidentBuilder {
 func (b *incidentBuilder) WithProviderType(v string) *incidentBuilder {
 	b.providertype = v
 	return b
+}
+
+func (o *incident) Clone() *incidentBuilder {
+	return NewincidentBuilder(o)
 }
 
 func (o *incident) Options() *incidentoptions {
@@ -963,8 +991,23 @@ func (b *incidentoptionsBuilder) WithWhen(v []string) *incidentoptionsBuilder {
 	return b
 }
 
+func (o *incidentoptions) Clone() *incidentoptionsBuilder {
+	return NewincidentoptionsBuilder(o)
+}
+
 func (o *incidentoptions) When() []string {
 	return o.when
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *incidentoptions) UnmarshalYAML(value *yaml.Node) error {
+	type Plain incidentoptions
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = incidentoptions(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -992,17 +1035,6 @@ func (j *incidentoptions) MarshalJSON() ([]byte, error) {
 		When: j.when,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *incidentoptions) UnmarshalYAML(value *yaml.Node) error {
-	type Plain incidentoptions
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = incidentoptions(plain)
-	return nil
 }
 
 // Notification definitions
@@ -1037,12 +1069,27 @@ func (b *notificationBuilder) WithIncident(v *incident) *notificationBuilder {
 	return b
 }
 
+func (o *notification) Clone() *notificationBuilder {
+	return NewnotificationBuilder(o)
+}
+
 func (o *notification) Email() *email {
 	return o.email
 }
 
 func (o *notification) Incident() *incident {
 	return o.incident
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *notification) UnmarshalYAML(value *yaml.Node) error {
+	type Plain notification
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = notification(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -1074,17 +1121,6 @@ func (j *notification) MarshalJSON() ([]byte, error) {
 		Incident: j.incident,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *notification) UnmarshalYAML(value *yaml.Node) error {
-	type Plain notification
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = notification(plain)
-	return nil
 }
 
 // Conditions of when to sending the email, default will send on all start, error,
@@ -1122,12 +1158,32 @@ func (b *optionsBuilder) WithWhen(v []string) *optionsBuilder {
 	return b
 }
 
+func (o *options) Clone() *optionsBuilder {
+	return NewoptionsBuilder(o)
+}
+
 func (o *options) Verbosity() *string {
 	return o.verbosity
 }
 
 func (o *options) When() []string {
 	return o.when
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *options) UnmarshalYAML(value *yaml.Node) error {
+	type Plain options
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.verbosity != nil {
+		if matched, _ := regexp.MatchString(`(?i)(^All$|^SummaryOnly$|^Compact$)`, string(*plain.verbosity)); !matched {
+			return fmt.Errorf("field %s pattern match: must match %s", "verbosity", `(?i)(^All$|^SummaryOnly$|^Compact$)`)
+		}
+	}
+	*j = options(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -1164,22 +1220,6 @@ func (j *options) MarshalJSON() ([]byte, error) {
 		When:      j.when,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *options) UnmarshalYAML(value *yaml.Node) error {
-	type Plain options
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.verbosity != nil {
-		if matched, _ := regexp.MatchString(`(?i)(^All$|^SummaryOnly$|^Compact$)`, string(*plain.verbosity)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "verbosity", `(?i)(^All$|^SummaryOnly$|^Compact$)`)
-		}
-	}
-	*j = options(plain)
-	return nil
 }
 
 // An individual deployment step in the rollout of an Azure service.
@@ -1268,6 +1308,10 @@ func (o *orchestratedstep) Actions() []string {
 
 func (o *orchestratedstep) Applications() *applications {
 	return o.applications
+}
+
+func (o *orchestratedstep) Clone() *orchestratedstepBuilder {
+	return NeworchestratedstepBuilder(o)
 }
 
 func (o *orchestratedstep) DependsOn() []string {
@@ -1405,6 +1449,10 @@ func (b *parametersBuilder) WithVersionFile(v string) *parametersBuilder {
 	return b
 }
 
+func (o *parameters) Clone() *parametersBuilder {
+	return NewparametersBuilder(o)
+}
+
 func (o *parameters) VersionFile() string {
 	return o.versionfile
 }
@@ -1513,6 +1561,10 @@ func (b *propertiesBuilder) WithEnvironment(v *string) *propertiesBuilder {
 func (b *propertiesBuilder) WithRoutingId(v string) *propertiesBuilder {
 	b.routingid = v
 	return b
+}
+
+func (o *properties) Clone() *propertiesBuilder {
+	return NewpropertiesBuilder(o)
 }
 
 func (o *properties) ConnectorId() string {
@@ -1725,6 +1777,10 @@ func (o *rolloutmetadata) BuildSource() buildsource {
 	return o.buildsource
 }
 
+func (o *rolloutmetadata) Clone() *rolloutmetadataBuilder {
+	return NewrolloutmetadataBuilder(o)
+}
+
 func (o *rolloutmetadata) Configuration() *configuration {
 	return o.configuration
 }
@@ -1896,12 +1952,37 @@ func (b *rolloutpolicyreferenceBuilder) WithVersion(v string) *rolloutpolicyrefe
 	return b
 }
 
+func (o *rolloutpolicyreference) Clone() *rolloutpolicyreferenceBuilder {
+	return NewrolloutpolicyreferenceBuilder(o)
+}
+
 func (o *rolloutpolicyreference) Name() string {
 	return o.name
 }
 
 func (o *rolloutpolicyreference) Version() string {
 	return o.version
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *rolloutpolicyreference) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["name"]; raw != nil && !ok {
+		return fmt.Errorf("field name in rolloutpolicyreference: required")
+	}
+	if _, ok := raw["version"]; raw != nil && !ok {
+		return fmt.Errorf("field version in rolloutpolicyreference: required")
+	}
+	type Plain rolloutpolicyreference
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = rolloutpolicyreference(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -1945,27 +2026,6 @@ func (j *rolloutpolicyreference) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *rolloutpolicyreference) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["name"]; raw != nil && !ok {
-		return fmt.Errorf("field name in rolloutpolicyreference: required")
-	}
-	if _, ok := raw["version"]; raw != nil && !ok {
-		return fmt.Errorf("field version in rolloutpolicyreference: required")
-	}
-	type Plain rolloutpolicyreference
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = rolloutpolicyreference(plain)
-	return nil
-}
-
 // Service scope configuration setting
 type servicescope struct {
 	// The path relative to the Service Group Root that points to the service scope
@@ -1986,6 +2046,10 @@ func (b *servicescopeBuilder) Build() *servicescope {
 func (b *servicescopeBuilder) WithSpecPath(v *string) *servicescopeBuilder {
 	b.specpath = v
 	return b
+}
+
+func (o *servicescope) Clone() *servicescopeBuilder {
+	return NewservicescopeBuilder(o)
 }
 
 func (o *servicescope) SpecPath() *string {

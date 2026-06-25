@@ -25,6 +25,10 @@ func (b *BooleanAsSchemaBuilder) WithId(v *string) *BooleanAsSchemaBuilder {
 	return b
 }
 
+func (o *BooleanAsSchema) Clone() *BooleanAsSchemaBuilder {
+	return NewBooleanAsSchemaBuilder(o)
+}
+
 func (o *BooleanAsSchema) Id() *string {
 	return o.id
 }

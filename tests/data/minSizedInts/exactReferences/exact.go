@@ -111,6 +111,10 @@ func (b *ExactBuilder) WithU8(v UBound8) *ExactBuilder {
 	return b
 }
 
+func (o *Exact) Clone() *ExactBuilder {
+	return NewExactBuilder(o)
+}
+
 func (o *Exact) I16() Bound16 {
 	return o.i16
 }

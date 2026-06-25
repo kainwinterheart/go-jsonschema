@@ -54,6 +54,10 @@ func (b *RefExternalFileNestedRefsBuilder) WithMyExternalThing(v *Thing) *RefExt
 	return b
 }
 
+func (o *RefExternalFileNestedRefs) Clone() *RefExternalFileNestedRefsBuilder {
+	return NewRefExternalFileNestedRefsBuilder(o)
+}
+
 func (o *RefExternalFileNestedRefs) MyExternalThing() *Thing {
 	return o.myexternalthing
 }
@@ -114,6 +118,10 @@ func (b *RefNestedBuilder) Build() *RefNested {
 func (b *RefNestedBuilder) WithMyThing(v *Thing) *RefNestedBuilder {
 	b.mything = v
 	return b
+}
+
+func (o *RefNested) Clone() *RefNestedBuilder {
+	return NewRefNestedBuilder(o)
 }
 
 func (o *RefNested) MyThing() *Thing {
@@ -178,8 +186,23 @@ func (b *ThingBuilder) WithName(v *Name) *ThingBuilder {
 	return b
 }
 
+func (o *Thing) Clone() *ThingBuilder {
+	return NewThingBuilder(o)
+}
+
 func (o *Thing) Name() *Name {
 	return o.name
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Thing
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Thing(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -207,15 +230,4 @@ func (j *Thing) MarshalJSON() ([]byte, error) {
 		Name: j.name,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Thing
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Thing(plain)
-	return nil
 }

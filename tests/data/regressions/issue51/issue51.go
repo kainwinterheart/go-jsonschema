@@ -30,6 +30,10 @@ func (b *Issue51Builder) WithName(v *string) *Issue51Builder {
 	return b
 }
 
+func (o *Issue51) Clone() *Issue51Builder {
+	return NewIssue51Builder(o)
+}
+
 func (o *Issue51) Name() *string {
 	return o.name
 }

@@ -163,6 +163,10 @@ func (o *Pointer) BoolWithDefault() *bool {
 	return o.boolwithdefault
 }
 
+func (o *Pointer) Clone() *PointerBuilder {
+	return NewPointerBuilder(o)
+}
+
 func (o *Pointer) DurationWithDefault() *time.Duration {
 	return o.durationwithdefault
 }

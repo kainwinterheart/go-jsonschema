@@ -10,24 +10,13 @@ import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "strings"
 
-type ComposedWithAllOfAndProperties_0 = BaseObject
-
-func (o *ComposedWithAllOfAndProperties) BaseField() string {
-	return o.basefield
+type BaseObject struct {
+	// basefield corresponds to the JSON schema field "BaseField".
+	basefield string `json:"BaseField" yaml:"BaseField" mapstructure:"BaseField"`
 }
 
 type BaseObjectBuilder struct {
 	basefield string
-}
-
-type ComposedWithAllOfAndProperties struct {
-	// basefield corresponds to the JSON schema field "BaseField".
-	basefield string `json:"BaseField" yaml:"BaseField" mapstructure:"BaseField"`
-
-	// directfield corresponds to the JSON schema field "DirectField".
-	directfield []string `json:"DirectField,omitempty,omitzero" yaml:"DirectField,omitempty" mapstructure:"DirectField,omitempty"`
-
-	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
 func (b *BaseObjectBuilder) Build() *BaseObject {
@@ -39,6 +28,32 @@ func (b *BaseObjectBuilder) Build() *BaseObject {
 func (b *BaseObjectBuilder) WithBaseField(v string) *BaseObjectBuilder {
 	b.basefield = v
 	return b
+}
+
+func (o *BaseObject) BaseField() string {
+	return o.basefield
+}
+
+func (o *BaseObject) Clone() *BaseObjectBuilder {
+	return NewBaseObjectBuilder(o)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *BaseObject) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["BaseField"]; raw != nil && !ok {
+		return fmt.Errorf("field BaseField in BaseObject: required")
+	}
+	type Plain BaseObject
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = BaseObject(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -75,42 +90,17 @@ func (j *BaseObject) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *BaseObject) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["BaseField"]; raw != nil && !ok {
-		return fmt.Errorf("field BaseField in BaseObject: required")
-	}
-	type Plain BaseObject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = BaseObject(plain)
-	return nil
-}
-
-func (o *BaseObject) BaseField() string {
-	return o.basefield
-}
-
-type BaseObject struct {
+type ComposedWithAllOfAndProperties struct {
 	// basefield corresponds to the JSON schema field "BaseField".
 	basefield string `json:"BaseField" yaml:"BaseField" mapstructure:"BaseField"`
+
+	// directfield corresponds to the JSON schema field "DirectField".
+	directfield []string `json:"DirectField,omitempty,omitzero" yaml:"DirectField,omitempty" mapstructure:"DirectField,omitempty"`
+
+	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
-func (b *ComposedWithAllOfAndPropertiesBuilder) WithDirectField(v []string) *ComposedWithAllOfAndPropertiesBuilder {
-	b.directfield = v
-	return b
-}
-
-func (b *ComposedWithAllOfAndPropertiesBuilder) WithBaseField(v string) *ComposedWithAllOfAndPropertiesBuilder {
-	b.basefield = v
-	return b
-}
+type ComposedWithAllOfAndProperties_0 = BaseObject
 
 type ComposedWithAllOfAndPropertiesBuilder struct {
 	basefield string
@@ -123,6 +113,24 @@ func (b *ComposedWithAllOfAndPropertiesBuilder) Build() *ComposedWithAllOfAndPro
 		basefield:   b.basefield,
 		directfield: b.directfield,
 	}
+}
+
+func (b *ComposedWithAllOfAndPropertiesBuilder) WithBaseField(v string) *ComposedWithAllOfAndPropertiesBuilder {
+	b.basefield = v
+	return b
+}
+
+func (b *ComposedWithAllOfAndPropertiesBuilder) WithDirectField(v []string) *ComposedWithAllOfAndPropertiesBuilder {
+	b.directfield = v
+	return b
+}
+
+func (o *ComposedWithAllOfAndProperties) BaseField() string {
+	return o.basefield
+}
+
+func (o *ComposedWithAllOfAndProperties) Clone() *ComposedWithAllOfAndPropertiesBuilder {
+	return NewComposedWithAllOfAndPropertiesBuilder(o)
 }
 
 func (o *ComposedWithAllOfAndProperties) DirectField() []string {

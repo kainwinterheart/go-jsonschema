@@ -55,23 +55,16 @@ func (b *RefOldBuilder) WithMyThing2(v *Thing) *RefOldBuilder {
 	return b
 }
 
+func (o *RefOld) Clone() *RefOldBuilder {
+	return NewRefOldBuilder(o)
+}
+
 func (o *RefOld) MyThing() *Thing {
 	return o.mything
 }
 
 func (o *RefOld) MyThing2() *Thing {
 	return o.mything2
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RefOld) UnmarshalYAML(value *yaml.Node) error {
-	type Plain RefOld
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = RefOld(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -105,6 +98,17 @@ func (j *RefOld) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RefOld) UnmarshalYAML(value *yaml.Node) error {
+	type Plain RefOld
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RefOld(plain)
+	return nil
+}
+
 type Thing struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
@@ -123,6 +127,10 @@ func (b *ThingBuilder) Build() *Thing {
 func (b *ThingBuilder) WithName(v *string) *ThingBuilder {
 	b.name = v
 	return b
+}
+
+func (o *Thing) Clone() *ThingBuilder {
+	return NewThingBuilder(o)
 }
 
 func (o *Thing) Name() *string {

@@ -38,6 +38,10 @@ func (b *DescriptionBuilder) WithMyField(v *string) *DescriptionBuilder {
 	return b
 }
 
+func (o *Description) Clone() *DescriptionBuilder {
+	return NewDescriptionBuilder(o)
+}
+
 func (o *Description) MyDescriptionlessField() *string {
 	return o.mydescriptionlessfield
 }

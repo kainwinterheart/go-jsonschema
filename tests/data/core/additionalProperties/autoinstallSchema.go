@@ -383,6 +383,10 @@ func (o *AutoinstallSchema) Apt() *AutoinstallSchemaapt {
 	return o.apt
 }
 
+func (o *AutoinstallSchema) Clone() *AutoinstallSchemaBuilder {
+	return NewAutoinstallSchemaBuilder(o)
+}
+
 func (o *AutoinstallSchema) Codecs() *AutoinstallSchemacodecs {
 	return o.codecs
 }
@@ -501,38 +505,6 @@ func (o *AutoinstallSchema) Version() int {
 
 func (o *AutoinstallSchema) Zdevs() []AutoinstallSchemazdevsElem {
 	return o.zdevs
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AutoinstallSchema) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["version"]; raw != nil && !ok {
-		return fmt.Errorf("field version in AutoinstallSchema: required")
-	}
-	type Plain AutoinstallSchema
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if 1 < plain.version {
-		return fmt.Errorf("field %s: must be <= %v", "version", 1)
-	}
-	if 1 > plain.version {
-		return fmt.Errorf("field %s: must be >= %v", "version", 1)
-	}
-	st := reflect.TypeOf(Plain{})
-	for i := range st.NumField() {
-		delete(raw, st.Field(i).Name)
-		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
-	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
-		return err
-	}
-	*j = AutoinstallSchema(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -707,6 +679,38 @@ func (j *AutoinstallSchema) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AutoinstallSchema) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["version"]; raw != nil && !ok {
+		return fmt.Errorf("field version in AutoinstallSchema: required")
+	}
+	type Plain AutoinstallSchema
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if 1 < plain.version {
+		return fmt.Errorf("field %s: must be <= %v", "version", 1)
+	}
+	if 1 > plain.version {
+		return fmt.Errorf("field %s: must be >= %v", "version", 1)
+	}
+	st := reflect.TypeOf(Plain{})
+	for i := range st.NumField() {
+		delete(raw, st.Field(i).Name)
+		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
+	}
+	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+		return err
+	}
+	*j = AutoinstallSchema(plain)
+	return nil
+}
+
 type AutoinstallSchemaactivedirectory struct {
 	// adminname corresponds to the JSON schema field "admin-name".
 	adminname *string `json:"admin-name,omitempty,omitzero" yaml:"admin-name,omitempty" mapstructure:"admin-name,omitempty"`
@@ -740,6 +744,10 @@ func (b *AutoinstallSchemaactivedirectoryBuilder) WithDomainName(v *string) *Aut
 
 func (o *AutoinstallSchemaactivedirectory) AdminName() *string {
 	return o.adminname
+}
+
+func (o *AutoinstallSchemaactivedirectory) Clone() *AutoinstallSchemaactivedirectoryBuilder {
+	return NewAutoinstallSchemaactivedirectoryBuilder(o)
 }
 
 func (o *AutoinstallSchemaactivedirectory) DomainName() *string {
@@ -884,6 +892,10 @@ func (b *AutoinstallSchemaaptBuilder) WithPrimary(v []interface{}) *AutoinstallS
 func (b *AutoinstallSchemaaptBuilder) WithSources(v AutoinstallSchemaaptsources) *AutoinstallSchemaaptBuilder {
 	b.sources = v
 	return b
+}
+
+func (o *AutoinstallSchemaapt) Clone() *AutoinstallSchemaaptBuilder {
+	return NewAutoinstallSchemaaptBuilder(o)
 }
 
 func (o *AutoinstallSchemaapt) DisableComponents() []AutoinstallSchemaaptdisablecomponentsElem {
@@ -1052,10 +1064,10 @@ var enumValues_AutoinstallSchemaaptfallback = []interface{}{
 	"offline-install",
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *AutoinstallSchemaaptfallback) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AutoinstallSchemaaptfallback) UnmarshalYAML(value *yaml.Node) error {
 	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
@@ -1072,10 +1084,10 @@ func (j *AutoinstallSchemaaptfallback) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AutoinstallSchemaaptfallback) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *AutoinstallSchemaaptfallback) UnmarshalJSON(value []byte) error {
 	var v string
-	if err := value.Decode(&v); err != nil {
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
@@ -1110,6 +1122,10 @@ func (b *AutoinstallSchemaaptmirrorselectionBuilder) Build() *AutoinstallSchemaa
 func (b *AutoinstallSchemaaptmirrorselectionBuilder) WithPrimary(v []string) *AutoinstallSchemaaptmirrorselectionBuilder {
 	b.primary = v
 	return b
+}
+
+func (o *AutoinstallSchemaaptmirrorselection) Clone() *AutoinstallSchemaaptmirrorselectionBuilder {
+	return NewAutoinstallSchemaaptmirrorselectionBuilder(o)
 }
 
 func (o *AutoinstallSchemaaptmirrorselection) Primary() []string {
@@ -1187,6 +1203,10 @@ func (b *AutoinstallSchemaaptmirrorselectionprimaryElem_1Builder) WithUri(v stri
 
 func (o *AutoinstallSchemaaptmirrorselectionprimaryElem_1) Arches() []string {
 	return o.arches
+}
+
+func (o *AutoinstallSchemaaptmirrorselectionprimaryElem_1) Clone() *AutoinstallSchemaaptmirrorselectionprimaryElem_1Builder {
+	return NewAutoinstallSchemaaptmirrorselectionprimaryElem_1Builder(o)
 }
 
 func (o *AutoinstallSchemaaptmirrorselectionprimaryElem_1) Uri() string {
@@ -1295,12 +1315,40 @@ func (o *AutoinstallSchemaaptpreferencesElem) APackage() string {
 	return o.apackage
 }
 
+func (o *AutoinstallSchemaaptpreferencesElem) Clone() *AutoinstallSchemaaptpreferencesElemBuilder {
+	return NewAutoinstallSchemaaptpreferencesElemBuilder(o)
+}
+
 func (o *AutoinstallSchemaaptpreferencesElem) Pin() string {
 	return o.pin
 }
 
 func (o *AutoinstallSchemaaptpreferencesElem) PinPriority() int {
 	return o.pinpriority
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AutoinstallSchemaaptpreferencesElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["package"]; raw != nil && !ok {
+		return fmt.Errorf("field package in AutoinstallSchemaaptpreferencesElem: required")
+	}
+	if _, ok := raw["pin"]; raw != nil && !ok {
+		return fmt.Errorf("field pin in AutoinstallSchemaaptpreferencesElem: required")
+	}
+	if _, ok := raw["pin-priority"]; raw != nil && !ok {
+		return fmt.Errorf("field pin-priority in AutoinstallSchemaaptpreferencesElem: required")
+	}
+	type Plain AutoinstallSchemaaptpreferencesElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AutoinstallSchemaaptpreferencesElem(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -1351,30 +1399,6 @@ func (j *AutoinstallSchemaaptpreferencesElem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AutoinstallSchemaaptpreferencesElem) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["package"]; raw != nil && !ok {
-		return fmt.Errorf("field package in AutoinstallSchemaaptpreferencesElem: required")
-	}
-	if _, ok := raw["pin"]; raw != nil && !ok {
-		return fmt.Errorf("field pin in AutoinstallSchemaaptpreferencesElem: required")
-	}
-	if _, ok := raw["pin-priority"]; raw != nil && !ok {
-		return fmt.Errorf("field pin-priority in AutoinstallSchemaaptpreferencesElem: required")
-	}
-	type Plain AutoinstallSchemaaptpreferencesElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AutoinstallSchemaaptpreferencesElem(plain)
-	return nil
-}
-
 type AutoinstallSchemaaptsources map[string]interface{}
 
 type AutoinstallSchemacodecs struct {
@@ -1397,8 +1421,23 @@ func (b *AutoinstallSchemacodecsBuilder) WithInstall(v *bool) *AutoinstallSchema
 	return b
 }
 
+func (o *AutoinstallSchemacodecs) Clone() *AutoinstallSchemacodecsBuilder {
+	return NewAutoinstallSchemacodecsBuilder(o)
+}
+
 func (o *AutoinstallSchemacodecs) Install() *bool {
 	return o.install
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AutoinstallSchemacodecs) UnmarshalYAML(value *yaml.Node) error {
+	type Plain AutoinstallSchemacodecs
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AutoinstallSchemacodecs(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -1428,17 +1467,6 @@ func (j *AutoinstallSchemacodecs) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AutoinstallSchemacodecs) UnmarshalYAML(value *yaml.Node) error {
-	type Plain AutoinstallSchemacodecs
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AutoinstallSchemacodecs(plain)
-	return nil
-}
-
 type AutoinstallSchemadrivers struct {
 	// install corresponds to the JSON schema field "install".
 	install *bool `json:"install,omitempty,omitzero" yaml:"install,omitempty" mapstructure:"install,omitempty"`
@@ -1457,6 +1485,10 @@ func (b *AutoinstallSchemadriversBuilder) Build() *AutoinstallSchemadrivers {
 func (b *AutoinstallSchemadriversBuilder) WithInstall(v *bool) *AutoinstallSchemadriversBuilder {
 	b.install = v
 	return b
+}
+
+func (o *AutoinstallSchemadrivers) Clone() *AutoinstallSchemadriversBuilder {
+	return NewAutoinstallSchemadriversBuilder(o)
 }
 
 func (o *AutoinstallSchemadrivers) Install() *bool {
@@ -1554,6 +1586,10 @@ func (b *AutoinstallSchemaidentityBuilder) WithUsername(v string) *AutoinstallSc
 	return b
 }
 
+func (o *AutoinstallSchemaidentity) Clone() *AutoinstallSchemaidentityBuilder {
+	return NewAutoinstallSchemaidentityBuilder(o)
+}
+
 func (o *AutoinstallSchemaidentity) Hostname() string {
 	return o.hostname
 }
@@ -1568,6 +1604,30 @@ func (o *AutoinstallSchemaidentity) Realname() *string {
 
 func (o *AutoinstallSchemaidentity) Username() string {
 	return o.username
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AutoinstallSchemaidentity) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["hostname"]; raw != nil && !ok {
+		return fmt.Errorf("field hostname in AutoinstallSchemaidentity: required")
+	}
+	if _, ok := raw["password"]; raw != nil && !ok {
+		return fmt.Errorf("field password in AutoinstallSchemaidentity: required")
+	}
+	if _, ok := raw["username"]; raw != nil && !ok {
+		return fmt.Errorf("field username in AutoinstallSchemaidentity: required")
+	}
+	type Plain AutoinstallSchemaidentity
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AutoinstallSchemaidentity(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -1622,30 +1682,6 @@ func (j *AutoinstallSchemaidentity) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AutoinstallSchemaidentity) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["hostname"]; raw != nil && !ok {
-		return fmt.Errorf("field hostname in AutoinstallSchemaidentity: required")
-	}
-	if _, ok := raw["password"]; raw != nil && !ok {
-		return fmt.Errorf("field password in AutoinstallSchemaidentity: required")
-	}
-	if _, ok := raw["username"]; raw != nil && !ok {
-		return fmt.Errorf("field username in AutoinstallSchemaidentity: required")
-	}
-	type Plain AutoinstallSchemaidentity
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AutoinstallSchemaidentity(plain)
-	return nil
-}
-
 type AutoinstallSchemakernel struct {
 	// flavor corresponds to the JSON schema field "flavor".
 	flavor *string `json:"flavor,omitempty,omitzero" yaml:"flavor,omitempty" mapstructure:"flavor,omitempty"`
@@ -1679,6 +1715,10 @@ func (b *AutoinstallSchemakernelBuilder) WithFlavor(v *string) *AutoinstallSchem
 
 func (o *AutoinstallSchemakernel) APackage() *string {
 	return o.apackage
+}
+
+func (o *AutoinstallSchemakernel) Clone() *AutoinstallSchemakernelBuilder {
+	return NewAutoinstallSchemakernelBuilder(o)
 }
 
 func (o *AutoinstallSchemakernel) Flavor() *string {
@@ -1745,6 +1785,10 @@ func (b *AutoinstallSchemakernelcrashdumpsBuilder) Build() *AutoinstallSchemaker
 func (b *AutoinstallSchemakernelcrashdumpsBuilder) WithEnabled(v AutoinstallSchemakernelcrashdumpsenabled) *AutoinstallSchemakernelcrashdumpsBuilder {
 	b.enabled = v
 	return b
+}
+
+func (o *AutoinstallSchemakernelcrashdumps) Clone() *AutoinstallSchemakernelcrashdumpsBuilder {
+	return NewAutoinstallSchemakernelcrashdumpsBuilder(o)
 }
 
 func (o *AutoinstallSchemakernelcrashdumps) Enabled() AutoinstallSchemakernelcrashdumpsenabled {
@@ -1847,6 +1891,10 @@ func (b *AutoinstallSchemakeyboardBuilder) WithVariant(v *string) *AutoinstallSc
 	return b
 }
 
+func (o *AutoinstallSchemakeyboard) Clone() *AutoinstallSchemakeyboardBuilder {
+	return NewAutoinstallSchemakeyboardBuilder(o)
+}
+
 func (o *AutoinstallSchemakeyboard) Layout() string {
 	return o.layout
 }
@@ -1857,24 +1905,6 @@ func (o *AutoinstallSchemakeyboard) Toggle() AutoinstallSchemakeyboardtoggle {
 
 func (o *AutoinstallSchemakeyboard) Variant() *string {
 	return o.variant
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AutoinstallSchemakeyboard) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["layout"]; raw != nil && !ok {
-		return fmt.Errorf("field layout in AutoinstallSchemakeyboard: required")
-	}
-	type Plain AutoinstallSchemakeyboard
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AutoinstallSchemakeyboard(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -1919,6 +1949,24 @@ func (j *AutoinstallSchemakeyboard) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AutoinstallSchemakeyboard) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["layout"]; raw != nil && !ok {
+		return fmt.Errorf("field layout in AutoinstallSchemakeyboard: required")
+	}
+	type Plain AutoinstallSchemakeyboard
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AutoinstallSchemakeyboard(plain)
+	return nil
+}
+
 type AutoinstallSchemakeyboardtoggle *string
 
 type AutoinstallSchemaoem struct {
@@ -1941,26 +1989,12 @@ func (b *AutoinstallSchemaoemBuilder) WithInstall(v interface{}) *AutoinstallSch
 	return b
 }
 
-func (o *AutoinstallSchemaoem) Install() interface{} {
-	return o.install
+func (o *AutoinstallSchemaoem) Clone() *AutoinstallSchemaoemBuilder {
+	return NewAutoinstallSchemaoemBuilder(o)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AutoinstallSchemaoem) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["install"]; raw != nil && !ok {
-		return fmt.Errorf("field install in AutoinstallSchemaoem: required")
-	}
-	type Plain AutoinstallSchemaoem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AutoinstallSchemaoem(plain)
-	return nil
+func (o *AutoinstallSchemaoem) Install() interface{} {
+	return o.install
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -1995,6 +2029,24 @@ func (j *AutoinstallSchemaoem) MarshalJSON() ([]byte, error) {
 		Install: j.install,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AutoinstallSchemaoem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["install"]; raw != nil && !ok {
+		return fmt.Errorf("field install in AutoinstallSchemaoem: required")
+	}
+	type Plain AutoinstallSchemaoem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AutoinstallSchemaoem(plain)
+	return nil
 }
 
 type AutoinstallSchemaproxy *string
@@ -2032,6 +2084,10 @@ func (b *AutoinstallSchemarefreshinstallerBuilder) WithUpdate(v *bool) *Autoinst
 
 func (o *AutoinstallSchemarefreshinstaller) Channel() *string {
 	return o.channel
+}
+
+func (o *AutoinstallSchemarefreshinstaller) Clone() *AutoinstallSchemarefreshinstallerBuilder {
+	return NewAutoinstallSchemarefreshinstallerBuilder(o)
 }
 
 func (o *AutoinstallSchemarefreshinstaller) Update() *bool {
@@ -2097,10 +2153,10 @@ var enumValues_AutoinstallSchemashutdown = []interface{}{
 	"poweroff",
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AutoinstallSchemashutdown) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *AutoinstallSchemashutdown) UnmarshalJSON(value []byte) error {
 	var v string
-	if err := value.Decode(&v); err != nil {
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
@@ -2117,10 +2173,10 @@ func (j *AutoinstallSchemashutdown) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *AutoinstallSchemashutdown) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AutoinstallSchemashutdown) UnmarshalYAML(value *yaml.Node) error {
 	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
@@ -2185,6 +2241,10 @@ func (o *AutoinstallSchemasnapsElem) Channel() *string {
 
 func (o *AutoinstallSchemasnapsElem) Classic() *bool {
 	return o.classic
+}
+
+func (o *AutoinstallSchemasnapsElem) Clone() *AutoinstallSchemasnapsElemBuilder {
+	return NewAutoinstallSchemasnapsElemBuilder(o)
 }
 
 func (o *AutoinstallSchemasnapsElem) Name() string {
@@ -2280,6 +2340,10 @@ func (b *AutoinstallSchemasourceBuilder) WithId(v *string) *AutoinstallSchemasou
 func (b *AutoinstallSchemasourceBuilder) WithSearchDrivers(v *bool) *AutoinstallSchemasourceBuilder {
 	b.searchdrivers = v
 	return b
+}
+
+func (o *AutoinstallSchemasource) Clone() *AutoinstallSchemasourceBuilder {
+	return NewAutoinstallSchemasourceBuilder(o)
 }
 
 func (o *AutoinstallSchemasource) Id() *string {
@@ -2382,6 +2446,10 @@ func (o *AutoinstallSchemassh) AuthorizedKeys() []string {
 	return o.authorizedkeys
 }
 
+func (o *AutoinstallSchemassh) Clone() *AutoinstallSchemasshBuilder {
+	return NewAutoinstallSchemasshBuilder(o)
+}
+
 func (o *AutoinstallSchemassh) InstallServer() *bool {
 	return o.installserver
 }
@@ -2454,6 +2522,10 @@ func (b *AutoinstallSchemaubuntuadvantageBuilder) Build() *AutoinstallSchemaubun
 func (b *AutoinstallSchemaubuntuadvantageBuilder) WithToken(v *string) *AutoinstallSchemaubuntuadvantageBuilder {
 	b.token = v
 	return b
+}
+
+func (o *AutoinstallSchemaubuntuadvantage) Clone() *AutoinstallSchemaubuntuadvantageBuilder {
+	return NewAutoinstallSchemaubuntuadvantageBuilder(o)
 }
 
 func (o *AutoinstallSchemaubuntuadvantage) Token() *string {
@@ -2541,30 +2613,12 @@ func (b *AutoinstallSchemaubuntuproBuilder) WithToken(v *string) *AutoinstallSch
 	return b
 }
 
-func (o *AutoinstallSchemaubuntupro) Token() *string {
-	return o.token
+func (o *AutoinstallSchemaubuntupro) Clone() *AutoinstallSchemaubuntuproBuilder {
+	return NewAutoinstallSchemaubuntuproBuilder(o)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AutoinstallSchemaubuntupro) UnmarshalYAML(value *yaml.Node) error {
-	type Plain AutoinstallSchemaubuntupro
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.token != nil {
-		if matched, _ := regexp.MatchString(`^C[1-9A-HJ-NP-Za-km-z]+$`, string(*plain.token)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "token", `^C[1-9A-HJ-NP-Za-km-z]+$`)
-		}
-	}
-	if plain.token != nil && utf8.RuneCountInString(string(*plain.token)) < 24 {
-		return fmt.Errorf("field %s length: must be >= %d", "token", 24)
-	}
-	if plain.token != nil && utf8.RuneCountInString(string(*plain.token)) > 30 {
-		return fmt.Errorf("field %s length: must be <= %d", "token", 30)
-	}
-	*j = AutoinstallSchemaubuntupro(plain)
-	return nil
+func (o *AutoinstallSchemaubuntupro) Token() *string {
+	return o.token
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -2605,6 +2659,28 @@ func (j *AutoinstallSchemaubuntupro) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AutoinstallSchemaubuntupro) UnmarshalYAML(value *yaml.Node) error {
+	type Plain AutoinstallSchemaubuntupro
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	if plain.token != nil {
+		if matched, _ := regexp.MatchString(`^C[1-9A-HJ-NP-Za-km-z]+$`, string(*plain.token)); !matched {
+			return fmt.Errorf("field %s pattern match: must match %s", "token", `^C[1-9A-HJ-NP-Za-km-z]+$`)
+		}
+	}
+	if plain.token != nil && utf8.RuneCountInString(string(*plain.token)) < 24 {
+		return fmt.Errorf("field %s length: must be >= %d", "token", 24)
+	}
+	if plain.token != nil && utf8.RuneCountInString(string(*plain.token)) > 30 {
+		return fmt.Errorf("field %s length: must be <= %d", "token", 30)
+	}
+	*j = AutoinstallSchemaubuntupro(plain)
+	return nil
+}
+
 type AutoinstallSchemaupdates string
 
 const AutoinstallSchemaupdatesAll AutoinstallSchemaupdates = "all"
@@ -2615,10 +2691,10 @@ var enumValues_AutoinstallSchemaupdates = []interface{}{
 	"all",
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *AutoinstallSchemaupdates) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AutoinstallSchemaupdates) UnmarshalYAML(value *yaml.Node) error {
 	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
@@ -2635,10 +2711,10 @@ func (j *AutoinstallSchemaupdates) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AutoinstallSchemaupdates) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *AutoinstallSchemaupdates) UnmarshalJSON(value []byte) error {
 	var v string
-	if err := value.Decode(&v); err != nil {
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
@@ -2686,6 +2762,10 @@ func (b *AutoinstallSchemazdevsElemBuilder) WithEnabled(v *bool) *AutoinstallSch
 func (b *AutoinstallSchemazdevsElemBuilder) WithId(v *string) *AutoinstallSchemazdevsElemBuilder {
 	b.id = v
 	return b
+}
+
+func (o *AutoinstallSchemazdevsElem) Clone() *AutoinstallSchemazdevsElemBuilder {
+	return NewAutoinstallSchemazdevsElemBuilder(o)
 }
 
 func (o *AutoinstallSchemazdevsElem) Enabled() *bool {

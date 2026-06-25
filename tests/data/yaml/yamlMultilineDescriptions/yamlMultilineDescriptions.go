@@ -58,6 +58,10 @@ func (o *YamlMultilineDescriptions) Bar() *string {
 	return o.bar
 }
 
+func (o *YamlMultilineDescriptions) Clone() *YamlMultilineDescriptionsBuilder {
+	return NewYamlMultilineDescriptionsBuilder(o)
+}
+
 func (o *YamlMultilineDescriptions) Foo() *string {
 	return o.foo
 }

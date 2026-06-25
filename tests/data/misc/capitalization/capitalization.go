@@ -191,6 +191,10 @@ func (o *Capitalization) A속성() *string {
 	return o.a속성
 }
 
+func (o *Capitalization) Clone() *CapitalizationBuilder {
+	return NewCapitalizationBuilder(o)
+}
+
 func (o *Capitalization) HtMl() *string {
 	return o.html
 }

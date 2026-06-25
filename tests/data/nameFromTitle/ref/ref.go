@@ -36,6 +36,10 @@ func (b *ExtRefBuilder) WithMyThing2(v *Thing) *ExtRefBuilder {
 	return b
 }
 
+func (o *ExtRef) Clone() *ExtRefBuilder {
+	return NewExtRefBuilder(o)
+}
+
 func (o *ExtRef) MyThing() *Thing {
 	return o.mything
 }
@@ -125,19 +129,12 @@ func (b *ThingBuilder) WithName(v *string) *ThingBuilder {
 	return b
 }
 
-func (o *Thing) Name() *string {
-	return o.name
+func (o *Thing) Clone() *ThingBuilder {
+	return NewThingBuilder(o)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Thing
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Thing(plain)
-	return nil
+func (o *Thing) Name() *string {
+	return o.name
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -165,4 +162,15 @@ func (j *Thing) MarshalJSON() ([]byte, error) {
 		Name: j.name,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Thing
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Thing(plain)
+	return nil
 }

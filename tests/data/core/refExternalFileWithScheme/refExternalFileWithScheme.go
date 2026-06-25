@@ -97,12 +97,27 @@ func (b *RefExternalFileWithSchemeBuilder) WithSomeOtherExternalThing(v *Thing) 
 	return b
 }
 
+func (o *RefExternalFileWithScheme) Clone() *RefExternalFileWithSchemeBuilder {
+	return NewRefExternalFileWithSchemeBuilder(o)
+}
+
 func (o *RefExternalFileWithScheme) MyExternalThing() *Thing {
 	return o.myexternalthing
 }
 
 func (o *RefExternalFileWithScheme) SomeOtherExternalThing() *Thing {
 	return o.someotherexternalthing
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RefExternalFileWithScheme) UnmarshalYAML(value *yaml.Node) error {
+	type Plain RefExternalFileWithScheme
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RefExternalFileWithScheme(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -136,15 +151,8 @@ func (j *RefExternalFileWithScheme) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RefExternalFileWithScheme) UnmarshalYAML(value *yaml.Node) error {
-	type Plain RefExternalFileWithScheme
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = RefExternalFileWithScheme(plain)
-	return nil
+func (o *Ref) Clone() *RefBuilder {
+	return NewRefBuilder(o)
 }
 
 func (o *Ref) MyThing() *Thing {
@@ -153,6 +161,17 @@ func (o *Ref) MyThing() *Thing {
 
 func (o *Ref) MyThing2() *Thing {
 	return o.mything2
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Ref) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Ref
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Ref(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -186,17 +205,6 @@ func (j *Ref) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Ref) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Ref
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Ref(plain)
-	return nil
-}
-
 type Thing struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
@@ -217,8 +225,23 @@ func (b *ThingBuilder) WithName(v *string) *ThingBuilder {
 	return b
 }
 
+func (o *Thing) Clone() *ThingBuilder {
+	return NewThingBuilder(o)
+}
+
 func (o *Thing) Name() *string {
 	return o.name
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Thing
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Thing(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -246,15 +269,4 @@ func (j *Thing) MarshalJSON() ([]byte, error) {
 		Name: j.name,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Thing
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Thing(plain)
-	return nil
 }

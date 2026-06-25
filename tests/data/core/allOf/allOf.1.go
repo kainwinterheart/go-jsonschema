@@ -26,6 +26,10 @@ func (b *AllOf1Builder) WithConfigurations(v []AllOf1configurationsElem) *AllOf1
 	return b
 }
 
+func (o *AllOf1) Clone() *AllOf1Builder {
+	return NewAllOf1Builder(o)
+}
+
 func (o *AllOf1) Configurations() []AllOf1configurationsElem {
 	return o.configurations
 }
@@ -103,8 +107,33 @@ func (o *AllOf1configurationsElem) Bar() float64 {
 	return o.bar
 }
 
+func (o *AllOf1configurationsElem) Clone() *AllOf1configurationsElemBuilder {
+	return NewAllOf1configurationsElemBuilder(o)
+}
+
 func (o *AllOf1configurationsElem) Foo() string {
 	return o.foo
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AllOf1configurationsElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["bar"]; raw != nil && !ok {
+		return fmt.Errorf("field bar in AllOf1configurationsElem: required")
+	}
+	if _, ok := raw["foo"]; raw != nil && !ok {
+		return fmt.Errorf("field foo in AllOf1configurationsElem: required")
+	}
+	type Plain AllOf1configurationsElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AllOf1configurationsElem(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -146,27 +175,6 @@ func (j *AllOf1configurationsElem) MarshalJSON() ([]byte, error) {
 		Foo: j.foo,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AllOf1configurationsElem) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["bar"]; raw != nil && !ok {
-		return fmt.Errorf("field bar in AllOf1configurationsElem: required")
-	}
-	if _, ok := raw["foo"]; raw != nil && !ok {
-		return fmt.Errorf("field foo in AllOf1configurationsElem: required")
-	}
-	type Plain AllOf1configurationsElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AllOf1configurationsElem(plain)
-	return nil
 }
 
 func NewAllOf1Builder(o *AllOf1) *AllOf1Builder {

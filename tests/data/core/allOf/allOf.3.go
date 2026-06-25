@@ -52,6 +52,10 @@ func (o *AllOf3) Bar() float64 {
 	return o.bar
 }
 
+func (o *AllOf3) Clone() *AllOf3Builder {
+	return NewAllOf3Builder(o)
+}
+
 func (o *AllOf3) Configurations() []interface{} {
 	return o.configurations
 }

@@ -25,6 +25,10 @@ func (b *AMapBuilder) WithMyMap(v map[string]float64) *AMapBuilder {
 	return b
 }
 
+func (o *AMap) Clone() *AMapBuilder {
+	return NewAMapBuilder(o)
+}
+
 func (o *AMap) MyMap() map[string]float64 {
 	return o.mymap
 }

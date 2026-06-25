@@ -34,6 +34,10 @@ func (b *ObjectAdditionalPropertiesBuilder) WithFoo(v ObjectAdditionalProperties
 	return b
 }
 
+func (o *ObjectAdditionalProperties) Clone() *ObjectAdditionalPropertiesBuilder {
+	return NewObjectAdditionalPropertiesBuilder(o)
+}
+
 func (o *ObjectAdditionalProperties) Foo() ObjectAdditionalPropertiesfoo {
 	return o.foo
 }

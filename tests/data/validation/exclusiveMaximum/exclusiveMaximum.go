@@ -59,6 +59,10 @@ func (b *ExclusiveMaximumBuilder) WithMyNumber(v float64) *ExclusiveMaximumBuild
 	return b
 }
 
+func (o *ExclusiveMaximum) Clone() *ExclusiveMaximumBuilder {
+	return NewExclusiveMaximumBuilder(o)
+}
+
 func (o *ExclusiveMaximum) MyInteger() int {
 	return o.myinteger
 }

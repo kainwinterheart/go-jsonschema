@@ -38,6 +38,10 @@ func (b *MaxLengthBuilder) WithMyString(v string) *MaxLengthBuilder {
 	return b
 }
 
+func (o *MaxLength) Clone() *MaxLengthBuilder {
+	return NewMaxLengthBuilder(o)
+}
+
 func (o *MaxLength) MyNullableString() *string {
 	return o.mynullablestring
 }

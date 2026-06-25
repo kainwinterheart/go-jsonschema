@@ -34,6 +34,10 @@ func (b *TypedDefaultBuilder) WithTopLevelDomains(v []string) *TypedDefaultBuild
 	return b
 }
 
+func (o *TypedDefault) Clone() *TypedDefaultBuilder {
+	return NewTypedDefaultBuilder(o)
+}
+
 func (o *TypedDefault) TopLevelDomains() []string {
 	return o.topleveldomains
 }

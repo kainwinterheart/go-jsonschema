@@ -76,6 +76,10 @@ func (b *AnyOf4ElemBuilder) WithTarget(v *Embeddedlinkrelationtarget) *AnyOf4Ele
 	return b
 }
 
+func (o *AnyOf4Elem) Clone() *AnyOf4ElemBuilder {
+	return NewAnyOf4ElemBuilder(o)
+}
+
 func (o *AnyOf4Elem) From() *Embeddedlinkendfrom {
 	return o.from
 }
@@ -94,37 +98,6 @@ func (o *AnyOf4Elem) Tags() Embeddedlinkendtags {
 
 func (o *AnyOf4Elem) Target() *Embeddedlinkrelationtarget {
 	return o.target
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *AnyOf4Elem) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	var anyOf4Elem_0 AnyOf4Elem_0
-	var anyOf4Elem_1 AnyOf4Elem_1
-	var anyOf4Elem_2 AnyOf4Elem_2
-	var errs []error
-	if err := anyOf4Elem_0.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if err := anyOf4Elem_1.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if err := anyOf4Elem_2.UnmarshalYAML(value); err != nil {
-		errs = append(errs, err)
-	}
-	if len(errs) == 3 {
-		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
-	}
-	type Plain AnyOf4Elem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = AnyOf4Elem(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -190,6 +163,37 @@ func (j *AnyOf4Elem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *AnyOf4Elem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	var anyOf4Elem_0 AnyOf4Elem_0
+	var anyOf4Elem_1 AnyOf4Elem_1
+	var anyOf4Elem_2 AnyOf4Elem_2
+	var errs []error
+	if err := anyOf4Elem_0.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := anyOf4Elem_1.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if err := anyOf4Elem_2.UnmarshalYAML(value); err != nil {
+		errs = append(errs, err)
+	}
+	if len(errs) == 3 {
+		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
+	}
+	type Plain AnyOf4Elem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = AnyOf4Elem(plain)
+	return nil
+}
+
 type Embeddedlinkend struct {
 	// When consuming a CDEvent, you are consuming a parent event. So, when looking at
 	// the 'from' key, this is the parent's parent.
@@ -233,6 +237,10 @@ func (b *EmbeddedlinkendBuilder) WithTags(v Embeddedlinkendtags) *Embeddedlinken
 	return b
 }
 
+func (o *Embeddedlinkend) Clone() *EmbeddedlinkendBuilder {
+	return NewEmbeddedlinkendBuilder(o)
+}
+
 func (o *Embeddedlinkend) From() *Embeddedlinkendfrom {
 	return o.from
 }
@@ -243,24 +251,6 @@ func (o *Embeddedlinkend) LinkType() Embeddedlinkendlinktype {
 
 func (o *Embeddedlinkend) Tags() Embeddedlinkendtags {
 	return o.tags
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Embeddedlinkend) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["linkType"]; raw != nil && !ok {
-		return fmt.Errorf("field linkType in Embeddedlinkend: required")
-	}
-	type Plain Embeddedlinkend
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Embeddedlinkend(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -305,6 +295,24 @@ func (j *Embeddedlinkend) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Embeddedlinkend) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["linkType"]; raw != nil && !ok {
+		return fmt.Errorf("field linkType in Embeddedlinkend: required")
+	}
+	type Plain Embeddedlinkend
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Embeddedlinkend(plain)
+	return nil
+}
+
 // When consuming a CDEvent, you are consuming a parent event. So, when looking at
 // the 'from' key, this is the parent's parent.
 type Embeddedlinkendfrom struct {
@@ -325,6 +333,10 @@ func (b *EmbeddedlinkendfromBuilder) Build() *Embeddedlinkendfrom {
 func (b *EmbeddedlinkendfromBuilder) WithContextId(v string) *EmbeddedlinkendfromBuilder {
 	b.contextid = v
 	return b
+}
+
+func (o *Embeddedlinkendfrom) Clone() *EmbeddedlinkendfromBuilder {
+	return NewEmbeddedlinkendfromBuilder(o)
 }
 
 func (o *Embeddedlinkendfrom) ContextId() string {
@@ -482,6 +494,10 @@ func (b *EmbeddedlinkpathBuilder) WithTags(v Embeddedlinkpathtags) *Embeddedlink
 	return b
 }
 
+func (o *Embeddedlinkpath) Clone() *EmbeddedlinkpathBuilder {
+	return NewEmbeddedlinkpathBuilder(o)
+}
+
 func (o *Embeddedlinkpath) From() Embeddedlinkpathfrom {
 	return o.from
 }
@@ -580,6 +596,10 @@ func (b *EmbeddedlinkpathfromBuilder) Build() *Embeddedlinkpathfrom {
 func (b *EmbeddedlinkpathfromBuilder) WithContextId(v string) *EmbeddedlinkpathfromBuilder {
 	b.contextid = v
 	return b
+}
+
+func (o *Embeddedlinkpathfrom) Clone() *EmbeddedlinkpathfromBuilder {
+	return NewEmbeddedlinkpathfromBuilder(o)
 }
 
 func (o *Embeddedlinkpathfrom) ContextId() string {
@@ -745,6 +765,10 @@ func (b *EmbeddedlinkrelationBuilder) WithTags(v Embeddedlinkrelationtags) *Embe
 func (b *EmbeddedlinkrelationBuilder) WithTarget(v Embeddedlinkrelationtarget) *EmbeddedlinkrelationBuilder {
 	b.target = v
 	return b
+}
+
+func (o *Embeddedlinkrelation) Clone() *EmbeddedlinkrelationBuilder {
+	return NewEmbeddedlinkrelationBuilder(o)
 }
 
 func (o *Embeddedlinkrelation) LinkKind() string {
@@ -915,34 +939,26 @@ func (b *EmbeddedlinkrelationtargetBuilder) WithContextId(v *string) *Embeddedli
 	return b
 }
 
-type AnyOf4Elem_2 = Embeddedlinkrelation
+func (o *Embeddedlinkrelationtarget) Clone() *EmbeddedlinkrelationtargetBuilder {
+	return NewEmbeddedlinkrelationtargetBuilder(o)
+}
 
 func (o *Embeddedlinkrelationtarget) ContextId() *string {
 	return o.contextid
 }
 
-func NewEmbeddedlinkpathBuilder(o *Embeddedlinkpath) *EmbeddedlinkpathBuilder {
-	if o == nil {
-		return &EmbeddedlinkpathBuilder{}
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Embeddedlinkrelationtarget) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Embeddedlinkrelationtarget
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
 	}
-	return &EmbeddedlinkpathBuilder{
-		from:     o.from,
-		linktype: o.linktype,
-		tags:     o.tags,
+	if plain.contextid != nil && utf8.RuneCountInString(string(*plain.contextid)) < 1 {
+		return fmt.Errorf("field %s length: must be >= %d", "contextId", 1)
 	}
-}
-
-func NewAnyOf4ElemBuilder(o *AnyOf4Elem) *AnyOf4ElemBuilder {
-	if o == nil {
-		return &AnyOf4ElemBuilder{}
-	}
-	return &AnyOf4ElemBuilder{
-		from:     o.from,
-		linkkind: o.linkkind,
-		linktype: o.linktype,
-		tags:     o.tags,
-		target:   o.target,
-	}
+	*j = Embeddedlinkrelationtarget(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -975,56 +991,12 @@ func (j *Embeddedlinkrelationtarget) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Embeddedlinkrelationtarget) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Embeddedlinkrelationtarget
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	if plain.contextid != nil && utf8.RuneCountInString(string(*plain.contextid)) < 1 {
-		return fmt.Errorf("field %s length: must be >= %d", "contextId", 1)
-	}
-	*j = Embeddedlinkrelationtarget(plain)
-	return nil
-}
-
-func NewEmbeddedlinkrelationtargetBuilder(o *Embeddedlinkrelationtarget) *EmbeddedlinkrelationtargetBuilder {
+func NewAnyOf4ElemBuilder(o *AnyOf4Elem) *AnyOf4ElemBuilder {
 	if o == nil {
-		return &EmbeddedlinkrelationtargetBuilder{}
+		return &AnyOf4ElemBuilder{}
 	}
-	return &EmbeddedlinkrelationtargetBuilder{
-		contextid: o.contextid,
-	}
-}
-
-func NewEmbeddedlinkpathfromBuilder(o *Embeddedlinkpathfrom) *EmbeddedlinkpathfromBuilder {
-	if o == nil {
-		return &EmbeddedlinkpathfromBuilder{}
-	}
-	return &EmbeddedlinkpathfromBuilder{
-		contextid: o.contextid,
-	}
-}
-
-func NewEmbeddedlinkendfromBuilder(o *Embeddedlinkendfrom) *EmbeddedlinkendfromBuilder {
-	if o == nil {
-		return &EmbeddedlinkendfromBuilder{}
-	}
-	return &EmbeddedlinkendfromBuilder{
-		contextid: o.contextid,
-	}
-}
-
-type AnyOf4Elem_1 = Embeddedlinkpath
-
-type AnyOf4Elem_0 = Embeddedlinkend
-
-func NewEmbeddedlinkrelationBuilder(o *Embeddedlinkrelation) *EmbeddedlinkrelationBuilder {
-	if o == nil {
-		return &EmbeddedlinkrelationBuilder{}
-	}
-	return &EmbeddedlinkrelationBuilder{
+	return &AnyOf4ElemBuilder{
+		from:     o.from,
 		linkkind: o.linkkind,
 		linktype: o.linktype,
 		tags:     o.tags,
@@ -1040,5 +1012,61 @@ func NewEmbeddedlinkendBuilder(o *Embeddedlinkend) *EmbeddedlinkendBuilder {
 		from:     o.from,
 		linktype: o.linktype,
 		tags:     o.tags,
+	}
+}
+
+func NewEmbeddedlinkendfromBuilder(o *Embeddedlinkendfrom) *EmbeddedlinkendfromBuilder {
+	if o == nil {
+		return &EmbeddedlinkendfromBuilder{}
+	}
+	return &EmbeddedlinkendfromBuilder{
+		contextid: o.contextid,
+	}
+}
+
+func NewEmbeddedlinkpathBuilder(o *Embeddedlinkpath) *EmbeddedlinkpathBuilder {
+	if o == nil {
+		return &EmbeddedlinkpathBuilder{}
+	}
+	return &EmbeddedlinkpathBuilder{
+		from:     o.from,
+		linktype: o.linktype,
+		tags:     o.tags,
+	}
+}
+
+func NewEmbeddedlinkpathfromBuilder(o *Embeddedlinkpathfrom) *EmbeddedlinkpathfromBuilder {
+	if o == nil {
+		return &EmbeddedlinkpathfromBuilder{}
+	}
+	return &EmbeddedlinkpathfromBuilder{
+		contextid: o.contextid,
+	}
+}
+
+func NewEmbeddedlinkrelationBuilder(o *Embeddedlinkrelation) *EmbeddedlinkrelationBuilder {
+	if o == nil {
+		return &EmbeddedlinkrelationBuilder{}
+	}
+	return &EmbeddedlinkrelationBuilder{
+		linkkind: o.linkkind,
+		linktype: o.linktype,
+		tags:     o.tags,
+		target:   o.target,
+	}
+}
+
+type AnyOf4Elem_0 = Embeddedlinkend
+
+type AnyOf4Elem_1 = Embeddedlinkpath
+
+type AnyOf4Elem_2 = Embeddedlinkrelation
+
+func NewEmbeddedlinkrelationtargetBuilder(o *Embeddedlinkrelationtarget) *EmbeddedlinkrelationtargetBuilder {
+	if o == nil {
+		return &EmbeddedlinkrelationtargetBuilder{}
+	}
+	return &EmbeddedlinkrelationtargetBuilder{
+		contextid: o.contextid,
 	}
 }

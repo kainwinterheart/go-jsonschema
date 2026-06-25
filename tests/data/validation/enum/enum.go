@@ -138,6 +138,10 @@ func (b *EnumBuilder) WithMyStringUntypedEnum(v *Enummystringuntypedenum) *EnumB
 	return b
 }
 
+func (o *Enum) Clone() *EnumBuilder {
+	return NewEnumBuilder(o)
+}
+
 func (o *Enum) MyBooleanTypedEnum() *Enummybooleantypedenum {
 	return o.mybooleantypedenum
 }
@@ -762,10 +766,10 @@ var enumValues_Enummystringtypedenum = []interface{}{
 	"green",
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Enummystringtypedenum) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Enummystringtypedenum) UnmarshalYAML(value *yaml.Node) error {
 	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
@@ -782,10 +786,10 @@ func (j *Enummystringtypedenum) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Enummystringtypedenum) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Enummystringtypedenum) UnmarshalJSON(value []byte) error {
 	var v string
-	if err := value.Decode(&v); err != nil {
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool
@@ -814,10 +818,10 @@ var enumValues_Enummystringuntypedenum = []interface{}{
 	"green",
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Enummystringuntypedenum) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Enummystringuntypedenum) UnmarshalYAML(value *yaml.Node) error {
 	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
@@ -834,10 +838,10 @@ func (j *Enummystringuntypedenum) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Enummystringuntypedenum) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Enummystringuntypedenum) UnmarshalJSON(value []byte) error {
 	var v string
-	if err := value.Decode(&v); err != nil {
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool

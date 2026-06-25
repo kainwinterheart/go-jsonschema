@@ -132,6 +132,10 @@ func (b *PeerNameBuilder) WithValue(v string) *PeerNameBuilder {
 	return b
 }
 
+func (o *PeerName) Clone() *PeerNameBuilder {
+	return NewPeerNameBuilder(o)
+}
+
 func (o *PeerName) Kind() PeerKind {
 	return o.kind
 }
@@ -234,6 +238,10 @@ func (b *TestcaseBuilder) WithNotExpectedPeerName(v *Testcasenotexpectedpeername
 	return b
 }
 
+func (o *Testcase) Clone() *TestcaseBuilder {
+	return NewTestcaseBuilder(o)
+}
+
 func (o *Testcase) ExpectedPeerName() *Testcaseexpectedpeername {
 	return o.expectedpeername
 }
@@ -330,6 +338,10 @@ func (b *TestcaseexpectedpeernameBuilder) WithValue(v string) *Testcaseexpectedp
 	return b
 }
 
+func (o *Testcaseexpectedpeername) Clone() *TestcaseexpectedpeernameBuilder {
+	return NewTestcaseexpectedpeernameBuilder(o)
+}
+
 func (o *Testcaseexpectedpeername) Kind() PeerKind {
 	return o.kind
 }
@@ -419,16 +431,6 @@ type TestcasenotexpectedpeernameBuilder struct {
 	value string
 }
 
-func (o *Testcasenotexpectedpeername) Kind() PeerKind {
-	return o.kind
-}
-
-func (o *Testcasenotexpectedpeername) Value() string {
-	return o.value
-}
-
-type Testcasenotexpectedpeername_0 = PeerName
-
 func (b *TestcasenotexpectedpeernameBuilder) Build() *Testcasenotexpectedpeername {
 	return &Testcasenotexpectedpeername{
 		kind:  b.kind,
@@ -444,6 +446,20 @@ func (b *TestcasenotexpectedpeernameBuilder) WithKind(v PeerKind) *Testcasenotex
 func (b *TestcasenotexpectedpeernameBuilder) WithValue(v string) *TestcasenotexpectedpeernameBuilder {
 	b.value = v
 	return b
+}
+
+type Testcasenotexpectedpeername_0 = PeerName
+
+func (o *Testcasenotexpectedpeername) Clone() *TestcasenotexpectedpeernameBuilder {
+	return NewTestcasenotexpectedpeernameBuilder(o)
+}
+
+func (o *Testcasenotexpectedpeername) Kind() PeerKind {
+	return o.kind
+}
+
+func (o *Testcasenotexpectedpeername) Value() string {
+	return o.value
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.

@@ -37,6 +37,10 @@ func (b *MinMaxItemsBuilder) WithMyStringArray(v []string) *MinMaxItemsBuilder {
 	return b
 }
 
+func (o *MinMaxItems) Clone() *MinMaxItemsBuilder {
+	return NewMinMaxItemsBuilder(o)
+}
+
 func (o *MinMaxItems) MyNestedArray() [][]interface{} {
 	return o.mynestedarray
 }

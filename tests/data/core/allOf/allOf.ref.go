@@ -27,6 +27,10 @@ func (b *CallToolResultBuilder) WithContent(v []CallToolResultcontentElem) *Call
 	return b
 }
 
+func (o *CallToolResult) Clone() *CallToolResultBuilder {
+	return NewCallToolResultBuilder(o)
+}
+
 func (o *CallToolResult) Content() []CallToolResultcontentElem {
 	return o.content
 }
@@ -90,8 +94,30 @@ func (b *CallToolResultcontentElemBuilder) WithText(v string) *CallToolResultcon
 	return b
 }
 
+func (o *CallToolResultcontentElem) Clone() *CallToolResultcontentElemBuilder {
+	return NewCallToolResultcontentElemBuilder(o)
+}
+
 func (o *CallToolResultcontentElem) Text() string {
 	return o.text
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *CallToolResultcontentElem) UnmarshalYAML(value *yaml.Node) error {
+	var raw map[string]interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	if _, ok := raw["text"]; raw != nil && !ok {
+		return fmt.Errorf("field text in CallToolResultcontentElem: required")
+	}
+	type Plain CallToolResultcontentElem
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = CallToolResultcontentElem(plain)
+	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -126,24 +152,6 @@ func (j *CallToolResultcontentElem) MarshalJSON() ([]byte, error) {
 		Text: j.text,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *CallToolResultcontentElem) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
-	}
-	if _, ok := raw["text"]; raw != nil && !ok {
-		return fmt.Errorf("field text in CallToolResultcontentElem: required")
-	}
-	type Plain CallToolResultcontentElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = CallToolResultcontentElem(plain)
-	return nil
 }
 
 func NewCallToolResultBuilder(o *CallToolResult) *CallToolResultBuilder {
@@ -192,6 +200,10 @@ func (b *TextContentBuilder) Build() *TextContent {
 func (b *TextContentBuilder) WithText(v string) *TextContentBuilder {
 	b.text = v
 	return b
+}
+
+func (o *TextContent) Clone() *TextContentBuilder {
+	return NewTextContentBuilder(o)
 }
 
 func (o *TextContent) Text() string {

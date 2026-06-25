@@ -78,6 +78,10 @@ func (b *PrimitiveDefsBuilder) WithMyString(v MinStr) *PrimitiveDefsBuilder {
 	return b
 }
 
+func (o *PrimitiveDefs) Clone() *PrimitiveDefsBuilder {
+	return NewPrimitiveDefsBuilder(o)
+}
+
 func (o *PrimitiveDefs) MyNullableString() *MinStr {
 	return o.mynullablestring
 }

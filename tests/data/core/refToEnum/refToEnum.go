@@ -36,6 +36,10 @@ func (b *RefToEnumBuilder) WithMyThing(v *Thing) *RefToEnumBuilder {
 	return b
 }
 
+func (o *RefToEnum) Clone() *RefToEnumBuilder {
+	return NewRefToEnumBuilder(o)
+}
+
 func (o *RefToEnum) MyThing() *Thing {
 	return o.mything
 }
@@ -88,10 +92,10 @@ var enumValues_Thing = []interface{}{
 	"y",
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Thing) UnmarshalJSON(value []byte) error {
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
 	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
+	if err := value.Decode(&v); err != nil {
 		return err
 	}
 	var ok bool
@@ -108,10 +112,10 @@ func (j *Thing) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Thing) UnmarshalJSON(value []byte) error {
 	var v string
-	if err := value.Decode(&v); err != nil {
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
 	var ok bool

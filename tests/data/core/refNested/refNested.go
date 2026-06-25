@@ -45,19 +45,12 @@ func (b *RefNestedBuilder) WithMyThing(v *Thing) *RefNestedBuilder {
 	return b
 }
 
-func (o *RefNested) MyThing() *Thing {
-	return o.mything
+func (o *RefNested) Clone() *RefNestedBuilder {
+	return NewRefNestedBuilder(o)
 }
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *RefNested) UnmarshalYAML(value *yaml.Node) error {
-	type Plain RefNested
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = RefNested(plain)
-	return nil
+func (o *RefNested) MyThing() *Thing {
+	return o.mything
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -87,6 +80,17 @@ func (j *RefNested) MarshalJSON() ([]byte, error) {
 	return json.Marshal(helper)
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *RefNested) UnmarshalYAML(value *yaml.Node) error {
+	type Plain RefNested
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = RefNested(plain)
+	return nil
+}
+
 type Thing struct {
 	// name corresponds to the JSON schema field "name".
 	name *Name `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
@@ -105,6 +109,10 @@ func (b *ThingBuilder) Build() *Thing {
 func (b *ThingBuilder) WithName(v *Name) *ThingBuilder {
 	b.name = v
 	return b
+}
+
+func (o *Thing) Clone() *ThingBuilder {
+	return NewThingBuilder(o)
 }
 
 func (o *Thing) Name() *Name {

@@ -83,6 +83,10 @@ func (b *PrimitivesBuilder) WithMyString(v *string) *PrimitivesBuilder {
 	return b
 }
 
+func (o *Primitives) Clone() *PrimitivesBuilder {
+	return NewPrimitivesBuilder(o)
+}
+
 func (o *Primitives) MyBoolean() *bool {
 	return o.myboolean
 }

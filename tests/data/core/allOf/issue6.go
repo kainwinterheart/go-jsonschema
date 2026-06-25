@@ -51,6 +51,10 @@ func (b *ElementBuilder) WithName(v *string) *ElementBuilder {
 	return b
 }
 
+func (o *Element) Clone() *ElementBuilder {
+	return NewElementBuilder(o)
+}
+
 func (o *Element) Extension() []string {
 	return o.extension
 }
@@ -129,6 +133,10 @@ func (b *Issue6Builder) Build() *Issue6 {
 func (b *Issue6Builder) WithName(v *Issue6name) *Issue6Builder {
 	b.name = v
 	return b
+}
+
+func (o *Issue6) Clone() *Issue6Builder {
+	return NewIssue6Builder(o)
 }
 
 func (o *Issue6) Name() *Issue6name {
@@ -299,6 +307,10 @@ func (b *Issue6nameBuilder) WithUse(v *Element) *Issue6nameBuilder {
 	return b
 }
 
+func (o *Issue6name) Clone() *Issue6nameBuilder {
+	return NewIssue6nameBuilder(o)
+}
+
 func (o *Issue6name) Family() *Element {
 	return o.family
 }
@@ -325,17 +337,6 @@ func (o *Issue6name) Text() *Element {
 
 func (o *Issue6name) Use() *Element {
 	return o.use
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Issue6name) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Issue6name
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = Issue6name(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -411,6 +412,17 @@ func (j *Issue6name) MarshalJSON() ([]byte, error) {
 		Use_2:    j.use_2,
 	}
 	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Issue6name) UnmarshalYAML(value *yaml.Node) error {
+	type Plain Issue6name
+	var plain Plain
+	if err := value.Decode(&plain); err != nil {
+		return err
+	}
+	*j = Issue6name(plain)
+	return nil
 }
 
 type Issue6nameuse_2 string
@@ -555,6 +567,10 @@ func (b *PeriodBuilder) WithEnd(v *time.Time) *PeriodBuilder {
 func (b *PeriodBuilder) WithStart(v *time.Time) *PeriodBuilder {
 	b.start = v
 	return b
+}
+
+func (o *Period) Clone() *PeriodBuilder {
+	return NewPeriodBuilder(o)
 }
 
 func (o *Period) End() *time.Time {

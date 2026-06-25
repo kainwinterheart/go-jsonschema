@@ -119,6 +119,10 @@ func (b *RestrictedBuilder) WithU8(v uint8) *RestrictedBuilder {
 	return b
 }
 
+func (o *Restricted) Clone() *RestrictedBuilder {
+	return NewRestrictedBuilder(o)
+}
+
 func (o *Restricted) I16() int16 {
 	return o.i16
 }

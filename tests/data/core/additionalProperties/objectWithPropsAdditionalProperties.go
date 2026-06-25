@@ -55,6 +55,10 @@ func (o *ObjectWithPropsAdditionalProperties) Bar() *string {
 	return o.bar
 }
 
+func (o *ObjectWithPropsAdditionalProperties) Clone() *ObjectWithPropsAdditionalPropertiesBuilder {
+	return NewObjectWithPropsAdditionalPropertiesBuilder(o)
+}
+
 func (o *ObjectWithPropsAdditionalProperties) Foo() *string {
 	return o.foo
 }

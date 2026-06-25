@@ -34,6 +34,10 @@ func (b *NillabilityBuilder) WithName(v map[bool]string) *NillabilityBuilder {
 	return b
 }
 
+func (o *Nillability) Clone() *NillabilityBuilder {
+	return NewNillabilityBuilder(o)
+}
+
 func (o *Nillability) Name() map[bool]string {
 	return o.name
 }

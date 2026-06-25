@@ -30,6 +30,10 @@ func (b *BoolAdditionalPropertiesBuilder) WithName(v *string) *BoolAdditionalPro
 	return b
 }
 
+func (o *BoolAdditionalProperties) Clone() *BoolAdditionalPropertiesBuilder {
+	return NewBoolAdditionalPropertiesBuilder(o)
+}
+
 func (o *BoolAdditionalProperties) Name() *string {
 	return o.name
 }

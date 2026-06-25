@@ -34,6 +34,10 @@ func (b *RefToMapBuilder) WithMyThing(v Thing) *RefToMapBuilder {
 	return b
 }
 
+func (o *RefToMap) Clone() *RefToMapBuilder {
+	return NewRefToMapBuilder(o)
+}
+
 func (o *RefToMap) MyThing() Thing {
 	return o.mything
 }
