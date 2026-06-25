@@ -53,8 +53,8 @@ func (o *Description) MyField() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Description) UnmarshalJSON(value []byte) error {
 	type DescriptionHelper struct {
-		Mydescriptionlessfield *string `json:"myDescriptionlessField",omitempty`
-		Myfield                *string `json:"myField",omitempty`
+		Mydescriptionlessfield *string `json:"myDescriptionlessField,omitempty"`
+		Myfield                *string `json:"myField,omitempty"`
 	}
 	type Plain Description
 	var helper DescriptionHelper
@@ -71,8 +71,8 @@ func (j *Description) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Description) MarshalJSON() ([]byte, error) {
 	type DescriptionMarshalHelper struct {
-		Mydescriptionlessfield *string `json:"myDescriptionlessField",omitempty`
-		Myfield                *string `json:"myField",omitempty`
+		Mydescriptionlessfield *string `json:"myDescriptionlessField,omitempty"`
+		Myfield                *string `json:"myField,omitempty"`
 	}
 	helper := DescriptionMarshalHelper{
 		Mydescriptionlessfield: j.mydescriptionlessfield,

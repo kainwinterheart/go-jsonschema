@@ -160,8 +160,8 @@ func (j *Agreement) UnmarshalJSON(value []byte) error {
 	}
 	type AgreementHelper struct {
 		Atype       string   `json:"@type"`
-		Permission  *string  `json:"permission",omitempty`
-		Prohibition *float64 `json:"prohibition",omitempty`
+		Permission  *string  `json:"permission,omitempty"`
+		Prohibition *float64 `json:"prohibition,omitempty"`
 	}
 	type Plain Agreement
 	var helper AgreementHelper
@@ -180,8 +180,8 @@ func (j *Agreement) UnmarshalJSON(value []byte) error {
 func (j *Agreement) MarshalJSON() ([]byte, error) {
 	type AgreementMarshalHelper struct {
 		Atype       string   `json:"@type"`
-		Permission  *string  `json:"permission",omitempty`
-		Prohibition *float64 `json:"prohibition",omitempty`
+		Permission  *string  `json:"permission,omitempty"`
+		Prohibition *float64 `json:"prohibition,omitempty"`
 	}
 	helper := AgreementMarshalHelper{
 		Atype:       j.atype,
@@ -237,8 +237,8 @@ func (o *CommonType) Prohibition() *float64 {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *CommonType) UnmarshalJSON(value []byte) error {
 	type CommonTypeHelper struct {
-		Permission  *string  `json:"permission",omitempty`
-		Prohibition *float64 `json:"prohibition",omitempty`
+		Permission  *string  `json:"permission,omitempty"`
+		Prohibition *float64 `json:"prohibition,omitempty"`
 	}
 	type Plain CommonType
 	var helper CommonTypeHelper
@@ -255,8 +255,8 @@ func (j *CommonType) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *CommonType) MarshalJSON() ([]byte, error) {
 	type CommonTypeMarshalHelper struct {
-		Permission  *string  `json:"permission",omitempty`
-		Prohibition *float64 `json:"prohibition",omitempty`
+		Permission  *string  `json:"permission,omitempty"`
+		Prohibition *float64 `json:"prohibition,omitempty"`
 	}
 	helper := CommonTypeMarshalHelper{
 		Permission:  j.permission,

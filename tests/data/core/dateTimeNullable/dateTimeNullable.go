@@ -48,7 +48,7 @@ func (j *DateTimeNullable) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *DateTimeNullable) UnmarshalJSON(value []byte) error {
 	type DateTimeNullableHelper struct {
-		Myobject *DateTimeNullablemyobject `json:"myObject",omitempty`
+		Myobject *DateTimeNullablemyobject `json:"myObject,omitempty"`
 	}
 	type Plain DateTimeNullable
 	var helper DateTimeNullableHelper
@@ -64,7 +64,7 @@ func (j *DateTimeNullable) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *DateTimeNullable) MarshalJSON() ([]byte, error) {
 	type DateTimeNullableMarshalHelper struct {
-		Myobject *DateTimeNullablemyobject `json:"myObject",omitempty`
+		Myobject *DateTimeNullablemyobject `json:"myObject,omitempty"`
 	}
 	helper := DateTimeNullableMarshalHelper{
 		Myobject: j.myobject,
@@ -103,7 +103,7 @@ func (o *DateTimeNullablemyobject) MyNullableDateTime() DateTimeNullablemyobject
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *DateTimeNullablemyobject) UnmarshalJSON(value []byte) error {
 	type DateTimeNullablemyobjectHelper struct {
-		Mynullabledatetime DateTimeNullablemyobjectmynullabledatetime `json:"myNullableDateTime",omitempty`
+		Mynullabledatetime DateTimeNullablemyobjectmynullabledatetime `json:"myNullableDateTime,omitempty"`
 	}
 	type Plain DateTimeNullablemyobject
 	var helper DateTimeNullablemyobjectHelper
@@ -119,7 +119,7 @@ func (j *DateTimeNullablemyobject) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *DateTimeNullablemyobject) MarshalJSON() ([]byte, error) {
 	type DateTimeNullablemyobjectMarshalHelper struct {
-		Mynullabledatetime DateTimeNullablemyobjectmynullabledatetime `json:"myNullableDateTime",omitempty`
+		Mynullabledatetime DateTimeNullablemyobjectmynullabledatetime `json:"myNullableDateTime,omitempty"`
 	}
 	helper := DateTimeNullablemyobjectMarshalHelper{
 		Mynullabledatetime: j.mynullabledatetime,

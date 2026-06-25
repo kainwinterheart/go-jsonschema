@@ -36,7 +36,7 @@ func (o *AMap) MyMap() AMapmymap {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AMap) UnmarshalJSON(value []byte) error {
 	type AMapHelper struct {
-		Mymap AMapmymap `json:"myMap",omitempty`
+		Mymap AMapmymap `json:"myMap,omitempty"`
 	}
 	type Plain AMap
 	var helper AMapHelper
@@ -52,7 +52,7 @@ func (j *AMap) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AMap) MarshalJSON() ([]byte, error) {
 	type AMapMarshalHelper struct {
-		Mymap AMapmymap `json:"myMap",omitempty`
+		Mymap AMapmymap `json:"myMap,omitempty"`
 	}
 	helper := AMapMarshalHelper{
 		Mymap: j.mymap,

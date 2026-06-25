@@ -65,7 +65,7 @@ func (o *RefExternalFileAllOfNestedRefs) Name() *Name {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *RefExternalFileAllOfNestedRefs) UnmarshalJSON(value []byte) error {
 	type RefExternalFileAllOfNestedRefsHelper struct {
-		Name *Name `json:"name",omitempty`
+		Name *Name `json:"name,omitempty"`
 	}
 	type Plain RefExternalFileAllOfNestedRefs
 	var helper RefExternalFileAllOfNestedRefsHelper
@@ -81,7 +81,7 @@ func (j *RefExternalFileAllOfNestedRefs) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *RefExternalFileAllOfNestedRefs) MarshalJSON() ([]byte, error) {
 	type RefExternalFileAllOfNestedRefsMarshalHelper struct {
-		Name *Name `json:"name",omitempty`
+		Name *Name `json:"name,omitempty"`
 	}
 	helper := RefExternalFileAllOfNestedRefsMarshalHelper{
 		Name: j.name,
@@ -131,7 +131,7 @@ func (o *RefNested) MyThing() *Thing {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *RefNested) UnmarshalJSON(value []byte) error {
 	type RefNestedHelper struct {
-		Mything *Thing `json:"myThing",omitempty`
+		Mything *Thing `json:"myThing,omitempty"`
 	}
 	type Plain RefNested
 	var helper RefNestedHelper
@@ -147,7 +147,7 @@ func (j *RefNested) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *RefNested) MarshalJSON() ([]byte, error) {
 	type RefNestedMarshalHelper struct {
-		Mything *Thing `json:"myThing",omitempty`
+		Mything *Thing `json:"myThing,omitempty"`
 	}
 	helper := RefNestedMarshalHelper{
 		Mything: j.mything,
@@ -208,7 +208,7 @@ func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Thing) UnmarshalJSON(value []byte) error {
 	type ThingHelper struct {
-		Name *Name `json:"name",omitempty`
+		Name *Name `json:"name,omitempty"`
 	}
 	type Plain Thing
 	var helper ThingHelper
@@ -224,7 +224,7 @@ func (j *Thing) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Thing) MarshalJSON() ([]byte, error) {
 	type ThingMarshalHelper struct {
-		Name *Name `json:"name",omitempty`
+		Name *Name `json:"name,omitempty"`
 	}
 	helper := ThingMarshalHelper{
 		Name: j.name,

@@ -194,16 +194,16 @@ func (j *OmitEmpty) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type OmitEmptyHelper struct {
-		Myarray       []interface{}                `json:"myArray",omitempty`
-		Myboolean     *bool                        `json:"myBoolean",omitempty`
-		Myinteger     *int                         `json:"myInteger",omitempty`
-		Mymap         OmitEmptymymap               `json:"myMap",omitempty`
-		Mynull        interface{}                  `json:"myNull",omitempty`
-		Mynullarray   []interface{}                `json:"myNullArray",omitempty`
-		Mynumber      *float64                     `json:"myNumber",omitempty`
-		Myobjectarray []OmitEmptymyobjectarrayElem `json:"myObjectArray",omitempty`
-		Mystring      *string                      `json:"myString",omitempty`
-		Mystringarray []string                     `json:"myStringArray",omitempty`
+		Myarray       []interface{}                `json:"myArray,omitempty"`
+		Myboolean     *bool                        `json:"myBoolean,omitempty"`
+		Myinteger     *int                         `json:"myInteger,omitempty"`
+		Mymap         OmitEmptymymap               `json:"myMap,omitempty"`
+		Mynull        interface{}                  `json:"myNull,omitempty"`
+		Mynullarray   []interface{}                `json:"myNullArray,omitempty"`
+		Mynumber      *float64                     `json:"myNumber,omitempty"`
+		Myobjectarray []OmitEmptymyobjectarrayElem `json:"myObjectArray,omitempty"`
+		Mystring      *string                      `json:"myString,omitempty"`
+		Mystringarray []string                     `json:"myStringArray,omitempty"`
 	}
 	type Plain OmitEmpty
 	var helper OmitEmptyHelper
@@ -236,16 +236,16 @@ func (j *OmitEmpty) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *OmitEmpty) MarshalJSON() ([]byte, error) {
 	type OmitEmptyMarshalHelper struct {
-		Myarray       []interface{}                `json:"myArray",omitempty`
-		Myboolean     *bool                        `json:"myBoolean",omitempty`
-		Myinteger     *int                         `json:"myInteger",omitempty`
-		Mymap         OmitEmptymymap               `json:"myMap",omitempty`
-		Mynull        interface{}                  `json:"myNull",omitempty`
-		Mynullarray   []interface{}                `json:"myNullArray",omitempty`
-		Mynumber      *float64                     `json:"myNumber",omitempty`
-		Myobjectarray []OmitEmptymyobjectarrayElem `json:"myObjectArray",omitempty`
-		Mystring      *string                      `json:"myString",omitempty`
-		Mystringarray []string                     `json:"myStringArray",omitempty`
+		Myarray       []interface{}                `json:"myArray,omitempty"`
+		Myboolean     *bool                        `json:"myBoolean,omitempty"`
+		Myinteger     *int                         `json:"myInteger,omitempty"`
+		Mymap         OmitEmptymymap               `json:"myMap,omitempty"`
+		Mynull        interface{}                  `json:"myNull,omitempty"`
+		Mynullarray   []interface{}                `json:"myNullArray,omitempty"`
+		Mynumber      *float64                     `json:"myNumber,omitempty"`
+		Myobjectarray []OmitEmptymyobjectarrayElem `json:"myObjectArray,omitempty"`
+		Mystring      *string                      `json:"myString,omitempty"`
+		Mystringarray []string                     `json:"myStringArray,omitempty"`
 	}
 	helper := OmitEmptyMarshalHelper{
 		Myarray:       j.myarray,

@@ -36,7 +36,7 @@ func (o *BooleanAsSchema) Id() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *BooleanAsSchema) UnmarshalJSON(value []byte) error {
 	type BooleanAsSchemaHelper struct {
-		Id *string `json:"id",omitempty`
+		Id *string `json:"id,omitempty"`
 	}
 	type Plain BooleanAsSchema
 	var helper BooleanAsSchemaHelper
@@ -52,7 +52,7 @@ func (j *BooleanAsSchema) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *BooleanAsSchema) MarshalJSON() ([]byte, error) {
 	type BooleanAsSchemaMarshalHelper struct {
-		Id *string `json:"id",omitempty`
+		Id *string `json:"id,omitempty"`
 	}
 	helper := BooleanAsSchemaMarshalHelper{
 		Id: j.id,

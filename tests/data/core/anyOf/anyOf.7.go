@@ -79,7 +79,7 @@ func (j *AnyOf7) UnmarshalJSON(value []byte) error {
 	}
 	type AnyOf7Helper struct {
 		Bar []*AnyOf7barElem `json:"bar"`
-		Baz []*AnyOf7bazElem `json:"baz",omitempty`
+		Baz []*AnyOf7bazElem `json:"baz,omitempty"`
 		Foo *AnyOf7foo       `json:"foo"`
 	}
 	type Plain AnyOf7
@@ -99,7 +99,7 @@ func (j *AnyOf7) UnmarshalJSON(value []byte) error {
 func (j *AnyOf7) MarshalJSON() ([]byte, error) {
 	type AnyOf7MarshalHelper struct {
 		Bar []*AnyOf7barElem `json:"bar"`
-		Baz []*AnyOf7bazElem `json:"baz",omitempty`
+		Baz []*AnyOf7bazElem `json:"baz,omitempty"`
 		Foo *AnyOf7foo       `json:"foo"`
 	}
 	helper := AnyOf7MarshalHelper{
@@ -197,7 +197,7 @@ func (j *AnyOf7barElem) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
 	type AnyOf7barElemHelper struct {
-		Name *string `json:"name",omitempty`
+		Name *string `json:"name,omitempty"`
 	}
 	type Plain AnyOf7barElem
 	var helper AnyOf7barElemHelper
@@ -213,7 +213,7 @@ func (j *AnyOf7barElem) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AnyOf7barElem) MarshalJSON() ([]byte, error) {
 	type AnyOf7barElemMarshalHelper struct {
-		Name *string `json:"name",omitempty`
+		Name *string `json:"name,omitempty"`
 	}
 	helper := AnyOf7barElemMarshalHelper{
 		Name: j.name,
@@ -264,7 +264,7 @@ func (j *AnyOf7bazElem) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
 	type AnyOf7bazElemHelper struct {
-		Name *string `json:"name",omitempty`
+		Name *string `json:"name,omitempty"`
 	}
 	type Plain AnyOf7bazElem
 	var helper AnyOf7bazElemHelper
@@ -280,7 +280,7 @@ func (j *AnyOf7bazElem) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AnyOf7bazElem) MarshalJSON() ([]byte, error) {
 	type AnyOf7bazElemMarshalHelper struct {
-		Name *string `json:"name",omitempty`
+		Name *string `json:"name,omitempty"`
 	}
 	helper := AnyOf7bazElemMarshalHelper{
 		Name: j.name,
@@ -354,7 +354,7 @@ func (j *AnyOf7foo) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
 	type AnyOf7fooHelper struct {
-		Name *string `json:"name",omitempty`
+		Name *string `json:"name,omitempty"`
 	}
 	type Plain AnyOf7foo
 	var helper AnyOf7fooHelper
@@ -370,7 +370,7 @@ func (j *AnyOf7foo) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AnyOf7foo) MarshalJSON() ([]byte, error) {
 	type AnyOf7fooMarshalHelper struct {
-		Name *string `json:"name",omitempty`
+		Name *string `json:"name,omitempty"`
 	}
 	helper := AnyOf7fooMarshalHelper{
 		Name: j.name,
@@ -443,7 +443,7 @@ func (j *Item) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Item) UnmarshalJSON(value []byte) error {
 	type ItemHelper struct {
-		Name *string `json:"name",omitempty`
+		Name *string `json:"name,omitempty"`
 	}
 	type Plain Item
 	var helper ItemHelper
@@ -459,7 +459,7 @@ func (j *Item) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Item) MarshalJSON() ([]byte, error) {
 	type ItemMarshalHelper struct {
-		Name *string `json:"name",omitempty`
+		Name *string `json:"name,omitempty"`
 	}
 	helper := ItemMarshalHelper{
 		Name: j.name,

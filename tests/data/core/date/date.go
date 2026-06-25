@@ -49,7 +49,7 @@ func (j *Date) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Date) UnmarshalJSON(value []byte) error {
 	type DateHelper struct {
-		Myobject *Datemyobject `json:"myObject",omitempty`
+		Myobject *Datemyobject `json:"myObject,omitempty"`
 	}
 	type Plain Date
 	var helper DateHelper
@@ -65,7 +65,7 @@ func (j *Date) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Date) MarshalJSON() ([]byte, error) {
 	type DateMarshalHelper struct {
-		Myobject *Datemyobject `json:"myObject",omitempty`
+		Myobject *Datemyobject `json:"myObject,omitempty"`
 	}
 	helper := DateMarshalHelper{
 		Myobject: j.myobject,

@@ -45,7 +45,7 @@ func (o *YamlStructNameFromFile) Foo() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *YamlStructNameFromFile) UnmarshalJSON(value []byte) error {
 	type YamlStructNameFromFileHelper struct {
-		Foo *string `json:"foo",omitempty`
+		Foo *string `json:"foo,omitempty"`
 	}
 	type Plain YamlStructNameFromFile
 	var helper YamlStructNameFromFileHelper
@@ -61,7 +61,7 @@ func (j *YamlStructNameFromFile) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *YamlStructNameFromFile) MarshalJSON() ([]byte, error) {
 	type YamlStructNameFromFileMarshalHelper struct {
-		Foo *string `json:"foo",omitempty`
+		Foo *string `json:"foo,omitempty"`
 	}
 	helper := YamlStructNameFromFileMarshalHelper{
 		Foo: j.foo,

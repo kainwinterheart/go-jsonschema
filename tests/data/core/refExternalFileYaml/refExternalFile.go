@@ -71,8 +71,8 @@ func (o *RefExternalFile) SomeOtherExternalThing() *YamlStructNameFromFile {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *RefExternalFile) UnmarshalJSON(value []byte) error {
 	type RefExternalFileHelper struct {
-		Myexternalthing        *YamlStructNameFromFile `json:"myExternalThing",omitempty`
-		Someotherexternalthing *YamlStructNameFromFile `json:"someOtherExternalThing",omitempty`
+		Myexternalthing        *YamlStructNameFromFile `json:"myExternalThing,omitempty"`
+		Someotherexternalthing *YamlStructNameFromFile `json:"someOtherExternalThing,omitempty"`
 	}
 	type Plain RefExternalFile
 	var helper RefExternalFileHelper
@@ -89,8 +89,8 @@ func (j *RefExternalFile) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *RefExternalFile) MarshalJSON() ([]byte, error) {
 	type RefExternalFileMarshalHelper struct {
-		Myexternalthing        *YamlStructNameFromFile `json:"myExternalThing",omitempty`
-		Someotherexternalthing *YamlStructNameFromFile `json:"someOtherExternalThing",omitempty`
+		Myexternalthing        *YamlStructNameFromFile `json:"myExternalThing,omitempty"`
+		Someotherexternalthing *YamlStructNameFromFile `json:"someOtherExternalThing,omitempty"`
 	}
 	helper := RefExternalFileMarshalHelper{
 		Myexternalthing:        j.myexternalthing,
@@ -152,7 +152,7 @@ func (j *YamlStructNameFromFile) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *YamlStructNameFromFile) UnmarshalJSON(value []byte) error {
 	type YamlStructNameFromFileHelper struct {
-		Foo *string `json:"foo",omitempty`
+		Foo *string `json:"foo,omitempty"`
 	}
 	type Plain YamlStructNameFromFile
 	var helper YamlStructNameFromFileHelper
@@ -168,7 +168,7 @@ func (j *YamlStructNameFromFile) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *YamlStructNameFromFile) MarshalJSON() ([]byte, error) {
 	type YamlStructNameFromFileMarshalHelper struct {
-		Foo *string `json:"foo",omitempty`
+		Foo *string `json:"foo,omitempty"`
 	}
 	helper := YamlStructNameFromFileMarshalHelper{
 		Foo: j.foo,

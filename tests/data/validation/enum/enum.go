@@ -189,17 +189,17 @@ func (o *Enum) MyStringUntypedEnum() *Enummystringuntypedenum {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Enum) UnmarshalJSON(value []byte) error {
 	type EnumHelper struct {
-		Mybooleantypedenum   *Enummybooleantypedenum   `json:"myBooleanTypedEnum",omitempty`
-		Mybooleanuntypedenum *Enummybooleanuntypedenum `json:"myBooleanUntypedEnum",omitempty`
-		Myintegertypedenum   *Enummyintegertypedenum   `json:"myIntegerTypedEnum",omitempty`
-		Mymixedtypeenum      *Enummymixedtypeenum      `json:"myMixedTypeEnum",omitempty`
-		Mymixeduntypedenum   *Enummymixeduntypedenum   `json:"myMixedUntypedEnum",omitempty`
-		Mynulltypedenum      *Enummynulltypedenum      `json:"myNullTypedEnum",omitempty`
-		Mynulluntypedenum    *Enummynulluntypedenum    `json:"myNullUntypedEnum",omitempty`
-		Mynumbertypedenum    *Enummynumbertypedenum    `json:"myNumberTypedEnum",omitempty`
-		Mynumberuntypedenum  *Enummynumberuntypedenum  `json:"myNumberUntypedEnum",omitempty`
-		Mystringtypedenum    *Enummystringtypedenum    `json:"myStringTypedEnum",omitempty`
-		Mystringuntypedenum  *Enummystringuntypedenum  `json:"myStringUntypedEnum",omitempty`
+		Mybooleantypedenum   *Enummybooleantypedenum   `json:"myBooleanTypedEnum,omitempty"`
+		Mybooleanuntypedenum *Enummybooleanuntypedenum `json:"myBooleanUntypedEnum,omitempty"`
+		Myintegertypedenum   *Enummyintegertypedenum   `json:"myIntegerTypedEnum,omitempty"`
+		Mymixedtypeenum      *Enummymixedtypeenum      `json:"myMixedTypeEnum,omitempty"`
+		Mymixeduntypedenum   *Enummymixeduntypedenum   `json:"myMixedUntypedEnum,omitempty"`
+		Mynulltypedenum      *Enummynulltypedenum      `json:"myNullTypedEnum,omitempty"`
+		Mynulluntypedenum    *Enummynulluntypedenum    `json:"myNullUntypedEnum,omitempty"`
+		Mynumbertypedenum    *Enummynumbertypedenum    `json:"myNumberTypedEnum,omitempty"`
+		Mynumberuntypedenum  *Enummynumberuntypedenum  `json:"myNumberUntypedEnum,omitempty"`
+		Mystringtypedenum    *Enummystringtypedenum    `json:"myStringTypedEnum,omitempty"`
+		Mystringuntypedenum  *Enummystringuntypedenum  `json:"myStringUntypedEnum,omitempty"`
 	}
 	type Plain Enum
 	var helper EnumHelper
@@ -225,17 +225,17 @@ func (j *Enum) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Enum) MarshalJSON() ([]byte, error) {
 	type EnumMarshalHelper struct {
-		Mybooleantypedenum   *Enummybooleantypedenum   `json:"myBooleanTypedEnum",omitempty`
-		Mybooleanuntypedenum *Enummybooleanuntypedenum `json:"myBooleanUntypedEnum",omitempty`
-		Myintegertypedenum   *Enummyintegertypedenum   `json:"myIntegerTypedEnum",omitempty`
-		Mymixedtypeenum      *Enummymixedtypeenum      `json:"myMixedTypeEnum",omitempty`
-		Mymixeduntypedenum   *Enummymixeduntypedenum   `json:"myMixedUntypedEnum",omitempty`
-		Mynulltypedenum      *Enummynulltypedenum      `json:"myNullTypedEnum",omitempty`
-		Mynulluntypedenum    *Enummynulluntypedenum    `json:"myNullUntypedEnum",omitempty`
-		Mynumbertypedenum    *Enummynumbertypedenum    `json:"myNumberTypedEnum",omitempty`
-		Mynumberuntypedenum  *Enummynumberuntypedenum  `json:"myNumberUntypedEnum",omitempty`
-		Mystringtypedenum    *Enummystringtypedenum    `json:"myStringTypedEnum",omitempty`
-		Mystringuntypedenum  *Enummystringuntypedenum  `json:"myStringUntypedEnum",omitempty`
+		Mybooleantypedenum   *Enummybooleantypedenum   `json:"myBooleanTypedEnum,omitempty"`
+		Mybooleanuntypedenum *Enummybooleanuntypedenum `json:"myBooleanUntypedEnum,omitempty"`
+		Myintegertypedenum   *Enummyintegertypedenum   `json:"myIntegerTypedEnum,omitempty"`
+		Mymixedtypeenum      *Enummymixedtypeenum      `json:"myMixedTypeEnum,omitempty"`
+		Mymixeduntypedenum   *Enummymixeduntypedenum   `json:"myMixedUntypedEnum,omitempty"`
+		Mynulltypedenum      *Enummynulltypedenum      `json:"myNullTypedEnum,omitempty"`
+		Mynulluntypedenum    *Enummynulluntypedenum    `json:"myNullUntypedEnum,omitempty"`
+		Mynumbertypedenum    *Enummynumbertypedenum    `json:"myNumberTypedEnum,omitempty"`
+		Mynumberuntypedenum  *Enummynumberuntypedenum  `json:"myNumberUntypedEnum,omitempty"`
+		Mystringtypedenum    *Enummystringtypedenum    `json:"myStringTypedEnum,omitempty"`
+		Mystringuntypedenum  *Enummystringuntypedenum  `json:"myStringUntypedEnum,omitempty"`
 	}
 	helper := EnumMarshalHelper{
 		Mybooleantypedenum:   j.mybooleantypedenum,

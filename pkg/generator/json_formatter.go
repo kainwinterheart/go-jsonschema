@@ -105,10 +105,11 @@ func (jf *jsonFormatter) generate(
 				if err := f.Type.Generate(out); err != nil {
 					return err
 				}
-				tag := fmt.Sprintf(`json:"%s"`, f.JSONName)
+				jsonTag := f.JSONName
 				if !isRequiredField(f, structType) {
-					tag += ",omitempty"
+					jsonTag += ",omitempty"
 				}
+				tag := fmt.Sprintf(`json:"%s"`, jsonTag)
 				out.Printf("`%s`", tag)
 				out.Newline()
 			}
@@ -217,10 +218,11 @@ func (jf *jsonFormatter) generate(
 					if err := f.Type.Generate(out); err != nil {
 						return err
 					}
-					tag := fmt.Sprintf(`json:"%s"`, f.JSONName)
+					jsonTag := f.JSONName
 					if !isRequiredField(f, structType) {
-						tag += ",omitempty"
+						jsonTag += ",omitempty"
 					}
+					tag := fmt.Sprintf(`json:"%s"`, jsonTag)
 					out.Printf("`%s`", tag)
 					out.Newline()
 				}
@@ -243,10 +245,11 @@ func (jf *jsonFormatter) generate(
 						continue
 					}
 					exportedName := strings.ToUpper(f.Name[:1]) + f.Name[1:]
-					tag := fmt.Sprintf(`json:"%s"`, f.JSONName)
+					jsonTag := f.JSONName
 					if !isRequiredField(f, structType) {
-						tag += ",omitempty"
+						jsonTag += ",omitempty"
 					}
+					tag := fmt.Sprintf(`json:"%s"`, jsonTag)
 					out.Printf("\t%s ", exportedName)
 					if err := f.Type.Generate(out); err != nil {
 						return err

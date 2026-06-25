@@ -60,8 +60,8 @@ func (j *GopkgYAMLv3AdditionalProperties) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type GopkgYAMLv3AdditionalPropertiesHelper struct {
-		Bar *string `json:"bar",omitempty`
-		Foo *string `json:"foo",omitempty`
+		Bar *string `json:"bar,omitempty"`
+		Foo *string `json:"foo,omitempty"`
 	}
 	type Plain GopkgYAMLv3AdditionalProperties
 	var helper GopkgYAMLv3AdditionalPropertiesHelper
@@ -86,8 +86,8 @@ func (j *GopkgYAMLv3AdditionalProperties) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *GopkgYAMLv3AdditionalProperties) MarshalJSON() ([]byte, error) {
 	type GopkgYAMLv3AdditionalPropertiesMarshalHelper struct {
-		Bar *string `json:"bar",omitempty`
-		Foo *string `json:"foo",omitempty`
+		Bar *string `json:"bar,omitempty"`
+		Foo *string `json:"foo,omitempty"`
 	}
 	helper := GopkgYAMLv3AdditionalPropertiesMarshalHelper{
 		Bar: j.bar,

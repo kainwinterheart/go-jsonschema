@@ -49,7 +49,7 @@ func (j *Ip) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Ip) UnmarshalJSON(value []byte) error {
 	type IpHelper struct {
-		Myobject *Ipmyobject `json:"myObject",omitempty`
+		Myobject *Ipmyobject `json:"myObject,omitempty"`
 	}
 	type Plain Ip
 	var helper IpHelper
@@ -65,7 +65,7 @@ func (j *Ip) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Ip) MarshalJSON() ([]byte, error) {
 	type IpMarshalHelper struct {
-		Myobject *Ipmyobject `json:"myObject",omitempty`
+		Myobject *Ipmyobject `json:"myObject,omitempty"`
 	}
 	helper := IpMarshalHelper{
 		Myobject: j.myobject,

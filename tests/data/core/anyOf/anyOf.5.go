@@ -50,7 +50,7 @@ func (j *CallToolResult) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *CallToolResult) UnmarshalJSON(value []byte) error {
 	type CallToolResultHelper struct {
-		Content []CallToolResultcontentElem `json:"content",omitempty`
+		Content []CallToolResultcontentElem `json:"content,omitempty"`
 	}
 	type Plain CallToolResult
 	var helper CallToolResultHelper
@@ -66,7 +66,7 @@ func (j *CallToolResult) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *CallToolResult) MarshalJSON() ([]byte, error) {
 	type CallToolResultMarshalHelper struct {
-		Content []CallToolResultcontentElem `json:"content",omitempty`
+		Content []CallToolResultcontentElem `json:"content,omitempty"`
 	}
 	helper := CallToolResultMarshalHelper{
 		Content: j.content,

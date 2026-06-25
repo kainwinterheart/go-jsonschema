@@ -45,7 +45,7 @@ func (o *RefToPrimitiveString) MyThing() *Thing {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *RefToPrimitiveString) UnmarshalJSON(value []byte) error {
 	type RefToPrimitiveStringHelper struct {
-		Mything *Thing `json:"myThing",omitempty`
+		Mything *Thing `json:"myThing,omitempty"`
 	}
 	type Plain RefToPrimitiveString
 	var helper RefToPrimitiveStringHelper
@@ -61,7 +61,7 @@ func (j *RefToPrimitiveString) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *RefToPrimitiveString) MarshalJSON() ([]byte, error) {
 	type RefToPrimitiveStringMarshalHelper struct {
-		Mything *Thing `json:"myThing",omitempty`
+		Mything *Thing `json:"myThing,omitempty"`
 	}
 	helper := RefToPrimitiveStringMarshalHelper{
 		Mything: j.mything,

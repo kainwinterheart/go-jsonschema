@@ -124,9 +124,9 @@ func (j *ComposedWithMultipleRequired) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
 	type ComposedWithMultipleRequiredHelper struct {
-		Basefield   *string  `json:"baseField",omitempty`
+		Basefield   *string  `json:"baseField,omitempty"`
 		Directfield bool     `json:"directField"`
-		Middlefield *float64 `json:"middleField",omitempty`
+		Middlefield *float64 `json:"middleField,omitempty"`
 	}
 	type Plain ComposedWithMultipleRequired
 	var helper ComposedWithMultipleRequiredHelper
@@ -152,9 +152,9 @@ func (j *ComposedWithMultipleRequired) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *ComposedWithMultipleRequired) MarshalJSON() ([]byte, error) {
 	type ComposedWithMultipleRequiredMarshalHelper struct {
-		Basefield   *string  `json:"baseField",omitempty`
+		Basefield   *string  `json:"baseField,omitempty"`
 		Directfield bool     `json:"directField"`
-		Middlefield *float64 `json:"middleField",omitempty`
+		Middlefield *float64 `json:"middleField,omitempty"`
 	}
 	helper := ComposedWithMultipleRequiredMarshalHelper{
 		Basefield:   j.basefield,

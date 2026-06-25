@@ -110,11 +110,11 @@ func (o *TypeMultiple) OnlyTwoOptions() interface{} {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *TypeMultiple) UnmarshalJSON(value []byte) error {
 	type TypeMultipleHelper struct {
-		All                  interface{}   `json:"all",omitempty`
-		Allprimitives        interface{}   `json:"allPrimitives",omitempty`
-		Arrayofall           []interface{} `json:"arrayOfAll",omitempty`
-		Arrayofallprimitives []interface{} `json:"arrayOfAllPrimitives",omitempty`
-		Onlytwooptions       interface{}   `json:"onlyTwoOptions",omitempty`
+		All                  interface{}   `json:"all,omitempty"`
+		Allprimitives        interface{}   `json:"allPrimitives,omitempty"`
+		Arrayofall           []interface{} `json:"arrayOfAll,omitempty"`
+		Arrayofallprimitives []interface{} `json:"arrayOfAllPrimitives,omitempty"`
+		Onlytwooptions       interface{}   `json:"onlyTwoOptions,omitempty"`
 	}
 	type Plain TypeMultiple
 	var helper TypeMultipleHelper
@@ -134,11 +134,11 @@ func (j *TypeMultiple) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *TypeMultiple) MarshalJSON() ([]byte, error) {
 	type TypeMultipleMarshalHelper struct {
-		All                  interface{}   `json:"all",omitempty`
-		Allprimitives        interface{}   `json:"allPrimitives",omitempty`
-		Arrayofall           []interface{} `json:"arrayOfAll",omitempty`
-		Arrayofallprimitives []interface{} `json:"arrayOfAllPrimitives",omitempty`
-		Onlytwooptions       interface{}   `json:"onlyTwoOptions",omitempty`
+		All                  interface{}   `json:"all,omitempty"`
+		Allprimitives        interface{}   `json:"allPrimitives,omitempty"`
+		Arrayofall           []interface{} `json:"arrayOfAll,omitempty"`
+		Arrayofallprimitives []interface{} `json:"arrayOfAllPrimitives,omitempty"`
+		Onlytwooptions       interface{}   `json:"onlyTwoOptions,omitempty"`
 	}
 	helper := TypeMultipleMarshalHelper{
 		All:                  j.all,

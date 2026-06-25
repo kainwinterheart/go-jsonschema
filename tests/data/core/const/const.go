@@ -82,10 +82,10 @@ func (o *AConst) MyString() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AConst) UnmarshalJSON(value []byte) error {
 	type AConstHelper struct {
-		Myboolean *bool    `json:"myBoolean",omitempty`
-		Myinteger *int     `json:"myInteger",omitempty`
-		Mynumber  *float64 `json:"myNumber",omitempty`
-		Mystring  *string  `json:"myString",omitempty`
+		Myboolean *bool    `json:"myBoolean,omitempty"`
+		Myinteger *int     `json:"myInteger,omitempty"`
+		Mynumber  *float64 `json:"myNumber,omitempty"`
+		Mystring  *string  `json:"myString,omitempty"`
 	}
 	type Plain AConst
 	var helper AConstHelper
@@ -116,10 +116,10 @@ func (j *AConst) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AConst) MarshalJSON() ([]byte, error) {
 	type AConstMarshalHelper struct {
-		Myboolean *bool    `json:"myBoolean",omitempty`
-		Myinteger *int     `json:"myInteger",omitempty`
-		Mynumber  *float64 `json:"myNumber",omitempty`
-		Mystring  *string  `json:"myString",omitempty`
+		Myboolean *bool    `json:"myBoolean,omitempty"`
+		Myinteger *int     `json:"myInteger,omitempty"`
+		Mynumber  *float64 `json:"myNumber,omitempty"`
+		Mystring  *string  `json:"myString,omitempty"`
 	}
 	helper := AConstMarshalHelper{
 		Myboolean: j.myboolean,

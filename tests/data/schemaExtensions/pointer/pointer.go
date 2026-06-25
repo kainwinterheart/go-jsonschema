@@ -220,17 +220,17 @@ func (j *Pointer) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field requiredIntPointer in Pointer: required")
 	}
 	type PointerHelper struct {
-		Boolwithdefault          *bool          `json:"boolWithDefault",omitempty`
-		Durationwithdefault      *time.Duration `json:"durationWithDefault",omitempty`
-		Intwithdefault           *int           `json:"intWithDefault",omitempty`
-		Normaldefault            string         `json:"normalDefault",omitempty`
-		Normaloptional           *string        `json:"normalOptional",omitempty`
-		Optionalintnonpointer    int            `json:"optionalIntNonPointer",omitempty`
-		Optionalstringnonpointer string         `json:"optionalStringNonPointer",omitempty`
+		Boolwithdefault          *bool          `json:"boolWithDefault,omitempty"`
+		Durationwithdefault      *time.Duration `json:"durationWithDefault,omitempty"`
+		Intwithdefault           *int           `json:"intWithDefault,omitempty"`
+		Normaldefault            string         `json:"normalDefault,omitempty"`
+		Normaloptional           *string        `json:"normalOptional,omitempty"`
+		Optionalintnonpointer    int            `json:"optionalIntNonPointer,omitempty"`
+		Optionalstringnonpointer string         `json:"optionalStringNonPointer,omitempty"`
 		Requiredintnonpointer    int            `json:"requiredIntNonPointer"`
 		Requiredintpointer       *int           `json:"requiredIntPointer"`
-		Slicewithdefault         []string       `json:"sliceWithDefault",omitempty`
-		Stringwithdefault        *string        `json:"stringWithDefault",omitempty`
+		Slicewithdefault         []string       `json:"sliceWithDefault,omitempty"`
+		Stringwithdefault        *string        `json:"stringWithDefault,omitempty"`
 	}
 	type Plain Pointer
 	var helper PointerHelper
@@ -285,17 +285,17 @@ func (j *Pointer) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Pointer) MarshalJSON() ([]byte, error) {
 	type PointerMarshalHelper struct {
-		Boolwithdefault          *bool          `json:"boolWithDefault",omitempty`
-		Durationwithdefault      *time.Duration `json:"durationWithDefault",omitempty`
-		Intwithdefault           *int           `json:"intWithDefault",omitempty`
-		Normaldefault            string         `json:"normalDefault",omitempty`
-		Normaloptional           *string        `json:"normalOptional",omitempty`
-		Optionalintnonpointer    int            `json:"optionalIntNonPointer",omitempty`
-		Optionalstringnonpointer string         `json:"optionalStringNonPointer",omitempty`
+		Boolwithdefault          *bool          `json:"boolWithDefault,omitempty"`
+		Durationwithdefault      *time.Duration `json:"durationWithDefault,omitempty"`
+		Intwithdefault           *int           `json:"intWithDefault,omitempty"`
+		Normaldefault            string         `json:"normalDefault,omitempty"`
+		Normaloptional           *string        `json:"normalOptional,omitempty"`
+		Optionalintnonpointer    int            `json:"optionalIntNonPointer,omitempty"`
+		Optionalstringnonpointer string         `json:"optionalStringNonPointer,omitempty"`
 		Requiredintnonpointer    int            `json:"requiredIntNonPointer"`
 		Requiredintpointer       *int           `json:"requiredIntPointer"`
-		Slicewithdefault         []string       `json:"sliceWithDefault",omitempty`
-		Stringwithdefault        *string        `json:"stringWithDefault",omitempty`
+		Slicewithdefault         []string       `json:"sliceWithDefault,omitempty"`
+		Stringwithdefault        *string        `json:"stringWithDefault,omitempty"`
 	}
 	helper := PointerMarshalHelper{
 		Boolwithdefault:          j.boolwithdefault,

@@ -55,7 +55,7 @@ func (o *Object) MyObject() *Objectmyobject {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Object) UnmarshalJSON(value []byte) error {
 	type ObjectHelper struct {
-		Myobject *Objectmyobject `json:"myObject",omitempty`
+		Myobject *Objectmyobject `json:"myObject,omitempty"`
 	}
 	type Plain Object
 	var helper ObjectHelper
@@ -71,7 +71,7 @@ func (j *Object) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Object) MarshalJSON() ([]byte, error) {
 	type ObjectMarshalHelper struct {
-		Myobject *Objectmyobject `json:"myObject",omitempty`
+		Myobject *Objectmyobject `json:"myObject,omitempty"`
 	}
 	helper := ObjectMarshalHelper{
 		Myobject: j.myobject,

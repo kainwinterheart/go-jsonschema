@@ -69,7 +69,7 @@ func (j *ReadOnlyNoValidation) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field myString in ReadOnlyNoValidation: required")
 	}
 	type ReadOnlyNoValidationHelper struct {
-		Myreadonlystring *string `json:"myReadOnlyString",omitempty`
+		Myreadonlystring *string `json:"myReadOnlyString,omitempty"`
 		Mystring         string  `json:"myString"`
 	}
 	type Plain ReadOnlyNoValidation
@@ -87,7 +87,7 @@ func (j *ReadOnlyNoValidation) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *ReadOnlyNoValidation) MarshalJSON() ([]byte, error) {
 	type ReadOnlyNoValidationMarshalHelper struct {
-		Myreadonlystring *string `json:"myReadOnlyString",omitempty`
+		Myreadonlystring *string `json:"myReadOnlyString,omitempty"`
 		Mystring         string  `json:"myString"`
 	}
 	helper := ReadOnlyNoValidationMarshalHelper{

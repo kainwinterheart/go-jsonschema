@@ -517,38 +517,38 @@ func (j *AutoinstallSchema) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field version in AutoinstallSchema: required")
 	}
 	type AutoinstallSchemaHelper struct {
-		Activedirectory     *AutoinstallSchemaactivedirectory  `json:"active-directory",omitempty`
-		Apt                 *AutoinstallSchemaapt              `json:"apt",omitempty`
-		Codecs              *AutoinstallSchemacodecs           `json:"codecs",omitempty`
-		Debconfselections   *string                            `json:"debconf-selections",omitempty`
-		Drivers             *AutoinstallSchemadrivers          `json:"drivers",omitempty`
-		Earlycommands       []interface{}                      `json:"early-commands",omitempty`
-		Errorcommands       []interface{}                      `json:"error-commands",omitempty`
-		Identity            *AutoinstallSchemaidentity         `json:"identity",omitempty`
-		Interactivesections []string                           `json:"interactive-sections",omitempty`
-		Kernel              *AutoinstallSchemakernel           `json:"kernel",omitempty`
-		Kernelcrashdumps    *AutoinstallSchemakernelcrashdumps `json:"kernel-crash-dumps",omitempty`
-		Keyboard            *AutoinstallSchemakeyboard         `json:"keyboard",omitempty`
-		Latecommands        []interface{}                      `json:"late-commands",omitempty`
-		Locale              *string                            `json:"locale",omitempty`
-		Network             interface{}                        `json:"network",omitempty`
-		Oem                 *AutoinstallSchemaoem              `json:"oem",omitempty`
-		Packages            []string                           `json:"packages",omitempty`
-		Proxy               AutoinstallSchemaproxy             `json:"proxy",omitempty`
-		Refreshinstaller    *AutoinstallSchemarefreshinstaller `json:"refresh-installer",omitempty`
-		Reporting           AutoinstallSchemareporting         `json:"reporting",omitempty`
-		Shutdown            *AutoinstallSchemashutdown         `json:"shutdown",omitempty`
-		Snaps               []AutoinstallSchemasnapsElem       `json:"snaps",omitempty`
-		Source              *AutoinstallSchemasource           `json:"source",omitempty`
-		Ssh                 *AutoinstallSchemassh              `json:"ssh",omitempty`
-		Storage             AutoinstallSchemastorage           `json:"storage",omitempty`
-		Timezone            *string                            `json:"timezone",omitempty`
-		Ubuntuadvantage     *AutoinstallSchemaubuntuadvantage  `json:"ubuntu-advantage",omitempty`
-		Ubuntupro           *AutoinstallSchemaubuntupro        `json:"ubuntu-pro",omitempty`
-		Updates             *AutoinstallSchemaupdates          `json:"updates",omitempty`
-		Userdata            AutoinstallSchemauserdata          `json:"user-data",omitempty`
+		Activedirectory     *AutoinstallSchemaactivedirectory  `json:"active-directory,omitempty"`
+		Apt                 *AutoinstallSchemaapt              `json:"apt,omitempty"`
+		Codecs              *AutoinstallSchemacodecs           `json:"codecs,omitempty"`
+		Debconfselections   *string                            `json:"debconf-selections,omitempty"`
+		Drivers             *AutoinstallSchemadrivers          `json:"drivers,omitempty"`
+		Earlycommands       []interface{}                      `json:"early-commands,omitempty"`
+		Errorcommands       []interface{}                      `json:"error-commands,omitempty"`
+		Identity            *AutoinstallSchemaidentity         `json:"identity,omitempty"`
+		Interactivesections []string                           `json:"interactive-sections,omitempty"`
+		Kernel              *AutoinstallSchemakernel           `json:"kernel,omitempty"`
+		Kernelcrashdumps    *AutoinstallSchemakernelcrashdumps `json:"kernel-crash-dumps,omitempty"`
+		Keyboard            *AutoinstallSchemakeyboard         `json:"keyboard,omitempty"`
+		Latecommands        []interface{}                      `json:"late-commands,omitempty"`
+		Locale              *string                            `json:"locale,omitempty"`
+		Network             interface{}                        `json:"network,omitempty"`
+		Oem                 *AutoinstallSchemaoem              `json:"oem,omitempty"`
+		Packages            []string                           `json:"packages,omitempty"`
+		Proxy               AutoinstallSchemaproxy             `json:"proxy,omitempty"`
+		Refreshinstaller    *AutoinstallSchemarefreshinstaller `json:"refresh-installer,omitempty"`
+		Reporting           AutoinstallSchemareporting         `json:"reporting,omitempty"`
+		Shutdown            *AutoinstallSchemashutdown         `json:"shutdown,omitempty"`
+		Snaps               []AutoinstallSchemasnapsElem       `json:"snaps,omitempty"`
+		Source              *AutoinstallSchemasource           `json:"source,omitempty"`
+		Ssh                 *AutoinstallSchemassh              `json:"ssh,omitempty"`
+		Storage             AutoinstallSchemastorage           `json:"storage,omitempty"`
+		Timezone            *string                            `json:"timezone,omitempty"`
+		Ubuntuadvantage     *AutoinstallSchemaubuntuadvantage  `json:"ubuntu-advantage,omitempty"`
+		Ubuntupro           *AutoinstallSchemaubuntupro        `json:"ubuntu-pro,omitempty"`
+		Updates             *AutoinstallSchemaupdates          `json:"updates,omitempty"`
+		Userdata            AutoinstallSchemauserdata          `json:"user-data,omitempty"`
 		Version             int                                `json:"version"`
-		Zdevs               []AutoinstallSchemazdevsElem       `json:"zdevs",omitempty`
+		Zdevs               []AutoinstallSchemazdevsElem       `json:"zdevs,omitempty"`
 	}
 	type Plain AutoinstallSchema
 	var helper AutoinstallSchemaHelper
@@ -609,38 +609,38 @@ func (j *AutoinstallSchema) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchema) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemaMarshalHelper struct {
-		Activedirectory     *AutoinstallSchemaactivedirectory  `json:"active-directory",omitempty`
-		Apt                 *AutoinstallSchemaapt              `json:"apt",omitempty`
-		Codecs              *AutoinstallSchemacodecs           `json:"codecs",omitempty`
-		Debconfselections   *string                            `json:"debconf-selections",omitempty`
-		Drivers             *AutoinstallSchemadrivers          `json:"drivers",omitempty`
-		Earlycommands       []interface{}                      `json:"early-commands",omitempty`
-		Errorcommands       []interface{}                      `json:"error-commands",omitempty`
-		Identity            *AutoinstallSchemaidentity         `json:"identity",omitempty`
-		Interactivesections []string                           `json:"interactive-sections",omitempty`
-		Kernel              *AutoinstallSchemakernel           `json:"kernel",omitempty`
-		Kernelcrashdumps    *AutoinstallSchemakernelcrashdumps `json:"kernel-crash-dumps",omitempty`
-		Keyboard            *AutoinstallSchemakeyboard         `json:"keyboard",omitempty`
-		Latecommands        []interface{}                      `json:"late-commands",omitempty`
-		Locale              *string                            `json:"locale",omitempty`
-		Network             interface{}                        `json:"network",omitempty`
-		Oem                 *AutoinstallSchemaoem              `json:"oem",omitempty`
-		Packages            []string                           `json:"packages",omitempty`
-		Proxy               AutoinstallSchemaproxy             `json:"proxy",omitempty`
-		Refreshinstaller    *AutoinstallSchemarefreshinstaller `json:"refresh-installer",omitempty`
-		Reporting           AutoinstallSchemareporting         `json:"reporting",omitempty`
-		Shutdown            *AutoinstallSchemashutdown         `json:"shutdown",omitempty`
-		Snaps               []AutoinstallSchemasnapsElem       `json:"snaps",omitempty`
-		Source              *AutoinstallSchemasource           `json:"source",omitempty`
-		Ssh                 *AutoinstallSchemassh              `json:"ssh",omitempty`
-		Storage             AutoinstallSchemastorage           `json:"storage",omitempty`
-		Timezone            *string                            `json:"timezone",omitempty`
-		Ubuntuadvantage     *AutoinstallSchemaubuntuadvantage  `json:"ubuntu-advantage",omitempty`
-		Ubuntupro           *AutoinstallSchemaubuntupro        `json:"ubuntu-pro",omitempty`
-		Updates             *AutoinstallSchemaupdates          `json:"updates",omitempty`
-		Userdata            AutoinstallSchemauserdata          `json:"user-data",omitempty`
+		Activedirectory     *AutoinstallSchemaactivedirectory  `json:"active-directory,omitempty"`
+		Apt                 *AutoinstallSchemaapt              `json:"apt,omitempty"`
+		Codecs              *AutoinstallSchemacodecs           `json:"codecs,omitempty"`
+		Debconfselections   *string                            `json:"debconf-selections,omitempty"`
+		Drivers             *AutoinstallSchemadrivers          `json:"drivers,omitempty"`
+		Earlycommands       []interface{}                      `json:"early-commands,omitempty"`
+		Errorcommands       []interface{}                      `json:"error-commands,omitempty"`
+		Identity            *AutoinstallSchemaidentity         `json:"identity,omitempty"`
+		Interactivesections []string                           `json:"interactive-sections,omitempty"`
+		Kernel              *AutoinstallSchemakernel           `json:"kernel,omitempty"`
+		Kernelcrashdumps    *AutoinstallSchemakernelcrashdumps `json:"kernel-crash-dumps,omitempty"`
+		Keyboard            *AutoinstallSchemakeyboard         `json:"keyboard,omitempty"`
+		Latecommands        []interface{}                      `json:"late-commands,omitempty"`
+		Locale              *string                            `json:"locale,omitempty"`
+		Network             interface{}                        `json:"network,omitempty"`
+		Oem                 *AutoinstallSchemaoem              `json:"oem,omitempty"`
+		Packages            []string                           `json:"packages,omitempty"`
+		Proxy               AutoinstallSchemaproxy             `json:"proxy,omitempty"`
+		Refreshinstaller    *AutoinstallSchemarefreshinstaller `json:"refresh-installer,omitempty"`
+		Reporting           AutoinstallSchemareporting         `json:"reporting,omitempty"`
+		Shutdown            *AutoinstallSchemashutdown         `json:"shutdown,omitempty"`
+		Snaps               []AutoinstallSchemasnapsElem       `json:"snaps,omitempty"`
+		Source              *AutoinstallSchemasource           `json:"source,omitempty"`
+		Ssh                 *AutoinstallSchemassh              `json:"ssh,omitempty"`
+		Storage             AutoinstallSchemastorage           `json:"storage,omitempty"`
+		Timezone            *string                            `json:"timezone,omitempty"`
+		Ubuntuadvantage     *AutoinstallSchemaubuntuadvantage  `json:"ubuntu-advantage,omitempty"`
+		Ubuntupro           *AutoinstallSchemaubuntupro        `json:"ubuntu-pro,omitempty"`
+		Updates             *AutoinstallSchemaupdates          `json:"updates,omitempty"`
+		Userdata            AutoinstallSchemauserdata          `json:"user-data,omitempty"`
 		Version             int                                `json:"version"`
-		Zdevs               []AutoinstallSchemazdevsElem       `json:"zdevs",omitempty`
+		Zdevs               []AutoinstallSchemazdevsElem       `json:"zdevs,omitempty"`
 	}
 	helper := AutoinstallSchemaMarshalHelper{
 		Activedirectory:     j.activedirectory,
@@ -757,8 +757,8 @@ func (o *AutoinstallSchemaactivedirectory) DomainName() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AutoinstallSchemaactivedirectory) UnmarshalJSON(value []byte) error {
 	type AutoinstallSchemaactivedirectoryHelper struct {
-		Adminname  *string `json:"admin-name",omitempty`
-		Domainname *string `json:"domain-name",omitempty`
+		Adminname  *string `json:"admin-name,omitempty"`
+		Domainname *string `json:"domain-name,omitempty"`
 	}
 	type Plain AutoinstallSchemaactivedirectory
 	var helper AutoinstallSchemaactivedirectoryHelper
@@ -775,8 +775,8 @@ func (j *AutoinstallSchemaactivedirectory) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchemaactivedirectory) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemaactivedirectoryMarshalHelper struct {
-		Adminname  *string `json:"admin-name",omitempty`
-		Domainname *string `json:"domain-name",omitempty`
+		Adminname  *string `json:"admin-name,omitempty"`
+		Domainname *string `json:"domain-name,omitempty"`
 	}
 	helper := AutoinstallSchemaactivedirectoryMarshalHelper{
 		Adminname:  j.adminname,
@@ -944,14 +944,14 @@ func (j *AutoinstallSchemaapt) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AutoinstallSchemaapt) UnmarshalJSON(value []byte) error {
 	type AutoinstallSchemaaptHelper struct {
-		Disablecomponents   []AutoinstallSchemaaptdisablecomponentsElem `json:"disable_components",omitempty`
-		Fallback            *AutoinstallSchemaaptfallback               `json:"fallback",omitempty`
-		Geoip               *bool                                       `json:"geoip",omitempty`
-		Mirrorselection     *AutoinstallSchemaaptmirrorselection        `json:"mirror-selection",omitempty`
-		Preferences         []AutoinstallSchemaaptpreferencesElem       `json:"preferences",omitempty`
-		Preservesourceslist *bool                                       `json:"preserve_sources_list",omitempty`
-		Primary             []interface{}                               `json:"primary",omitempty`
-		Sources             AutoinstallSchemaaptsources                 `json:"sources",omitempty`
+		Disablecomponents   []AutoinstallSchemaaptdisablecomponentsElem `json:"disable_components,omitempty"`
+		Fallback            *AutoinstallSchemaaptfallback               `json:"fallback,omitempty"`
+		Geoip               *bool                                       `json:"geoip,omitempty"`
+		Mirrorselection     *AutoinstallSchemaaptmirrorselection        `json:"mirror-selection,omitempty"`
+		Preferences         []AutoinstallSchemaaptpreferencesElem       `json:"preferences,omitempty"`
+		Preservesourceslist *bool                                       `json:"preserve_sources_list,omitempty"`
+		Primary             []interface{}                               `json:"primary,omitempty"`
+		Sources             AutoinstallSchemaaptsources                 `json:"sources,omitempty"`
 	}
 	type Plain AutoinstallSchemaapt
 	var helper AutoinstallSchemaaptHelper
@@ -974,14 +974,14 @@ func (j *AutoinstallSchemaapt) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchemaapt) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemaaptMarshalHelper struct {
-		Disablecomponents   []AutoinstallSchemaaptdisablecomponentsElem `json:"disable_components",omitempty`
-		Fallback            *AutoinstallSchemaaptfallback               `json:"fallback",omitempty`
-		Geoip               *bool                                       `json:"geoip",omitempty`
-		Mirrorselection     *AutoinstallSchemaaptmirrorselection        `json:"mirror-selection",omitempty`
-		Preferences         []AutoinstallSchemaaptpreferencesElem       `json:"preferences",omitempty`
-		Preservesourceslist *bool                                       `json:"preserve_sources_list",omitempty`
-		Primary             []interface{}                               `json:"primary",omitempty`
-		Sources             AutoinstallSchemaaptsources                 `json:"sources",omitempty`
+		Disablecomponents   []AutoinstallSchemaaptdisablecomponentsElem `json:"disable_components,omitempty"`
+		Fallback            *AutoinstallSchemaaptfallback               `json:"fallback,omitempty"`
+		Geoip               *bool                                       `json:"geoip,omitempty"`
+		Mirrorselection     *AutoinstallSchemaaptmirrorselection        `json:"mirror-selection,omitempty"`
+		Preferences         []AutoinstallSchemaaptpreferencesElem       `json:"preferences,omitempty"`
+		Preservesourceslist *bool                                       `json:"preserve_sources_list,omitempty"`
+		Primary             []interface{}                               `json:"primary,omitempty"`
+		Sources             AutoinstallSchemaaptsources                 `json:"sources,omitempty"`
 	}
 	helper := AutoinstallSchemaaptMarshalHelper{
 		Disablecomponents:   j.disablecomponents,
@@ -1146,7 +1146,7 @@ func (j *AutoinstallSchemaaptmirrorselection) UnmarshalYAML(value *yaml.Node) er
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AutoinstallSchemaaptmirrorselection) UnmarshalJSON(value []byte) error {
 	type AutoinstallSchemaaptmirrorselectionHelper struct {
-		Primary []string `json:"primary",omitempty`
+		Primary []string `json:"primary,omitempty"`
 	}
 	type Plain AutoinstallSchemaaptmirrorselection
 	var helper AutoinstallSchemaaptmirrorselectionHelper
@@ -1162,7 +1162,7 @@ func (j *AutoinstallSchemaaptmirrorselection) UnmarshalJSON(value []byte) error 
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchemaaptmirrorselection) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemaaptmirrorselectionMarshalHelper struct {
-		Primary []string `json:"primary",omitempty`
+		Primary []string `json:"primary,omitempty"`
 	}
 	helper := AutoinstallSchemaaptmirrorselectionMarshalHelper{
 		Primary: j.primary,
@@ -1241,7 +1241,7 @@ func (j *AutoinstallSchemaaptmirrorselectionprimaryElem_1) UnmarshalJSON(value [
 		return fmt.Errorf("field uri in AutoinstallSchemaaptmirrorselectionprimaryElem_1: required")
 	}
 	type AutoinstallSchemaaptmirrorselectionprimaryElem_1Helper struct {
-		Arches []string `json:"arches",omitempty`
+		Arches []string `json:"arches,omitempty"`
 		Uri    string   `json:"uri"`
 	}
 	type Plain AutoinstallSchemaaptmirrorselectionprimaryElem_1
@@ -1259,7 +1259,7 @@ func (j *AutoinstallSchemaaptmirrorselectionprimaryElem_1) UnmarshalJSON(value [
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchemaaptmirrorselectionprimaryElem_1) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemaaptmirrorselectionprimaryElem_1MarshalHelper struct {
-		Arches []string `json:"arches",omitempty`
+		Arches []string `json:"arches,omitempty"`
 		Uri    string   `json:"uri"`
 	}
 	helper := AutoinstallSchemaaptmirrorselectionprimaryElem_1MarshalHelper{
@@ -1443,7 +1443,7 @@ func (j *AutoinstallSchemacodecs) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AutoinstallSchemacodecs) UnmarshalJSON(value []byte) error {
 	type AutoinstallSchemacodecsHelper struct {
-		Install *bool `json:"install",omitempty`
+		Install *bool `json:"install,omitempty"`
 	}
 	type Plain AutoinstallSchemacodecs
 	var helper AutoinstallSchemacodecsHelper
@@ -1459,7 +1459,7 @@ func (j *AutoinstallSchemacodecs) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchemacodecs) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemacodecsMarshalHelper struct {
-		Install *bool `json:"install",omitempty`
+		Install *bool `json:"install,omitempty"`
 	}
 	helper := AutoinstallSchemacodecsMarshalHelper{
 		Install: j.install,
@@ -1498,7 +1498,7 @@ func (o *AutoinstallSchemadrivers) Install() *bool {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AutoinstallSchemadrivers) UnmarshalJSON(value []byte) error {
 	type AutoinstallSchemadriversHelper struct {
-		Install *bool `json:"install",omitempty`
+		Install *bool `json:"install,omitempty"`
 	}
 	type Plain AutoinstallSchemadrivers
 	var helper AutoinstallSchemadriversHelper
@@ -1514,7 +1514,7 @@ func (j *AutoinstallSchemadrivers) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchemadrivers) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemadriversMarshalHelper struct {
-		Install *bool `json:"install",omitempty`
+		Install *bool `json:"install,omitempty"`
 	}
 	helper := AutoinstallSchemadriversMarshalHelper{
 		Install: j.install,
@@ -1648,7 +1648,7 @@ func (j *AutoinstallSchemaidentity) UnmarshalJSON(value []byte) error {
 	type AutoinstallSchemaidentityHelper struct {
 		Hostname string  `json:"hostname"`
 		Password string  `json:"password"`
-		Realname *string `json:"realname",omitempty`
+		Realname *string `json:"realname,omitempty"`
 		Username string  `json:"username"`
 	}
 	type Plain AutoinstallSchemaidentity
@@ -1670,7 +1670,7 @@ func (j *AutoinstallSchemaidentity) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemaidentityMarshalHelper struct {
 		Hostname string  `json:"hostname"`
 		Password string  `json:"password"`
-		Realname *string `json:"realname",omitempty`
+		Realname *string `json:"realname,omitempty"`
 		Username string  `json:"username"`
 	}
 	helper := AutoinstallSchemaidentityMarshalHelper{
@@ -1728,8 +1728,8 @@ func (o *AutoinstallSchemakernel) Flavor() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AutoinstallSchemakernel) UnmarshalJSON(value []byte) error {
 	type AutoinstallSchemakernelHelper struct {
-		Flavor   *string `json:"flavor",omitempty`
-		Apackage *string `json:"package",omitempty`
+		Flavor   *string `json:"flavor,omitempty"`
+		Apackage *string `json:"package,omitempty"`
 	}
 	type Plain AutoinstallSchemakernel
 	var helper AutoinstallSchemakernelHelper
@@ -1746,8 +1746,8 @@ func (j *AutoinstallSchemakernel) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchemakernel) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemakernelMarshalHelper struct {
-		Flavor   *string `json:"flavor",omitempty`
-		Apackage *string `json:"package",omitempty`
+		Flavor   *string `json:"flavor,omitempty"`
+		Apackage *string `json:"package,omitempty"`
 	}
 	helper := AutoinstallSchemakernelMarshalHelper{
 		Flavor:   j.flavor,
@@ -1918,8 +1918,8 @@ func (j *AutoinstallSchemakeyboard) UnmarshalJSON(value []byte) error {
 	}
 	type AutoinstallSchemakeyboardHelper struct {
 		Layout  string                          `json:"layout"`
-		Toggle  AutoinstallSchemakeyboardtoggle `json:"toggle",omitempty`
-		Variant *string                         `json:"variant",omitempty`
+		Toggle  AutoinstallSchemakeyboardtoggle `json:"toggle,omitempty"`
+		Variant *string                         `json:"variant,omitempty"`
 	}
 	type Plain AutoinstallSchemakeyboard
 	var helper AutoinstallSchemakeyboardHelper
@@ -1938,8 +1938,8 @@ func (j *AutoinstallSchemakeyboard) UnmarshalJSON(value []byte) error {
 func (j *AutoinstallSchemakeyboard) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemakeyboardMarshalHelper struct {
 		Layout  string                          `json:"layout"`
-		Toggle  AutoinstallSchemakeyboardtoggle `json:"toggle",omitempty`
-		Variant *string                         `json:"variant",omitempty`
+		Toggle  AutoinstallSchemakeyboardtoggle `json:"toggle,omitempty"`
+		Variant *string                         `json:"variant,omitempty"`
 	}
 	helper := AutoinstallSchemakeyboardMarshalHelper{
 		Layout:  j.layout,
@@ -2097,8 +2097,8 @@ func (o *AutoinstallSchemarefreshinstaller) Update() *bool {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AutoinstallSchemarefreshinstaller) UnmarshalJSON(value []byte) error {
 	type AutoinstallSchemarefreshinstallerHelper struct {
-		Channel *string `json:"channel",omitempty`
-		Update  *bool   `json:"update",omitempty`
+		Channel *string `json:"channel,omitempty"`
+		Update  *bool   `json:"update,omitempty"`
 	}
 	type Plain AutoinstallSchemarefreshinstaller
 	var helper AutoinstallSchemarefreshinstallerHelper
@@ -2115,8 +2115,8 @@ func (j *AutoinstallSchemarefreshinstaller) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchemarefreshinstaller) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemarefreshinstallerMarshalHelper struct {
-		Channel *string `json:"channel",omitempty`
-		Update  *bool   `json:"update",omitempty`
+		Channel *string `json:"channel,omitempty"`
+		Update  *bool   `json:"update,omitempty"`
 	}
 	helper := AutoinstallSchemarefreshinstallerMarshalHelper{
 		Channel: j.channel,
@@ -2261,8 +2261,8 @@ func (j *AutoinstallSchemasnapsElem) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field name in AutoinstallSchemasnapsElem: required")
 	}
 	type AutoinstallSchemasnapsElemHelper struct {
-		Channel *string `json:"channel",omitempty`
-		Classic *bool   `json:"classic",omitempty`
+		Channel *string `json:"channel,omitempty"`
+		Classic *bool   `json:"classic,omitempty"`
 		Name    string  `json:"name"`
 	}
 	type Plain AutoinstallSchemasnapsElem
@@ -2281,8 +2281,8 @@ func (j *AutoinstallSchemasnapsElem) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchemasnapsElem) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemasnapsElemMarshalHelper struct {
-		Channel *string `json:"channel",omitempty`
-		Classic *bool   `json:"classic",omitempty`
+		Channel *string `json:"channel,omitempty"`
+		Classic *bool   `json:"classic,omitempty"`
 		Name    string  `json:"name"`
 	}
 	helper := AutoinstallSchemasnapsElemMarshalHelper{
@@ -2357,8 +2357,8 @@ func (o *AutoinstallSchemasource) SearchDrivers() *bool {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AutoinstallSchemasource) UnmarshalJSON(value []byte) error {
 	type AutoinstallSchemasourceHelper struct {
-		Id            *string `json:"id",omitempty`
-		Searchdrivers *bool   `json:"search_drivers",omitempty`
+		Id            *string `json:"id,omitempty"`
+		Searchdrivers *bool   `json:"search_drivers,omitempty"`
 	}
 	type Plain AutoinstallSchemasource
 	var helper AutoinstallSchemasourceHelper
@@ -2375,8 +2375,8 @@ func (j *AutoinstallSchemasource) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchemasource) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemasourceMarshalHelper struct {
-		Id            *string `json:"id",omitempty`
-		Searchdrivers *bool   `json:"search_drivers",omitempty`
+		Id            *string `json:"id,omitempty"`
+		Searchdrivers *bool   `json:"search_drivers,omitempty"`
 	}
 	helper := AutoinstallSchemasourceMarshalHelper{
 		Id:            j.id,
@@ -2457,9 +2457,9 @@ func (o *AutoinstallSchemassh) InstallServer() *bool {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AutoinstallSchemassh) UnmarshalJSON(value []byte) error {
 	type AutoinstallSchemasshHelper struct {
-		Allowpw        *bool    `json:"allow-pw",omitempty`
-		Authorizedkeys []string `json:"authorized-keys",omitempty`
-		Installserver  *bool    `json:"install-server",omitempty`
+		Allowpw        *bool    `json:"allow-pw,omitempty"`
+		Authorizedkeys []string `json:"authorized-keys,omitempty"`
+		Installserver  *bool    `json:"install-server,omitempty"`
 	}
 	type Plain AutoinstallSchemassh
 	var helper AutoinstallSchemasshHelper
@@ -2477,9 +2477,9 @@ func (j *AutoinstallSchemassh) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchemassh) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemasshMarshalHelper struct {
-		Allowpw        *bool    `json:"allow-pw",omitempty`
-		Authorizedkeys []string `json:"authorized-keys",omitempty`
-		Installserver  *bool    `json:"install-server",omitempty`
+		Allowpw        *bool    `json:"allow-pw,omitempty"`
+		Authorizedkeys []string `json:"authorized-keys,omitempty"`
+		Installserver  *bool    `json:"install-server,omitempty"`
 	}
 	helper := AutoinstallSchemasshMarshalHelper{
 		Allowpw:        j.allowpw,
@@ -2535,7 +2535,7 @@ func (o *AutoinstallSchemaubuntuadvantage) Token() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AutoinstallSchemaubuntuadvantage) UnmarshalJSON(value []byte) error {
 	type AutoinstallSchemaubuntuadvantageHelper struct {
-		Token *string `json:"token",omitempty`
+		Token *string `json:"token,omitempty"`
 	}
 	type Plain AutoinstallSchemaubuntuadvantage
 	var helper AutoinstallSchemaubuntuadvantageHelper
@@ -2562,7 +2562,7 @@ func (j *AutoinstallSchemaubuntuadvantage) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchemaubuntuadvantage) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemaubuntuadvantageMarshalHelper struct {
-		Token *string `json:"token",omitempty`
+		Token *string `json:"token,omitempty"`
 	}
 	helper := AutoinstallSchemaubuntuadvantageMarshalHelper{
 		Token: j.token,
@@ -2624,7 +2624,7 @@ func (o *AutoinstallSchemaubuntupro) Token() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AutoinstallSchemaubuntupro) UnmarshalJSON(value []byte) error {
 	type AutoinstallSchemaubuntuproHelper struct {
-		Token *string `json:"token",omitempty`
+		Token *string `json:"token,omitempty"`
 	}
 	type Plain AutoinstallSchemaubuntupro
 	var helper AutoinstallSchemaubuntuproHelper
@@ -2651,7 +2651,7 @@ func (j *AutoinstallSchemaubuntupro) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchemaubuntupro) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemaubuntuproMarshalHelper struct {
-		Token *string `json:"token",omitempty`
+		Token *string `json:"token,omitempty"`
 	}
 	helper := AutoinstallSchemaubuntuproMarshalHelper{
 		Token: j.token,
@@ -2790,8 +2790,8 @@ func (j *AutoinstallSchemazdevsElem) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AutoinstallSchemazdevsElem) UnmarshalJSON(value []byte) error {
 	type AutoinstallSchemazdevsElemHelper struct {
-		Enabled *bool   `json:"enabled",omitempty`
-		Id      *string `json:"id",omitempty`
+		Enabled *bool   `json:"enabled,omitempty"`
+		Id      *string `json:"id,omitempty"`
 	}
 	type Plain AutoinstallSchemazdevsElem
 	var helper AutoinstallSchemazdevsElemHelper
@@ -2808,8 +2808,8 @@ func (j *AutoinstallSchemazdevsElem) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AutoinstallSchemazdevsElem) MarshalJSON() ([]byte, error) {
 	type AutoinstallSchemazdevsElemMarshalHelper struct {
-		Enabled *bool   `json:"enabled",omitempty`
-		Id      *string `json:"id",omitempty`
+		Enabled *bool   `json:"enabled,omitempty"`
+		Id      *string `json:"id,omitempty"`
 	}
 	helper := AutoinstallSchemazdevsElemMarshalHelper{
 		Enabled: j.enabled,

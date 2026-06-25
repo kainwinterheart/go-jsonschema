@@ -45,7 +45,7 @@ func (o *Thing) S() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Thing) UnmarshalJSON(value []byte) error {
 	type ThingHelper struct {
-		S *string `json:"s",omitempty`
+		S *string `json:"s,omitempty"`
 	}
 	type Plain Thing
 	var helper ThingHelper
@@ -61,7 +61,7 @@ func (j *Thing) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Thing) MarshalJSON() ([]byte, error) {
 	type ThingMarshalHelper struct {
-		S *string `json:"s",omitempty`
+		S *string `json:"s,omitempty"`
 	}
 	helper := ThingMarshalHelper{
 		S: j.s,

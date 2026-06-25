@@ -61,8 +61,8 @@ func (j *Alpha) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type AlphaHelper struct {
-		Beta Beta `json:"beta",omitempty`
-		Eta  *Eta `json:"eta",omitempty`
+		Beta Beta `json:"beta,omitempty"`
+		Eta  *Eta `json:"eta,omitempty"`
 	}
 	type Plain Alpha
 	var helper AlphaHelper
@@ -87,8 +87,8 @@ func (j *Alpha) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Alpha) MarshalJSON() ([]byte, error) {
 	type AlphaMarshalHelper struct {
-		Beta Beta `json:"beta",omitempty`
-		Eta  *Eta `json:"eta",omitempty`
+		Beta Beta `json:"beta,omitempty"`
+		Eta  *Eta `json:"eta,omitempty"`
 	}
 	helper := AlphaMarshalHelper{
 		Beta: j.beta,
@@ -305,7 +305,7 @@ func (j *Iota) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type IotaHelper struct {
-		Kappa *TITLE `json:"kappa",omitempty`
+		Kappa *TITLE `json:"kappa,omitempty"`
 	}
 	type Plain Iota
 	var helper IotaHelper
@@ -329,7 +329,7 @@ func (j *Iota) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Iota) MarshalJSON() ([]byte, error) {
 	type IotaMarshalHelper struct {
-		Kappa *TITLE `json:"kappa",omitempty`
+		Kappa *TITLE `json:"kappa,omitempty"`
 	}
 	helper := IotaMarshalHelper{
 		Kappa: j.kappa,
@@ -397,7 +397,7 @@ func (j *IotakappalambdaElem) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type IotakappalambdaElemHelper struct {
-		Sigma *Alpha `json:"sigma",omitempty`
+		Sigma *Alpha `json:"sigma,omitempty"`
 	}
 	type Plain IotakappalambdaElem
 	var helper IotakappalambdaElemHelper
@@ -421,7 +421,7 @@ func (j *IotakappalambdaElem) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *IotakappalambdaElem) MarshalJSON() ([]byte, error) {
 	type IotakappalambdaElemMarshalHelper struct {
-		Sigma *Alpha `json:"sigma",omitempty`
+		Sigma *Alpha `json:"sigma,omitempty"`
 	}
 	helper := IotakappalambdaElemMarshalHelper{
 		Sigma: j.sigma,
@@ -621,7 +621,7 @@ func (j *TITLE) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type TITLEHelper struct {
-		Lambda []IotakappalambdaElem `json:"lambda",omitempty`
+		Lambda []IotakappalambdaElem `json:"lambda,omitempty"`
 	}
 	type Plain TITLE
 	var helper TITLEHelper
@@ -645,7 +645,7 @@ func (j *TITLE) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *TITLE) MarshalJSON() ([]byte, error) {
 	type TITLEMarshalHelper struct {
-		Lambda []IotakappalambdaElem `json:"lambda",omitempty`
+		Lambda []IotakappalambdaElem `json:"lambda,omitempty"`
 	}
 	helper := TITLEMarshalHelper{
 		Lambda: j.lambda,

@@ -69,8 +69,8 @@ func (o *YamlMultilineDescriptions) Foo() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *YamlMultilineDescriptions) UnmarshalJSON(value []byte) error {
 	type YamlMultilineDescriptionsHelper struct {
-		Bar *string `json:"bar",omitempty`
-		Foo *string `json:"foo",omitempty`
+		Bar *string `json:"bar,omitempty"`
+		Foo *string `json:"foo,omitempty"`
 	}
 	type Plain YamlMultilineDescriptions
 	var helper YamlMultilineDescriptionsHelper
@@ -87,8 +87,8 @@ func (j *YamlMultilineDescriptions) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *YamlMultilineDescriptions) MarshalJSON() ([]byte, error) {
 	type YamlMultilineDescriptionsMarshalHelper struct {
-		Bar *string `json:"bar",omitempty`
-		Foo *string `json:"foo",omitempty`
+		Bar *string `json:"bar,omitempty"`
+		Foo *string `json:"foo,omitempty"`
 	}
 	helper := YamlMultilineDescriptionsMarshalHelper{
 		Bar: j.bar,

@@ -77,9 +77,9 @@ func (o *Tags) Url() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Tags) UnmarshalJSON(value []byte) error {
 	type TagsHelper struct {
-		Html *string `json:"html",omitempty`
-		Id   *string `json:"id",omitempty`
-		Url  *string `json:"url",omitempty`
+		Html *string `json:"html,omitempty"`
+		Id   *string `json:"id,omitempty"`
+		Url  *string `json:"url,omitempty"`
 	}
 	type Plain Tags
 	var helper TagsHelper
@@ -97,9 +97,9 @@ func (j *Tags) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Tags) MarshalJSON() ([]byte, error) {
 	type TagsMarshalHelper struct {
-		Html *string `json:"html",omitempty`
-		Id   *string `json:"id",omitempty`
-		Url  *string `json:"url",omitempty`
+		Html *string `json:"html,omitempty"`
+		Id   *string `json:"id,omitempty"`
+		Url  *string `json:"url,omitempty"`
 	}
 	helper := TagsMarshalHelper{
 		Html: j.html,

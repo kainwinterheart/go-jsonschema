@@ -210,10 +210,10 @@ func (j *SpecialCharacters) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *SpecialCharacters) UnmarshalJSON(value []byte) error {
 	type SpecialCharactersHelper struct {
-		Plainlicenses    *SpecialCharactersplainlicenses `json:"plainLicenses",omitempty`
-		Plainlicensesref []License                       `json:"plainLicensesRef",omitempty`
-		Pluslicenses     *SpecialCharacterspluslicenses  `json:"plusLicenses",omitempty`
-		Pluslicensesref  []License_1                     `json:"plusLicensesRef",omitempty`
+		Plainlicenses    *SpecialCharactersplainlicenses `json:"plainLicenses,omitempty"`
+		Plainlicensesref []License                       `json:"plainLicensesRef,omitempty"`
+		Pluslicenses     *SpecialCharacterspluslicenses  `json:"plusLicenses,omitempty"`
+		Pluslicensesref  []License_1                     `json:"plusLicensesRef,omitempty"`
 	}
 	type Plain SpecialCharacters
 	var helper SpecialCharactersHelper
@@ -232,10 +232,10 @@ func (j *SpecialCharacters) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *SpecialCharacters) MarshalJSON() ([]byte, error) {
 	type SpecialCharactersMarshalHelper struct {
-		Plainlicenses    *SpecialCharactersplainlicenses `json:"plainLicenses",omitempty`
-		Plainlicensesref []License                       `json:"plainLicensesRef",omitempty`
-		Pluslicenses     *SpecialCharacterspluslicenses  `json:"plusLicenses",omitempty`
-		Pluslicensesref  []License_1                     `json:"plusLicensesRef",omitempty`
+		Plainlicenses    *SpecialCharactersplainlicenses `json:"plainLicenses,omitempty"`
+		Plainlicensesref []License                       `json:"plainLicensesRef,omitempty"`
+		Pluslicenses     *SpecialCharacterspluslicenses  `json:"plusLicenses,omitempty"`
+		Pluslicensesref  []License_1                     `json:"plusLicensesRef,omitempty"`
 	}
 	helper := SpecialCharactersMarshalHelper{
 		Plainlicenses:    j.plainlicenses,

@@ -55,7 +55,7 @@ func (j *StructWithConstraints) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type StructWithConstraintsHelper struct {
-		Prop *float64 `json:"prop",omitempty`
+		Prop *float64 `json:"prop,omitempty"`
 	}
 	type Plain StructWithConstraints
 	var helper StructWithConstraintsHelper
@@ -82,7 +82,7 @@ func (j *StructWithConstraints) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *StructWithConstraints) MarshalJSON() ([]byte, error) {
 	type StructWithConstraintsMarshalHelper struct {
-		Prop *float64 `json:"prop",omitempty`
+		Prop *float64 `json:"prop,omitempty"`
 	}
 	helper := StructWithConstraintsMarshalHelper{
 		Prop: j.prop,

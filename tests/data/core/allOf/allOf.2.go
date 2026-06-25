@@ -37,7 +37,7 @@ func (o *AllOf2) Configurations() []AllOf2configurationsElem {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AllOf2) UnmarshalJSON(value []byte) error {
 	type AllOf2Helper struct {
-		Configurations []AllOf2configurationsElem `json:"configurations",omitempty`
+		Configurations []AllOf2configurationsElem `json:"configurations,omitempty"`
 	}
 	type Plain AllOf2
 	var helper AllOf2Helper
@@ -53,7 +53,7 @@ func (j *AllOf2) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AllOf2) MarshalJSON() ([]byte, error) {
 	type AllOf2MarshalHelper struct {
-		Configurations []AllOf2configurationsElem `json:"configurations",omitempty`
+		Configurations []AllOf2configurationsElem `json:"configurations,omitempty"`
 	}
 	helper := AllOf2MarshalHelper{
 		Configurations: j.configurations,
@@ -165,7 +165,7 @@ func (j *AllOf2configurationsElem) UnmarshalJSON(value []byte) error {
 	}
 	type AllOf2configurationsElemHelper struct {
 		Bar float64 `json:"bar"`
-		Baz *bool   `json:"baz",omitempty`
+		Baz *bool   `json:"baz,omitempty"`
 		Foo string  `json:"foo"`
 	}
 	type Plain AllOf2configurationsElem
@@ -185,7 +185,7 @@ func (j *AllOf2configurationsElem) UnmarshalJSON(value []byte) error {
 func (j *AllOf2configurationsElem) MarshalJSON() ([]byte, error) {
 	type AllOf2configurationsElemMarshalHelper struct {
 		Bar float64 `json:"bar"`
-		Baz *bool   `json:"baz",omitempty`
+		Baz *bool   `json:"baz,omitempty"`
 		Foo string  `json:"foo"`
 	}
 	helper := AllOf2configurationsElemMarshalHelper{
@@ -318,7 +318,7 @@ func (j *Baz) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Baz) UnmarshalJSON(value []byte) error {
 	type BazHelper struct {
-		Baz *bool `json:"baz",omitempty`
+		Baz *bool `json:"baz,omitempty"`
 	}
 	type Plain Baz
 	var helper BazHelper
@@ -334,7 +334,7 @@ func (j *Baz) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Baz) MarshalJSON() ([]byte, error) {
 	type BazMarshalHelper struct {
-		Baz *bool `json:"baz",omitempty`
+		Baz *bool `json:"baz,omitempty"`
 	}
 	helper := BazMarshalHelper{
 		Baz: j.baz,

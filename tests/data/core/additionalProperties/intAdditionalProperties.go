@@ -45,7 +45,7 @@ func (j *IntAdditionalProperties) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type IntAdditionalPropertiesHelper struct {
-		Name *string `json:"name",omitempty`
+		Name *string `json:"name,omitempty"`
 	}
 	type Plain IntAdditionalProperties
 	var helper IntAdditionalPropertiesHelper
@@ -69,7 +69,7 @@ func (j *IntAdditionalProperties) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *IntAdditionalProperties) MarshalJSON() ([]byte, error) {
 	type IntAdditionalPropertiesMarshalHelper struct {
-		Name *string `json:"name",omitempty`
+		Name *string `json:"name,omitempty"`
 	}
 	helper := IntAdditionalPropertiesMarshalHelper{
 		Name: j.name,

@@ -74,7 +74,7 @@ func (j *ObjectNested) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *ObjectNested) UnmarshalJSON(value []byte) error {
 	type ObjectNestedHelper struct {
-		Myobject *ObjectNestedmyobject `json:"myObject",omitempty`
+		Myobject *ObjectNestedmyobject `json:"myObject,omitempty"`
 	}
 	type Plain ObjectNested
 	var helper ObjectNestedHelper
@@ -90,7 +90,7 @@ func (j *ObjectNested) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *ObjectNested) MarshalJSON() ([]byte, error) {
 	type ObjectNestedMarshalHelper struct {
-		Myobject *ObjectNestedmyobject `json:"myObject",omitempty`
+		Myobject *ObjectNestedmyobject `json:"myObject,omitempty"`
 	}
 	helper := ObjectNestedMarshalHelper{
 		Myobject: j.myobject,
@@ -129,7 +129,7 @@ func (o *ObjectNestedmyobject) MyObject() *ObjectNestedmyobjectmyobject {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *ObjectNestedmyobject) UnmarshalJSON(value []byte) error {
 	type ObjectNestedmyobjectHelper struct {
-		Myobject *ObjectNestedmyobjectmyobject `json:"myObject",omitempty`
+		Myobject *ObjectNestedmyobjectmyobject `json:"myObject,omitempty"`
 	}
 	type Plain ObjectNestedmyobject
 	var helper ObjectNestedmyobjectHelper
@@ -145,7 +145,7 @@ func (j *ObjectNestedmyobject) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *ObjectNestedmyobject) MarshalJSON() ([]byte, error) {
 	type ObjectNestedmyobjectMarshalHelper struct {
-		Myobject *ObjectNestedmyobjectmyobject `json:"myObject",omitempty`
+		Myobject *ObjectNestedmyobjectmyobject `json:"myObject,omitempty"`
 	}
 	helper := ObjectNestedmyobjectMarshalHelper{
 		Myobject: j.myobject,
@@ -206,7 +206,7 @@ func (j *ObjectNestedmyobjectmyobject) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *ObjectNestedmyobjectmyobject) UnmarshalJSON(value []byte) error {
 	type ObjectNestedmyobjectmyobjectHelper struct {
-		Mystring *string `json:"myString",omitempty`
+		Mystring *string `json:"myString,omitempty"`
 	}
 	type Plain ObjectNestedmyobjectmyobject
 	var helper ObjectNestedmyobjectmyobjectHelper
@@ -222,7 +222,7 @@ func (j *ObjectNestedmyobjectmyobject) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *ObjectNestedmyobjectmyobject) MarshalJSON() ([]byte, error) {
 	type ObjectNestedmyobjectmyobjectMarshalHelper struct {
-		Mystring *string `json:"myString",omitempty`
+		Mystring *string `json:"myString,omitempty"`
 	}
 	helper := ObjectNestedmyobjectmyobjectMarshalHelper{
 		Mystring: j.mystring,

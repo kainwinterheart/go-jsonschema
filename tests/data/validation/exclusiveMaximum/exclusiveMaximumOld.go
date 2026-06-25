@@ -93,8 +93,8 @@ func (j *ExclusiveMaximumOld) UnmarshalJSON(value []byte) error {
 	}
 	type ExclusiveMaximumOldHelper struct {
 		Myinteger         int         `json:"myInteger"`
-		Mynullableinteger *int        `json:"myNullableInteger",omitempty`
-		Mynullablenumber  interface{} `json:"myNullableNumber",omitempty`
+		Mynullableinteger *int        `json:"myNullableInteger,omitempty"`
+		Mynullablenumber  interface{} `json:"myNullableNumber,omitempty"`
 		Mynumber          float64     `json:"myNumber"`
 	}
 	type Plain ExclusiveMaximumOld
@@ -124,8 +124,8 @@ func (j *ExclusiveMaximumOld) UnmarshalJSON(value []byte) error {
 func (j *ExclusiveMaximumOld) MarshalJSON() ([]byte, error) {
 	type ExclusiveMaximumOldMarshalHelper struct {
 		Myinteger         int         `json:"myInteger"`
-		Mynullableinteger *int        `json:"myNullableInteger",omitempty`
-		Mynullablenumber  interface{} `json:"myNullableNumber",omitempty`
+		Mynullableinteger *int        `json:"myNullableInteger,omitempty"`
+		Mynullablenumber  interface{} `json:"myNullableNumber,omitempty"`
 		Mynumber          float64     `json:"myNumber"`
 	}
 	helper := ExclusiveMaximumOldMarshalHelper{

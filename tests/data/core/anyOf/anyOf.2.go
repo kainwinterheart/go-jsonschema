@@ -39,7 +39,7 @@ func (o *AnyOf2) Configurations() []AnyOf2configurationsElem {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AnyOf2) UnmarshalJSON(value []byte) error {
 	type AnyOf2Helper struct {
-		Configurations []AnyOf2configurationsElem `json:"configurations",omitempty`
+		Configurations []AnyOf2configurationsElem `json:"configurations,omitempty"`
 	}
 	type Plain AnyOf2
 	var helper AnyOf2Helper
@@ -55,7 +55,7 @@ func (j *AnyOf2) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AnyOf2) MarshalJSON() ([]byte, error) {
 	type AnyOf2MarshalHelper struct {
-		Configurations []AnyOf2configurationsElem `json:"configurations",omitempty`
+		Configurations []AnyOf2configurationsElem `json:"configurations,omitempty"`
 	}
 	helper := AnyOf2MarshalHelper{
 		Configurations: j.configurations,
@@ -227,7 +227,7 @@ func (o *AnyOf2configurationsElem_2) Clone() *AnyOf2configurationsElem_2Builder 
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AnyOf2configurationsElem_2) UnmarshalJSON(value []byte) error {
 	type AnyOf2configurationsElem_2Helper struct {
-		Baz *bool `json:"baz",omitempty`
+		Baz *bool `json:"baz,omitempty"`
 	}
 	type Plain AnyOf2configurationsElem_2
 	var helper AnyOf2configurationsElem_2Helper
@@ -243,7 +243,7 @@ func (j *AnyOf2configurationsElem_2) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AnyOf2configurationsElem_2) MarshalJSON() ([]byte, error) {
 	type AnyOf2configurationsElem_2MarshalHelper struct {
-		Baz *bool `json:"baz",omitempty`
+		Baz *bool `json:"baz,omitempty"`
 	}
 	helper := AnyOf2configurationsElem_2MarshalHelper{
 		Baz: j.baz,
@@ -332,9 +332,9 @@ func (j *AnyOf2configurationsElem) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
 	type AnyOf2configurationsElemHelper struct {
-		Bar *float64 `json:"bar",omitempty`
-		Baz *bool    `json:"baz",omitempty`
-		Foo *string  `json:"foo",omitempty`
+		Bar *float64 `json:"bar,omitempty"`
+		Baz *bool    `json:"baz,omitempty"`
+		Foo *string  `json:"foo,omitempty"`
 	}
 	type Plain AnyOf2configurationsElem
 	var helper AnyOf2configurationsElemHelper
@@ -352,9 +352,9 @@ func (j *AnyOf2configurationsElem) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AnyOf2configurationsElem) MarshalJSON() ([]byte, error) {
 	type AnyOf2configurationsElemMarshalHelper struct {
-		Bar *float64 `json:"bar",omitempty`
-		Baz *bool    `json:"baz",omitempty`
-		Foo *string  `json:"foo",omitempty`
+		Bar *float64 `json:"bar,omitempty"`
+		Baz *bool    `json:"baz,omitempty"`
+		Foo *string  `json:"foo,omitempty"`
 	}
 	helper := AnyOf2configurationsElemMarshalHelper{
 		Bar: j.bar,

@@ -49,7 +49,7 @@ func (j *AnyOf6) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AnyOf6) UnmarshalJSON(value []byte) error {
 	type AnyOf6Helper struct {
-		Qux2 []AnyOf6qux2Elem `json:"qux2",omitempty`
+		Qux2 []AnyOf6qux2Elem `json:"qux2,omitempty"`
 	}
 	type Plain AnyOf6
 	var helper AnyOf6Helper
@@ -65,7 +65,7 @@ func (j *AnyOf6) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AnyOf6) MarshalJSON() ([]byte, error) {
 	type AnyOf6MarshalHelper struct {
-		Qux2 []AnyOf6qux2Elem `json:"qux2",omitempty`
+		Qux2 []AnyOf6qux2Elem `json:"qux2,omitempty"`
 	}
 	helper := AnyOf6MarshalHelper{
 		Qux2: j.qux2,
@@ -155,7 +155,7 @@ func (j *AnyOf6qux2Elem) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
 	type AnyOf6qux2ElemHelper struct {
-		Content []interface{} `json:"content",omitempty`
+		Content []interface{} `json:"content,omitempty"`
 	}
 	type Plain AnyOf6qux2Elem
 	var helper AnyOf6qux2ElemHelper
@@ -171,7 +171,7 @@ func (j *AnyOf6qux2Elem) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AnyOf6qux2Elem) MarshalJSON() ([]byte, error) {
 	type AnyOf6qux2ElemMarshalHelper struct {
-		Content []interface{} `json:"content",omitempty`
+		Content []interface{} `json:"content,omitempty"`
 	}
 	helper := AnyOf6qux2ElemMarshalHelper{
 		Content: j.content,
@@ -210,7 +210,7 @@ func (o *Bar2) Content() []Bar2contentElem {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Bar2) UnmarshalJSON(value []byte) error {
 	type Bar2Helper struct {
-		Content []Bar2contentElem `json:"content",omitempty`
+		Content []Bar2contentElem `json:"content,omitempty"`
 	}
 	type Plain Bar2
 	var helper Bar2Helper
@@ -226,7 +226,7 @@ func (j *Bar2) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Bar2) MarshalJSON() ([]byte, error) {
 	type Bar2MarshalHelper struct {
-		Content []Bar2contentElem `json:"content",omitempty`
+		Content []Bar2contentElem `json:"content,omitempty"`
 	}
 	helper := Bar2MarshalHelper{
 		Content: j.content,
@@ -296,7 +296,7 @@ func (j *Bar2contentElem) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
 	type Bar2contentElemHelper struct {
-		Content []interface{} `json:"content",omitempty`
+		Content []interface{} `json:"content,omitempty"`
 	}
 	type Plain Bar2contentElem
 	var helper Bar2contentElemHelper
@@ -312,7 +312,7 @@ func (j *Bar2contentElem) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Bar2contentElem) MarshalJSON() ([]byte, error) {
 	type Bar2contentElemMarshalHelper struct {
-		Content []interface{} `json:"content",omitempty`
+		Content []interface{} `json:"content,omitempty"`
 	}
 	helper := Bar2contentElemMarshalHelper{
 		Content: j.content,
@@ -382,7 +382,7 @@ func (o *Baz2) Content() []Baz2contentElem {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Baz2) UnmarshalJSON(value []byte) error {
 	type Baz2Helper struct {
-		Content []Baz2contentElem `json:"content",omitempty`
+		Content []Baz2contentElem `json:"content,omitempty"`
 	}
 	type Plain Baz2
 	var helper Baz2Helper
@@ -398,7 +398,7 @@ func (j *Baz2) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Baz2) MarshalJSON() ([]byte, error) {
 	type Baz2MarshalHelper struct {
-		Content []Baz2contentElem `json:"content",omitempty`
+		Content []Baz2contentElem `json:"content,omitempty"`
 	}
 	helper := Baz2MarshalHelper{
 		Content: j.content,
@@ -468,7 +468,7 @@ func (j *Baz2contentElem) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
 	type Baz2contentElemHelper struct {
-		Content []interface{} `json:"content",omitempty`
+		Content []interface{} `json:"content,omitempty"`
 	}
 	type Plain Baz2contentElem
 	var helper Baz2contentElemHelper
@@ -484,7 +484,7 @@ func (j *Baz2contentElem) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Baz2contentElem) MarshalJSON() ([]byte, error) {
 	type Baz2contentElemMarshalHelper struct {
-		Content []interface{} `json:"content",omitempty`
+		Content []interface{} `json:"content,omitempty"`
 	}
 	helper := Baz2contentElemMarshalHelper{
 		Content: j.content,
@@ -565,7 +565,7 @@ func (j *Foo2) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Foo2) UnmarshalJSON(value []byte) error {
 	type Foo2Helper struct {
-		Content []Foo2contentElem `json:"content",omitempty`
+		Content []Foo2contentElem `json:"content,omitempty"`
 	}
 	type Plain Foo2
 	var helper Foo2Helper
@@ -581,7 +581,7 @@ func (j *Foo2) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Foo2) MarshalJSON() ([]byte, error) {
 	type Foo2MarshalHelper struct {
-		Content []Foo2contentElem `json:"content",omitempty`
+		Content []Foo2contentElem `json:"content,omitempty"`
 	}
 	helper := Foo2MarshalHelper{
 		Content: j.content,
@@ -638,7 +638,7 @@ func (j *Foo2contentElem) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
 	type Foo2contentElemHelper struct {
-		Content []interface{} `json:"content",omitempty`
+		Content []interface{} `json:"content,omitempty"`
 	}
 	type Plain Foo2contentElem
 	var helper Foo2contentElemHelper
@@ -654,7 +654,7 @@ func (j *Foo2contentElem) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Foo2contentElem) MarshalJSON() ([]byte, error) {
 	type Foo2contentElemMarshalHelper struct {
-		Content []interface{} `json:"content",omitempty`
+		Content []interface{} `json:"content,omitempty"`
 	}
 	helper := Foo2contentElemMarshalHelper{
 		Content: j.content,

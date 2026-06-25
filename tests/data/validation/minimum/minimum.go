@@ -93,8 +93,8 @@ func (j *Minimum) UnmarshalJSON(value []byte) error {
 	}
 	type MinimumHelper struct {
 		Myinteger         int      `json:"myInteger"`
-		Mynullableinteger *int     `json:"myNullableInteger",omitempty`
-		Mynullablenumber  *float64 `json:"myNullableNumber",omitempty`
+		Mynullableinteger *int     `json:"myNullableInteger,omitempty"`
+		Mynullablenumber  *float64 `json:"myNullableNumber,omitempty"`
 		Mynumber          float64  `json:"myNumber"`
 	}
 	type Plain Minimum
@@ -127,8 +127,8 @@ func (j *Minimum) UnmarshalJSON(value []byte) error {
 func (j *Minimum) MarshalJSON() ([]byte, error) {
 	type MinimumMarshalHelper struct {
 		Myinteger         int      `json:"myInteger"`
-		Mynullableinteger *int     `json:"myNullableInteger",omitempty`
-		Mynullablenumber  *float64 `json:"myNullableNumber",omitempty`
+		Mynullableinteger *int     `json:"myNullableInteger,omitempty"`
+		Mynullablenumber  *float64 `json:"myNullableNumber,omitempty"`
 		Mynumber          float64  `json:"myNumber"`
 	}
 	helper := MinimumMarshalHelper{

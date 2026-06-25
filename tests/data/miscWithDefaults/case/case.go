@@ -111,12 +111,12 @@ func (o *ACase) UPPERCASEFIELD() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *ACase) UnmarshalJSON(value []byte) error {
 	type ACaseHelper struct {
-		Capitalcamelfield *string `json:"CapitalCamelField",omitempty`
-		Uppercasefield    *string `json:"UPPERCASEFIELD",omitempty`
-		Camelcase         *string `json:"camelCase",omitempty`
-		Lowercase         *string `json:"lowercase",omitempty`
-		Snakemixedcase    *string `json:"snake_Mixed_Case",omitempty`
-		Snakecase         *string `json:"snake_case",omitempty`
+		Capitalcamelfield *string `json:"CapitalCamelField,omitempty"`
+		Uppercasefield    *string `json:"UPPERCASEFIELD,omitempty"`
+		Camelcase         *string `json:"camelCase,omitempty"`
+		Lowercase         *string `json:"lowercase,omitempty"`
+		Snakemixedcase    *string `json:"snake_Mixed_Case,omitempty"`
+		Snakecase         *string `json:"snake_case,omitempty"`
 	}
 	type Plain ACase
 	var helper ACaseHelper
@@ -137,12 +137,12 @@ func (j *ACase) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *ACase) MarshalJSON() ([]byte, error) {
 	type ACaseMarshalHelper struct {
-		Capitalcamelfield *string `json:"CapitalCamelField",omitempty`
-		Uppercasefield    *string `json:"UPPERCASEFIELD",omitempty`
-		Camelcase         *string `json:"camelCase",omitempty`
-		Lowercase         *string `json:"lowercase",omitempty`
-		Snakemixedcase    *string `json:"snake_Mixed_Case",omitempty`
-		Snakecase         *string `json:"snake_case",omitempty`
+		Capitalcamelfield *string `json:"CapitalCamelField,omitempty"`
+		Uppercasefield    *string `json:"UPPERCASEFIELD,omitempty"`
+		Camelcase         *string `json:"camelCase,omitempty"`
+		Lowercase         *string `json:"lowercase,omitempty"`
+		Snakemixedcase    *string `json:"snake_Mixed_Case,omitempty"`
+		Snakecase         *string `json:"snake_case,omitempty"`
 	}
 	helper := ACaseMarshalHelper{
 		Capitalcamelfield: j.capitalcamelfield,

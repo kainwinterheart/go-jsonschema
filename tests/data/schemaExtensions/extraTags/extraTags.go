@@ -36,7 +36,7 @@ func (o *ExtraTags) Name() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *ExtraTags) UnmarshalJSON(value []byte) error {
 	type ExtraTagsHelper struct {
-		Name *string `json:"name",omitempty`
+		Name *string `json:"name,omitempty"`
 	}
 	type Plain ExtraTags
 	var helper ExtraTagsHelper
@@ -52,7 +52,7 @@ func (j *ExtraTags) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *ExtraTags) MarshalJSON() ([]byte, error) {
 	type ExtraTagsMarshalHelper struct {
-		Name *string `json:"name",omitempty`
+		Name *string `json:"name,omitempty"`
 	}
 	helper := ExtraTagsMarshalHelper{
 		Name: j.name,

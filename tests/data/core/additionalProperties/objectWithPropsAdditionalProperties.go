@@ -70,8 +70,8 @@ func (j *ObjectWithPropsAdditionalProperties) UnmarshalJSON(value []byte) error 
 		return err
 	}
 	type ObjectWithPropsAdditionalPropertiesHelper struct {
-		Bar *string `json:"bar",omitempty`
-		Foo *string `json:"foo",omitempty`
+		Bar *string `json:"bar,omitempty"`
+		Foo *string `json:"foo,omitempty"`
 	}
 	type Plain ObjectWithPropsAdditionalProperties
 	var helper ObjectWithPropsAdditionalPropertiesHelper
@@ -96,8 +96,8 @@ func (j *ObjectWithPropsAdditionalProperties) UnmarshalJSON(value []byte) error 
 // MarshalJSON implements json.Marshaler.
 func (j *ObjectWithPropsAdditionalProperties) MarshalJSON() ([]byte, error) {
 	type ObjectWithPropsAdditionalPropertiesMarshalHelper struct {
-		Bar *string `json:"bar",omitempty`
-		Foo *string `json:"foo",omitempty`
+		Bar *string `json:"bar,omitempty"`
+		Foo *string `json:"foo,omitempty"`
 	}
 	helper := ObjectWithPropsAdditionalPropertiesMarshalHelper{
 		Bar: j.bar,

@@ -120,8 +120,8 @@ func (o *RefExternalFileWithDupe) MyThing() *Thing {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *RefExternalFileWithDupe) UnmarshalJSON(value []byte) error {
 	type RefExternalFileWithDupeHelper struct {
-		Myexternalthing *Thing_1 `json:"myExternalThing",omitempty`
-		Mything         *Thing   `json:"myThing",omitempty`
+		Myexternalthing *Thing_1 `json:"myExternalThing,omitempty"`
+		Mything         *Thing   `json:"myThing,omitempty"`
 	}
 	type Plain RefExternalFileWithDupe
 	var helper RefExternalFileWithDupeHelper
@@ -138,8 +138,8 @@ func (j *RefExternalFileWithDupe) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *RefExternalFileWithDupe) MarshalJSON() ([]byte, error) {
 	type RefExternalFileWithDupeMarshalHelper struct {
-		Myexternalthing *Thing_1 `json:"myExternalThing",omitempty`
-		Mything         *Thing   `json:"myThing",omitempty`
+		Myexternalthing *Thing_1 `json:"myExternalThing,omitempty"`
+		Mything         *Thing   `json:"myThing,omitempty"`
 	}
 	helper := RefExternalFileWithDupeMarshalHelper{
 		Myexternalthing: j.myexternalthing,
@@ -174,8 +174,8 @@ func (o *Ref) MyThing2() *Thing_1 {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Ref) UnmarshalJSON(value []byte) error {
 	type RefHelper struct {
-		Mything  *Thing_1 `json:"myThing",omitempty`
-		Mything2 *Thing_1 `json:"myThing2",omitempty`
+		Mything  *Thing_1 `json:"myThing,omitempty"`
+		Mything2 *Thing_1 `json:"myThing2,omitempty"`
 	}
 	type Plain Ref
 	var helper RefHelper
@@ -192,8 +192,8 @@ func (j *Ref) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Ref) MarshalJSON() ([]byte, error) {
 	type RefMarshalHelper struct {
-		Mything  *Thing_1 `json:"myThing",omitempty`
-		Mything2 *Thing_1 `json:"myThing2",omitempty`
+		Mything  *Thing_1 `json:"myThing,omitempty"`
+		Mything2 *Thing_1 `json:"myThing2,omitempty"`
 	}
 	helper := RefMarshalHelper{
 		Mything:  j.mything,
@@ -264,7 +264,7 @@ func (o *Thing_1) Name() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Thing_1) UnmarshalJSON(value []byte) error {
 	type Thing_1Helper struct {
-		Name *string `json:"name",omitempty`
+		Name *string `json:"name,omitempty"`
 	}
 	type Plain Thing_1
 	var helper Thing_1Helper
@@ -280,7 +280,7 @@ func (j *Thing_1) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Thing_1) MarshalJSON() ([]byte, error) {
 	type Thing_1MarshalHelper struct {
-		Name *string `json:"name",omitempty`
+		Name *string `json:"name,omitempty"`
 	}
 	helper := Thing_1MarshalHelper{
 		Name: j.name,
@@ -321,7 +321,7 @@ func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Thing) UnmarshalJSON(value []byte) error {
 	type ThingHelper struct {
-		Something *string `json:"something",omitempty`
+		Something *string `json:"something,omitempty"`
 	}
 	type Plain Thing
 	var helper ThingHelper
@@ -337,7 +337,7 @@ func (j *Thing) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Thing) MarshalJSON() ([]byte, error) {
 	type ThingMarshalHelper struct {
-		Something *string `json:"something",omitempty`
+		Something *string `json:"something,omitempty"`
 	}
 	helper := ThingMarshalHelper{
 		Something: j.something,

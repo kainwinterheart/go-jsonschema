@@ -47,7 +47,7 @@ func (o *RefToEnum) MyThing() *Thing {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *RefToEnum) UnmarshalJSON(value []byte) error {
 	type RefToEnumHelper struct {
-		Mything *Thing `json:"myThing",omitempty`
+		Mything *Thing `json:"myThing,omitempty"`
 	}
 	type Plain RefToEnum
 	var helper RefToEnumHelper
@@ -63,7 +63,7 @@ func (j *RefToEnum) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *RefToEnum) MarshalJSON() ([]byte, error) {
 	type RefToEnumMarshalHelper struct {
-		Mything *Thing `json:"myThing",omitempty`
+		Mything *Thing `json:"myThing,omitempty"`
 	}
 	helper := RefToEnumMarshalHelper{
 		Mything: j.mything,
