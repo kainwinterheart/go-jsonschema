@@ -724,8 +724,18 @@ func getImmutablePointerTypeName(t codegen.Type) string {
 		return "immutable.Map[" + typeArgName(x.KeyType) + ", " + typeArgName(x.ValueType) + "]"
 	case *codegen.PointerType:
 		return "*" + getImmutablePointerTypeName(x.Type)
+	case codegen.NamedType:
+		return typeArgName(x)
+	case *codegen.NamedType:
+		return typeArgName(x)
+	case codegen.EmptyInterfaceType, codegen.NullType:
+		return "interface{}"
+	case codegen.PrimitiveType:
+		return x.Type
+	case codegen.DurationType:
+		return "time.Duration"
 	default:
-		return typeArgName(t)
+		panic(fmt.Sprintf("unknown type in getImmutablePointerTypeName: %T", t))
 	}
 }
 
@@ -768,8 +778,12 @@ func rawTypeName(t codegen.Type) string {
 		return rawTypeName(x.Decl.Type)
 	case *codegen.NamedType:
 		return rawTypeName(x.Decl.Type)
+	case codegen.NullType, codegen.EmptyInterfaceType:
+		return "interface{}"
+	case codegen.PrimitiveType:
+		return x.Type
 	default:
-		return typeArgName(t)
+		panic(fmt.Sprintf("unknown type in rawTypeName: %T", t))
 	}
 }
 

@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"fmt"
 	"sort"
 
 	"github.com/kainwinterheart/go-jsonschema/pkg/codegen"
@@ -87,7 +88,9 @@ func typeArgName(t codegen.Type) string {
 		return "time.Duration"
 	case codegen.CustomNameType:
 		return x.Type
+	case *codegen.CustomNameType:
+		return x.Type
 	default:
-		return "interface{}"
+		panic(fmt.Sprintf("unknown type in typeArgName: %T", t))
 	}
 }
