@@ -739,7 +739,7 @@ func getImmutablePointerTypeName(t codegen.Type) string {
 	case *codegen.CustomNameType:
 		return x.Type
 	default:
-		panic(fmt.Sprintf("unknown type in getImmutablePointerTypeName: %T", t))
+		return typeArgName(t)
 	}
 }
 
@@ -791,7 +791,7 @@ func rawTypeName(t codegen.Type) string {
 	case *codegen.CustomNameType:
 		return x.Type
 	default:
-		panic(fmt.Sprintf("unknown type in rawTypeName: %T", t))
+		return typeArgName(t)
 	}
 }
 
