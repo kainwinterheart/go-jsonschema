@@ -45,7 +45,7 @@ func (j *AMap) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.mymap = helper.Mymap
+	plain.mymap = *immutable.NewMapOf[string](nil, helper.Mymap)
 	*j = AMap(plain)
 	return nil
 }
@@ -83,7 +83,7 @@ func (j *AMap) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 	var plain Plain
-	plain.mymap = rawStruct.Mymap
+	plain.mymap = *immutable.NewMapOf[string](nil, rawStruct.Mymap)
 	plain = plain
 	*j = AMap(plain)
 	return nil

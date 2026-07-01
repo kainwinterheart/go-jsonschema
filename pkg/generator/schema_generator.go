@@ -634,6 +634,11 @@ func (g *schemaGenerator) generateType(t *schemas.Type, scope nameScope) (codege
 		if err != nil {
 			return nil, err
 		}
+		// Handle nil result from generateType (e.g., sub-schema type elements)
+		if elemType == nil {
+			g.output.file.Package.AddImport("github.com/benbjohnson/immutable", "")
+			return arrayTypeVal, nil
+		}
 
 		g.output.file.Package.AddImport("github.com/benbjohnson/immutable", "")
 		return codegen.ArrayType{Type: elemType}, nil
@@ -1203,6 +1208,10 @@ func (g *schemaGenerator) generateTypeInline(t *schemas.Type, scope nameScope) (
 				theType, err = g.generateTypeInline(t.Items, g.singularScope(scope))
 				if err != nil {
 					return nil, err
+				}
+				// Handle nil result from generateTypeInline (e.g., sub-schema type elements)
+				if theType == nil {
+					theType = emptyInterfaceTypeVal
 				}
 			}
 

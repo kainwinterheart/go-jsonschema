@@ -568,14 +568,14 @@ func rawToImmutableConversion(t codegen.Type, expr string) string {
 		// If inner type is a NamedType, we need to cast the conversion result to the named type
 		if _, isNamed := innerType.(*codegen.NamedType); isNamed {
 			if nt, ok := innerType.(*codegen.NamedType); ok && nt.Decl != nil {
-				innerConv = fmt.Sprintf("(%s)(%s)", nt.Decl.Name, innerConv)
+				innerConv = fmt.Sprintf("(%s)(%s)", typeArgName(nt), innerConv)
 			} else if nt, ok := innerType.(codegen.NamedType); ok && nt.Decl != nil {
-				innerConv = fmt.Sprintf("(%s)(%s)", nt.Decl.Name, innerConv)
+				innerConv = fmt.Sprintf("(%s)(%s)", typeArgName(nt), innerConv)
 			}
 		}
 		return fmt.Sprintf("func() *immutable.List[%s] { if %s == nil { return nil }; l := make([]%s, 0, len(%s)); for _, v := range %s { l = append(l, %s) }; return immutable.NewList(l...) }()",
 			innerTypeName, expr, innerTypeName, expr, expr, innerConv)
-	case codegen.MapType:
+	case codegen.MapType, *codegen.MapType:
 		return fmt.Sprintf("*immutable.NewMapOf[string](nil, %s)", expr)
 	case *codegen.PointerType:
 		if x.Type == nil {
@@ -623,7 +623,7 @@ func rawToImmutableConversion(t codegen.Type, expr string) string {
 				innerConv := rawToImmutableConversion(innerElemType, "v")
 
 				// Result type is the NamedType name (which is already a pointer type)
-				resultTypeName := nt.Decl.Name
+				resultTypeName := typeArgName(nt)
 
 				return fmt.Sprintf("func() *%s { if %s == nil { return nil }; raw := %s; l := make([]%s, 0, len(raw)); for _, v := range raw { l = append(l, %s) }; nv := %s(immutable.NewList(l...)); return &nv }()",
 					resultTypeName, expr, expr, innerTypeName, innerConv, resultTypeName)
@@ -653,7 +653,7 @@ func rawToImmutableConversion(t codegen.Type, expr string) string {
 			innerConv := rawToImmutableConversion(innerType, "v")
 			resultType := innerTypeName
 			if x.Decl != nil {
-				resultType = x.Decl.Name
+				resultType = typeArgName(x)
 			}
 			// NamedType wrapping ArrayType already represents the pointer type,
 			// so don't add extra * to the result
@@ -664,13 +664,13 @@ func rawToImmutableConversion(t codegen.Type, expr string) string {
 				resultType, expr, innerTypeName, expr, expr, innerConv, resultType)
 		case codegen.MapType, *codegen.MapType:
 			if x.Decl != nil {
-				return fmt.Sprintf("(%s)(*immutable.NewMapOf[string](nil, %s))", x.Decl.Name, expr)
+				return fmt.Sprintf("(%s)(*immutable.NewMapOf[string](nil, %s))", typeArgName(x), expr)
 			}
 			return fmt.Sprintf("*immutable.NewMapOf[string](nil, %s)", expr)
 		}
 		// Scalar type alias (e.g. SerializableDate): helper field is interface{}, cast to named type
 		if x.Decl.Type == nil && x.Decl != nil {
-			return fmt.Sprintf("(%s)(%s)", x.Decl.Name, expr)
+			return fmt.Sprintf("(%s)(%s)", typeArgName(x), expr)
 		}
 		return rawToImmutableConversion(x.Decl.Type, expr)
 	case *codegen.NamedType:
@@ -686,7 +686,7 @@ func rawToImmutableConversion(t codegen.Type, expr string) string {
 			// Cast to the named type if available
 			resultType := innerTypeName
 			if x.Decl != nil {
-				resultType = x.Decl.Name
+				resultType = typeArgName(x)
 			}
 			// NamedType wrapping ArrayType already represents the pointer type,
 			// so don't add extra * to the result
@@ -698,13 +698,13 @@ func rawToImmutableConversion(t codegen.Type, expr string) string {
 		case codegen.MapType, *codegen.MapType:
 			// Cast to the named type if available
 			if x.Decl != nil {
-				return fmt.Sprintf("(%s)(*immutable.NewMapOf[string](nil, %s))", x.Decl.Name, expr)
+				return fmt.Sprintf("(%s)(*immutable.NewMapOf[string](nil, %s))", typeArgName(x), expr)
 			}
 			return fmt.Sprintf("*immutable.NewMapOf[string](nil, %s)", expr)
 		}
 		// Scalar type alias (e.g. SerializableDate): helper field is interface{}, cast to named type
 		if x.Decl.Type == nil && x.Decl != nil {
-			return fmt.Sprintf("(%s)(%s)", x.Decl.Name, expr)
+			return fmt.Sprintf("(%s)(%s)", typeArgName(x), expr)
 		}
 		return rawToImmutableConversion(x.Decl.Type, expr)
 	default:

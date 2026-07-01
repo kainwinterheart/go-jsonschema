@@ -61,12 +61,18 @@ func typeArgName(t codegen.Type) string {
 		if x.Decl == nil {
 			return "interface{}"
 		}
+		if x.Package != nil {
+			return x.Package.Name() + "." + x.Decl.Name
+		}
 		return x.Decl.Name
 	case *codegen.PointerType:
 		return "*" + typeArgName(x.Type)
 	case *codegen.NamedType:
 		if x.Decl == nil {
 			return "interface{}"
+		}
+		if x.Package != nil {
+			return x.Package.Name() + "." + x.Decl.Name
 		}
 		return x.Decl.Name
 	case *codegen.ArrayType:

@@ -125,7 +125,7 @@ func (j *Datemyobject) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 	var plain Plain
-	plain.mydate = (SerializableDate)(rawStruct.Mydate)
+	plain.mydate = (types.SerializableDate)(rawStruct.Mydate)
 	plain = plain
 	*j = Datemyobject(plain)
 	return nil
@@ -149,7 +149,7 @@ func (j *Datemyobject) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.mydate = (SerializableDate)(helper.Mydate)
+	plain.mydate = (types.SerializableDate)(helper.Mydate)
 	*j = Datemyobject(plain)
 	return nil
 }

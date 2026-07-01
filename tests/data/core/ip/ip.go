@@ -125,7 +125,7 @@ func (j *Ipmyobject) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 	var plain Plain
-	plain.myip = (Addr)(rawStruct.Myip)
+	plain.myip = (netip.Addr)(rawStruct.Myip)
 	plain = plain
 	*j = Ipmyobject(plain)
 	return nil
@@ -149,7 +149,7 @@ func (j *Ipmyobject) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.myip = (Addr)(helper.Myip)
+	plain.myip = (netip.Addr)(helper.Myip)
 	*j = Ipmyobject(plain)
 	return nil
 }

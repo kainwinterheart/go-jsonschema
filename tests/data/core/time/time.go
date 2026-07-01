@@ -143,7 +143,7 @@ func (j *Timemyobject) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 	var plain Plain
-	plain.mytime = (SerializableTime)(rawStruct.Mytime)
+	plain.mytime = (types.SerializableTime)(rawStruct.Mytime)
 	plain = plain
 	*j = Timemyobject(plain)
 	return nil
@@ -167,7 +167,7 @@ func (j *Timemyobject) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.mytime = (SerializableTime)(helper.Mytime)
+	plain.mytime = (types.SerializableTime)(helper.Mytime)
 	*j = Timemyobject(plain)
 	return nil
 }

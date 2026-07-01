@@ -125,7 +125,7 @@ func (j *DateTimemyobject) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 	var plain Plain
-	plain.mydatetime = (Time)(rawStruct.Mydatetime)
+	plain.mydatetime = (time.Time)(rawStruct.Mydatetime)
 	plain = plain
 	*j = DateTimemyobject(plain)
 	return nil
@@ -149,7 +149,7 @@ func (j *DateTimemyobject) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.mydatetime = (Time)(helper.Mydatetime)
+	plain.mydatetime = (time.Time)(helper.Mydatetime)
 	*j = DateTimemyobject(plain)
 	return nil
 }
