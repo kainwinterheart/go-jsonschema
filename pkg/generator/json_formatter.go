@@ -266,10 +266,18 @@ func (jf *jsonFormatter) generate(
 					out.Printlnf("}")
 					out.Printlnf("var additionalPropsRaw map[string]interface{}")
 					out.Printlnf("if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil { return err }")
-					out.Printlnf("plain.AdditionalProperties = func() interface{} {")
-					out.Printlnf("	if additionalPropsRaw == nil { return nil }")
-					out.Printlnf("	return additionalPropsRaw")
-					out.Printlnf("}()")
+					_, isEmptyInterface := f.Type.(codegen.EmptyInterfaceType)
+					_, isEmptyInterfacePtr := f.Type.(*codegen.EmptyInterfaceType)
+					if isEmptyInterface || isEmptyInterfacePtr {
+						out.Printlnf("plain.AdditionalProperties = func() interface{} {")
+						out.Printlnf("	if additionalPropsRaw == nil { return nil }")
+						out.Printlnf("	return additionalPropsRaw")
+						out.Printlnf("}()")
+					} else {
+						out.Printlnf("if additionalPropsRaw != nil {")
+						out.Printlnf("	if err := mapstructure.Decode(additionalPropsRaw, &plain.AdditionalProperties); err != nil { return err }")
+						out.Printlnf("}")
+					}
 					break
 				}
 			}
@@ -779,8 +787,14 @@ func rawTypeName(t codegen.Type) string {
 	case codegen.MapType, *codegen.MapType:
 		return "map[string]" + typeArgName(getType(t))
 	case codegen.NamedType:
+		if _, ok := x.Decl.Type.(*codegen.StructType); ok {
+			return x.Decl.Name
+		}
 		return rawTypeName(x.Decl.Type)
 	case *codegen.NamedType:
+		if _, ok := x.Decl.Type.(*codegen.StructType); ok {
+			return x.Decl.Name
+		}
 		return rawTypeName(x.Decl.Type)
 	case codegen.NullType, codegen.EmptyInterfaceType:
 		return "interface{}"

@@ -1,0 +1,546 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "state",
+  "title": "WorkflowStep",
+  "type": "object",
+  "properties": {
+    "stepType": {
+      "type": "string",
+      "enum": [
+        "PMCandidateGenerate",
+        "PMSynthesize",
+        "PMReview",
+        "Classification",
+        "Decomposition",
+        "DecompositionReview",
+        "DomainStart",
+        "InvestigationPlanGenerate",
+        "InvestigationPlanReview",
+        "InvestigationWorkstream",
+        "InvestigationWorkstreamReview",
+        "InvestigationSynthesis",
+        "InvestigationConsistencyReview",
+        "Architecture",
+        "ArchitectureReview",
+        "Plan",
+        "PlanReview",
+        "CodeImplementation",
+        "CodeReview",
+        "TechLeadReview",
+        "ArchitectureFinalReview",
+        "FinalInvestigation",
+        "PMExpansionCleanup",
+        "InvestigationPlanStructuralReview",
+        "InvestigationFactReview",
+        "DecompositionOrchestrator",
+        "ArchitectureOrchestrator",
+        "PlanOrchestrator",
+        "CodeReviewOrchestrator",
+        "TechLeadReviewOrchestrator",
+        "ArchitectureFinalReviewOrchestrator",
+        "InvestigationFactReviewOrchestrator",
+        "InvestigationConsistencyReviewOrchestrator",
+        "TechLeadEnd",
+        "Boundary"
+      ],
+      "goJSONSchema": {
+        "pointer": false
+      }
+    },
+    "state": {
+      "$ref": "#/$defs/WorkflowState",
+      "goJSONSchema": {
+        "pointer": true
+      }
+    },
+    "domainID": {
+      "type": "string",
+      "goJSONSchema": {
+        "pointer": false
+      }
+    },
+    "workstreamID": {
+      "type": "string",
+      "goJSONSchema": {
+        "pointer": false
+      }
+    },
+    "iteration": {
+      "type": "integer",
+      "goJSONSchema": {
+        "pointer": false
+      }
+    },
+    "reviewIteration": {
+      "type": "integer",
+      "goJSONSchema": {
+        "pointer": false
+      }
+    },
+    "codeReviewIteration": {
+      "type": "integer",
+      "goJSONSchema": {
+        "pointer": false
+      }
+    },
+    "payload": {
+      "$ref": "#/$defs/PayloadData",
+      "goJSONSchema": {
+        "pointer": true
+      }
+    },
+    "domainIndex": {
+      "type": "integer",
+      "goJSONSchema": {
+        "pointer": false
+      }
+    },
+    "workstreamIndex": {
+      "type": "integer",
+      "goJSONSchema": {
+        "pointer": false
+      }
+    }
+  },
+  "$defs": {
+    "DomainState": {
+      "type": "object",
+      "properties": {
+        "architecture": {
+          "goJSONSchema": {
+            "type": "dt.Arch",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "plan": {
+          "goJSONSchema": {
+            "type": "dt.Plan",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "codeOutputs": {
+          "type": "array",
+          "items": {
+            "goJSONSchema": {
+              "type": "dt.Coder",
+              "imports": [
+                "dt"
+              ]
+            }
+          }
+        },
+        "codeSummary": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "finalFeedback": {
+          "goJSONSchema": {
+            "type": "dt.ArchFinal",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "finalReviewPassed": {
+          "type": "boolean",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "wrappedTask": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "wrappedCoderTask": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "pmFilepath": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "allChanges": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "codeSummaries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mergedSummaries": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "techLeadRevisionCycle": {
+          "type": "boolean",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "techLeadReviewIter": {
+          "type": "integer",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "techLeadReviewResult": {
+          "goJSONSchema": {
+            "type": "dt.TechLeadFinal",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        }
+      }
+    },
+    "WorkflowState": {
+      "type": "object",
+      "properties": {
+        "task": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "subdir": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "rephrasedTask": {
+          "goJSONSchema": {
+            "type": "dt.PmSynthesizer",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "choices": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "decompositionResult": {
+          "goJSONSchema": {
+            "type": "dt.SystemDecomposition",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "domains": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/DomainState"
+          }
+        },
+        "investigationPlan": {
+          "goJSONSchema": {
+            "type": "dt.InvestigatorPlan",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "investigationResults": {
+          "goJSONSchema": {
+            "type": "dt.InvestigationReport",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "completedWorkstreams": {
+          "type": "object",
+          "additionalProperties": {
+            "goJSONSchema": {
+              "type": "dt.InvestigatorFindings",
+              "imports": [
+                "dt"
+              ]
+            }
+          }
+        },
+        "workstreams": {
+          "type": "array",
+          "items": {
+            "goJSONSchema": {
+              "type": "dt.InvestigatorPlanworkstreamsElem",
+              "imports": [
+                "dt"
+              ]
+            }
+          }
+        },
+        "speculativeExpansions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "out": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "pmFilepath": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "finalInvestigationTask": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "domainIterationIndex": {
+          "type": "integer",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "domainIterationTotal": {
+          "type": "integer",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "domainCurrentStage": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "techLeadDocSuffix": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        }
+      }
+    },
+    "PayloadData": {
+      "type": "object",
+      "properties": {
+        "revisionPrompt": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "docSuffix": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "revisionInvPrefix": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "initialPromptContext": {
+          "type": "string",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "codeReview": {
+          "goJSONSchema": {
+            "type": "dt.CodeReview",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "decompositionReview": {
+          "goJSONSchema": {
+            "type": "dt.SystemDecompositionReview",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "investigationPlanQualityReview": {
+          "goJSONSchema": {
+            "type": "dt.InvestigationPlanQualityReview",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "gapAnalysisReview": {
+          "goJSONSchema": {
+            "type": "dt.GapAnalysisReview",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "archReview": {
+          "goJSONSchema": {
+            "type": "dt.ArchReview",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "planReview": {
+          "goJSONSchema": {
+            "type": "dt.PlanReview",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "archFinal": {
+          "goJSONSchema": {
+            "type": "dt.ArchFinal",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "factReview": {
+          "goJSONSchema": {
+            "type": "dt.FactCheckingReview",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "consistencyReview": {
+          "goJSONSchema": {
+            "type": "dt.SynthesisConsistencyReview",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "techLeadFinalReview": {
+          "goJSONSchema": {
+            "type": "dt.TechLeadFinal",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "hasTechLeadFinalReview": {
+          "type": "boolean",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "investigationReport": {
+          "goJSONSchema": {
+            "type": "dt.InvestigationReport",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "investigatorFindings": {
+          "goJSONSchema": {
+            "type": "dt.InvestigatorFindings",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "findingsList": {
+          "type": "array",
+          "items": {
+            "goJSONSchema": {
+              "type": "dt.InvestigatorFindings",
+              "imports": [
+                "dt"
+              ]
+            }
+          }
+        },
+        "coderOutputs": {
+          "type": "array",
+          "items": {
+            "goJSONSchema": {
+              "type": "dt.Coder",
+              "imports": [
+                "dt"
+              ]
+            }
+          }
+        },
+        "allChanges": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "iterCount": {
+          "type": "integer",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        },
+        "workstreamElem": {
+          "goJSONSchema": {
+            "type": "dt.InvestigatorPlanworkstreamsElem",
+            "pointer": true,
+            "imports": [
+              "dt"
+            ]
+          }
+        },
+        "tlIter": {
+          "type": "integer",
+          "goJSONSchema": {
+            "pointer": false
+          }
+        }
+      }
+    }
+  }
+}

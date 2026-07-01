@@ -3,6 +3,7 @@ module github.com/kainwinterheart/go-jsonschema/tests
 go 1.25.0
 
 replace (
+	dt => ./dt
 	github.com/kainwinterheart/go-jsonschema => ../
 	github.com/kainwinterheart/go-jsonschema/tests/helpers/other => ./helpers/other
 )
@@ -19,6 +20,7 @@ require (
 
 require (
 	dario.cat/mergo v1.0.2 // indirect
+	dt v0.0.0-00010101000000-000000000000 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
