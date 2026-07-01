@@ -90,6 +90,8 @@ func typeArgName(t codegen.Type) string {
 		return x.Type
 	case *codegen.CustomNameType:
 		return x.Type
+	case *codegen.StructType:
+		return "interface{}"
 	default:
 		panic(fmt.Sprintf("unknown type in typeArgName: %T", t))
 	}

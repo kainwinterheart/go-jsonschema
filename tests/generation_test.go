@@ -469,3 +469,10 @@ func mustAbs(s string) string {
 
 	return result
 }
+
+func TestCustomTypeRefs(t *testing.T) {
+	t.Parallel()
+
+	cfg := basicConfig
+	testExampleFile(t, cfg, "./data/core/testSchema/testSchema.json")
+}
