@@ -4,50 +4,51 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 type Exact struct {
 	// i16 corresponds to the JSON schema field "i16".
-	i16 []int16 `json:"i16" yaml:"i16" mapstructure:"i16"`
+	i16 *immutable.List[int16] `json:"i16" yaml:"i16" mapstructure:"i16"`
 
 	// i32 corresponds to the JSON schema field "i32".
-	i32 []int32 `json:"i32" yaml:"i32" mapstructure:"i32"`
+	i32 *immutable.List[int32] `json:"i32" yaml:"i32" mapstructure:"i32"`
 
 	// i64 corresponds to the JSON schema field "i64".
-	i64 []int64 `json:"i64" yaml:"i64" mapstructure:"i64"`
+	i64 *immutable.List[int64] `json:"i64" yaml:"i64" mapstructure:"i64"`
 
 	// i8 corresponds to the JSON schema field "i8".
-	i8 []int8 `json:"i8" yaml:"i8" mapstructure:"i8"`
+	i8 *immutable.List[int8] `json:"i8" yaml:"i8" mapstructure:"i8"`
 
 	// u16 corresponds to the JSON schema field "u16".
-	u16 []uint16 `json:"u16" yaml:"u16" mapstructure:"u16"`
+	u16 *immutable.List[uint16] `json:"u16" yaml:"u16" mapstructure:"u16"`
 
 	// u32 corresponds to the JSON schema field "u32".
-	u32 []uint32 `json:"u32" yaml:"u32" mapstructure:"u32"`
+	u32 *immutable.List[uint32] `json:"u32" yaml:"u32" mapstructure:"u32"`
 
 	// u64 corresponds to the JSON schema field "u64".
-	u64 []uint64 `json:"u64" yaml:"u64" mapstructure:"u64"`
+	u64 *immutable.List[uint64] `json:"u64" yaml:"u64" mapstructure:"u64"`
 
 	// u8 corresponds to the JSON schema field "u8".
-	u8 []uint8 `json:"u8" yaml:"u8" mapstructure:"u8"`
+	u8 *immutable.List[uint8] `json:"u8" yaml:"u8" mapstructure:"u8"`
 }
 
 type ExactBuilder struct {
-	i16 []int16
+	i16 *immutable.List[int16]
 
-	i32 []int32
+	i32 *immutable.List[int32]
 
-	i64 []int64
+	i64 *immutable.List[int64]
 
-	i8 []int8
+	i8 *immutable.List[int8]
 
-	u16 []uint16
+	u16 *immutable.List[uint16]
 
-	u32 []uint32
+	u32 *immutable.List[uint32]
 
-	u64 []uint64
+	u64 *immutable.List[uint64]
 
-	u8 []uint8
+	u8 *immutable.List[uint8]
 }
 
 func (b *ExactBuilder) Build() *Exact {
@@ -63,42 +64,42 @@ func (b *ExactBuilder) Build() *Exact {
 	}
 }
 
-func (b *ExactBuilder) WithI16(v []int16) *ExactBuilder {
+func (b *ExactBuilder) WithI16(v *immutable.List[int16]) *ExactBuilder {
 	b.i16 = v
 	return b
 }
 
-func (b *ExactBuilder) WithI32(v []int32) *ExactBuilder {
+func (b *ExactBuilder) WithI32(v *immutable.List[int32]) *ExactBuilder {
 	b.i32 = v
 	return b
 }
 
-func (b *ExactBuilder) WithI64(v []int64) *ExactBuilder {
+func (b *ExactBuilder) WithI64(v *immutable.List[int64]) *ExactBuilder {
 	b.i64 = v
 	return b
 }
 
-func (b *ExactBuilder) WithI8(v []int8) *ExactBuilder {
+func (b *ExactBuilder) WithI8(v *immutable.List[int8]) *ExactBuilder {
 	b.i8 = v
 	return b
 }
 
-func (b *ExactBuilder) WithU16(v []uint16) *ExactBuilder {
+func (b *ExactBuilder) WithU16(v *immutable.List[uint16]) *ExactBuilder {
 	b.u16 = v
 	return b
 }
 
-func (b *ExactBuilder) WithU32(v []uint32) *ExactBuilder {
+func (b *ExactBuilder) WithU32(v *immutable.List[uint32]) *ExactBuilder {
 	b.u32 = v
 	return b
 }
 
-func (b *ExactBuilder) WithU64(v []uint64) *ExactBuilder {
+func (b *ExactBuilder) WithU64(v *immutable.List[uint64]) *ExactBuilder {
 	b.u64 = v
 	return b
 }
 
-func (b *ExactBuilder) WithU8(v []uint8) *ExactBuilder {
+func (b *ExactBuilder) WithU8(v *immutable.List[uint8]) *ExactBuilder {
 	b.u8 = v
 	return b
 }
@@ -107,35 +108,35 @@ func (o *Exact) Clone() *ExactBuilder {
 	return NewExactBuilder(o)
 }
 
-func (o *Exact) I16() []int16 {
+func (o *Exact) I16() *immutable.List[int16] {
 	return o.i16
 }
 
-func (o *Exact) I32() []int32 {
+func (o *Exact) I32() *immutable.List[int32] {
 	return o.i32
 }
 
-func (o *Exact) I64() []int64 {
+func (o *Exact) I64() *immutable.List[int64] {
 	return o.i64
 }
 
-func (o *Exact) I8() []int8 {
+func (o *Exact) I8() *immutable.List[int8] {
 	return o.i8
 }
 
-func (o *Exact) U16() []uint16 {
+func (o *Exact) U16() *immutable.List[uint16] {
 	return o.u16
 }
 
-func (o *Exact) U32() []uint32 {
+func (o *Exact) U32() *immutable.List[uint32] {
 	return o.u32
 }
 
-func (o *Exact) U64() []uint64 {
+func (o *Exact) U64() *immutable.List[uint64] {
 	return o.u64
 }
 
-func (o *Exact) U8() []uint8 {
+func (o *Exact) U8() *immutable.List[uint8] {
 	return o.u8
 }
 
@@ -185,14 +186,86 @@ func (j *Exact) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.i16 = helper.I16
-	plain.i32 = helper.I32
-	plain.i64 = helper.I64
-	plain.i8 = helper.I8
-	plain.u16 = helper.U16
-	plain.u32 = helper.U32
-	plain.u64 = helper.U64
-	plain.u8 = helper.U8
+	plain.i16 = func() *immutable.List[int16] {
+		if helper.I16 == nil {
+			return nil
+		}
+		l := make([]int16, 0, len(helper.I16))
+		for _, v := range helper.I16 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.i32 = func() *immutable.List[int32] {
+		if helper.I32 == nil {
+			return nil
+		}
+		l := make([]int32, 0, len(helper.I32))
+		for _, v := range helper.I32 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.i64 = func() *immutable.List[int64] {
+		if helper.I64 == nil {
+			return nil
+		}
+		l := make([]int64, 0, len(helper.I64))
+		for _, v := range helper.I64 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.i8 = func() *immutable.List[int8] {
+		if helper.I8 == nil {
+			return nil
+		}
+		l := make([]int8, 0, len(helper.I8))
+		for _, v := range helper.I8 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.u16 = func() *immutable.List[uint16] {
+		if helper.U16 == nil {
+			return nil
+		}
+		l := make([]uint16, 0, len(helper.U16))
+		for _, v := range helper.U16 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.u32 = func() *immutable.List[uint32] {
+		if helper.U32 == nil {
+			return nil
+		}
+		l := make([]uint32, 0, len(helper.U32))
+		for _, v := range helper.U32 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.u64 = func() *immutable.List[uint64] {
+		if helper.U64 == nil {
+			return nil
+		}
+		l := make([]uint64, 0, len(helper.U64))
+		for _, v := range helper.U64 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.u8 = func() *immutable.List[uint8] {
+		if helper.U8 == nil {
+			return nil
+		}
+		l := make([]uint8, 0, len(helper.U8))
+		for _, v := range helper.U8 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = Exact(plain)
 	return nil
 }
@@ -210,14 +283,102 @@ func (j *Exact) MarshalJSON() ([]byte, error) {
 		U8  []uint8  `json:"u8"`
 	}
 	helper := ExactMarshalHelper{
-		I16: j.i16,
-		I32: j.i32,
-		I64: j.i64,
-		I8:  j.i8,
-		U16: j.u16,
-		U32: j.u32,
-		U64: j.u64,
-		U8:  j.u8,
+		I16: func() []int16 {
+			if j.i16 == nil {
+				return nil
+			}
+			lst := (*immutable.List[int16])(j.i16)
+			l := make([]int16, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		I32: func() []int32 {
+			if j.i32 == nil {
+				return nil
+			}
+			lst := (*immutable.List[int32])(j.i32)
+			l := make([]int32, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		I64: func() []int64 {
+			if j.i64 == nil {
+				return nil
+			}
+			lst := (*immutable.List[int64])(j.i64)
+			l := make([]int64, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		I8: func() []int8 {
+			if j.i8 == nil {
+				return nil
+			}
+			lst := (*immutable.List[int8])(j.i8)
+			l := make([]int8, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		U16: func() []uint16 {
+			if j.u16 == nil {
+				return nil
+			}
+			lst := (*immutable.List[uint16])(j.u16)
+			l := make([]uint16, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		U32: func() []uint32 {
+			if j.u32 == nil {
+				return nil
+			}
+			lst := (*immutable.List[uint32])(j.u32)
+			l := make([]uint32, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		U64: func() []uint64 {
+			if j.u64 == nil {
+				return nil
+			}
+			lst := (*immutable.List[uint64])(j.u64)
+			l := make([]uint64, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		U8: func() []uint8 {
+			if j.u8 == nil {
+				return nil
+			}
+			lst := (*immutable.List[uint8])(j.u8)
+			l := make([]uint8, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -252,11 +413,103 @@ func (j *Exact) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["u8"]; raw != nil && !ok {
 		return fmt.Errorf("field u8 in Exact: required")
 	}
+	type PlainRaw struct {
+		I16 []int16
+		I32 []int32
+		I64 []int64
+		I8  []int8
+		U16 []uint16
+		U32 []uint32
+		U64 []uint64
+		U8  []uint8
+	}
 	type Plain Exact
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.i16 = func() *immutable.List[int16] {
+		if rawStruct.I16 == nil {
+			return nil
+		}
+		l := make([]int16, 0, len(rawStruct.I16))
+		for _, v := range rawStruct.I16 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.i32 = func() *immutable.List[int32] {
+		if rawStruct.I32 == nil {
+			return nil
+		}
+		l := make([]int32, 0, len(rawStruct.I32))
+		for _, v := range rawStruct.I32 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.i64 = func() *immutable.List[int64] {
+		if rawStruct.I64 == nil {
+			return nil
+		}
+		l := make([]int64, 0, len(rawStruct.I64))
+		for _, v := range rawStruct.I64 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.i8 = func() *immutable.List[int8] {
+		if rawStruct.I8 == nil {
+			return nil
+		}
+		l := make([]int8, 0, len(rawStruct.I8))
+		for _, v := range rawStruct.I8 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.u16 = func() *immutable.List[uint16] {
+		if rawStruct.U16 == nil {
+			return nil
+		}
+		l := make([]uint16, 0, len(rawStruct.U16))
+		for _, v := range rawStruct.U16 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.u32 = func() *immutable.List[uint32] {
+		if rawStruct.U32 == nil {
+			return nil
+		}
+		l := make([]uint32, 0, len(rawStruct.U32))
+		for _, v := range rawStruct.U32 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.u64 = func() *immutable.List[uint64] {
+		if rawStruct.U64 == nil {
+			return nil
+		}
+		l := make([]uint64, 0, len(rawStruct.U64))
+		for _, v := range rawStruct.U64 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.u8 = func() *immutable.List[uint8] {
+		if rawStruct.U8 == nil {
+			return nil
+		}
+		l := make([]uint8, 0, len(rawStruct.U8))
+		for _, v := range rawStruct.U8 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = Exact(plain)
 	return nil
 }

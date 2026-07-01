@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 func NewOmitBothBuilder(o *OmitBoth) *OmitBothBuilder {
@@ -26,7 +27,7 @@ func NewOmitBothBuilder(o *OmitBoth) *OmitBothBuilder {
 
 type OmitBoth struct {
 	// myarray corresponds to the JSON schema field "myArray".
-	myarray []interface{} `json:"myArray,omitempty,omitzero"`
+	myarray *immutable.List[interface{}] `json:"myArray,omitempty,omitzero"`
 
 	// myboolean corresponds to the JSON schema field "myBoolean".
 	myboolean *bool `json:"myBoolean,omitempty,omitzero"`
@@ -41,23 +42,23 @@ type OmitBoth struct {
 	mynull interface{} `json:"myNull,omitempty,omitzero"`
 
 	// mynullarray corresponds to the JSON schema field "myNullArray".
-	mynullarray []interface{} `json:"myNullArray,omitempty,omitzero"`
+	mynullarray *immutable.List[interface{}] `json:"myNullArray,omitempty,omitzero"`
 
 	// mynumber corresponds to the JSON schema field "myNumber".
 	mynumber *float64 `json:"myNumber,omitempty,omitzero"`
 
 	// myobjectarray corresponds to the JSON schema field "myObjectArray".
-	myobjectarray []OmitBothmyobjectarrayElem `json:"myObjectArray,omitempty,omitzero"`
+	myobjectarray *immutable.List[OmitBothmyobjectarrayElem] `json:"myObjectArray,omitempty,omitzero"`
 
 	// mystring corresponds to the JSON schema field "myString".
 	mystring *string `json:"myString,omitempty,omitzero"`
 
 	// mystringarray corresponds to the JSON schema field "myStringArray".
-	mystringarray []string `json:"myStringArray,omitempty,omitzero"`
+	mystringarray *immutable.List[string] `json:"myStringArray,omitempty,omitzero"`
 }
 
 type OmitBothBuilder struct {
-	myarray []interface{}
+	myarray *immutable.List[interface{}]
 
 	myboolean *bool
 
@@ -67,15 +68,15 @@ type OmitBothBuilder struct {
 
 	mynull interface{}
 
-	mynullarray []interface{}
+	mynullarray *immutable.List[interface{}]
 
 	mynumber *float64
 
-	myobjectarray []OmitBothmyobjectarrayElem
+	myobjectarray *immutable.List[OmitBothmyobjectarrayElem]
 
 	mystring *string
 
-	mystringarray []string
+	mystringarray *immutable.List[string]
 }
 
 func (b *OmitBothBuilder) Build() *OmitBoth {
@@ -93,7 +94,7 @@ func (b *OmitBothBuilder) Build() *OmitBoth {
 	}
 }
 
-func (b *OmitBothBuilder) WithMyArray(v []interface{}) *OmitBothBuilder {
+func (b *OmitBothBuilder) WithMyArray(v *immutable.List[interface{}]) *OmitBothBuilder {
 	b.myarray = v
 	return b
 }
@@ -118,7 +119,7 @@ func (b *OmitBothBuilder) WithMyNull(v interface{}) *OmitBothBuilder {
 	return b
 }
 
-func (b *OmitBothBuilder) WithMyNullArray(v []interface{}) *OmitBothBuilder {
+func (b *OmitBothBuilder) WithMyNullArray(v *immutable.List[interface{}]) *OmitBothBuilder {
 	b.mynullarray = v
 	return b
 }
@@ -128,7 +129,7 @@ func (b *OmitBothBuilder) WithMyNumber(v *float64) *OmitBothBuilder {
 	return b
 }
 
-func (b *OmitBothBuilder) WithMyObjectArray(v []OmitBothmyobjectarrayElem) *OmitBothBuilder {
+func (b *OmitBothBuilder) WithMyObjectArray(v *immutable.List[OmitBothmyobjectarrayElem]) *OmitBothBuilder {
 	b.myobjectarray = v
 	return b
 }
@@ -138,7 +139,7 @@ func (b *OmitBothBuilder) WithMyString(v *string) *OmitBothBuilder {
 	return b
 }
 
-func (b *OmitBothBuilder) WithMyStringArray(v []string) *OmitBothBuilder {
+func (b *OmitBothBuilder) WithMyStringArray(v *immutable.List[string]) *OmitBothBuilder {
 	b.mystringarray = v
 	return b
 }
@@ -147,7 +148,7 @@ func (o *OmitBoth) Clone() *OmitBothBuilder {
 	return NewOmitBothBuilder(o)
 }
 
-func (o *OmitBoth) MyArray() []interface{} {
+func (o *OmitBoth) MyArray() *immutable.List[interface{}] {
 	return o.myarray
 }
 
@@ -167,7 +168,7 @@ func (o *OmitBoth) MyNull() interface{} {
 	return o.mynull
 }
 
-func (o *OmitBoth) MyNullArray() []interface{} {
+func (o *OmitBoth) MyNullArray() *immutable.List[interface{}] {
 	return o.mynullarray
 }
 
@@ -175,7 +176,7 @@ func (o *OmitBoth) MyNumber() *float64 {
 	return o.mynumber
 }
 
-func (o *OmitBoth) MyObjectArray() []OmitBothmyobjectarrayElem {
+func (o *OmitBoth) MyObjectArray() *immutable.List[OmitBothmyobjectarrayElem] {
 	return o.myobjectarray
 }
 
@@ -183,7 +184,7 @@ func (o *OmitBoth) MyString() *string {
 	return o.mystring
 }
 
-func (o *OmitBoth) MyStringArray() []string {
+func (o *OmitBoth) MyStringArray() *immutable.List[string] {
 	return o.mystringarray
 }
 
@@ -194,16 +195,16 @@ func (j *OmitBoth) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type OmitBothHelper struct {
-		Myarray       []interface{}               `json:"myArray,omitempty"`
-		Myboolean     *bool                       `json:"myBoolean,omitempty"`
-		Myinteger     *int                        `json:"myInteger,omitempty"`
-		Mymap         OmitBothmymap               `json:"myMap,omitempty"`
-		Mynull        interface{}                 `json:"myNull,omitempty"`
-		Mynullarray   []interface{}               `json:"myNullArray,omitempty"`
-		Mynumber      *float64                    `json:"myNumber,omitempty"`
-		Myobjectarray []OmitBothmyobjectarrayElem `json:"myObjectArray,omitempty"`
-		Mystring      *string                     `json:"myString,omitempty"`
-		Mystringarray []string                    `json:"myStringArray,omitempty"`
+		Myarray       []interface{}            `json:"myArray,omitempty"`
+		Myboolean     *bool                    `json:"myBoolean,omitempty"`
+		Myinteger     *int                     `json:"myInteger,omitempty"`
+		Mymap         map[string]float64       `json:"myMap,omitempty"`
+		Mynull        interface{}              `json:"myNull,omitempty"`
+		Mynullarray   []interface{}            `json:"myNullArray,omitempty"`
+		Mynumber      *float64                 `json:"myNumber,omitempty"`
+		Myobjectarray []map[string]interface{} `json:"myObjectArray,omitempty"`
+		Mystring      *string                  `json:"myString,omitempty"`
+		Mystringarray []string                 `json:"myStringArray,omitempty"`
 	}
 	type Plain OmitBoth
 	var helper OmitBothHelper
@@ -211,21 +212,57 @@ func (j *OmitBoth) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.myarray = helper.Myarray
+	plain.myarray = func() *immutable.List[interface{}] {
+		if helper.Myarray == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(helper.Myarray))
+		for _, v := range helper.Myarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.myboolean = helper.Myboolean
 	plain.myinteger = helper.Myinteger
-	plain.mymap = helper.Mymap
+	plain.mymap = (OmitBothmymap)(*immutable.NewMapOf[string](nil, helper.Mymap))
 	plain.mynull = helper.Mynull
-	plain.mynullarray = helper.Mynullarray
+	plain.mynullarray = func() *immutable.List[interface{}] {
+		if helper.Mynullarray == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(helper.Mynullarray))
+		for _, v := range helper.Mynullarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.mynumber = helper.Mynumber
-	plain.myobjectarray = helper.Myobjectarray
+	plain.myobjectarray = func() *immutable.List[OmitBothmyobjectarrayElem] {
+		if helper.Myobjectarray == nil {
+			return nil
+		}
+		l := make([]OmitBothmyobjectarrayElem, 0, len(helper.Myobjectarray))
+		for _, v := range helper.Myobjectarray {
+			l = append(l, (OmitBothmyobjectarrayElem)((OmitBothmyobjectarrayElem)(*immutable.NewMapOf[string](nil, v))))
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.mystring = helper.Mystring
-	plain.mystringarray = helper.Mystringarray
+	plain.mystringarray = func() *immutable.List[string] {
+		if helper.Mystringarray == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Mystringarray))
+		for _, v := range helper.Mystringarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	if plain.mynull != nil {
 		return fmt.Errorf("field %s: must be null", "myNull")
 	}
-	for i0 := range plain.mynullarray {
-		if plain.mynullarray[i0] != nil {
+	for i0 := 0; i0 < plain.mynullarray.Len(); i0++ {
+		if plain.mynullarray.Get(i0) != nil {
 			return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNullArray[%d]", i0))
 		}
 	}
@@ -236,28 +273,94 @@ func (j *OmitBoth) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *OmitBoth) MarshalJSON() ([]byte, error) {
 	type OmitBothMarshalHelper struct {
-		Myarray       []interface{}               `json:"myArray,omitempty"`
-		Myboolean     *bool                       `json:"myBoolean,omitempty"`
-		Myinteger     *int                        `json:"myInteger,omitempty"`
-		Mymap         OmitBothmymap               `json:"myMap,omitempty"`
-		Mynull        interface{}                 `json:"myNull,omitempty"`
-		Mynullarray   []interface{}               `json:"myNullArray,omitempty"`
-		Mynumber      *float64                    `json:"myNumber,omitempty"`
-		Myobjectarray []OmitBothmyobjectarrayElem `json:"myObjectArray,omitempty"`
-		Mystring      *string                     `json:"myString,omitempty"`
-		Mystringarray []string                    `json:"myStringArray,omitempty"`
+		Myarray       []interface{}            `json:"myArray,omitempty"`
+		Myboolean     *bool                    `json:"myBoolean,omitempty"`
+		Myinteger     *int                     `json:"myInteger,omitempty"`
+		Mymap         map[string]float64       `json:"myMap,omitempty"`
+		Mynull        interface{}              `json:"myNull,omitempty"`
+		Mynullarray   []interface{}            `json:"myNullArray,omitempty"`
+		Mynumber      *float64                 `json:"myNumber,omitempty"`
+		Myobjectarray []map[string]interface{} `json:"myObjectArray,omitempty"`
+		Mystring      *string                  `json:"myString,omitempty"`
+		Mystringarray []string                 `json:"myStringArray,omitempty"`
 	}
 	helper := OmitBothMarshalHelper{
-		Myarray:       j.myarray,
-		Myboolean:     j.myboolean,
-		Myinteger:     j.myinteger,
-		Mymap:         j.mymap,
-		Mynull:        j.mynull,
-		Mynullarray:   j.mynullarray,
-		Mynumber:      j.mynumber,
-		Myobjectarray: j.myobjectarray,
-		Mystring:      j.mystring,
-		Mystringarray: j.mystringarray,
+		Myarray: func() []interface{} {
+			if j.myarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(j.myarray)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Myboolean: j.myboolean,
+		Myinteger: j.myinteger,
+		Mymap: func() map[string]float64 {
+			m := make(map[string]float64)
+			iter := (*immutable.Map[string, float64])(&j.mymap).Iterator()
+			for iter.First(); !iter.Done(); {
+				k, v, ok := iter.Next()
+				if !ok {
+					break
+				}
+				m[k] = v
+			}
+			return m
+		}(),
+		Mynull: j.mynull,
+		Mynullarray: func() []interface{} {
+			if j.mynullarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(j.mynullarray)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Mynumber: j.mynumber,
+		Myobjectarray: func() []map[string]interface{} {
+			if j.myobjectarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[OmitBothmyobjectarrayElem])(j.myobjectarray)
+			l := make([]map[string]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = func() map[string]interface{} {
+					m := make(map[string]interface{})
+					iter := (*immutable.Map[string, interface{}])(&__elem).Iterator()
+					for iter.First(); !iter.Done(); {
+						k, v, ok := iter.Next()
+						if !ok {
+							break
+						}
+						m[k] = v
+					}
+					return m
+				}()
+			}
+			return l
+		}(),
+		Mystring: j.mystring,
+		Mystringarray: func() []string {
+			if j.mystringarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.mystringarray)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -268,16 +371,76 @@ func (j *OmitBoth) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
+	type PlainRaw struct {
+		Myarray       []interface{}
+		Myboolean     *bool
+		Myinteger     *int
+		Mymap         map[string]float64
+		Mynull        interface{}
+		Mynullarray   []interface{}
+		Mynumber      *float64
+		Myobjectarray []map[string]interface{}
+		Mystring      *string
+		Mystringarray []string
+	}
 	type Plain OmitBoth
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myarray = func() *immutable.List[interface{}] {
+		if rawStruct.Myarray == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(rawStruct.Myarray))
+		for _, v := range rawStruct.Myarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.myboolean = rawStruct.Myboolean
+	plain.myinteger = rawStruct.Myinteger
+	plain.mymap = (OmitBothmymap)(*immutable.NewMapOf[string](nil, rawStruct.Mymap))
+	plain.mynull = rawStruct.Mynull
+	plain.mynullarray = func() *immutable.List[interface{}] {
+		if rawStruct.Mynullarray == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(rawStruct.Mynullarray))
+		for _, v := range rawStruct.Mynullarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mynumber = rawStruct.Mynumber
+	plain.myobjectarray = func() *immutable.List[OmitBothmyobjectarrayElem] {
+		if rawStruct.Myobjectarray == nil {
+			return nil
+		}
+		l := make([]OmitBothmyobjectarrayElem, 0, len(rawStruct.Myobjectarray))
+		for _, v := range rawStruct.Myobjectarray {
+			l = append(l, (OmitBothmyobjectarrayElem)((OmitBothmyobjectarrayElem)(*immutable.NewMapOf[string](nil, v))))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mystring = rawStruct.Mystring
+	plain.mystringarray = func() *immutable.List[string] {
+		if rawStruct.Mystringarray == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Mystringarray))
+		for _, v := range rawStruct.Mystringarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	if plain.mynull != nil {
 		return fmt.Errorf("field %s: must be null", "myNull")
 	}
-	for i0 := range plain.mynullarray {
-		if plain.mynullarray[i0] != nil {
+	for i0 := 0; i0 < plain.mynullarray.Len(); i0++ {
+		if plain.mynullarray.Get(i0) != nil {
 			return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNullArray[%d]", i0))
 		}
 	}
@@ -285,6 +448,58 @@ func (j *OmitBoth) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-type OmitBothmymap map[string]float64
+type OmitBothmymap immutable.Map[string, float64]
 
-type OmitBothmyobjectarrayElem map[string]interface{}
+func (m OmitBothmymap) Items() []struct {
+	Key   string
+	Value float64
+} {
+	var items []struct {
+		Key   string
+		Value float64
+	}
+	iter := (&m).Iterator()
+	for iter.First(); !iter.Done(); {
+		k, v, ok := iter.Next()
+		if !ok {
+			break
+		}
+		items = append(items, struct {
+			Key   string
+			Value float64
+		}{k, v})
+	}
+	return items
+}
+
+func (m OmitBothmymap) Iterator() *immutable.MapIterator[string, float64] {
+	return (*immutable.Map[string, float64])(&m).Iterator()
+}
+
+type OmitBothmyobjectarrayElem immutable.Map[string, interface{}]
+
+func (m OmitBothmyobjectarrayElem) Items() []struct {
+	Key   string
+	Value interface{}
+} {
+	var items []struct {
+		Key   string
+		Value interface{}
+	}
+	iter := (&m).Iterator()
+	for iter.First(); !iter.Done(); {
+		k, v, ok := iter.Next()
+		if !ok {
+			break
+		}
+		items = append(items, struct {
+			Key   string
+			Value interface{}
+		}{k, v})
+	}
+	return items
+}
+
+func (m OmitBothmyobjectarrayElem) Iterator() *immutable.MapIterator[string, interface{}] {
+	return (*immutable.Map[string, interface{}])(&m).Iterator()
+}

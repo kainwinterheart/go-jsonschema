@@ -37,11 +37,17 @@ func (o *DateTime) MyObject() *DateTimemyobject {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *DateTime) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Myobject *DateTimemyobject
+	}
 	type Plain DateTime
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myobject = rawStruct.Myobject
+	plain = plain
 	*j = DateTime(plain)
 	return nil
 }
@@ -110,11 +116,17 @@ func (j *DateTimemyobject) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myDateTime"]; raw != nil && !ok {
 		return fmt.Errorf("field myDateTime in DateTimemyobject: required")
 	}
+	type PlainRaw struct {
+		Mydatetime time.Time
+	}
 	type Plain DateTimemyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mydatetime = (Time)(rawStruct.Mydatetime)
+	plain = plain
 	*j = DateTimemyobject(plain)
 	return nil
 }
@@ -137,7 +149,7 @@ func (j *DateTimemyobject) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.mydatetime = helper.Mydatetime
+	plain.mydatetime = (Time)(helper.Mydatetime)
 	*j = DateTimemyobject(plain)
 	return nil
 }

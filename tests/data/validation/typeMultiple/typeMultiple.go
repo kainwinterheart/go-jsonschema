@@ -3,6 +3,7 @@
 package test
 
 import "encoding/json"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 func NewTypeMultipleBuilder(o *TypeMultiple) *TypeMultipleBuilder {
@@ -26,11 +27,11 @@ type TypeMultiple struct {
 	allprimitives interface{} `json:"allPrimitives,omitempty,omitzero" yaml:"allPrimitives,omitempty" mapstructure:"allPrimitives,omitempty"`
 
 	// arrayofall corresponds to the JSON schema field "arrayOfAll".
-	arrayofall []interface{} `json:"arrayOfAll,omitempty,omitzero" yaml:"arrayOfAll,omitempty" mapstructure:"arrayOfAll,omitempty"`
+	arrayofall *immutable.List[interface{}] `json:"arrayOfAll,omitempty,omitzero" yaml:"arrayOfAll,omitempty" mapstructure:"arrayOfAll,omitempty"`
 
 	// arrayofallprimitives corresponds to the JSON schema field
 	// "arrayOfAllPrimitives".
-	arrayofallprimitives []interface{} `json:"arrayOfAllPrimitives,omitempty,omitzero" yaml:"arrayOfAllPrimitives,omitempty" mapstructure:"arrayOfAllPrimitives,omitempty"`
+	arrayofallprimitives *immutable.List[interface{}] `json:"arrayOfAllPrimitives,omitempty,omitzero" yaml:"arrayOfAllPrimitives,omitempty" mapstructure:"arrayOfAllPrimitives,omitempty"`
 
 	// onlytwooptions corresponds to the JSON schema field "onlyTwoOptions".
 	onlytwooptions interface{} `json:"onlyTwoOptions,omitempty,omitzero" yaml:"onlyTwoOptions,omitempty" mapstructure:"onlyTwoOptions,omitempty"`
@@ -41,9 +42,9 @@ type TypeMultipleBuilder struct {
 
 	allprimitives interface{}
 
-	arrayofall []interface{}
+	arrayofall *immutable.List[interface{}]
 
-	arrayofallprimitives []interface{}
+	arrayofallprimitives *immutable.List[interface{}]
 
 	onlytwooptions interface{}
 }
@@ -68,12 +69,12 @@ func (b *TypeMultipleBuilder) WithAllPrimitives(v interface{}) *TypeMultipleBuil
 	return b
 }
 
-func (b *TypeMultipleBuilder) WithArrayOfAll(v []interface{}) *TypeMultipleBuilder {
+func (b *TypeMultipleBuilder) WithArrayOfAll(v *immutable.List[interface{}]) *TypeMultipleBuilder {
 	b.arrayofall = v
 	return b
 }
 
-func (b *TypeMultipleBuilder) WithArrayOfAllPrimitives(v []interface{}) *TypeMultipleBuilder {
+func (b *TypeMultipleBuilder) WithArrayOfAllPrimitives(v *immutable.List[interface{}]) *TypeMultipleBuilder {
 	b.arrayofallprimitives = v
 	return b
 }
@@ -91,11 +92,11 @@ func (o *TypeMultiple) AllPrimitives() interface{} {
 	return o.allprimitives
 }
 
-func (o *TypeMultiple) ArrayOfAll() []interface{} {
+func (o *TypeMultiple) ArrayOfAll() *immutable.List[interface{}] {
 	return o.arrayofall
 }
 
-func (o *TypeMultiple) ArrayOfAllPrimitives() []interface{} {
+func (o *TypeMultiple) ArrayOfAllPrimitives() *immutable.List[interface{}] {
 	return o.arrayofallprimitives
 }
 
@@ -124,8 +125,26 @@ func (j *TypeMultiple) UnmarshalJSON(value []byte) error {
 	var plain Plain
 	plain.all = helper.All
 	plain.allprimitives = helper.Allprimitives
-	plain.arrayofall = helper.Arrayofall
-	plain.arrayofallprimitives = helper.Arrayofallprimitives
+	plain.arrayofall = func() *immutable.List[interface{}] {
+		if helper.Arrayofall == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(helper.Arrayofall))
+		for _, v := range helper.Arrayofall {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.arrayofallprimitives = func() *immutable.List[interface{}] {
+		if helper.Arrayofallprimitives == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(helper.Arrayofallprimitives))
+		for _, v := range helper.Arrayofallprimitives {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.onlytwooptions = helper.Onlytwooptions
 	*j = TypeMultiple(plain)
 	return nil
@@ -141,22 +160,76 @@ func (j *TypeMultiple) MarshalJSON() ([]byte, error) {
 		Onlytwooptions       interface{}   `json:"onlyTwoOptions,omitempty"`
 	}
 	helper := TypeMultipleMarshalHelper{
-		All:                  j.all,
-		Allprimitives:        j.allprimitives,
-		Arrayofall:           j.arrayofall,
-		Arrayofallprimitives: j.arrayofallprimitives,
-		Onlytwooptions:       j.onlytwooptions,
+		All:           j.all,
+		Allprimitives: j.allprimitives,
+		Arrayofall: func() []interface{} {
+			if j.arrayofall == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(j.arrayofall)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Arrayofallprimitives: func() []interface{} {
+			if j.arrayofallprimitives == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(j.arrayofallprimitives)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Onlytwooptions: j.onlytwooptions,
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *TypeMultiple) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		All                  interface{}
+		Allprimitives        interface{}
+		Arrayofall           []interface{}
+		Arrayofallprimitives []interface{}
+		Onlytwooptions       interface{}
+	}
 	type Plain TypeMultiple
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.all = rawStruct.All
+	plain.allprimitives = rawStruct.Allprimitives
+	plain.arrayofall = func() *immutable.List[interface{}] {
+		if rawStruct.Arrayofall == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(rawStruct.Arrayofall))
+		for _, v := range rawStruct.Arrayofall {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.arrayofallprimitives = func() *immutable.List[interface{}] {
+		if rawStruct.Arrayofallprimitives == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(rawStruct.Arrayofallprimitives))
+		for _, v := range rawStruct.Arrayofallprimitives {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.onlytwooptions = rawStruct.Onlytwooptions
+	plain = plain
 	*j = TypeMultiple(plain)
 	return nil
 }

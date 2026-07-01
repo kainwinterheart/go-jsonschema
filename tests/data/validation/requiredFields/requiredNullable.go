@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 func NewRequiredNullableBuilder(o *RequiredNullable) *RequiredNullableBuilder {
@@ -100,11 +101,32 @@ func (j *RequiredNullable) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myNullableStringArray"]; raw != nil && !ok {
 		return fmt.Errorf("field myNullableStringArray in RequiredNullable: required")
 	}
+	type PlainRaw struct {
+		Mynullableobject      *RequiredNullablemynullableobject
+		Mynullablestring      RequiredNullablemynullablestring
+		Mynullablestringarray []string
+	}
 	type Plain RequiredNullable
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mynullableobject = rawStruct.Mynullableobject
+	plain.mynullablestring = rawStruct.Mynullablestring
+	plain.mynullablestringarray = func() *RequiredNullablemynullablestringarray {
+		if rawStruct.Mynullablestringarray == nil {
+			return nil
+		}
+		raw := rawStruct.Mynullablestringarray
+		l := make([]string, 0, len(raw))
+		for _, v := range raw {
+			l = append(l, v)
+		}
+		nv := RequiredNullablemynullablestringarray(immutable.NewList(l...))
+		return &nv
+	}()
+	plain = plain
 	*j = RequiredNullable(plain)
 	return nil
 }
@@ -125,9 +147,9 @@ func (j *RequiredNullable) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field myNullableStringArray in RequiredNullable: required")
 	}
 	type RequiredNullableHelper struct {
-		Mynullableobject      *RequiredNullablemynullableobject      `json:"myNullableObject"`
-		Mynullablestring      RequiredNullablemynullablestring       `json:"myNullableString"`
-		Mynullablestringarray *RequiredNullablemynullablestringarray `json:"myNullableStringArray"`
+		Mynullableobject      *RequiredNullablemynullableobject `json:"myNullableObject"`
+		Mynullablestring      RequiredNullablemynullablestring  `json:"myNullableString"`
+		Mynullablestringarray []string                          `json:"myNullableStringArray"`
 	}
 	type Plain RequiredNullable
 	var helper RequiredNullableHelper
@@ -137,7 +159,18 @@ func (j *RequiredNullable) UnmarshalJSON(value []byte) error {
 	var plain Plain
 	plain.mynullableobject = helper.Mynullableobject
 	plain.mynullablestring = helper.Mynullablestring
-	plain.mynullablestringarray = helper.Mynullablestringarray
+	plain.mynullablestringarray = func() *RequiredNullablemynullablestringarray {
+		if helper.Mynullablestringarray == nil {
+			return nil
+		}
+		raw := helper.Mynullablestringarray
+		l := make([]string, 0, len(raw))
+		for _, v := range raw {
+			l = append(l, v)
+		}
+		nv := RequiredNullablemynullablestringarray(immutable.NewList(l...))
+		return &nv
+	}()
 	*j = RequiredNullable(plain)
 	return nil
 }
@@ -145,14 +178,25 @@ func (j *RequiredNullable) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *RequiredNullable) MarshalJSON() ([]byte, error) {
 	type RequiredNullableMarshalHelper struct {
-		Mynullableobject      *RequiredNullablemynullableobject      `json:"myNullableObject"`
-		Mynullablestring      RequiredNullablemynullablestring       `json:"myNullableString"`
-		Mynullablestringarray *RequiredNullablemynullablestringarray `json:"myNullableStringArray"`
+		Mynullableobject      *RequiredNullablemynullableobject `json:"myNullableObject"`
+		Mynullablestring      RequiredNullablemynullablestring  `json:"myNullableString"`
+		Mynullablestringarray []string                          `json:"myNullableStringArray"`
 	}
 	helper := RequiredNullableMarshalHelper{
-		Mynullableobject:      j.mynullableobject,
-		Mynullablestring:      j.mynullablestring,
-		Mynullablestringarray: j.mynullablestringarray,
+		Mynullableobject: j.mynullableobject,
+		Mynullablestring: j.mynullablestring,
+		Mynullablestringarray: func() []string {
+			if j.mynullablestringarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(*j.mynullablestringarray)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -228,15 +272,21 @@ func (j *RequiredNullablemynullableobject) UnmarshalYAML(value *yaml.Node) error
 	if _, ok := raw["myNestedProp"]; raw != nil && !ok {
 		return fmt.Errorf("field myNestedProp in RequiredNullablemynullableobject: required")
 	}
+	type PlainRaw struct {
+		Mynestedprop string
+	}
 	type Plain RequiredNullablemynullableobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mynestedprop = rawStruct.Mynestedprop
+	plain = plain
 	*j = RequiredNullablemynullableobject(plain)
 	return nil
 }
 
 type RequiredNullablemynullablestring *string
 
-type RequiredNullablemynullablestringarray []string
+type RequiredNullablemynullablestringarray *immutable.List[string]

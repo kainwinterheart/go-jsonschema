@@ -99,11 +99,19 @@ func (j *YamlMultilineDescriptions) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *YamlMultilineDescriptions) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Bar *string
+		Foo *string
+	}
 	type Plain YamlMultilineDescriptions
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.bar = rawStruct.Bar
+	plain.foo = rawStruct.Foo
+	plain = plain
 	*j = YamlMultilineDescriptions(plain)
 	return nil
 }

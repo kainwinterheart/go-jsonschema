@@ -111,11 +111,25 @@ func (j *CaseDupes) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *CaseDupes) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Somefield   *string
+		Somefield_2 *string
+		Somefield_3 *string
+		Somefield_4 *string
+		Somefield_5 *string
+	}
 	type Plain CaseDupes
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.somefield = rawStruct.Somefield
+	plain.somefield_2 = rawStruct.Somefield_2
+	plain.somefield_3 = rawStruct.Somefield_3
+	plain.somefield_4 = rawStruct.Somefield_4
+	plain.somefield_5 = rawStruct.Somefield_5
+	plain = plain
 	*j = CaseDupes(plain)
 	return nil
 }

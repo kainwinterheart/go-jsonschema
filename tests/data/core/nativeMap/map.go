@@ -3,6 +3,7 @@
 package test
 
 import "encoding/json"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 type AMap struct {
@@ -36,7 +37,7 @@ func (o *AMap) MyMap() AMapmymap {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AMap) UnmarshalJSON(value []byte) error {
 	type AMapHelper struct {
-		Mymap AMapmymap `json:"myMap,omitempty"`
+		Mymap map[string]float64 `json:"myMap,omitempty"`
 	}
 	type Plain AMap
 	var helper AMapHelper
@@ -44,7 +45,7 @@ func (j *AMap) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.mymap = helper.Mymap
+	plain.mymap = (AMapmymap)(*immutable.NewMapOf[string](nil, helper.Mymap))
 	*j = AMap(plain)
 	return nil
 }
@@ -52,26 +53,69 @@ func (j *AMap) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AMap) MarshalJSON() ([]byte, error) {
 	type AMapMarshalHelper struct {
-		Mymap AMapmymap `json:"myMap,omitempty"`
+		Mymap map[string]float64 `json:"myMap,omitempty"`
 	}
 	helper := AMapMarshalHelper{
-		Mymap: j.mymap,
+		Mymap: func() map[string]float64 {
+			m := make(map[string]float64)
+			iter := (*immutable.Map[string, float64])(&j.mymap).Iterator()
+			for iter.First(); !iter.Done(); {
+				k, v, ok := iter.Next()
+				if !ok {
+					break
+				}
+				m[k] = v
+			}
+			return m
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *AMap) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Mymap map[string]float64
+	}
 	type Plain AMap
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mymap = (AMapmymap)(*immutable.NewMapOf[string](nil, rawStruct.Mymap))
+	plain = plain
 	*j = AMap(plain)
 	return nil
 }
 
-type AMapmymap map[string]float64
+type AMapmymap immutable.Map[string, float64]
+
+func (m AMapmymap) Items() []struct {
+	Key   string
+	Value float64
+} {
+	var items []struct {
+		Key   string
+		Value float64
+	}
+	iter := (&m).Iterator()
+	for iter.First(); !iter.Done(); {
+		k, v, ok := iter.Next()
+		if !ok {
+			break
+		}
+		items = append(items, struct {
+			Key   string
+			Value float64
+		}{k, v})
+	}
+	return items
+}
+
+func (m AMapmymap) Iterator() *immutable.MapIterator[string, float64] {
+	return (*immutable.Map[string, float64])(&m).Iterator()
+}
 
 func NewAMapBuilder(o *AMap) *AMapBuilder {
 	if o == nil {

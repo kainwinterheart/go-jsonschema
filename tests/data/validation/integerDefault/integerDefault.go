@@ -138,11 +138,21 @@ func (j *IntegerDefault) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["programId"]; raw != nil && !ok {
 		return fmt.Errorf("field programId in IntegerDefault: required")
 	}
+	type PlainRaw struct {
+		Count         int
+		Nullablecount IntegerDefaultnullablecount
+		Programid     int
+	}
 	type Plain IntegerDefault
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.count = rawStruct.Count
+	plain.nullablecount = rawStruct.Nullablecount
+	plain.programid = rawStruct.Programid
+	plain = plain
 	if v, ok := raw["count"]; !ok || v == nil {
 		plain.count = 42
 	}

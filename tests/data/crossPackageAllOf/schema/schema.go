@@ -121,11 +121,19 @@ func (j *Schema) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Schema) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Definotherschema *Schemadefinotherschema
+		Definsameschema  *Schemadefinsameschema
+	}
 	type Plain Schema
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.definotherschema = rawStruct.Definotherschema
+	plain.definsameschema = rawStruct.Definsameschema
+	plain = plain
 	*j = Schema(plain)
 	return nil
 }
@@ -160,11 +168,17 @@ func (o *Schemadefinotherschema) Value() *other.Value {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Schemadefinotherschema) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Value *other.Value
+	}
 	type Plain Schemadefinotherschema
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.value = rawStruct.Value
+	plain = plain
 	*j = Schemadefinotherschema(plain)
 	return nil
 }
@@ -226,11 +240,17 @@ func (o *Schemadefinsameschema) Name() *Name {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Schemadefinsameschema) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Name *Name
+	}
 	type Plain Schemadefinsameschema
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.name = rawStruct.Name
+	plain = plain
 	*j = Schemadefinsameschema(plain)
 	return nil
 }
@@ -292,11 +312,17 @@ func (o *Thing) Name() *Name {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Name *Name
+	}
 	type Plain Thing
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.name = rawStruct.Name
+	plain = plain
 	*j = Thing(plain)
 	return nil
 }

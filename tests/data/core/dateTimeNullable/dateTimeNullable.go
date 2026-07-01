@@ -36,11 +36,17 @@ func (o *DateTimeNullable) MyObject() *DateTimeNullablemyobject {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *DateTimeNullable) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Myobject *DateTimeNullablemyobject
+	}
 	type Plain DateTimeNullable
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myobject = rawStruct.Myobject
+	plain = plain
 	*j = DateTimeNullable(plain)
 	return nil
 }
@@ -129,11 +135,17 @@ func (j *DateTimeNullablemyobject) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *DateTimeNullablemyobject) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Mynullabledatetime DateTimeNullablemyobjectmynullabledatetime
+	}
 	type Plain DateTimeNullablemyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mynullabledatetime = rawStruct.Mynullabledatetime
+	plain = plain
 	*j = DateTimeNullablemyobject(plain)
 	return nil
 }

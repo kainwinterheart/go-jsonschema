@@ -5,15 +5,16 @@ package test
 import "encoding/json"
 import "errors"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 type AnyOf6 struct {
 	// qux2 corresponds to the JSON schema field "qux2".
-	qux2 []AnyOf6qux2Elem `json:"qux2,omitempty,omitzero" yaml:"qux2,omitempty" mapstructure:"qux2,omitempty"`
+	qux2 *immutable.List[AnyOf6qux2Elem] `json:"qux2,omitempty,omitzero" yaml:"qux2,omitempty" mapstructure:"qux2,omitempty"`
 }
 
 type AnyOf6Builder struct {
-	qux2 []AnyOf6qux2Elem
+	qux2 *immutable.List[AnyOf6qux2Elem]
 }
 
 func (b *AnyOf6Builder) Build() *AnyOf6 {
@@ -22,7 +23,7 @@ func (b *AnyOf6Builder) Build() *AnyOf6 {
 	}
 }
 
-func (b *AnyOf6Builder) WithQux2(v []AnyOf6qux2Elem) *AnyOf6Builder {
+func (b *AnyOf6Builder) WithQux2(v *immutable.List[AnyOf6qux2Elem]) *AnyOf6Builder {
 	b.qux2 = v
 	return b
 }
@@ -31,17 +32,32 @@ func (o *AnyOf6) Clone() *AnyOf6Builder {
 	return NewAnyOf6Builder(o)
 }
 
-func (o *AnyOf6) Qux2() []AnyOf6qux2Elem {
+func (o *AnyOf6) Qux2() *immutable.List[AnyOf6qux2Elem] {
 	return o.qux2
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *AnyOf6) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Qux2 []AnyOf6qux2Elem
+	}
 	type Plain AnyOf6
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.qux2 = func() *immutable.List[AnyOf6qux2Elem] {
+		if rawStruct.Qux2 == nil {
+			return nil
+		}
+		l := make([]AnyOf6qux2Elem, 0, len(rawStruct.Qux2))
+		for _, v := range rawStruct.Qux2 {
+			l = append(l, (AnyOf6qux2Elem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = AnyOf6(plain)
 	return nil
 }
@@ -57,7 +73,16 @@ func (j *AnyOf6) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.qux2 = helper.Qux2
+	plain.qux2 = func() *immutable.List[AnyOf6qux2Elem] {
+		if helper.Qux2 == nil {
+			return nil
+		}
+		l := make([]AnyOf6qux2Elem, 0, len(helper.Qux2))
+		for _, v := range helper.Qux2 {
+			l = append(l, (AnyOf6qux2Elem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = AnyOf6(plain)
 	return nil
 }
@@ -68,18 +93,29 @@ func (j *AnyOf6) MarshalJSON() ([]byte, error) {
 		Qux2 []AnyOf6qux2Elem `json:"qux2,omitempty"`
 	}
 	helper := AnyOf6MarshalHelper{
-		Qux2: j.qux2,
+		Qux2: func() []AnyOf6qux2Elem {
+			if j.qux2 == nil {
+				return nil
+			}
+			lst := (*immutable.List[AnyOf6qux2Elem])(j.qux2)
+			l := make([]AnyOf6qux2Elem, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 type AnyOf6qux2Elem struct {
 	// content corresponds to the JSON schema field "content".
-	content []interface{} `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
+	content *immutable.List[interface{}] `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
 type AnyOf6qux2ElemBuilder struct {
-	content []interface{}
+	content *immutable.List[interface{}]
 }
 
 func (b *AnyOf6qux2ElemBuilder) Build() *AnyOf6qux2Elem {
@@ -88,7 +124,7 @@ func (b *AnyOf6qux2ElemBuilder) Build() *AnyOf6qux2Elem {
 	}
 }
 
-func (b *AnyOf6qux2ElemBuilder) WithContent(v []interface{}) *AnyOf6qux2ElemBuilder {
+func (b *AnyOf6qux2ElemBuilder) WithContent(v *immutable.List[interface{}]) *AnyOf6qux2ElemBuilder {
 	b.content = v
 	return b
 }
@@ -97,7 +133,7 @@ func (o *AnyOf6qux2Elem) Clone() *AnyOf6qux2ElemBuilder {
 	return NewAnyOf6qux2ElemBuilder(o)
 }
 
-func (o *AnyOf6qux2Elem) Content() []interface{} {
+func (o *AnyOf6qux2Elem) Content() *immutable.List[interface{}] {
 	return o.content
 }
 
@@ -123,11 +159,26 @@ func (j *AnyOf6qux2Elem) UnmarshalYAML(value *yaml.Node) error {
 	if len(errs) == 3 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
+	type PlainRaw struct {
+		Content []interface{}
+	}
 	type Plain AnyOf6qux2Elem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.content = func() *immutable.List[interface{}] {
+		if rawStruct.Content == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(rawStruct.Content))
+		for _, v := range rawStruct.Content {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = AnyOf6qux2Elem(plain)
 	return nil
 }
@@ -163,7 +214,16 @@ func (j *AnyOf6qux2Elem) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.content = helper.Content
+	plain.content = func() *immutable.List[interface{}] {
+		if helper.Content == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(helper.Content))
+		for _, v := range helper.Content {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = AnyOf6qux2Elem(plain)
 	return nil
 }
@@ -174,18 +234,29 @@ func (j *AnyOf6qux2Elem) MarshalJSON() ([]byte, error) {
 		Content []interface{} `json:"content,omitempty"`
 	}
 	helper := AnyOf6qux2ElemMarshalHelper{
-		Content: j.content,
+		Content: func() []interface{} {
+			if j.content == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(j.content)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 type Bar2 struct {
 	// content corresponds to the JSON schema field "content".
-	content []Bar2contentElem `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
+	content *immutable.List[Bar2contentElem] `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
 type Bar2Builder struct {
-	content []Bar2contentElem
+	content *immutable.List[Bar2contentElem]
 }
 
 func (b *Bar2Builder) Build() *Bar2 {
@@ -194,7 +265,7 @@ func (b *Bar2Builder) Build() *Bar2 {
 	}
 }
 
-func (b *Bar2Builder) WithContent(v []Bar2contentElem) *Bar2Builder {
+func (b *Bar2Builder) WithContent(v *immutable.List[Bar2contentElem]) *Bar2Builder {
 	b.content = v
 	return b
 }
@@ -203,7 +274,7 @@ func (o *Bar2) Clone() *Bar2Builder {
 	return NewBar2Builder(o)
 }
 
-func (o *Bar2) Content() []Bar2contentElem {
+func (o *Bar2) Content() *immutable.List[Bar2contentElem] {
 	return o.content
 }
 
@@ -218,7 +289,16 @@ func (j *Bar2) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.content = helper.Content
+	plain.content = func() *immutable.List[Bar2contentElem] {
+		if helper.Content == nil {
+			return nil
+		}
+		l := make([]Bar2contentElem, 0, len(helper.Content))
+		for _, v := range helper.Content {
+			l = append(l, (Bar2contentElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = Bar2(plain)
 	return nil
 }
@@ -229,29 +309,55 @@ func (j *Bar2) MarshalJSON() ([]byte, error) {
 		Content []Bar2contentElem `json:"content,omitempty"`
 	}
 	helper := Bar2MarshalHelper{
-		Content: j.content,
+		Content: func() []Bar2contentElem {
+			if j.content == nil {
+				return nil
+			}
+			lst := (*immutable.List[Bar2contentElem])(j.content)
+			l := make([]Bar2contentElem, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Bar2) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Content []Bar2contentElem
+	}
 	type Plain Bar2
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.content = func() *immutable.List[Bar2contentElem] {
+		if rawStruct.Content == nil {
+			return nil
+		}
+		l := make([]Bar2contentElem, 0, len(rawStruct.Content))
+		for _, v := range rawStruct.Content {
+			l = append(l, (Bar2contentElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = Bar2(plain)
 	return nil
 }
 
 type Bar2contentElem struct {
 	// content corresponds to the JSON schema field "content".
-	content []interface{} `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
+	content *immutable.List[interface{}] `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
 type Bar2contentElemBuilder struct {
-	content []interface{}
+	content *immutable.List[interface{}]
 }
 
 func (b *Bar2contentElemBuilder) Build() *Bar2contentElem {
@@ -260,7 +366,7 @@ func (b *Bar2contentElemBuilder) Build() *Bar2contentElem {
 	}
 }
 
-func (b *Bar2contentElemBuilder) WithContent(v []interface{}) *Bar2contentElemBuilder {
+func (b *Bar2contentElemBuilder) WithContent(v *immutable.List[interface{}]) *Bar2contentElemBuilder {
 	b.content = v
 	return b
 }
@@ -269,7 +375,7 @@ func (o *Bar2contentElem) Clone() *Bar2contentElemBuilder {
 	return NewBar2contentElemBuilder(o)
 }
 
-func (o *Bar2contentElem) Content() []interface{} {
+func (o *Bar2contentElem) Content() *immutable.List[interface{}] {
 	return o.content
 }
 
@@ -304,7 +410,16 @@ func (j *Bar2contentElem) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.content = helper.Content
+	plain.content = func() *immutable.List[interface{}] {
+		if helper.Content == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(helper.Content))
+		for _, v := range helper.Content {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = Bar2contentElem(plain)
 	return nil
 }
@@ -315,7 +430,18 @@ func (j *Bar2contentElem) MarshalJSON() ([]byte, error) {
 		Content []interface{} `json:"content,omitempty"`
 	}
 	helper := Bar2contentElemMarshalHelper{
-		Content: j.content,
+		Content: func() []interface{} {
+			if j.content == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(j.content)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -342,22 +468,37 @@ func (j *Bar2contentElem) UnmarshalYAML(value *yaml.Node) error {
 	if len(errs) == 3 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
+	type PlainRaw struct {
+		Content []interface{}
+	}
 	type Plain Bar2contentElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.content = func() *immutable.List[interface{}] {
+		if rawStruct.Content == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(rawStruct.Content))
+		for _, v := range rawStruct.Content {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = Bar2contentElem(plain)
 	return nil
 }
 
 type Baz2 struct {
 	// content corresponds to the JSON schema field "content".
-	content []Baz2contentElem `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
+	content *immutable.List[Baz2contentElem] `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
 type Baz2Builder struct {
-	content []Baz2contentElem
+	content *immutable.List[Baz2contentElem]
 }
 
 func (b *Baz2Builder) Build() *Baz2 {
@@ -366,7 +507,7 @@ func (b *Baz2Builder) Build() *Baz2 {
 	}
 }
 
-func (b *Baz2Builder) WithContent(v []Baz2contentElem) *Baz2Builder {
+func (b *Baz2Builder) WithContent(v *immutable.List[Baz2contentElem]) *Baz2Builder {
 	b.content = v
 	return b
 }
@@ -375,7 +516,7 @@ func (o *Baz2) Clone() *Baz2Builder {
 	return NewBaz2Builder(o)
 }
 
-func (o *Baz2) Content() []Baz2contentElem {
+func (o *Baz2) Content() *immutable.List[Baz2contentElem] {
 	return o.content
 }
 
@@ -390,7 +531,16 @@ func (j *Baz2) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.content = helper.Content
+	plain.content = func() *immutable.List[Baz2contentElem] {
+		if helper.Content == nil {
+			return nil
+		}
+		l := make([]Baz2contentElem, 0, len(helper.Content))
+		for _, v := range helper.Content {
+			l = append(l, (Baz2contentElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = Baz2(plain)
 	return nil
 }
@@ -401,29 +551,55 @@ func (j *Baz2) MarshalJSON() ([]byte, error) {
 		Content []Baz2contentElem `json:"content,omitempty"`
 	}
 	helper := Baz2MarshalHelper{
-		Content: j.content,
+		Content: func() []Baz2contentElem {
+			if j.content == nil {
+				return nil
+			}
+			lst := (*immutable.List[Baz2contentElem])(j.content)
+			l := make([]Baz2contentElem, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Baz2) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Content []Baz2contentElem
+	}
 	type Plain Baz2
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.content = func() *immutable.List[Baz2contentElem] {
+		if rawStruct.Content == nil {
+			return nil
+		}
+		l := make([]Baz2contentElem, 0, len(rawStruct.Content))
+		for _, v := range rawStruct.Content {
+			l = append(l, (Baz2contentElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = Baz2(plain)
 	return nil
 }
 
 type Baz2contentElem struct {
 	// content corresponds to the JSON schema field "content".
-	content []interface{} `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
+	content *immutable.List[interface{}] `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
 type Baz2contentElemBuilder struct {
-	content []interface{}
+	content *immutable.List[interface{}]
 }
 
 func (b *Baz2contentElemBuilder) Build() *Baz2contentElem {
@@ -432,7 +608,7 @@ func (b *Baz2contentElemBuilder) Build() *Baz2contentElem {
 	}
 }
 
-func (b *Baz2contentElemBuilder) WithContent(v []interface{}) *Baz2contentElemBuilder {
+func (b *Baz2contentElemBuilder) WithContent(v *immutable.List[interface{}]) *Baz2contentElemBuilder {
 	b.content = v
 	return b
 }
@@ -441,7 +617,7 @@ func (o *Baz2contentElem) Clone() *Baz2contentElemBuilder {
 	return NewBaz2contentElemBuilder(o)
 }
 
-func (o *Baz2contentElem) Content() []interface{} {
+func (o *Baz2contentElem) Content() *immutable.List[interface{}] {
 	return o.content
 }
 
@@ -476,7 +652,16 @@ func (j *Baz2contentElem) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.content = helper.Content
+	plain.content = func() *immutable.List[interface{}] {
+		if helper.Content == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(helper.Content))
+		for _, v := range helper.Content {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = Baz2contentElem(plain)
 	return nil
 }
@@ -487,7 +672,18 @@ func (j *Baz2contentElem) MarshalJSON() ([]byte, error) {
 		Content []interface{} `json:"content,omitempty"`
 	}
 	helper := Baz2contentElemMarshalHelper{
-		Content: j.content,
+		Content: func() []interface{} {
+			if j.content == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(j.content)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -514,22 +710,37 @@ func (j *Baz2contentElem) UnmarshalYAML(value *yaml.Node) error {
 	if len(errs) == 3 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
+	type PlainRaw struct {
+		Content []interface{}
+	}
 	type Plain Baz2contentElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.content = func() *immutable.List[interface{}] {
+		if rawStruct.Content == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(rawStruct.Content))
+		for _, v := range rawStruct.Content {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = Baz2contentElem(plain)
 	return nil
 }
 
 type Foo2 struct {
 	// content corresponds to the JSON schema field "content".
-	content []Foo2contentElem `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
+	content *immutable.List[Foo2contentElem] `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
 type Foo2Builder struct {
-	content []Foo2contentElem
+	content *immutable.List[Foo2contentElem]
 }
 
 func (b *Foo2Builder) Build() *Foo2 {
@@ -538,7 +749,7 @@ func (b *Foo2Builder) Build() *Foo2 {
 	}
 }
 
-func (b *Foo2Builder) WithContent(v []Foo2contentElem) *Foo2Builder {
+func (b *Foo2Builder) WithContent(v *immutable.List[Foo2contentElem]) *Foo2Builder {
 	b.content = v
 	return b
 }
@@ -547,17 +758,32 @@ func (o *Foo2) Clone() *Foo2Builder {
 	return NewFoo2Builder(o)
 }
 
-func (o *Foo2) Content() []Foo2contentElem {
+func (o *Foo2) Content() *immutable.List[Foo2contentElem] {
 	return o.content
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Foo2) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Content []Foo2contentElem
+	}
 	type Plain Foo2
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.content = func() *immutable.List[Foo2contentElem] {
+		if rawStruct.Content == nil {
+			return nil
+		}
+		l := make([]Foo2contentElem, 0, len(rawStruct.Content))
+		for _, v := range rawStruct.Content {
+			l = append(l, (Foo2contentElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = Foo2(plain)
 	return nil
 }
@@ -573,7 +799,16 @@ func (j *Foo2) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.content = helper.Content
+	plain.content = func() *immutable.List[Foo2contentElem] {
+		if helper.Content == nil {
+			return nil
+		}
+		l := make([]Foo2contentElem, 0, len(helper.Content))
+		for _, v := range helper.Content {
+			l = append(l, (Foo2contentElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = Foo2(plain)
 	return nil
 }
@@ -584,18 +819,29 @@ func (j *Foo2) MarshalJSON() ([]byte, error) {
 		Content []Foo2contentElem `json:"content,omitempty"`
 	}
 	helper := Foo2MarshalHelper{
-		Content: j.content,
+		Content: func() []Foo2contentElem {
+			if j.content == nil {
+				return nil
+			}
+			lst := (*immutable.List[Foo2contentElem])(j.content)
+			l := make([]Foo2contentElem, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 type Foo2contentElem struct {
 	// content corresponds to the JSON schema field "content".
-	content []interface{} `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
+	content *immutable.List[interface{}] `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
 type Foo2contentElemBuilder struct {
-	content []interface{}
+	content *immutable.List[interface{}]
 }
 
 func (b *Foo2contentElemBuilder) Build() *Foo2contentElem {
@@ -604,7 +850,7 @@ func (b *Foo2contentElemBuilder) Build() *Foo2contentElem {
 	}
 }
 
-func (b *Foo2contentElemBuilder) WithContent(v []interface{}) *Foo2contentElemBuilder {
+func (b *Foo2contentElemBuilder) WithContent(v *immutable.List[interface{}]) *Foo2contentElemBuilder {
 	b.content = v
 	return b
 }
@@ -646,7 +892,16 @@ func (j *Foo2contentElem) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.content = helper.Content
+	plain.content = func() *immutable.List[interface{}] {
+		if helper.Content == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(helper.Content))
+		for _, v := range helper.Content {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = Foo2contentElem(plain)
 	return nil
 }
@@ -657,7 +912,18 @@ func (j *Foo2contentElem) MarshalJSON() ([]byte, error) {
 		Content []interface{} `json:"content,omitempty"`
 	}
 	helper := Foo2contentElemMarshalHelper{
-		Content: j.content,
+		Content: func() []interface{} {
+			if j.content == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(j.content)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -735,16 +1001,31 @@ func (j *Foo2contentElem) UnmarshalYAML(value *yaml.Node) error {
 	if len(errs) == 3 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
+	type PlainRaw struct {
+		Content []interface{}
+	}
 	type Plain Foo2contentElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.content = func() *immutable.List[interface{}] {
+		if rawStruct.Content == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(rawStruct.Content))
+		for _, v := range rawStruct.Content {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = Foo2contentElem(plain)
 	return nil
 }
 
-func (o *Foo2contentElem) Content() []interface{} {
+func (o *Foo2contentElem) Content() *immutable.List[interface{}] {
 	return o.content
 }
 

@@ -3,6 +3,7 @@
 package test
 
 import "encoding/json"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 func NewTypedDefaultBuilder(o *TypedDefault) *TypedDefaultBuilder {
@@ -16,11 +17,11 @@ func NewTypedDefaultBuilder(o *TypedDefault) *TypedDefaultBuilder {
 
 type TypedDefault struct {
 	// topleveldomains corresponds to the JSON schema field "topLevelDomains".
-	topleveldomains []string `json:"topLevelDomains,omitempty,omitzero" yaml:"topLevelDomains,omitempty" mapstructure:"topLevelDomains,omitempty"`
+	topleveldomains *immutable.List[string] `json:"topLevelDomains,omitempty,omitzero" yaml:"topLevelDomains,omitempty" mapstructure:"topLevelDomains,omitempty"`
 }
 
 type TypedDefaultBuilder struct {
-	topleveldomains []string
+	topleveldomains *immutable.List[string]
 }
 
 func (b *TypedDefaultBuilder) Build() *TypedDefault {
@@ -29,7 +30,7 @@ func (b *TypedDefaultBuilder) Build() *TypedDefault {
 	}
 }
 
-func (b *TypedDefaultBuilder) WithTopLevelDomains(v []string) *TypedDefaultBuilder {
+func (b *TypedDefaultBuilder) WithTopLevelDomains(v *immutable.List[string]) *TypedDefaultBuilder {
 	b.topleveldomains = v
 	return b
 }
@@ -38,7 +39,7 @@ func (o *TypedDefault) Clone() *TypedDefaultBuilder {
 	return NewTypedDefaultBuilder(o)
 }
 
-func (o *TypedDefault) TopLevelDomains() []string {
+func (o *TypedDefault) TopLevelDomains() *immutable.List[string] {
 	return o.topleveldomains
 }
 
@@ -57,14 +58,18 @@ func (j *TypedDefault) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.topleveldomains = helper.Topleveldomains
-	if v, ok := raw["topLevelDomains"]; !ok || v == nil {
-		plain.topleveldomains = []string{
-			".com",
-			".org",
-			".info",
-			".gov",
+	plain.topleveldomains = func() *immutable.List[string] {
+		if helper.Topleveldomains == nil {
+			return nil
 		}
+		l := make([]string, 0, len(helper.Topleveldomains))
+		for _, v := range helper.Topleveldomains {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	if v, ok := raw["topLevelDomains"]; !ok || v == nil {
+		plain.topleveldomains = immutable.NewList[string](".com", ".org", ".info", ".gov")
 	}
 	*j = TypedDefault(plain)
 	return nil
@@ -76,7 +81,18 @@ func (j *TypedDefault) MarshalJSON() ([]byte, error) {
 		Topleveldomains []string `json:"topLevelDomains,omitempty"`
 	}
 	helper := TypedDefaultMarshalHelper{
-		Topleveldomains: j.topleveldomains,
+		Topleveldomains: func() []string {
+			if j.topleveldomains == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.topleveldomains)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -87,18 +103,28 @@ func (j *TypedDefault) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
+	type PlainRaw struct {
+		Topleveldomains []string
+	}
 	type Plain TypedDefault
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
-	if v, ok := raw["topLevelDomains"]; !ok || v == nil {
-		plain.topleveldomains = []string{
-			".com",
-			".org",
-			".info",
-			".gov",
+	var plain Plain
+	plain.topleveldomains = func() *immutable.List[string] {
+		if rawStruct.Topleveldomains == nil {
+			return nil
 		}
+		l := make([]string, 0, len(rawStruct.Topleveldomains))
+		for _, v := range rawStruct.Topleveldomains {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
+	if v, ok := raw["topLevelDomains"]; !ok || v == nil {
+		plain.topleveldomains = immutable.NewList[string](".com", ".org", ".info", ".gov")
 	}
 	*j = TypedDefault(plain)
 	return nil

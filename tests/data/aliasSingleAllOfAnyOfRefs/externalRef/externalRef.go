@@ -3,6 +3,7 @@
 package test
 
 import "encoding/json"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 func NewThingBuilder(o *Thing) *ThingBuilder {
@@ -16,11 +17,11 @@ func NewThingBuilder(o *Thing) *ThingBuilder {
 
 type Thing struct {
 	// values corresponds to the JSON schema field "values".
-	values []Value `json:"values,omitempty,omitzero" yaml:"values,omitempty" mapstructure:"values,omitempty"`
+	values *immutable.List[Value] `json:"values,omitempty,omitzero" yaml:"values,omitempty" mapstructure:"values,omitempty"`
 }
 
 type ThingBuilder struct {
-	values []Value
+	values *immutable.List[Value]
 }
 
 func (b *ThingBuilder) Build() *Thing {
@@ -29,7 +30,7 @@ func (b *ThingBuilder) Build() *Thing {
 	}
 }
 
-func (b *ThingBuilder) WithValues(v []Value) *ThingBuilder {
+func (b *ThingBuilder) WithValues(v *immutable.List[Value]) *ThingBuilder {
 	b.values = v
 	return b
 }
@@ -38,7 +39,7 @@ func (o *Thing) Clone() *ThingBuilder {
 	return NewThingBuilder(o)
 }
 
-func (o *Thing) Values() []Value {
+func (o *Thing) Values() *immutable.List[Value] {
 	return o.values
 }
 
@@ -53,7 +54,16 @@ func (j *Thing) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.values = helper.Values
+	plain.values = func() *immutable.List[Value] {
+		if helper.Values == nil {
+			return nil
+		}
+		l := make([]Value, 0, len(helper.Values))
+		for _, v := range helper.Values {
+			l = append(l, (Value)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = Thing(plain)
 	return nil
 }
@@ -64,18 +74,44 @@ func (j *Thing) MarshalJSON() ([]byte, error) {
 		Values []Value `json:"values,omitempty"`
 	}
 	helper := ThingMarshalHelper{
-		Values: j.values,
+		Values: func() []Value {
+			if j.values == nil {
+				return nil
+			}
+			lst := (*immutable.List[Value])(j.values)
+			l := make([]Value, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Values []Value
+	}
 	type Plain Thing
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.values = func() *immutable.List[Value] {
+		if rawStruct.Values == nil {
+			return nil
+		}
+		l := make([]Value, 0, len(rawStruct.Values))
+		for _, v := range rawStruct.Values {
+			l = append(l, (Value)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = Thing(plain)
 	return nil
 }

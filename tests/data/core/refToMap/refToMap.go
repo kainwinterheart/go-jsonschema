@@ -3,6 +3,7 @@
 package test
 
 import "encoding/json"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 func NewRefToMapBuilder(o *RefToMap) *RefToMapBuilder {
@@ -45,7 +46,7 @@ func (o *RefToMap) MyThing() Thing {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *RefToMap) UnmarshalJSON(value []byte) error {
 	type RefToMapHelper struct {
-		Mything Thing `json:"myThing,omitempty"`
+		Mything map[string]float64 `json:"myThing,omitempty"`
 	}
 	type Plain RefToMap
 	var helper RefToMapHelper
@@ -53,7 +54,7 @@ func (j *RefToMap) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.mything = helper.Mything
+	plain.mything = (Thing)(*immutable.NewMapOf[string](nil, helper.Mything))
 	*j = RefToMap(plain)
 	return nil
 }
@@ -61,23 +62,66 @@ func (j *RefToMap) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *RefToMap) MarshalJSON() ([]byte, error) {
 	type RefToMapMarshalHelper struct {
-		Mything Thing `json:"myThing,omitempty"`
+		Mything map[string]float64 `json:"myThing,omitempty"`
 	}
 	helper := RefToMapMarshalHelper{
-		Mything: j.mything,
+		Mything: func() map[string]float64 {
+			m := make(map[string]float64)
+			iter := (*immutable.Map[string, float64])(&j.mything).Iterator()
+			for iter.First(); !iter.Done(); {
+				k, v, ok := iter.Next()
+				if !ok {
+					break
+				}
+				m[k] = v
+			}
+			return m
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *RefToMap) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Mything map[string]float64
+	}
 	type Plain RefToMap
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mything = (Thing)(*immutable.NewMapOf[string](nil, rawStruct.Mything))
+	plain = plain
 	*j = RefToMap(plain)
 	return nil
 }
 
-type Thing map[string]float64
+type Thing immutable.Map[string, float64]
+
+func (m Thing) Items() []struct {
+	Key   string
+	Value float64
+} {
+	var items []struct {
+		Key   string
+		Value float64
+	}
+	iter := (&m).Iterator()
+	for iter.First(); !iter.Done(); {
+		k, v, ok := iter.Next()
+		if !ok {
+			break
+		}
+		items = append(items, struct {
+			Key   string
+			Value float64
+		}{k, v})
+	}
+	return items
+}
+
+func (m Thing) Iterator() *immutable.MapIterator[string, float64] {
+	return (*immutable.Map[string, float64])(&m).Iterator()
+}

@@ -5,19 +5,20 @@ package test
 import "encoding/json"
 import "errors"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 // object with anyOf properties
 type AnyOf1 struct {
 	// configurations corresponds to the JSON schema field "configurations".
-	configurations []AnyOf1configurationsElem `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
+	configurations *immutable.List[AnyOf1configurationsElem] `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
 
 	// flags corresponds to the JSON schema field "flags".
 	flags interface{} `json:"flags,omitempty,omitzero" yaml:"flags,omitempty" mapstructure:"flags,omitempty"`
 }
 
 type AnyOf1Builder struct {
-	configurations []AnyOf1configurationsElem
+	configurations *immutable.List[AnyOf1configurationsElem]
 
 	flags interface{}
 }
@@ -29,7 +30,7 @@ func (b *AnyOf1Builder) Build() *AnyOf1 {
 	}
 }
 
-func (b *AnyOf1Builder) WithConfigurations(v []AnyOf1configurationsElem) *AnyOf1Builder {
+func (b *AnyOf1Builder) WithConfigurations(v *immutable.List[AnyOf1configurationsElem]) *AnyOf1Builder {
 	b.configurations = v
 	return b
 }
@@ -43,7 +44,7 @@ func (o *AnyOf1) Clone() *AnyOf1Builder {
 	return NewAnyOf1Builder(o)
 }
 
-func (o *AnyOf1) Configurations() []AnyOf1configurationsElem {
+func (o *AnyOf1) Configurations() *immutable.List[AnyOf1configurationsElem] {
 	return o.configurations
 }
 
@@ -53,11 +54,28 @@ func (o *AnyOf1) Flags() interface{} {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *AnyOf1) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Configurations []AnyOf1configurationsElem
+		Flags          interface{}
+	}
 	type Plain AnyOf1
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.configurations = func() *immutable.List[AnyOf1configurationsElem] {
+		if rawStruct.Configurations == nil {
+			return nil
+		}
+		l := make([]AnyOf1configurationsElem, 0, len(rawStruct.Configurations))
+		for _, v := range rawStruct.Configurations {
+			l = append(l, (AnyOf1configurationsElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.flags = rawStruct.Flags
+	plain = plain
 	*j = AnyOf1(plain)
 	return nil
 }
@@ -74,7 +92,16 @@ func (j *AnyOf1) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.configurations = helper.Configurations
+	plain.configurations = func() *immutable.List[AnyOf1configurationsElem] {
+		if helper.Configurations == nil {
+			return nil
+		}
+		l := make([]AnyOf1configurationsElem, 0, len(helper.Configurations))
+		for _, v := range helper.Configurations {
+			l = append(l, (AnyOf1configurationsElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.flags = helper.Flags
 	*j = AnyOf1(plain)
 	return nil
@@ -87,8 +114,19 @@ func (j *AnyOf1) MarshalJSON() ([]byte, error) {
 		Flags          interface{}                `json:"flags,omitempty"`
 	}
 	helper := AnyOf1MarshalHelper{
-		Configurations: j.configurations,
-		Flags:          j.flags,
+		Configurations: func() []AnyOf1configurationsElem {
+			if j.configurations == nil {
+				return nil
+			}
+			lst := (*immutable.List[AnyOf1configurationsElem])(j.configurations)
+			l := make([]AnyOf1configurationsElem, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Flags: j.flags,
 	}
 	return json.Marshal(helper)
 }
@@ -206,11 +244,17 @@ func (j *AnyOf1configurationsElem_0) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["foo"]; raw != nil && !ok {
 		return fmt.Errorf("field foo in AnyOf1configurationsElem_0: required")
 	}
+	type PlainRaw struct {
+		Foo string
+	}
 	type Plain AnyOf1configurationsElem_0
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.foo = rawStruct.Foo
+	plain = plain
 	*j = AnyOf1configurationsElem_0(plain)
 	return nil
 }
@@ -286,11 +330,17 @@ func (j *AnyOf1configurationsElem_1) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["bar"]; raw != nil && !ok {
 		return fmt.Errorf("field bar in AnyOf1configurationsElem_1: required")
 	}
+	type PlainRaw struct {
+		Bar float64
+	}
 	type Plain AnyOf1configurationsElem_1
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.bar = rawStruct.Bar
+	plain = plain
 	*j = AnyOf1configurationsElem_1(plain)
 	return nil
 }
@@ -325,11 +375,17 @@ func (o *AnyOf1configurationsElem_2) Clone() *AnyOf1configurationsElem_2Builder 
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *AnyOf1configurationsElem_2) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Baz *bool
+	}
 	type Plain AnyOf1configurationsElem_2
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.baz = rawStruct.Baz
+	plain = plain
 	*j = AnyOf1configurationsElem_2(plain)
 	return nil
 }
@@ -399,11 +455,21 @@ func (j *AnyOf1configurationsElem) UnmarshalYAML(value *yaml.Node) error {
 	if len(errs) == 3 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
+	type PlainRaw struct {
+		Bar *float64
+		Baz *bool
+		Foo *string
+	}
 	type Plain AnyOf1configurationsElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.bar = rawStruct.Bar
+	plain.baz = rawStruct.Baz
+	plain.foo = rawStruct.Foo
+	plain = plain
 	*j = AnyOf1configurationsElem(plain)
 	return nil
 }

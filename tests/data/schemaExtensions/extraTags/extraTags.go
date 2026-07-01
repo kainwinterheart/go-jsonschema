@@ -62,11 +62,17 @@ func (j *ExtraTags) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *ExtraTags) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Name *string
+	}
 	type Plain ExtraTags
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.name = rawStruct.Name
+	plain = plain
 	*j = ExtraTags(plain)
 	return nil
 }

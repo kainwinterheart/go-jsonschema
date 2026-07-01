@@ -2,9 +2,11 @@
 
 package test
 
+import "github.com/benbjohnson/immutable"
+
 type Schema struct {
 	// prop corresponds to the JSON schema field "prop".
 	prop SchemaBase `json:"prop,omitempty,omitzero" yaml:"prop,omitempty" mapstructure:"prop,omitempty"`
 }
 
-type SchemaBase []int
+type SchemaBase *immutable.List[int]

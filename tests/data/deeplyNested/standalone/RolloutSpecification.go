@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 import "regexp"
 import "unicode/utf8"
@@ -187,7 +188,7 @@ type RolloutSpecification struct {
 	contentversion string `json:"contentVersion" yaml:"contentVersion" mapstructure:"contentVersion"`
 
 	// The exact sequence of steps that must be executed as part of this rollout.
-	orchestratedsteps []orchestratedstep `json:"orchestratedSteps" yaml:"orchestratedSteps" mapstructure:"orchestratedSteps"`
+	orchestratedsteps *immutable.List[orchestratedstep] `json:"orchestratedSteps" yaml:"orchestratedSteps" mapstructure:"orchestratedSteps"`
 
 	// The metadata associated with this particular rollout.
 	rolloutmetadata rolloutmetadata `json:"rolloutMetadata" yaml:"rolloutMetadata" mapstructure:"rolloutMetadata"`
@@ -196,7 +197,7 @@ type RolloutSpecification struct {
 type RolloutSpecificationBuilder struct {
 	contentversion string
 
-	orchestratedsteps []orchestratedstep
+	orchestratedsteps *immutable.List[orchestratedstep]
 
 	rolloutmetadata rolloutmetadata
 }
@@ -214,7 +215,7 @@ func (b *RolloutSpecificationBuilder) WithContentVersion(v string) *RolloutSpeci
 	return b
 }
 
-func (b *RolloutSpecificationBuilder) WithOrchestratedSteps(v []orchestratedstep) *RolloutSpecificationBuilder {
+func (b *RolloutSpecificationBuilder) WithOrchestratedSteps(v *immutable.List[orchestratedstep]) *RolloutSpecificationBuilder {
 	b.orchestratedsteps = v
 	return b
 }
@@ -232,7 +233,7 @@ func (o *RolloutSpecification) ContentVersion() string {
 	return o.contentversion
 }
 
-func (o *RolloutSpecification) OrchestratedSteps() []orchestratedstep {
+func (o *RolloutSpecification) OrchestratedSteps() *immutable.List[orchestratedstep] {
 	return o.orchestratedsteps
 }
 
@@ -255,11 +256,30 @@ func (j *RolloutSpecification) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["rolloutMetadata"]; raw != nil && !ok {
 		return fmt.Errorf("field rolloutMetadata in RolloutSpecification: required")
 	}
+	type PlainRaw struct {
+		Contentversion    string
+		Orchestratedsteps []orchestratedstep
+		Rolloutmetadata   rolloutmetadata
+	}
 	type Plain RolloutSpecification
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.contentversion = rawStruct.Contentversion
+	plain.orchestratedsteps = func() *immutable.List[orchestratedstep] {
+		if rawStruct.Orchestratedsteps == nil {
+			return nil
+		}
+		l := make([]orchestratedstep, 0, len(rawStruct.Orchestratedsteps))
+		for _, v := range rawStruct.Orchestratedsteps {
+			l = append(l, (orchestratedstep)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.rolloutmetadata = rawStruct.Rolloutmetadata
+	plain = plain
 	if matched, _ := regexp.MatchString(`^([0-9]+\.)?([0-9]+\.)?([0-9]+\.)?([0-9]+){1}$`, string(plain.contentversion)); !matched {
 		return fmt.Errorf("field %s pattern match: must match %s", "contentversion", `^([0-9]+\.)?([0-9]+\.)?([0-9]+\.)?([0-9]+){1}$`)
 	}
@@ -294,7 +314,16 @@ func (j *RolloutSpecification) UnmarshalJSON(value []byte) error {
 	}
 	var plain Plain
 	plain.contentversion = helper.Contentversion
-	plain.orchestratedsteps = helper.Orchestratedsteps
+	plain.orchestratedsteps = func() *immutable.List[orchestratedstep] {
+		if helper.Orchestratedsteps == nil {
+			return nil
+		}
+		l := make([]orchestratedstep, 0, len(helper.Orchestratedsteps))
+		for _, v := range helper.Orchestratedsteps {
+			l = append(l, (orchestratedstep)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.rolloutmetadata = helper.Rolloutmetadata
 	if matched, _ := regexp.MatchString(`^([0-9]+\.)?([0-9]+\.)?([0-9]+\.)?([0-9]+){1}$`, string(plain.contentversion)); !matched {
 		return fmt.Errorf("field %s pattern match: must match %s", "contentversion", `^([0-9]+\.)?([0-9]+\.)?([0-9]+\.)?([0-9]+){1}$`)
@@ -311,9 +340,20 @@ func (j *RolloutSpecification) MarshalJSON() ([]byte, error) {
 		Rolloutmetadata   rolloutmetadata    `json:"rolloutMetadata"`
 	}
 	helper := RolloutSpecificationMarshalHelper{
-		Contentversion:    j.contentversion,
-		Orchestratedsteps: j.orchestratedsteps,
-		Rolloutmetadata:   j.rolloutmetadata,
+		Contentversion: j.contentversion,
+		Orchestratedsteps: func() []orchestratedstep {
+			if j.orchestratedsteps == nil {
+				return nil
+			}
+			lst := (*immutable.List[orchestratedstep])(j.orchestratedsteps)
+			l := make([]orchestratedstep, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Rolloutmetadata: j.rolloutmetadata,
 	}
 	return json.Marshal(helper)
 }
@@ -321,22 +361,22 @@ func (j *RolloutSpecification) MarshalJSON() ([]byte, error) {
 // The details of applications to be deployed.
 type applications struct {
 	// The list of actions to be performed.
-	actions []string `json:"actions" yaml:"actions" mapstructure:"actions"`
+	actions *immutable.List[string] `json:"actions" yaml:"actions" mapstructure:"actions"`
 
 	// The details of the service resources across which the application has to be
 	// deployed.
 	applyacrossserviceresources applyacrossserviceresources `json:"applyAcrossServiceResources" yaml:"applyAcrossServiceResources" mapstructure:"applyAcrossServiceResources"`
 
 	// The list of the application instance names..
-	names []string `json:"names" yaml:"names" mapstructure:"names"`
+	names *immutable.List[string] `json:"names" yaml:"names" mapstructure:"names"`
 }
 
 type applicationsBuilder struct {
-	actions []string
+	actions *immutable.List[string]
 
 	applyacrossserviceresources applyacrossserviceresources
 
-	names []string
+	names *immutable.List[string]
 }
 
 func (b *applicationsBuilder) Build() *applications {
@@ -347,7 +387,7 @@ func (b *applicationsBuilder) Build() *applications {
 	}
 }
 
-func (b *applicationsBuilder) WithActions(v []string) *applicationsBuilder {
+func (b *applicationsBuilder) WithActions(v *immutable.List[string]) *applicationsBuilder {
 	b.actions = v
 	return b
 }
@@ -357,12 +397,12 @@ func (b *applicationsBuilder) WithApplyAcrossServiceResources(v applyacrossservi
 	return b
 }
 
-func (b *applicationsBuilder) WithNames(v []string) *applicationsBuilder {
+func (b *applicationsBuilder) WithNames(v *immutable.List[string]) *applicationsBuilder {
 	b.names = v
 	return b
 }
 
-func (o *applications) Actions() []string {
+func (o *applications) Actions() *immutable.List[string] {
 	return o.actions
 }
 
@@ -374,7 +414,7 @@ func (o *applications) Clone() *applicationsBuilder {
 	return NewapplicationsBuilder(o)
 }
 
-func (o *applications) Names() []string {
+func (o *applications) Names() *immutable.List[string] {
 	return o.names
 }
 
@@ -393,11 +433,39 @@ func (j *applications) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["names"]; raw != nil && !ok {
 		return fmt.Errorf("field names in applications: required")
 	}
+	type PlainRaw struct {
+		Actions                     []string
+		Applyacrossserviceresources applyacrossserviceresources
+		Names                       []string
+	}
 	type Plain applications
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.actions = func() *immutable.List[string] {
+		if rawStruct.Actions == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Actions))
+		for _, v := range rawStruct.Actions {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.applyacrossserviceresources = rawStruct.Applyacrossserviceresources
+	plain.names = func() *immutable.List[string] {
+		if rawStruct.Names == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Names))
+		for _, v := range rawStruct.Names {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = applications(plain)
 	return nil
 }
@@ -428,9 +496,27 @@ func (j *applications) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.actions = helper.Actions
+	plain.actions = func() *immutable.List[string] {
+		if helper.Actions == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Actions))
+		for _, v := range helper.Actions {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.applyacrossserviceresources = helper.Applyacrossserviceresources
-	plain.names = helper.Names
+	plain.names = func() *immutable.List[string] {
+		if helper.Names == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Names))
+		for _, v := range helper.Names {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = applications(plain)
 	return nil
 }
@@ -443,9 +529,31 @@ func (j *applications) MarshalJSON() ([]byte, error) {
 		Names                       []string                    `json:"names"`
 	}
 	helper := applicationsMarshalHelper{
-		Actions:                     j.actions,
+		Actions: func() []string {
+			if j.actions == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.actions)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 		Applyacrossserviceresources: j.applyacrossserviceresources,
-		Names:                       j.names,
+		Names: func() []string {
+			if j.names == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.names)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -460,7 +568,7 @@ type applyacrossserviceresources struct {
 	deployarmresources *bool `json:"deployArmResources,omitempty,omitzero" yaml:"deployArmResources,omitempty" mapstructure:"deployArmResources,omitempty"`
 
 	// The list of service resource instance names.
-	names []string `json:"names" yaml:"names" mapstructure:"names"`
+	names *immutable.List[string] `json:"names" yaml:"names" mapstructure:"names"`
 }
 
 type applyacrossserviceresourcesBuilder struct {
@@ -468,7 +576,7 @@ type applyacrossserviceresourcesBuilder struct {
 
 	deployarmresources *bool
 
-	names []string
+	names *immutable.List[string]
 }
 
 func (b *applyacrossserviceresourcesBuilder) Build() *applyacrossserviceresources {
@@ -489,7 +597,7 @@ func (b *applyacrossserviceresourcesBuilder) WithDeployArmResources(v *bool) *ap
 	return b
 }
 
-func (b *applyacrossserviceresourcesBuilder) WithNames(v []string) *applyacrossserviceresourcesBuilder {
+func (b *applyacrossserviceresourcesBuilder) WithNames(v *immutable.List[string]) *applyacrossserviceresourcesBuilder {
 	b.names = v
 	return b
 }
@@ -506,7 +614,7 @@ func (o *applyacrossserviceresources) DeployArmResources() *bool {
 	return o.deployarmresources
 }
 
-func (o *applyacrossserviceresources) Names() []string {
+func (o *applyacrossserviceresources) Names() *immutable.List[string] {
 	return o.names
 }
 
@@ -535,7 +643,16 @@ func (j *applyacrossserviceresources) UnmarshalJSON(value []byte) error {
 	var plain Plain
 	plain.definitionname = helper.Definitionname
 	plain.deployarmresources = helper.Deployarmresources
-	plain.names = helper.Names
+	plain.names = func() *immutable.List[string] {
+		if helper.Names == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Names))
+		for _, v := range helper.Names {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = applyacrossserviceresources(plain)
 	return nil
 }
@@ -550,7 +667,18 @@ func (j *applyacrossserviceresources) MarshalJSON() ([]byte, error) {
 	helper := applyacrossserviceresourcesMarshalHelper{
 		Definitionname:     j.definitionname,
 		Deployarmresources: j.deployarmresources,
-		Names:              j.names,
+		Names: func() []string {
+			if j.names == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.names)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -567,11 +695,30 @@ func (j *applyacrossserviceresources) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["names"]; raw != nil && !ok {
 		return fmt.Errorf("field names in applyacrossserviceresources: required")
 	}
+	type PlainRaw struct {
+		Definitionname     string
+		Deployarmresources *bool
+		Names              []string
+	}
 	type Plain applyacrossserviceresources
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.definitionname = rawStruct.Definitionname
+	plain.deployarmresources = rawStruct.Deployarmresources
+	plain.names = func() *immutable.List[string] {
+		if rawStruct.Names == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Names))
+		for _, v := range rawStruct.Names {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = applyacrossserviceresources(plain)
 	return nil
 }
@@ -649,11 +796,17 @@ func (j *buildsource) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["parameters"]; raw != nil && !ok {
 		return fmt.Errorf("field parameters in buildsource: required")
 	}
+	type PlainRaw struct {
+		Parameters parameters
+	}
 	type Plain buildsource
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.parameters = rawStruct.Parameters
+	plain = plain
 	*j = buildsource(plain)
 	return nil
 }
@@ -689,11 +842,17 @@ func (o *configuration) ServiceScope() *servicescope {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *configuration) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Servicescope *servicescope
+	}
 	type Plain configuration
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.servicescope = rawStruct.Servicescope
+	plain = plain
 	*j = configuration(plain)
 	return nil
 }
@@ -794,11 +953,21 @@ func (j *email) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["to"]; raw != nil && !ok {
 		return fmt.Errorf("field to in email: required")
 	}
+	type PlainRaw struct {
+		Cc      *string
+		Options *options
+		To      string
+	}
 	type Plain email
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.cc = rawStruct.Cc
+	plain.options = rawStruct.Options
+	plain.to = rawStruct.To
+	plain = plain
 	*j = email(plain)
 	return nil
 }
@@ -916,11 +1085,21 @@ func (j *incident) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["providerType"]; raw != nil && !ok {
 		return fmt.Errorf("field providerType in incident: required")
 	}
+	type PlainRaw struct {
+		Options      *incidentoptions
+		Properties   properties
+		Providertype string
+	}
 	type Plain incident
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.options = rawStruct.Options
+	plain.properties = rawStruct.Properties
+	plain.providertype = rawStruct.Providertype
+	plain = plain
 	*j = incident(plain)
 	return nil
 }
@@ -973,11 +1152,11 @@ func (j *incident) MarshalJSON() ([]byte, error) {
 // Conditions of when to create incidents, default will send on every error
 type incidentoptions struct {
 	// when corresponds to the JSON schema field "when".
-	when []string `json:"when,omitempty,omitzero" yaml:"when,omitempty" mapstructure:"when,omitempty"`
+	when *immutable.List[string] `json:"when,omitempty,omitzero" yaml:"when,omitempty" mapstructure:"when,omitempty"`
 }
 
 type incidentoptionsBuilder struct {
-	when []string
+	when *immutable.List[string]
 }
 
 func (b *incidentoptionsBuilder) Build() *incidentoptions {
@@ -986,7 +1165,7 @@ func (b *incidentoptionsBuilder) Build() *incidentoptions {
 	}
 }
 
-func (b *incidentoptionsBuilder) WithWhen(v []string) *incidentoptionsBuilder {
+func (b *incidentoptionsBuilder) WithWhen(v *immutable.List[string]) *incidentoptionsBuilder {
 	b.when = v
 	return b
 }
@@ -995,17 +1174,32 @@ func (o *incidentoptions) Clone() *incidentoptionsBuilder {
 	return NewincidentoptionsBuilder(o)
 }
 
-func (o *incidentoptions) When() []string {
+func (o *incidentoptions) When() *immutable.List[string] {
 	return o.when
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *incidentoptions) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		When []string
+	}
 	type Plain incidentoptions
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.when = func() *immutable.List[string] {
+		if rawStruct.When == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.When))
+		for _, v := range rawStruct.When {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = incidentoptions(plain)
 	return nil
 }
@@ -1021,7 +1215,16 @@ func (j *incidentoptions) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.when = helper.When
+	plain.when = func() *immutable.List[string] {
+		if helper.When == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.When))
+		for _, v := range helper.When {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = incidentoptions(plain)
 	return nil
 }
@@ -1032,7 +1235,18 @@ func (j *incidentoptions) MarshalJSON() ([]byte, error) {
 		When []string `json:"when,omitempty"`
 	}
 	helper := incidentoptionsMarshalHelper{
-		When: j.when,
+		When: func() []string {
+			if j.when == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.when)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -1083,11 +1297,19 @@ func (o *notification) Incident() *incident {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *notification) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Email    *email
+		Incident *incident
+	}
 	type Plain notification
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.email = rawStruct.Email
+	plain.incident = rawStruct.Incident
+	plain = plain
 	*j = notification(plain)
 	return nil
 }
@@ -1132,13 +1354,13 @@ type options struct {
 	verbosity *string `json:"verbosity,omitempty,omitzero" yaml:"verbosity,omitempty" mapstructure:"verbosity,omitempty"`
 
 	// when corresponds to the JSON schema field "when".
-	when []string `json:"when,omitempty,omitzero" yaml:"when,omitempty" mapstructure:"when,omitempty"`
+	when *immutable.List[string] `json:"when,omitempty,omitzero" yaml:"when,omitempty" mapstructure:"when,omitempty"`
 }
 
 type optionsBuilder struct {
 	verbosity *string
 
-	when []string
+	when *immutable.List[string]
 }
 
 func (b *optionsBuilder) Build() *options {
@@ -1153,7 +1375,7 @@ func (b *optionsBuilder) WithVerbosity(v *string) *optionsBuilder {
 	return b
 }
 
-func (b *optionsBuilder) WithWhen(v []string) *optionsBuilder {
+func (b *optionsBuilder) WithWhen(v *immutable.List[string]) *optionsBuilder {
 	b.when = v
 	return b
 }
@@ -1166,17 +1388,34 @@ func (o *options) Verbosity() *string {
 	return o.verbosity
 }
 
-func (o *options) When() []string {
+func (o *options) When() *immutable.List[string] {
 	return o.when
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *options) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Verbosity *string
+		When      []string
+	}
 	type Plain options
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.verbosity = rawStruct.Verbosity
+	plain.when = func() *immutable.List[string] {
+		if rawStruct.When == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.When))
+		for _, v := range rawStruct.When {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	if plain.verbosity != nil {
 		if matched, _ := regexp.MatchString(`(?i)(^All$|^SummaryOnly$|^Compact$)`, string(*plain.verbosity)); !matched {
 			return fmt.Errorf("field %s pattern match: must match %s", "verbosity", `(?i)(^All$|^SummaryOnly$|^Compact$)`)
@@ -1199,7 +1438,16 @@ func (j *options) UnmarshalJSON(value []byte) error {
 	}
 	var plain Plain
 	plain.verbosity = helper.Verbosity
-	plain.when = helper.When
+	plain.when = func() *immutable.List[string] {
+		if helper.When == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.When))
+		for _, v := range helper.When {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	if plain.verbosity != nil {
 		if matched, _ := regexp.MatchString(`(?i)(^All$|^SummaryOnly$|^Compact$)`, string(*plain.verbosity)); !matched {
 			return fmt.Errorf("field %s pattern match: must match %s", "verbosity", `(?i)(^All$|^SummaryOnly$|^Compact$)`)
@@ -1217,7 +1465,18 @@ func (j *options) MarshalJSON() ([]byte, error) {
 	}
 	helper := optionsMarshalHelper{
 		Verbosity: j.verbosity,
-		When:      j.when,
+		When: func() []string {
+			if j.when == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.when)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -1228,14 +1487,14 @@ type orchestratedstep struct {
 	// executed in the order that they are declared. The action names must be unique.
 	// If this is an Extension action, the name of the extension must exist in the
 	// 'Extensions' block in  RolloutParameters.
-	actions []string `json:"actions,omitempty,omitzero" yaml:"actions,omitempty" mapstructure:"actions,omitempty"`
+	actions *immutable.List[string] `json:"actions,omitempty,omitzero" yaml:"actions,omitempty" mapstructure:"actions,omitempty"`
 
 	// The details of applications to be deployed.
 	applications *applications `json:"applications,omitempty,omitzero" yaml:"applications,omitempty" mapstructure:"applications,omitempty"`
 
 	// The names of the rollout steps that must be executed prior to the current step
 	// being executed.
-	dependson []string `json:"dependsOn,omitempty,omitzero" yaml:"dependsOn,omitempty" mapstructure:"dependsOn,omitempty"`
+	dependson *immutable.List[string] `json:"dependsOn,omitempty,omitzero" yaml:"dependsOn,omitempty" mapstructure:"dependsOn,omitempty"`
 
 	// The name of the rollout step.
 	name string `json:"name" yaml:"name" mapstructure:"name"`
@@ -1248,11 +1507,11 @@ type orchestratedstep struct {
 }
 
 type orchestratedstepBuilder struct {
-	actions []string
+	actions *immutable.List[string]
 
 	applications *applications
 
-	dependson []string
+	dependson *immutable.List[string]
 
 	name string
 
@@ -1272,7 +1531,7 @@ func (b *orchestratedstepBuilder) Build() *orchestratedstep {
 	}
 }
 
-func (b *orchestratedstepBuilder) WithActions(v []string) *orchestratedstepBuilder {
+func (b *orchestratedstepBuilder) WithActions(v *immutable.List[string]) *orchestratedstepBuilder {
 	b.actions = v
 	return b
 }
@@ -1282,7 +1541,7 @@ func (b *orchestratedstepBuilder) WithApplications(v *applications) *orchestrate
 	return b
 }
 
-func (b *orchestratedstepBuilder) WithDependsOn(v []string) *orchestratedstepBuilder {
+func (b *orchestratedstepBuilder) WithDependsOn(v *immutable.List[string]) *orchestratedstepBuilder {
 	b.dependson = v
 	return b
 }
@@ -1302,7 +1561,7 @@ func (b *orchestratedstepBuilder) WithTargetType(v string) *orchestratedstepBuil
 	return b
 }
 
-func (o *orchestratedstep) Actions() []string {
+func (o *orchestratedstep) Actions() *immutable.List[string] {
 	return o.actions
 }
 
@@ -1314,7 +1573,7 @@ func (o *orchestratedstep) Clone() *orchestratedstepBuilder {
 	return NeworchestratedstepBuilder(o)
 }
 
-func (o *orchestratedstep) DependsOn() []string {
+func (o *orchestratedstep) DependsOn() *immutable.List[string] {
 	return o.dependson
 }
 
@@ -1356,9 +1615,27 @@ func (j *orchestratedstep) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.actions = helper.Actions
+	plain.actions = func() *immutable.List[string] {
+		if helper.Actions == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Actions))
+		for _, v := range helper.Actions {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.applications = helper.Applications
-	plain.dependson = helper.Dependson
+	plain.dependson = func() *immutable.List[string] {
+		if helper.Dependson == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Dependson))
+		for _, v := range helper.Dependson {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.name = helper.Name
 	plain.targetname = helper.Targetname
 	plain.targettype = helper.Targettype
@@ -1386,12 +1663,34 @@ func (j *orchestratedstep) MarshalJSON() ([]byte, error) {
 		Targettype   string        `json:"targetType"`
 	}
 	helper := orchestratedstepMarshalHelper{
-		Actions:      j.actions,
+		Actions: func() []string {
+			if j.actions == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.actions)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 		Applications: j.applications,
-		Dependson:    j.dependson,
-		Name:         j.name,
-		Targetname:   j.targetname,
-		Targettype:   j.targettype,
+		Dependson: func() []string {
+			if j.dependson == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.dependson)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Name:       j.name,
+		Targetname: j.targetname,
+		Targettype: j.targettype,
 	}
 	return json.Marshal(helper)
 }
@@ -1408,11 +1707,45 @@ func (j *orchestratedstep) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["targetType"]; raw != nil && !ok {
 		return fmt.Errorf("field targetType in orchestratedstep: required")
 	}
+	type PlainRaw struct {
+		Actions      []string
+		Applications *applications
+		Dependson    []string
+		Name         string
+		Targetname   *string
+		Targettype   string
+	}
 	type Plain orchestratedstep
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.actions = func() *immutable.List[string] {
+		if rawStruct.Actions == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Actions))
+		for _, v := range rawStruct.Actions {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.applications = rawStruct.Applications
+	plain.dependson = func() *immutable.List[string] {
+		if rawStruct.Dependson == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Dependson))
+		for _, v := range rawStruct.Dependson {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.name = rawStruct.Name
+	plain.targetname = rawStruct.Targetname
+	plain.targettype = rawStruct.Targettype
+	plain = plain
 	if utf8.RuneCountInString(string(plain.name)) < 1 {
 		return fmt.Errorf("field %s length: must be >= %d", "name", 1)
 	}
@@ -1500,11 +1833,17 @@ func (j *parameters) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["versionFile"]; raw != nil && !ok {
 		return fmt.Errorf("field versionFile in parameters: required")
 	}
+	type PlainRaw struct {
+		Versionfile string
+	}
 	type Plain parameters
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.versionfile = rawStruct.Versionfile
+	plain = plain
 	*j = parameters(plain)
 	return nil
 }
@@ -1595,11 +1934,23 @@ func (j *properties) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["routingId"]; raw != nil && !ok {
 		return fmt.Errorf("field routingId in properties: required")
 	}
+	type PlainRaw struct {
+		Connectorid string
+		Correlateby *string
+		Environment *string
+		Routingid   string
+	}
 	type Plain properties
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.connectorid = rawStruct.Connectorid
+	plain.correlateby = rawStruct.Correlateby
+	plain.environment = rawStruct.Environment
+	plain.routingid = rawStruct.Routingid
+	plain = plain
 	if plain.correlateby != nil {
 		if matched, _ := regexp.MatchString(`(?i)(^rollout$)`, string(*plain.correlateby)); !matched {
 			return fmt.Errorf("field %s pattern match: must match %s", "correlateby", `(?i)(^rollout$)`)
@@ -1692,7 +2043,7 @@ type rolloutmetadata struct {
 	parameterreplacementspath *string `json:"parameterReplacementsPath,omitempty,omitzero" yaml:"parameterReplacementsPath,omitempty" mapstructure:"parameterReplacementsPath,omitempty"`
 
 	// List of rollout policy references to use for the rollout.
-	rolloutpolicyreferences []rolloutpolicyreference `json:"rolloutPolicyReferences,omitempty,omitzero" yaml:"rolloutPolicyReferences,omitempty" mapstructure:"rolloutPolicyReferences,omitempty"`
+	rolloutpolicyreferences *immutable.List[rolloutpolicyreference] `json:"rolloutPolicyReferences,omitempty,omitzero" yaml:"rolloutPolicyReferences,omitempty" mapstructure:"rolloutPolicyReferences,omitempty"`
 
 	// The scope of this particular rollout.
 	rollouttype string `json:"rolloutType" yaml:"rolloutType" mapstructure:"rolloutType"`
@@ -1713,7 +2064,7 @@ type rolloutmetadataBuilder struct {
 
 	parameterreplacementspath *string
 
-	rolloutpolicyreferences []rolloutpolicyreference
+	rolloutpolicyreferences *immutable.List[rolloutpolicyreference]
 
 	rollouttype string
 
@@ -1758,7 +2109,7 @@ func (b *rolloutmetadataBuilder) WithParameterReplacementsPath(v *string) *rollo
 	return b
 }
 
-func (b *rolloutmetadataBuilder) WithRolloutPolicyReferences(v []rolloutpolicyreference) *rolloutmetadataBuilder {
+func (b *rolloutmetadataBuilder) WithRolloutPolicyReferences(v *immutable.List[rolloutpolicyreference]) *rolloutmetadataBuilder {
 	b.rolloutpolicyreferences = v
 	return b
 }
@@ -1797,7 +2148,7 @@ func (o *rolloutmetadata) ParameterReplacementsPath() *string {
 	return o.parameterreplacementspath
 }
 
-func (o *rolloutmetadata) RolloutPolicyReferences() []rolloutpolicyreference {
+func (o *rolloutmetadata) RolloutPolicyReferences() *immutable.List[rolloutpolicyreference] {
 	return o.rolloutpolicyreferences
 }
 
@@ -1827,11 +2178,40 @@ func (j *rolloutmetadata) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["serviceModelPath"]; raw != nil && !ok {
 		return fmt.Errorf("field serviceModelPath in rolloutmetadata: required")
 	}
+	type PlainRaw struct {
+		Buildsource               buildsource
+		Configuration             *configuration
+		Name                      string
+		Notification              *notification
+		Parameterreplacementspath *string
+		Rolloutpolicyreferences   []rolloutpolicyreference
+		Rollouttype               string
+		Servicemodelpath          string
+	}
 	type Plain rolloutmetadata
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.buildsource = rawStruct.Buildsource
+	plain.configuration = rawStruct.Configuration
+	plain.name = rawStruct.Name
+	plain.notification = rawStruct.Notification
+	plain.parameterreplacementspath = rawStruct.Parameterreplacementspath
+	plain.rolloutpolicyreferences = func() *immutable.List[rolloutpolicyreference] {
+		if rawStruct.Rolloutpolicyreferences == nil {
+			return nil
+		}
+		l := make([]rolloutpolicyreference, 0, len(rawStruct.Rolloutpolicyreferences))
+		for _, v := range rawStruct.Rolloutpolicyreferences {
+			l = append(l, (rolloutpolicyreference)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.rollouttype = rawStruct.Rollouttype
+	plain.servicemodelpath = rawStruct.Servicemodelpath
+	plain = plain
 	if utf8.RuneCountInString(string(plain.name)) < 1 {
 		return fmt.Errorf("field %s length: must be >= %d", "name", 1)
 	}
@@ -1881,7 +2261,16 @@ func (j *rolloutmetadata) UnmarshalJSON(value []byte) error {
 	plain.name = helper.Name
 	plain.notification = helper.Notification
 	plain.parameterreplacementspath = helper.Parameterreplacementspath
-	plain.rolloutpolicyreferences = helper.Rolloutpolicyreferences
+	plain.rolloutpolicyreferences = func() *immutable.List[rolloutpolicyreference] {
+		if helper.Rolloutpolicyreferences == nil {
+			return nil
+		}
+		l := make([]rolloutpolicyreference, 0, len(helper.Rolloutpolicyreferences))
+		for _, v := range helper.Rolloutpolicyreferences {
+			l = append(l, (rolloutpolicyreference)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.rollouttype = helper.Rollouttype
 	plain.servicemodelpath = helper.Servicemodelpath
 	if utf8.RuneCountInString(string(plain.name)) < 1 {
@@ -1912,9 +2301,20 @@ func (j *rolloutmetadata) MarshalJSON() ([]byte, error) {
 		Name:                      j.name,
 		Notification:              j.notification,
 		Parameterreplacementspath: j.parameterreplacementspath,
-		Rolloutpolicyreferences:   j.rolloutpolicyreferences,
-		Rollouttype:               j.rollouttype,
-		Servicemodelpath:          j.servicemodelpath,
+		Rolloutpolicyreferences: func() []rolloutpolicyreference {
+			if j.rolloutpolicyreferences == nil {
+				return nil
+			}
+			lst := (*immutable.List[rolloutpolicyreference])(j.rolloutpolicyreferences)
+			l := make([]rolloutpolicyreference, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Rollouttype:      j.rollouttype,
+		Servicemodelpath: j.servicemodelpath,
 	}
 	return json.Marshal(helper)
 }
@@ -1976,11 +2376,19 @@ func (j *rolloutpolicyreference) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["version"]; raw != nil && !ok {
 		return fmt.Errorf("field version in rolloutpolicyreference: required")
 	}
+	type PlainRaw struct {
+		Name    string
+		Version string
+	}
 	type Plain rolloutpolicyreference
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.name = rawStruct.Name
+	plain.version = rawStruct.Version
+	plain = plain
 	*j = rolloutpolicyreference(plain)
 	return nil
 }
@@ -2085,11 +2493,17 @@ func (j *servicescope) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *servicescope) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Specpath *string
+	}
 	type Plain servicescope
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.specpath = rawStruct.Specpath
+	plain = plain
 	*j = servicescope(plain)
 	return nil
 }

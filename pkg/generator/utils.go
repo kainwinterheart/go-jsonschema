@@ -51,3 +51,37 @@ func isMapType(t codegen.Type) bool {
 
 	return isMapType
 }
+
+// typeArgName returns the type argument name for use in immutable type generation.
+func typeArgName(t codegen.Type) string {
+	switch x := t.(type) {
+	case codegen.PrimitiveType:
+		return x.Type
+	case codegen.NamedType:
+		if x.Decl == nil {
+			return "interface{}"
+		}
+		return x.Decl.Name
+	case *codegen.PointerType:
+		return "*" + typeArgName(x.Type)
+	case *codegen.NamedType:
+		if x.Decl == nil {
+			return "interface{}"
+		}
+		return x.Decl.Name
+	case *codegen.ArrayType:
+		return "[]" + typeArgName(x.Type)
+	case codegen.MapType:
+		return "map[" + typeArgName(x.KeyType) + "]" + typeArgName(x.ValueType)
+	case *codegen.MapType:
+		return "map[" + typeArgName(x.KeyType) + "]" + typeArgName(x.ValueType)
+	case codegen.NullType, codegen.EmptyInterfaceType:
+		return "interface{}"
+	case codegen.DurationType:
+		return "time.Duration"
+	case codegen.CustomNameType:
+		return x.Type
+	default:
+		return "interface{}"
+	}
+}

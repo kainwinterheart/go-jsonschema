@@ -159,11 +159,23 @@ func (j *MultipleOf) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myNumber"]; raw != nil && !ok {
 		return fmt.Errorf("field myNumber in MultipleOf: required")
 	}
+	type PlainRaw struct {
+		Myinteger         int
+		Mynullableinteger *int
+		Mynullablenumber  *float64
+		Mynumber          float64
+	}
 	type Plain MultipleOf
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myinteger = rawStruct.Myinteger
+	plain.mynullableinteger = rawStruct.Mynullableinteger
+	plain.mynullablenumber = rawStruct.Mynullablenumber
+	plain.mynumber = rawStruct.Mynumber
+	plain = plain
 	if plain.myinteger%2 != 0 {
 		return fmt.Errorf("field %s: must be a multiple of %v", "myInteger", 2.000000)
 	}

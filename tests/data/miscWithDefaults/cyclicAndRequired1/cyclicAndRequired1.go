@@ -36,11 +36,17 @@ func (o *Bar) RefToFoo() *Foo {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Bar) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Reftofoo *Foo
+	}
 	type Plain Bar
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.reftofoo = rawStruct.Reftofoo
+	plain = plain
 	*j = Bar(plain)
 	return nil
 }
@@ -129,11 +135,17 @@ func (j *CyclicAndRequired1) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *CyclicAndRequired1) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		A *Foo
+	}
 	type Plain CyclicAndRequired1
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.a = rawStruct.A
+	plain = plain
 	*j = CyclicAndRequired1(plain)
 	return nil
 }
@@ -175,11 +187,17 @@ func (j *Foo) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["refToBar"]; raw != nil && !ok {
 		return fmt.Errorf("field refToBar in Foo: required")
 	}
+	type PlainRaw struct {
+		Reftobar Bar
+	}
 	type Plain Foo
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.reftobar = rawStruct.Reftobar
+	plain = plain
 	*j = Foo(plain)
 	return nil
 }

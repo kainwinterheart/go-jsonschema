@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 type AllOf3 struct {
@@ -11,7 +12,7 @@ type AllOf3 struct {
 	bar float64 `json:"bar" yaml:"bar" mapstructure:"bar"`
 
 	// configurations corresponds to the JSON schema field "configurations".
-	configurations []interface{} `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
+	configurations *immutable.List[interface{}] `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
 
 	// foo corresponds to the JSON schema field "foo".
 	foo string `json:"foo" yaml:"foo" mapstructure:"foo"`
@@ -20,7 +21,7 @@ type AllOf3 struct {
 type AllOf3Builder struct {
 	bar float64
 
-	configurations []interface{}
+	configurations *immutable.List[interface{}]
 
 	foo string
 }
@@ -38,7 +39,7 @@ func (b *AllOf3Builder) WithBar(v float64) *AllOf3Builder {
 	return b
 }
 
-func (b *AllOf3Builder) WithConfigurations(v []interface{}) *AllOf3Builder {
+func (b *AllOf3Builder) WithConfigurations(v *immutable.List[interface{}]) *AllOf3Builder {
 	b.configurations = v
 	return b
 }
@@ -56,7 +57,7 @@ func (o *AllOf3) Clone() *AllOf3Builder {
 	return NewAllOf3Builder(o)
 }
 
-func (o *AllOf3) Configurations() []interface{} {
+func (o *AllOf3) Configurations() *immutable.List[interface{}] {
 	return o.configurations
 }
 
@@ -88,7 +89,16 @@ func (j *AllOf3) UnmarshalJSON(value []byte) error {
 	}
 	var plain Plain
 	plain.bar = helper.Bar
-	plain.configurations = helper.Configurations
+	plain.configurations = func() *immutable.List[interface{}] {
+		if helper.Configurations == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(helper.Configurations))
+		for _, v := range helper.Configurations {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.foo = helper.Foo
 	*j = AllOf3(plain)
 	return nil
@@ -102,9 +112,20 @@ func (j *AllOf3) MarshalJSON() ([]byte, error) {
 		Foo            string        `json:"foo"`
 	}
 	helper := AllOf3MarshalHelper{
-		Bar:            j.bar,
-		Configurations: j.configurations,
-		Foo:            j.foo,
+		Bar: j.bar,
+		Configurations: func() []interface{} {
+			if j.configurations == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(j.configurations)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Foo: j.foo,
 	}
 	return json.Marshal(helper)
 }
@@ -121,11 +142,30 @@ func (j *AllOf3) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["foo"]; raw != nil && !ok {
 		return fmt.Errorf("field foo in AllOf3: required")
 	}
+	type PlainRaw struct {
+		Bar            float64
+		Configurations []interface{}
+		Foo            string
+	}
 	type Plain AllOf3
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.bar = rawStruct.Bar
+	plain.configurations = func() *immutable.List[interface{}] {
+		if rawStruct.Configurations == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(rawStruct.Configurations))
+		for _, v := range rawStruct.Configurations {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.foo = rawStruct.Foo
+	plain = plain
 	*j = AllOf3(plain)
 	return nil
 }

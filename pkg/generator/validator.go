@@ -117,8 +117,8 @@ func (v *nullTypeValidator) generate(out *codegen.Emitter, format string) error 
 	for i := range v.arrayDepth {
 		index := fmt.Sprintf("i%d", i)
 		indexes[i] = index
-		out.Printlnf(`for %s := range %s {`, index, value)
-		value += fmt.Sprintf("[%s]", index)
+		out.Printlnf(`for %s := 0; %s < %s.Len(); %s++ {`, index, index, value, index)
+		value += fmt.Sprintf(".Get(%s)", index)
 		fieldName += "[%d]"
 
 		out.Indent(1)
@@ -338,6 +338,51 @@ func isPointerToInteger(t codegen.Type) bool {
 func (v *defaultValidator) tryDumpDefaultSlice(maxLineLen int32) (string, error) {
 	tmpEmitter := codegen.NewEmitter(maxLineLen)
 
+	// Check if the type is an array type (which now generates *immutable.List[T])
+	isArrayType := false
+	switch v.defaultValueType.(type) {
+	case codegen.ArrayType, *codegen.ArrayType:
+		isArrayType = true
+	}
+
+	if isArrayType {
+		// Generate immutable.NewList[T](...) instead of {...}
+		kind := reflect.ValueOf(v.defaultValue).Kind()
+
+		if kind == reflect.Slice {
+			df, ok := v.defaultValue.([]any)
+			if !ok {
+				return "", ErrInvalidDefaultValue
+			}
+
+			if len(df) == 0 {
+				// For empty slices, we can't infer the element type, so use nil
+				return "nil", nil
+			}
+
+			// Determine the element type from the defaultValue
+			var elemType string
+			elemType = fmt.Sprintf("%T", df[0])
+			elemType = strings.ReplaceAll(elemType, "string", "string")
+			elemType = strings.ReplaceAll(elemType, "int", "int")
+			elemType = strings.ReplaceAll(elemType, "float64", "float64")
+			elemType = strings.ReplaceAll(elemType, "bool", "bool")
+			elemType = strings.ReplaceAll(elemType, "map[string]interface {}", "map[string]interface{}")
+
+			tmpEmitter.Printf("immutable.NewList[%s](", elemType)
+			for i, value := range df {
+				if i > 0 {
+					tmpEmitter.Printf(", ")
+				}
+				tmpEmitter.Printf("%s", litter.Sdump(value))
+			}
+			tmpEmitter.Printf(")")
+			return tmpEmitter.String(), nil
+		} else {
+			return "", ErrCannotFindSlideToDump
+		}
+	}
+
 	if err := v.defaultValueType.Generate(tmpEmitter); err != nil {
 		return "", fmt.Errorf("%w: %w", ErrCannotDumpDefaultSlice, err)
 	}
@@ -407,8 +452,8 @@ func (v *arrayValidator) generate(out *codegen.Emitter, format string) error {
 	for i := 1; i < v.arrayDepth; i++ {
 		index := fmt.Sprintf("i%d", i)
 		indexes = append(indexes, index)
-		out.Printlnf(`for %s := range %s {`, index, value)
-		value += fmt.Sprintf("[%s]", index)
+		out.Printlnf(`for %s := 0; %s < %s.Len(); %s++ {`, index, index, value, index)
+		value += fmt.Sprintf(".Get(%s)", index)
 		fieldName += "[%d]"
 
 		out.Indent(1)
@@ -420,7 +465,7 @@ func (v *arrayValidator) generate(out *codegen.Emitter, format string) error {
 	}
 
 	if v.minItems != 0 {
-		out.Printlnf(`if %s != nil && len(%s) < %d {`, value, value, v.minItems)
+		out.Printlnf(`if %s != nil && %s.Len() < %d {`, value, value, v.minItems)
 		out.Indent(1)
 		out.Printlnf(`return fmt.Errorf("field %%s length: must be >= %%d", %s, %d)`, fieldName, v.minItems)
 		out.Indent(-1)
@@ -428,7 +473,7 @@ func (v *arrayValidator) generate(out *codegen.Emitter, format string) error {
 	}
 
 	if v.maxItems != 0 {
-		out.Printlnf(`if len(%s) > %d {`, value, v.maxItems)
+		out.Printlnf(`if %s.Len() > %d {`, value, v.maxItems)
 		out.Indent(1)
 		out.Printlnf(`return fmt.Errorf("field %%s length: must be <= %%d", %s, %d)`, fieldName, v.maxItems)
 		out.Indent(-1)
@@ -581,7 +626,8 @@ func (v *numericValidator) generate(out *codegen.Emitter, format string) error {
 			out.Indent(1)
 			out.Printlnf("remainder := math.Mod(%s%s, %v)", pointerPrefix, value, v.valueOf(*v.multipleOf))
 			out.Printlnf(
-				`if !(math.Abs(remainder) < 1e-10 || math.Abs(remainder - %v) < 1e-10) {`, v.valueOf(*v.multipleOf))
+				`if !(math.Abs(remainder) < 1e-10 || math.Abs(remainder - %v) < 1e-10) {`, v.valueOf(*v.multipleOf),
+			)
 			out.Indent(1)
 			out.Printlnf(`return fmt.Errorf("field %%s: must be a multiple of %%v", "%s", %f)`, v.jsonName, *v.multipleOf)
 			out.Indent(-1)

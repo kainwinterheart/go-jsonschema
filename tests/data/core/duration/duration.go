@@ -37,11 +37,17 @@ func (o *Duration) MyObject() *Durationmyobject {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Duration) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Myobject *Durationmyobject
+	}
 	type Plain Duration
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myobject = rawStruct.Myobject
+	plain = plain
 	*j = Duration(plain)
 	return nil
 }
@@ -122,11 +128,19 @@ func (j *Durationmyobject) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
+	type PlainRaw struct {
+		Withdefault    time.Duration
+		Withoutdefault *time.Duration
+	}
 	type Plain Durationmyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.withdefault = rawStruct.Withdefault
+	plain.withoutdefault = rawStruct.Withoutdefault
+	plain = plain
 	if v, ok := raw["withDefault"]; !ok || v == nil {
 		defaultDuration, err := time.ParseDuration("20s")
 		if err != nil {

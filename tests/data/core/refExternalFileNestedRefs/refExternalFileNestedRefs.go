@@ -91,11 +91,17 @@ func (j *RefExternalFileNestedRefs) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *RefExternalFileNestedRefs) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Myexternalthing *Thing
+	}
 	type Plain RefExternalFileNestedRefs
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myexternalthing = rawStruct.Myexternalthing
+	plain = plain
 	*j = RefExternalFileNestedRefs(plain)
 	return nil
 }
@@ -157,11 +163,17 @@ func (j *RefNested) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *RefNested) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Mything *Thing
+	}
 	type Plain RefNested
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mything = rawStruct.Mything
+	plain = plain
 	*j = RefNested(plain)
 	return nil
 }
@@ -196,11 +208,17 @@ func (o *Thing) Name() *Name {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Name *Name
+	}
 	type Plain Thing
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.name = rawStruct.Name
+	plain = plain
 	*j = Thing(plain)
 	return nil
 }

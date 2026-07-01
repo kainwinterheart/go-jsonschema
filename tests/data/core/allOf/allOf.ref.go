@@ -4,16 +4,17 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 // The server's response to a tool call
 type CallToolResult struct {
 	// content corresponds to the JSON schema field "content".
-	content []CallToolResultcontentElem `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
+	content *immutable.List[CallToolResultcontentElem] `json:"content,omitempty,omitzero" yaml:"content,omitempty" mapstructure:"content,omitempty"`
 }
 
 type CallToolResultBuilder struct {
-	content []CallToolResultcontentElem
+	content *immutable.List[CallToolResultcontentElem]
 }
 
 func (b *CallToolResultBuilder) Build() *CallToolResult {
@@ -22,7 +23,7 @@ func (b *CallToolResultBuilder) Build() *CallToolResult {
 	}
 }
 
-func (b *CallToolResultBuilder) WithContent(v []CallToolResultcontentElem) *CallToolResultBuilder {
+func (b *CallToolResultBuilder) WithContent(v *immutable.List[CallToolResultcontentElem]) *CallToolResultBuilder {
 	b.content = v
 	return b
 }
@@ -31,17 +32,32 @@ func (o *CallToolResult) Clone() *CallToolResultBuilder {
 	return NewCallToolResultBuilder(o)
 }
 
-func (o *CallToolResult) Content() []CallToolResultcontentElem {
+func (o *CallToolResult) Content() *immutable.List[CallToolResultcontentElem] {
 	return o.content
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *CallToolResult) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Content []CallToolResultcontentElem
+	}
 	type Plain CallToolResult
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.content = func() *immutable.List[CallToolResultcontentElem] {
+		if rawStruct.Content == nil {
+			return nil
+		}
+		l := make([]CallToolResultcontentElem, 0, len(rawStruct.Content))
+		for _, v := range rawStruct.Content {
+			l = append(l, (CallToolResultcontentElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = CallToolResult(plain)
 	return nil
 }
@@ -57,7 +73,16 @@ func (j *CallToolResult) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.content = helper.Content
+	plain.content = func() *immutable.List[CallToolResultcontentElem] {
+		if helper.Content == nil {
+			return nil
+		}
+		l := make([]CallToolResultcontentElem, 0, len(helper.Content))
+		for _, v := range helper.Content {
+			l = append(l, (CallToolResultcontentElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = CallToolResult(plain)
 	return nil
 }
@@ -68,7 +93,18 @@ func (j *CallToolResult) MarshalJSON() ([]byte, error) {
 		Content []CallToolResultcontentElem `json:"content,omitempty"`
 	}
 	helper := CallToolResultMarshalHelper{
-		Content: j.content,
+		Content: func() []CallToolResultcontentElem {
+			if j.content == nil {
+				return nil
+			}
+			lst := (*immutable.List[CallToolResultcontentElem])(j.content)
+			l := make([]CallToolResultcontentElem, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -111,11 +147,17 @@ func (j *CallToolResultcontentElem) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["text"]; raw != nil && !ok {
 		return fmt.Errorf("field text in CallToolResultcontentElem: required")
 	}
+	type PlainRaw struct {
+		Text string
+	}
 	type Plain CallToolResultcontentElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.text = rawStruct.Text
+	plain = plain
 	*j = CallToolResultcontentElem(plain)
 	return nil
 }
@@ -219,11 +261,17 @@ func (j *TextContent) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["text"]; raw != nil && !ok {
 		return fmt.Errorf("field text in TextContent: required")
 	}
+	type PlainRaw struct {
+		Text string
+	}
 	type Plain TextContent
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.text = rawStruct.Text
+	plain = plain
 	*j = TextContent(plain)
 	return nil
 }

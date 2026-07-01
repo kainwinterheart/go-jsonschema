@@ -41,7 +41,6 @@ func (yf *yamlFormatter) generate(
 		for _, f := range structType.Fields {
 			if f.Name == additionalProperties {
 				forceBefore = true
-
 				break
 			}
 		}
@@ -63,17 +62,45 @@ func (yf *yamlFormatter) generate(
 			}
 		}
 
-		tp := typePlain
+		// Generate a raw helper struct with non-immutable types for yaml decoding
+		rawTypeName := typePlain + "Raw"
+		out.Printlnf("type %s struct {", rawTypeName)
 
+		if structType, ok := declType.Type.(*codegen.StructType); ok {
+			for _, f := range structType.Fields {
+				exportedName := rawExportedName(f.Name)
+				out.Printf("\t%s ", exportedName)
+				if err := rawType(f.Type).Generate(out); err != nil {
+					return err
+				}
+				out.Printlnf("")
+			}
+		}
+		out.Printlnf("}")
+
+		// Declare Plain type alias
+		tp := typePlain
 		if tp == declType.Name {
 			for i := 0; !output.isUniqueTypeName(tp) && i < math.MaxInt; i++ {
 				tp = fmt.Sprintf("%s_%d", typePlain, i)
 			}
 		}
-
 		out.Printlnf("type %s %s", tp, declType.Name)
-		out.Printlnf("var %s %s", varNamePlainStruct, tp)
-		out.Printlnf("if err := value.Decode(&%s); err != nil { return err }", varNamePlainStruct)
+
+		// Decode into raw, then copy to plain
+		out.Printlnf("var rawStruct %s", rawTypeName)
+		out.Printlnf("if err := value.Decode(&rawStruct); err != nil { return err }")
+		out.Printlnf("var plain %s", tp)
+
+		if structType, ok := declType.Type.(*codegen.StructType); ok {
+			for _, f := range structType.Fields {
+				exportedName := rawExportedName(f.Name)
+				conv := rawToImmutableConversion(f.Type, "rawStruct."+exportedName)
+				out.Printlnf("plain.%s = %s", f.Name, conv)
+			}
+		}
+
+		out.Printlnf(varNamePlainStruct + " = plain")
 
 		for _, v := range afterValidators {
 			if err := v.generate(out, "yaml"); err != nil {
@@ -91,11 +118,9 @@ func (yf *yamlFormatter) generate(
 					out.Printlnf("delete(raw, strings.Split(st.Field(i).Tag.Get(\"json\"), \",\")[0])")
 					out.Indent(-1)
 					out.Printlnf("}")
-					out.Printlnf("if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {")
-					out.Indent(1)
-					out.Printlnf("return err")
-					out.Indent(-1)
-					out.Printlnf("}")
+					out.Printlnf("var additionalPropsRaw map[string]interface{}")
+					out.Printlnf("if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil { return err }")
+					out.Printlnf("plain.AdditionalProperties = additionalPropsRaw")
 
 					break
 				}
@@ -173,7 +198,6 @@ func (yf *yamlFormatter) addImport(out *codegen.File, declType *codegen.TypeDecl
 				out.Package.AddImport("reflect", "")
 				out.Package.AddImport("strings", "")
 				out.Package.AddImport("github.com/go-viper/mapstructure/v2", "")
-
 				return
 			}
 		}

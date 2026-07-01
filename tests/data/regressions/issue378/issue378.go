@@ -69,11 +69,17 @@ func (j *Issue378) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Issue378) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Memory *string
+	}
 	type Plain Issue378
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.memory = rawStruct.Memory
+	plain = plain
 	if plain.memory != nil {
 		if matched, _ := regexp.MatchString(`^\d+([tgmk]b)?$`, string(*plain.memory)); !matched {
 			return fmt.Errorf("field %s pattern match: must match %s", "memory", `^\d+([tgmk]b)?$`)

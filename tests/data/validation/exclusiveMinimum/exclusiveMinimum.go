@@ -152,11 +152,23 @@ func (j *ExclusiveMinimum) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myNumber"]; raw != nil && !ok {
 		return fmt.Errorf("field myNumber in ExclusiveMinimum: required")
 	}
+	type PlainRaw struct {
+		Myinteger         int
+		Mynullableinteger *int
+		Mynullablenumber  *float64
+		Mynumber          float64
+	}
 	type Plain ExclusiveMinimum
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myinteger = rawStruct.Myinteger
+	plain.mynullableinteger = rawStruct.Mynullableinteger
+	plain.mynullablenumber = rawStruct.Mynullablenumber
+	plain.mynumber = rawStruct.Mynumber
+	plain = plain
 	if 2 >= plain.myinteger {
 		return fmt.Errorf("field %s: must be > %v", "myInteger", 2)
 	}

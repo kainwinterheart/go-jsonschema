@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import "github.com/go-viper/mapstructure/v2"
 import yaml "gopkg.in/yaml.v3"
 import "reflect"
@@ -80,11 +81,17 @@ func (j *BaseObject) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["BaseField"]; raw != nil && !ok {
 		return fmt.Errorf("field BaseField in BaseObject: required")
 	}
+	type PlainRaw struct {
+		Basefield string
+	}
 	type Plain BaseObject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.basefield = rawStruct.Basefield
+	plain = plain
 	*j = BaseObject(plain)
 	return nil
 }
@@ -94,7 +101,7 @@ type ComposedWithAllOfAndProperties struct {
 	basefield string `json:"BaseField" yaml:"BaseField" mapstructure:"BaseField"`
 
 	// directfield corresponds to the JSON schema field "DirectField".
-	directfield []string `json:"DirectField,omitempty,omitzero" yaml:"DirectField,omitempty" mapstructure:"DirectField,omitempty"`
+	directfield *immutable.List[string] `json:"DirectField,omitempty,omitzero" yaml:"DirectField,omitempty" mapstructure:"DirectField,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
 }
@@ -102,7 +109,7 @@ type ComposedWithAllOfAndProperties struct {
 type ComposedWithAllOfAndPropertiesBuilder struct {
 	basefield string
 
-	directfield []string
+	directfield *immutable.List[string]
 }
 
 func (b *ComposedWithAllOfAndPropertiesBuilder) Build() *ComposedWithAllOfAndProperties {
@@ -117,7 +124,7 @@ func (b *ComposedWithAllOfAndPropertiesBuilder) WithBaseField(v string) *Compose
 	return b
 }
 
-func (b *ComposedWithAllOfAndPropertiesBuilder) WithDirectField(v []string) *ComposedWithAllOfAndPropertiesBuilder {
+func (b *ComposedWithAllOfAndPropertiesBuilder) WithDirectField(v *immutable.List[string]) *ComposedWithAllOfAndPropertiesBuilder {
 	b.directfield = v
 	return b
 }
@@ -130,7 +137,7 @@ func (o *ComposedWithAllOfAndProperties) Clone() *ComposedWithAllOfAndProperties
 	return NewComposedWithAllOfAndPropertiesBuilder(o)
 }
 
-func (o *ComposedWithAllOfAndProperties) DirectField() []string {
+func (o *ComposedWithAllOfAndProperties) DirectField() *immutable.List[string] {
 	return o.directfield
 }
 
@@ -154,15 +161,31 @@ func (j *ComposedWithAllOfAndProperties) UnmarshalJSON(value []byte) error {
 	}
 	var plain Plain
 	plain.basefield = helper.Basefield
-	plain.directfield = helper.Directfield
+	plain.directfield = func() *immutable.List[string] {
+		if helper.Directfield == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Directfield))
+		for _, v := range helper.Directfield {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = func() interface{} {
+		if additionalPropsRaw == nil {
+			return nil
+		}
+		return additionalPropsRaw
+	}()
 	*j = ComposedWithAllOfAndProperties(plain)
 	return nil
 }
@@ -174,8 +197,19 @@ func (j *ComposedWithAllOfAndProperties) MarshalJSON() ([]byte, error) {
 		Directfield []string `json:"DirectField,omitempty"`
 	}
 	helper := ComposedWithAllOfAndPropertiesMarshalHelper{
-		Basefield:   j.basefield,
-		Directfield: j.directfield,
+		Basefield: j.basefield,
+		Directfield: func() []string {
+			if j.directfield == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.directfield)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -189,19 +223,40 @@ func (j *ComposedWithAllOfAndProperties) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["BaseField"]; raw != nil && !ok {
 		return fmt.Errorf("field BaseField in ComposedWithAllOfAndProperties: required")
 	}
+	type PlainRaw struct {
+		Basefield            string
+		Directfield          []string
+		AdditionalProperties interface{}
+	}
 	type Plain ComposedWithAllOfAndProperties
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.basefield = rawStruct.Basefield
+	plain.directfield = func() *immutable.List[string] {
+		if rawStruct.Directfield == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Directfield))
+		for _, v := range rawStruct.Directfield {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.AdditionalProperties = rawStruct.AdditionalProperties
+	plain = plain
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = additionalPropsRaw
 	*j = ComposedWithAllOfAndProperties(plain)
 	return nil
 }

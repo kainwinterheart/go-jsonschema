@@ -5,6 +5,7 @@ package test
 import "encoding/json"
 import "errors"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 type Agreement struct {
@@ -64,16 +65,22 @@ func (j *Agreement) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Agreement) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Id *string
+	}
 	type Plain Agreement
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.id = rawStruct.Id
+	plain = plain
 	*j = Agreement(plain)
 	return nil
 }
 
-type AnyOfRef map[string]interface{}
+type AnyOfRef immutable.Map[string, interface{}]
 
 type AnyOfRef_0 struct {
 	// id corresponds to the JSON schema field "id".
@@ -136,11 +143,19 @@ func (j *AnyOfRef_0) UnmarshalYAML(value *yaml.Node) error {
 	if len(errs) == 2 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
+	type PlainRaw struct {
+		Id   *string
+		Name *string
+	}
 	type Plain AnyOfRef_0
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.id = rawStruct.Id
+	plain.name = rawStruct.Name
+	plain = plain
 	*j = AnyOfRef_0(plain)
 	return nil
 }
@@ -190,6 +205,32 @@ func (j *AnyOfRef_0) MarshalJSON() ([]byte, error) {
 		Name: j.name,
 	}
 	return json.Marshal(helper)
+}
+
+func (m AnyOfRef) Items() []struct {
+	Key   string
+	Value interface{}
+} {
+	var items []struct {
+		Key   string
+		Value interface{}
+	}
+	iter := (&m).Iterator()
+	for iter.First(); !iter.Done(); {
+		k, v, ok := iter.Next()
+		if !ok {
+			break
+		}
+		items = append(items, struct {
+			Key   string
+			Value interface{}
+		}{k, v})
+	}
+	return items
+}
+
+func (m AnyOfRef) Iterator() *immutable.MapIterator[string, interface{}] {
+	return (*immutable.Map[string, interface{}])(&m).Iterator()
 }
 
 func NewAgreementBuilder(o *Agreement) *AgreementBuilder {
@@ -248,17 +289,19 @@ func (o *Offer) Name() *string {
 	return o.name
 }
 
-type AnyOfRef_0_1 = Agreement
-
-type AnyOfRef_0_0 = Offer
-
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Offer) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Name *string
+	}
 	type Plain Offer
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.name = rawStruct.Name
+	plain = plain
 	*j = Offer(plain)
 	return nil
 }
@@ -289,5 +332,9 @@ func (j *Offer) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(helper)
 }
+
+type AnyOfRef_0_1 = Agreement
+
+type AnyOfRef_0_0 = Offer
 
 type Policy interface{}

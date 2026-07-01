@@ -101,11 +101,19 @@ func (j *RefExternalFile) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *RefExternalFile) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Myexternalthing        *YamlStructNameFromFile
+		Someotherexternalthing *YamlStructNameFromFile
+	}
 	type Plain RefExternalFile
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myexternalthing = rawStruct.Myexternalthing
+	plain.someotherexternalthing = rawStruct.Someotherexternalthing
+	plain = plain
 	*j = RefExternalFile(plain)
 	return nil
 }
@@ -140,11 +148,17 @@ func (o *YamlStructNameFromFile) Foo() *string {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *YamlStructNameFromFile) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Foo *string
+	}
 	type Plain YamlStructNameFromFile
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.foo = rawStruct.Foo
+	plain = plain
 	*j = YamlStructNameFromFile(plain)
 	return nil
 }

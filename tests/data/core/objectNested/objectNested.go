@@ -62,11 +62,17 @@ func (o *ObjectNested) MyObject() *ObjectNestedmyobject {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *ObjectNested) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Myobject *ObjectNestedmyobject
+	}
 	type Plain ObjectNested
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myobject = rawStruct.Myobject
+	plain = plain
 	*j = ObjectNested(plain)
 	return nil
 }
@@ -155,11 +161,17 @@ func (j *ObjectNestedmyobject) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *ObjectNestedmyobject) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Myobject *ObjectNestedmyobjectmyobject
+	}
 	type Plain ObjectNestedmyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myobject = rawStruct.Myobject
+	plain = plain
 	*j = ObjectNestedmyobject(plain)
 	return nil
 }
@@ -194,11 +206,17 @@ func (o *ObjectNestedmyobjectmyobject) MyString() *string {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *ObjectNestedmyobjectmyobject) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Mystring *string
+	}
 	type Plain ObjectNestedmyobjectmyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mystring = rawStruct.Mystring
+	plain = plain
 	*j = ObjectNestedmyobjectmyobject(plain)
 	return nil
 }

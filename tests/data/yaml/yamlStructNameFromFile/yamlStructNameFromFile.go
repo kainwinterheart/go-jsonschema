@@ -71,11 +71,17 @@ func (j *YamlStructNameFromFile) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *YamlStructNameFromFile) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Foo *string
+	}
 	type Plain YamlStructNameFromFile
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.foo = rawStruct.Foo
+	plain = plain
 	*j = YamlStructNameFromFile(plain)
 	return nil
 }

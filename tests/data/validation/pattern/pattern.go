@@ -140,11 +140,21 @@ func (j *Pattern) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myString"]; raw != nil && !ok {
 		return fmt.Errorf("field myString in Pattern: required")
 	}
+	type PlainRaw struct {
+		Myescapedstring  *string
+		Mynullablestring *string
+		Mystring         string
+	}
 	type Plain Pattern
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myescapedstring = rawStruct.Myescapedstring
+	plain.mynullablestring = rawStruct.Mynullablestring
+	plain.mystring = rawStruct.Mystring
+	plain = plain
 	if plain.myescapedstring != nil {
 		if matched, _ := regexp.MatchString(`^\$\{\{(.|[\r\n])*\}\}$`, string(*plain.myescapedstring)); !matched {
 			return fmt.Errorf("field %s pattern match: must match %s", "myescapedstring", `^\$\{\{(.|[\r\n])*\}\}$`)

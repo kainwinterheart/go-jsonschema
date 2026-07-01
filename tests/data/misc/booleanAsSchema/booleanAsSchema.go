@@ -62,11 +62,17 @@ func (j *BooleanAsSchema) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *BooleanAsSchema) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Id *string
+	}
 	type Plain BooleanAsSchema
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.id = rawStruct.Id
+	plain = plain
 	*j = BooleanAsSchema(plain)
 	return nil
 }

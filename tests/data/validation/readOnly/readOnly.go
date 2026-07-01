@@ -112,11 +112,19 @@ func (j *ReadOnly) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myReadOnlyString"]; raw != nil && ok {
 		return fmt.Errorf("field myReadOnlyString in ReadOnly: read only")
 	}
+	type PlainRaw struct {
+		Myreadonlystring *string
+		Mystring         string
+	}
 	type Plain ReadOnly
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myreadonlystring = rawStruct.Myreadonlystring
+	plain.mystring = rawStruct.Mystring
+	plain = plain
 	*j = ReadOnly(plain)
 	return nil
 }

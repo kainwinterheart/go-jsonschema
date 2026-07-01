@@ -59,9 +59,16 @@ func (j *Issue51) UnmarshalJSON(value []byte) error {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = func() interface{} {
+		if additionalPropsRaw == nil {
+			return nil
+		}
+		return additionalPropsRaw
+	}()
 	*j = Issue51(plain)
 	return nil
 }
@@ -83,19 +90,29 @@ func (j *Issue51) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
+	type PlainRaw struct {
+		Name                 *string
+		AdditionalProperties interface{}
+	}
 	type Plain Issue51
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.name = rawStruct.Name
+	plain.AdditionalProperties = rawStruct.AdditionalProperties
+	plain = plain
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = additionalPropsRaw
 	*j = Issue51(plain)
 	return nil
 }

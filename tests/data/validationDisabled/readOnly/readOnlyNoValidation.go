@@ -106,11 +106,19 @@ func (j *ReadOnlyNoValidation) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myString"]; raw != nil && !ok {
 		return fmt.Errorf("field myString in ReadOnlyNoValidation: required")
 	}
+	type PlainRaw struct {
+		Myreadonlystring *string
+		Mystring         string
+	}
 	type Plain ReadOnlyNoValidation
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myreadonlystring = rawStruct.Myreadonlystring
+	plain.mystring = rawStruct.Mystring
+	plain = plain
 	*j = ReadOnlyNoValidation(plain)
 	return nil
 }

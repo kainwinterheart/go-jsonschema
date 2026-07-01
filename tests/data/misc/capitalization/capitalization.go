@@ -320,11 +320,47 @@ func (j *Capitalization) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Capitalization) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Html              *string
+		Htmlsomethingelse *string
+		Html_2            *string
+		Htmlsomething     *string
+		Id                *string
+		Idsomethingelse   *string
+		Id_2              *string
+		Idsomething       *string
+		Url               *string
+		Urlsomethingelse  *string
+		Url_2             *string
+		Urlsomething      *string
+		Aアトリビュート          *string
+		A属性               *string
+		A屬性               *string
+		A속성               *string
+	}
 	type Plain Capitalization
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.html = rawStruct.Html
+	plain.htmlsomethingelse = rawStruct.Htmlsomethingelse
+	plain.html_2 = rawStruct.Html_2
+	plain.htmlsomething = rawStruct.Htmlsomething
+	plain.id = rawStruct.Id
+	plain.idsomethingelse = rawStruct.Idsomethingelse
+	plain.id_2 = rawStruct.Id_2
+	plain.idsomething = rawStruct.Idsomething
+	plain.url = rawStruct.Url
+	plain.urlsomethingelse = rawStruct.Urlsomethingelse
+	plain.url_2 = rawStruct.Url_2
+	plain.urlsomething = rawStruct.Urlsomething
+	plain.aアトリビュート = rawStruct.Aアトリビュート
+	plain.a属性 = rawStruct.A属性
+	plain.a屬性 = rawStruct.A屬性
+	plain.a속성 = rawStruct.A속성
+	plain = plain
 	*j = Capitalization(plain)
 	return nil
 }

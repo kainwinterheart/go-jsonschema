@@ -71,11 +71,17 @@ func (j *RefToPrimitiveString) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *RefToPrimitiveString) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Mything *Thing
+	}
 	type Plain RefToPrimitiveString
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mything = rawStruct.Mything
+	plain = plain
 	*j = RefToPrimitiveString(plain)
 	return nil
 }

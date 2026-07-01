@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 import "reflect"
 
@@ -128,23 +129,23 @@ type SpecialCharacters struct {
 	plainlicenses *SpecialCharactersplainlicenses `json:"plainLicenses,omitempty,omitzero" yaml:"plainLicenses,omitempty" mapstructure:"plainLicenses,omitempty"`
 
 	// plainlicensesref corresponds to the JSON schema field "plainLicensesRef".
-	plainlicensesref []License `json:"plainLicensesRef,omitempty,omitzero" yaml:"plainLicensesRef,omitempty" mapstructure:"plainLicensesRef,omitempty"`
+	plainlicensesref *immutable.List[License] `json:"plainLicensesRef,omitempty,omitzero" yaml:"plainLicensesRef,omitempty" mapstructure:"plainLicensesRef,omitempty"`
 
 	// pluslicenses corresponds to the JSON schema field "plusLicenses".
 	pluslicenses *SpecialCharacterspluslicenses `json:"plusLicenses,omitempty,omitzero" yaml:"plusLicenses,omitempty" mapstructure:"plusLicenses,omitempty"`
 
 	// pluslicensesref corresponds to the JSON schema field "plusLicensesRef".
-	pluslicensesref []License_1 `json:"plusLicensesRef,omitempty,omitzero" yaml:"plusLicensesRef,omitempty" mapstructure:"plusLicensesRef,omitempty"`
+	pluslicensesref *immutable.List[License_1] `json:"plusLicensesRef,omitempty,omitzero" yaml:"plusLicensesRef,omitempty" mapstructure:"plusLicensesRef,omitempty"`
 }
 
 type SpecialCharactersBuilder struct {
 	plainlicenses *SpecialCharactersplainlicenses
 
-	plainlicensesref []License
+	plainlicensesref *immutable.List[License]
 
 	pluslicenses *SpecialCharacterspluslicenses
 
-	pluslicensesref []License_1
+	pluslicensesref *immutable.List[License_1]
 }
 
 func (b *SpecialCharactersBuilder) Build() *SpecialCharacters {
@@ -161,7 +162,7 @@ func (b *SpecialCharactersBuilder) WithPlainLicenses(v *SpecialCharactersplainli
 	return b
 }
 
-func (b *SpecialCharactersBuilder) WithPlainLicensesRef(v []License) *SpecialCharactersBuilder {
+func (b *SpecialCharactersBuilder) WithPlainLicensesRef(v *immutable.List[License]) *SpecialCharactersBuilder {
 	b.plainlicensesref = v
 	return b
 }
@@ -171,7 +172,7 @@ func (b *SpecialCharactersBuilder) WithPlusLicenses(v *SpecialCharacterspluslice
 	return b
 }
 
-func (b *SpecialCharactersBuilder) WithPlusLicensesRef(v []License_1) *SpecialCharactersBuilder {
+func (b *SpecialCharactersBuilder) WithPlusLicensesRef(v *immutable.List[License_1]) *SpecialCharactersBuilder {
 	b.pluslicensesref = v
 	return b
 }
@@ -184,7 +185,7 @@ func (o *SpecialCharacters) PlainLicenses() *SpecialCharactersplainlicenses {
 	return o.plainlicenses
 }
 
-func (o *SpecialCharacters) PlainLicensesRef() []License {
+func (o *SpecialCharacters) PlainLicensesRef() *immutable.List[License] {
 	return o.plainlicensesref
 }
 
@@ -192,17 +193,47 @@ func (o *SpecialCharacters) PlusLicenses() *SpecialCharacterspluslicenses {
 	return o.pluslicenses
 }
 
-func (o *SpecialCharacters) PlusLicensesRef() []License_1 {
+func (o *SpecialCharacters) PlusLicensesRef() *immutable.List[License_1] {
 	return o.pluslicensesref
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *SpecialCharacters) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Plainlicenses    *SpecialCharactersplainlicenses
+		Plainlicensesref []License
+		Pluslicenses     *SpecialCharacterspluslicenses
+		Pluslicensesref  []License_1
+	}
 	type Plain SpecialCharacters
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.plainlicenses = rawStruct.Plainlicenses
+	plain.plainlicensesref = func() *immutable.List[License] {
+		if rawStruct.Plainlicensesref == nil {
+			return nil
+		}
+		l := make([]License, 0, len(rawStruct.Plainlicensesref))
+		for _, v := range rawStruct.Plainlicensesref {
+			l = append(l, (License)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.pluslicenses = rawStruct.Pluslicenses
+	plain.pluslicensesref = func() *immutable.List[License_1] {
+		if rawStruct.Pluslicensesref == nil {
+			return nil
+		}
+		l := make([]License_1, 0, len(rawStruct.Pluslicensesref))
+		for _, v := range rawStruct.Pluslicensesref {
+			l = append(l, (License_1)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = SpecialCharacters(plain)
 	return nil
 }
@@ -222,9 +253,27 @@ func (j *SpecialCharacters) UnmarshalJSON(value []byte) error {
 	}
 	var plain Plain
 	plain.plainlicenses = helper.Plainlicenses
-	plain.plainlicensesref = helper.Plainlicensesref
+	plain.plainlicensesref = func() *immutable.List[License] {
+		if helper.Plainlicensesref == nil {
+			return nil
+		}
+		l := make([]License, 0, len(helper.Plainlicensesref))
+		for _, v := range helper.Plainlicensesref {
+			l = append(l, (License)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.pluslicenses = helper.Pluslicenses
-	plain.pluslicensesref = helper.Pluslicensesref
+	plain.pluslicensesref = func() *immutable.List[License_1] {
+		if helper.Pluslicensesref == nil {
+			return nil
+		}
+		l := make([]License_1, 0, len(helper.Pluslicensesref))
+		for _, v := range helper.Pluslicensesref {
+			l = append(l, (License_1)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = SpecialCharacters(plain)
 	return nil
 }
@@ -238,10 +287,32 @@ func (j *SpecialCharacters) MarshalJSON() ([]byte, error) {
 		Pluslicensesref  []License_1                     `json:"plusLicensesRef,omitempty"`
 	}
 	helper := SpecialCharactersMarshalHelper{
-		Plainlicenses:    j.plainlicenses,
-		Plainlicensesref: j.plainlicensesref,
-		Pluslicenses:     j.pluslicenses,
-		Pluslicensesref:  j.pluslicensesref,
+		Plainlicenses: j.plainlicenses,
+		Plainlicensesref: func() []License {
+			if j.plainlicensesref == nil {
+				return nil
+			}
+			lst := (*immutable.List[License])(j.plainlicensesref)
+			l := make([]License, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Pluslicenses: j.pluslicenses,
+		Pluslicensesref: func() []License_1 {
+			if j.pluslicensesref == nil {
+				return nil
+			}
+			lst := (*immutable.List[License_1])(j.pluslicensesref)
+			l := make([]License_1, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }

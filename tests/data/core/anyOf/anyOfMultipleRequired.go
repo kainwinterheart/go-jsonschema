@@ -88,19 +88,33 @@ func (j *ComposedWithMultipleRequired) UnmarshalYAML(value *yaml.Node) error {
 	if len(errs) == 2 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
+	type PlainRaw struct {
+		Basefield            *string
+		Directfield          bool
+		Middlefield          *float64
+		AdditionalProperties interface{}
+	}
 	type Plain ComposedWithMultipleRequired
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.basefield = rawStruct.Basefield
+	plain.directfield = rawStruct.Directfield
+	plain.middlefield = rawStruct.Middlefield
+	plain.AdditionalProperties = rawStruct.AdditionalProperties
+	plain = plain
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = additionalPropsRaw
 	*j = ComposedWithMultipleRequired(plain)
 	return nil
 }
@@ -142,9 +156,16 @@ func (j *ComposedWithMultipleRequired) UnmarshalJSON(value []byte) error {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = func() interface{} {
+		if additionalPropsRaw == nil {
+			return nil
+		}
+		return additionalPropsRaw
+	}()
 	*j = ComposedWithMultipleRequired(plain)
 	return nil
 }
@@ -201,11 +222,17 @@ func (j *MultipleRequiredBase) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["baseField"]; raw != nil && !ok {
 		return fmt.Errorf("field baseField in MultipleRequiredBase: required")
 	}
+	type PlainRaw struct {
+		Basefield string
+	}
 	type Plain MultipleRequiredBase
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.basefield = rawStruct.Basefield
+	plain = plain
 	*j = MultipleRequiredBase(plain)
 	return nil
 }
@@ -337,11 +364,17 @@ func (j *MultipleRequiredMiddle) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["middleField"]; raw != nil && !ok {
 		return fmt.Errorf("field middleField in MultipleRequiredMiddle: required")
 	}
+	type PlainRaw struct {
+		Middlefield float64
+	}
 	type Plain MultipleRequiredMiddle
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.middlefield = rawStruct.Middlefield
+	plain = plain
 	*j = MultipleRequiredMiddle(plain)
 	return nil
 }

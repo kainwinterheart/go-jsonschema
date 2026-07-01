@@ -3,15 +3,16 @@
 package test
 
 import "encoding/json"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 type AMap struct {
 	// mymap corresponds to the JSON schema field "myMap".
-	mymap map[string]float64 `json:"myMap,omitempty,omitzero" yaml:"myMap,omitempty" mapstructure:"myMap,omitempty"`
+	mymap immutable.Map[string, float64] `json:"myMap,omitempty,omitzero" yaml:"myMap,omitempty" mapstructure:"myMap,omitempty"`
 }
 
 type AMapBuilder struct {
-	mymap map[string]float64
+	mymap immutable.Map[string, float64]
 }
 
 func (b *AMapBuilder) Build() *AMap {
@@ -20,7 +21,7 @@ func (b *AMapBuilder) Build() *AMap {
 	}
 }
 
-func (b *AMapBuilder) WithMyMap(v map[string]float64) *AMapBuilder {
+func (b *AMapBuilder) WithMyMap(v immutable.Map[string, float64]) *AMapBuilder {
 	b.mymap = v
 	return b
 }
@@ -29,7 +30,7 @@ func (o *AMap) Clone() *AMapBuilder {
 	return NewAMapBuilder(o)
 }
 
-func (o *AMap) MyMap() map[string]float64 {
+func (o *AMap) MyMap() immutable.Map[string, float64] {
 	return o.mymap
 }
 
@@ -55,18 +56,35 @@ func (j *AMap) MarshalJSON() ([]byte, error) {
 		Mymap map[string]float64 `json:"myMap,omitempty"`
 	}
 	helper := AMapMarshalHelper{
-		Mymap: j.mymap,
+		Mymap: func() map[string]float64 {
+			m := make(map[string]float64)
+			iter := (*immutable.Map[string, float64])(&j.mymap).Iterator()
+			for iter.First(); !iter.Done(); {
+				k, v, ok := iter.Next()
+				if !ok {
+					break
+				}
+				m[k] = v
+			}
+			return m
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *AMap) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Mymap map[string]float64
+	}
 	type Plain AMap
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mymap = rawStruct.Mymap
+	plain = plain
 	*j = AMap(plain)
 	return nil
 }

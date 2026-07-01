@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 func NewRequiredFieldsBuilder(o *RequiredFields) *RequiredFieldsBuilder {
@@ -49,63 +50,63 @@ type RequiredFields struct {
 	myboolean bool `json:"myBoolean" yaml:"myBoolean" mapstructure:"myBoolean"`
 
 	// mybooleanarray corresponds to the JSON schema field "myBooleanArray".
-	mybooleanarray []bool `json:"myBooleanArray" yaml:"myBooleanArray" mapstructure:"myBooleanArray"`
+	mybooleanarray *immutable.List[bool] `json:"myBooleanArray" yaml:"myBooleanArray" mapstructure:"myBooleanArray"`
 
 	// myinteger corresponds to the JSON schema field "myInteger".
 	myinteger *int `json:"myInteger,omitempty,omitzero" yaml:"myInteger,omitempty" mapstructure:"myInteger,omitempty"`
 
 	// myintegerarray corresponds to the JSON schema field "myIntegerArray".
-	myintegerarray []int `json:"myIntegerArray,omitempty,omitzero" yaml:"myIntegerArray,omitempty" mapstructure:"myIntegerArray,omitempty"`
+	myintegerarray *immutable.List[int] `json:"myIntegerArray,omitempty,omitzero" yaml:"myIntegerArray,omitempty" mapstructure:"myIntegerArray,omitempty"`
 
 	// mynull corresponds to the JSON schema field "myNull".
 	mynull interface{} `json:"myNull" yaml:"myNull" mapstructure:"myNull"`
 
 	// mynullarray corresponds to the JSON schema field "myNullArray".
-	mynullarray []interface{} `json:"myNullArray" yaml:"myNullArray" mapstructure:"myNullArray"`
+	mynullarray *immutable.List[interface{}] `json:"myNullArray" yaml:"myNullArray" mapstructure:"myNullArray"`
 
 	// mynumber corresponds to the JSON schema field "myNumber".
 	mynumber float64 `json:"myNumber" yaml:"myNumber" mapstructure:"myNumber"`
 
 	// mynumberarray corresponds to the JSON schema field "myNumberArray".
-	mynumberarray []float64 `json:"myNumberArray" yaml:"myNumberArray" mapstructure:"myNumberArray"`
+	mynumberarray *immutable.List[float64] `json:"myNumberArray" yaml:"myNumberArray" mapstructure:"myNumberArray"`
 
 	// myobject corresponds to the JSON schema field "myObject".
 	myobject RequiredFieldsmyobject `json:"myObject" yaml:"myObject" mapstructure:"myObject"`
 
 	// myobjectarray corresponds to the JSON schema field "myObjectArray".
-	myobjectarray []RequiredFieldsmyobjectarrayElem `json:"myObjectArray" yaml:"myObjectArray" mapstructure:"myObjectArray"`
+	myobjectarray *immutable.List[RequiredFieldsmyobjectarrayElem] `json:"myObjectArray" yaml:"myObjectArray" mapstructure:"myObjectArray"`
 
 	// mystring corresponds to the JSON schema field "myString".
 	mystring string `json:"myString" yaml:"myString" mapstructure:"myString"`
 
 	// mystringarray corresponds to the JSON schema field "myStringArray".
-	mystringarray []string `json:"myStringArray" yaml:"myStringArray" mapstructure:"myStringArray"`
+	mystringarray *immutable.List[string] `json:"myStringArray" yaml:"myStringArray" mapstructure:"myStringArray"`
 }
 
 type RequiredFieldsBuilder struct {
 	myboolean bool
 
-	mybooleanarray []bool
+	mybooleanarray *immutable.List[bool]
 
 	myinteger *int
 
-	myintegerarray []int
+	myintegerarray *immutable.List[int]
 
 	mynull interface{}
 
-	mynullarray []interface{}
+	mynullarray *immutable.List[interface{}]
 
 	mynumber float64
 
-	mynumberarray []float64
+	mynumberarray *immutable.List[float64]
 
 	myobject RequiredFieldsmyobject
 
-	myobjectarray []RequiredFieldsmyobjectarrayElem
+	myobjectarray *immutable.List[RequiredFieldsmyobjectarrayElem]
 
 	mystring string
 
-	mystringarray []string
+	mystringarray *immutable.List[string]
 }
 
 func (b *RequiredFieldsBuilder) Build() *RequiredFields {
@@ -130,7 +131,7 @@ func (b *RequiredFieldsBuilder) WithMyBoolean(v bool) *RequiredFieldsBuilder {
 	return b
 }
 
-func (b *RequiredFieldsBuilder) WithMyBooleanArray(v []bool) *RequiredFieldsBuilder {
+func (b *RequiredFieldsBuilder) WithMyBooleanArray(v *immutable.List[bool]) *RequiredFieldsBuilder {
 	b.mybooleanarray = v
 	return b
 }
@@ -140,7 +141,7 @@ func (b *RequiredFieldsBuilder) WithMyInteger(v *int) *RequiredFieldsBuilder {
 	return b
 }
 
-func (b *RequiredFieldsBuilder) WithMyIntegerArray(v []int) *RequiredFieldsBuilder {
+func (b *RequiredFieldsBuilder) WithMyIntegerArray(v *immutable.List[int]) *RequiredFieldsBuilder {
 	b.myintegerarray = v
 	return b
 }
@@ -150,7 +151,7 @@ func (b *RequiredFieldsBuilder) WithMyNull(v interface{}) *RequiredFieldsBuilder
 	return b
 }
 
-func (b *RequiredFieldsBuilder) WithMyNullArray(v []interface{}) *RequiredFieldsBuilder {
+func (b *RequiredFieldsBuilder) WithMyNullArray(v *immutable.List[interface{}]) *RequiredFieldsBuilder {
 	b.mynullarray = v
 	return b
 }
@@ -160,7 +161,7 @@ func (b *RequiredFieldsBuilder) WithMyNumber(v float64) *RequiredFieldsBuilder {
 	return b
 }
 
-func (b *RequiredFieldsBuilder) WithMyNumberArray(v []float64) *RequiredFieldsBuilder {
+func (b *RequiredFieldsBuilder) WithMyNumberArray(v *immutable.List[float64]) *RequiredFieldsBuilder {
 	b.mynumberarray = v
 	return b
 }
@@ -170,7 +171,7 @@ func (b *RequiredFieldsBuilder) WithMyObject(v RequiredFieldsmyobject) *Required
 	return b
 }
 
-func (b *RequiredFieldsBuilder) WithMyObjectArray(v []RequiredFieldsmyobjectarrayElem) *RequiredFieldsBuilder {
+func (b *RequiredFieldsBuilder) WithMyObjectArray(v *immutable.List[RequiredFieldsmyobjectarrayElem]) *RequiredFieldsBuilder {
 	b.myobjectarray = v
 	return b
 }
@@ -180,7 +181,7 @@ func (b *RequiredFieldsBuilder) WithMyString(v string) *RequiredFieldsBuilder {
 	return b
 }
 
-func (b *RequiredFieldsBuilder) WithMyStringArray(v []string) *RequiredFieldsBuilder {
+func (b *RequiredFieldsBuilder) WithMyStringArray(v *immutable.List[string]) *RequiredFieldsBuilder {
 	b.mystringarray = v
 	return b
 }
@@ -193,7 +194,7 @@ func (o *RequiredFields) MyBoolean() bool {
 	return o.myboolean
 }
 
-func (o *RequiredFields) MyBooleanArray() []bool {
+func (o *RequiredFields) MyBooleanArray() *immutable.List[bool] {
 	return o.mybooleanarray
 }
 
@@ -201,7 +202,7 @@ func (o *RequiredFields) MyInteger() *int {
 	return o.myinteger
 }
 
-func (o *RequiredFields) MyIntegerArray() []int {
+func (o *RequiredFields) MyIntegerArray() *immutable.List[int] {
 	return o.myintegerarray
 }
 
@@ -209,7 +210,7 @@ func (o *RequiredFields) MyNull() interface{} {
 	return o.mynull
 }
 
-func (o *RequiredFields) MyNullArray() []interface{} {
+func (o *RequiredFields) MyNullArray() *immutable.List[interface{}] {
 	return o.mynullarray
 }
 
@@ -217,7 +218,7 @@ func (o *RequiredFields) MyNumber() float64 {
 	return o.mynumber
 }
 
-func (o *RequiredFields) MyNumberArray() []float64 {
+func (o *RequiredFields) MyNumberArray() *immutable.List[float64] {
 	return o.mynumberarray
 }
 
@@ -225,7 +226,7 @@ func (o *RequiredFields) MyObject() RequiredFieldsmyobject {
 	return o.myobject
 }
 
-func (o *RequiredFields) MyObjectArray() []RequiredFieldsmyobjectarrayElem {
+func (o *RequiredFields) MyObjectArray() *immutable.List[RequiredFieldsmyobjectarrayElem] {
 	return o.myobjectarray
 }
 
@@ -233,7 +234,7 @@ func (o *RequiredFields) MyString() string {
 	return o.mystring
 }
 
-func (o *RequiredFields) MyStringArray() []string {
+func (o *RequiredFields) MyStringArray() *immutable.List[string] {
 	return o.mystringarray
 }
 
@@ -294,22 +295,76 @@ func (j *RequiredFields) UnmarshalJSON(value []byte) error {
 	}
 	var plain Plain
 	plain.myboolean = helper.Myboolean
-	plain.mybooleanarray = helper.Mybooleanarray
+	plain.mybooleanarray = func() *immutable.List[bool] {
+		if helper.Mybooleanarray == nil {
+			return nil
+		}
+		l := make([]bool, 0, len(helper.Mybooleanarray))
+		for _, v := range helper.Mybooleanarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.myinteger = helper.Myinteger
-	plain.myintegerarray = helper.Myintegerarray
+	plain.myintegerarray = func() *immutable.List[int] {
+		if helper.Myintegerarray == nil {
+			return nil
+		}
+		l := make([]int, 0, len(helper.Myintegerarray))
+		for _, v := range helper.Myintegerarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.mynull = helper.Mynull
-	plain.mynullarray = helper.Mynullarray
+	plain.mynullarray = func() *immutable.List[interface{}] {
+		if helper.Mynullarray == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(helper.Mynullarray))
+		for _, v := range helper.Mynullarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.mynumber = helper.Mynumber
-	plain.mynumberarray = helper.Mynumberarray
+	plain.mynumberarray = func() *immutable.List[float64] {
+		if helper.Mynumberarray == nil {
+			return nil
+		}
+		l := make([]float64, 0, len(helper.Mynumberarray))
+		for _, v := range helper.Mynumberarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.myobject = helper.Myobject
-	plain.myobjectarray = helper.Myobjectarray
+	plain.myobjectarray = func() *immutable.List[RequiredFieldsmyobjectarrayElem] {
+		if helper.Myobjectarray == nil {
+			return nil
+		}
+		l := make([]RequiredFieldsmyobjectarrayElem, 0, len(helper.Myobjectarray))
+		for _, v := range helper.Myobjectarray {
+			l = append(l, (RequiredFieldsmyobjectarrayElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.mystring = helper.Mystring
-	plain.mystringarray = helper.Mystringarray
+	plain.mystringarray = func() *immutable.List[string] {
+		if helper.Mystringarray == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Mystringarray))
+		for _, v := range helper.Mystringarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	if plain.mynull != nil {
 		return fmt.Errorf("field %s: must be null", "myNull")
 	}
-	for i0 := range plain.mynullarray {
-		if plain.mynullarray[i0] != nil {
+	for i0 := 0; i0 < plain.mynullarray.Len(); i0++ {
+		if plain.mynullarray.Get(i0) != nil {
 			return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNullArray[%d]", i0))
 		}
 	}
@@ -334,18 +389,84 @@ func (j *RequiredFields) MarshalJSON() ([]byte, error) {
 		Mystringarray  []string                          `json:"myStringArray"`
 	}
 	helper := RequiredFieldsMarshalHelper{
-		Myboolean:      j.myboolean,
-		Mybooleanarray: j.mybooleanarray,
-		Myinteger:      j.myinteger,
-		Myintegerarray: j.myintegerarray,
-		Mynull:         j.mynull,
-		Mynullarray:    j.mynullarray,
-		Mynumber:       j.mynumber,
-		Mynumberarray:  j.mynumberarray,
-		Myobject:       j.myobject,
-		Myobjectarray:  j.myobjectarray,
-		Mystring:       j.mystring,
-		Mystringarray:  j.mystringarray,
+		Myboolean: j.myboolean,
+		Mybooleanarray: func() []bool {
+			if j.mybooleanarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[bool])(j.mybooleanarray)
+			l := make([]bool, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Myinteger: j.myinteger,
+		Myintegerarray: func() []int {
+			if j.myintegerarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[int])(j.myintegerarray)
+			l := make([]int, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Mynull: j.mynull,
+		Mynullarray: func() []interface{} {
+			if j.mynullarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(j.mynullarray)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Mynumber: j.mynumber,
+		Mynumberarray: func() []float64 {
+			if j.mynumberarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[float64])(j.mynumberarray)
+			l := make([]float64, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Myobject: j.myobject,
+		Myobjectarray: func() []RequiredFieldsmyobjectarrayElem {
+			if j.myobjectarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[RequiredFieldsmyobjectarrayElem])(j.myobjectarray)
+			l := make([]RequiredFieldsmyobjectarrayElem, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Mystring: j.mystring,
+		Mystringarray: func() []string {
+			if j.mystringarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.mystringarray)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -386,16 +507,98 @@ func (j *RequiredFields) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myStringArray"]; raw != nil && !ok {
 		return fmt.Errorf("field myStringArray in RequiredFields: required")
 	}
+	type PlainRaw struct {
+		Myboolean      bool
+		Mybooleanarray []bool
+		Myinteger      *int
+		Myintegerarray []int
+		Mynull         interface{}
+		Mynullarray    []interface{}
+		Mynumber       float64
+		Mynumberarray  []float64
+		Myobject       RequiredFieldsmyobject
+		Myobjectarray  []RequiredFieldsmyobjectarrayElem
+		Mystring       string
+		Mystringarray  []string
+	}
 	type Plain RequiredFields
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myboolean = rawStruct.Myboolean
+	plain.mybooleanarray = func() *immutable.List[bool] {
+		if rawStruct.Mybooleanarray == nil {
+			return nil
+		}
+		l := make([]bool, 0, len(rawStruct.Mybooleanarray))
+		for _, v := range rawStruct.Mybooleanarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.myinteger = rawStruct.Myinteger
+	plain.myintegerarray = func() *immutable.List[int] {
+		if rawStruct.Myintegerarray == nil {
+			return nil
+		}
+		l := make([]int, 0, len(rawStruct.Myintegerarray))
+		for _, v := range rawStruct.Myintegerarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mynull = rawStruct.Mynull
+	plain.mynullarray = func() *immutable.List[interface{}] {
+		if rawStruct.Mynullarray == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(rawStruct.Mynullarray))
+		for _, v := range rawStruct.Mynullarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mynumber = rawStruct.Mynumber
+	plain.mynumberarray = func() *immutable.List[float64] {
+		if rawStruct.Mynumberarray == nil {
+			return nil
+		}
+		l := make([]float64, 0, len(rawStruct.Mynumberarray))
+		for _, v := range rawStruct.Mynumberarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.myobject = rawStruct.Myobject
+	plain.myobjectarray = func() *immutable.List[RequiredFieldsmyobjectarrayElem] {
+		if rawStruct.Myobjectarray == nil {
+			return nil
+		}
+		l := make([]RequiredFieldsmyobjectarrayElem, 0, len(rawStruct.Myobjectarray))
+		for _, v := range rawStruct.Myobjectarray {
+			l = append(l, (RequiredFieldsmyobjectarrayElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mystring = rawStruct.Mystring
+	plain.mystringarray = func() *immutable.List[string] {
+		if rawStruct.Mystringarray == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Mystringarray))
+		for _, v := range rawStruct.Mystringarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	if plain.mynull != nil {
 		return fmt.Errorf("field %s: must be null", "myNull")
 	}
-	for i0 := range plain.mynullarray {
-		if plain.mynullarray[i0] != nil {
+	for i0 := 0; i0 < plain.mynullarray.Len(); i0++ {
+		if plain.mynullarray.Get(i0) != nil {
 			return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNullArray[%d]", i0))
 		}
 	}
@@ -441,11 +644,17 @@ func (j *RequiredFieldsmyobject) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myNestedObjectString"]; raw != nil && !ok {
 		return fmt.Errorf("field myNestedObjectString in RequiredFieldsmyobject: required")
 	}
+	type PlainRaw struct {
+		Mynestedobjectstring string
+	}
 	type Plain RequiredFieldsmyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mynestedobjectstring = rawStruct.Mynestedobjectstring
+	plain = plain
 	*j = RequiredFieldsmyobject(plain)
 	return nil
 }
@@ -556,11 +765,17 @@ func (j *RequiredFieldsmyobjectarrayElem) UnmarshalYAML(value *yaml.Node) error 
 	if _, ok := raw["myNestedObjectString"]; raw != nil && !ok {
 		return fmt.Errorf("field myNestedObjectString in RequiredFieldsmyobjectarrayElem: required")
 	}
+	type PlainRaw struct {
+		Mynestedobjectstring string
+	}
 	type Plain RequiredFieldsmyobjectarrayElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mynestedobjectstring = rawStruct.Mynestedobjectstring
+	plain = plain
 	*j = RequiredFieldsmyobjectarrayElem(plain)
 	return nil
 }

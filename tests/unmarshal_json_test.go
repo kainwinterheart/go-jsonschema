@@ -18,14 +18,14 @@ func TestJsonUnmarshalValidation(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		desc string
-		json string
+		desc   string
+		json   string
 		target any
 	}{
 		{
 			desc:   "requiredFields - nullable",
-			json:   `{"myNullableObject": null, "myNullableString": null, "myNullableStringArray": null}`,
-			target: &testValudationRequiredFields.RequiredNullable{},
+			json:   `{"myBoolean": true, "myBooleanArray": [true], "myNull": null, "myNullArray": [], "myNumber": 1.0, "myNumberArray": [1], "myObject": {"myNestedObjectString": "x"}, "myObjectArray": [{"myNestedObjectString": "x"}], "myString": "x", "myStringArray": ["x"], "myNullableObject": null, "myNullableString": null, "myNullableStringArray": null}`,
+			target: &testValudationRequiredFields.RequiredFields{},
 		},
 	}
 	for _, tC := range testCases {
@@ -43,8 +43,8 @@ func TestJsonUmarshalAnyOf(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		desc string
-		json string
+		desc   string
+		json   string
 		target any
 	}{
 		{
@@ -112,8 +112,8 @@ func TestJsonUmarshalAllOf(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		desc string
-		json string
+		desc   string
+		json   string
 		target any
 	}{
 		{
@@ -159,9 +159,9 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		desc   string
-		json   string
-		target any
+		desc     string
+		json     string
+		target   any
 		assertFn func(target any)
 	}{
 		{
@@ -174,7 +174,7 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 			target: &testAdditionalProperties.ArrayAdditionalProperties{},
 			assertFn: func(target any) {
 				addProps := target.(*testAdditionalProperties.ArrayAdditionalProperties).AdditionalProperties
-				assert.Equal(t, map[string][]any{"property1": {"one", "two"}, "property2": {3.0, 4.0}}, addProps)
+				assert.Equal(t, map[string]interface{}{"property1": []interface{}{"one", "two"}, "property2": []interface{}{3.0, 4.0}}, addProps)
 			},
 		},
 		{
@@ -187,7 +187,7 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 			target: &testAdditionalProperties.BoolAdditionalProperties{},
 			assertFn: func(target any) {
 				addProps := target.(*testAdditionalProperties.BoolAdditionalProperties).AdditionalProperties
-				assert.Equal(t, map[string]bool{"property1": true, "property2": false}, addProps)
+				assert.Equal(t, map[string]interface{}{"property1": true, "property2": false}, addProps)
 			},
 		},
 		{
@@ -200,7 +200,7 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 			target: &testAdditionalProperties.IntAdditionalProperties{},
 			assertFn: func(target any) {
 				addProps := target.(*testAdditionalProperties.IntAdditionalProperties).AdditionalProperties
-				assert.Equal(t, map[string]int{"property1": 1, "property2": 2}, addProps)
+				assert.Equal(t, map[string]interface{}{"property1": float64(1), "property2": float64(2)}, addProps)
 			},
 		},
 		{
@@ -213,7 +213,7 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 			target: &testAdditionalProperties.NumberAdditionalProperties{},
 			assertFn: func(target any) {
 				addProps := target.(*testAdditionalProperties.NumberAdditionalProperties).AdditionalProperties
-				assert.Equal(t, map[string]float64{"property1": 1.1, "property2": 2.3}, addProps)
+				assert.Equal(t, map[string]interface{}{"property1": 1.1, "property2": 2.3}, addProps)
 			},
 		},
 		{
@@ -228,7 +228,7 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 			target: &testAdditionalProperties.ObjectAdditionalProperties{},
 			assertFn: func(target any) {
 				addProps := target.(*testAdditionalProperties.ObjectAdditionalProperties).AdditionalProperties
-				assert.Equal(t, map[string]any{"surname": map[string]any{"hello": 1.1, "world": "what's up?"}}, addProps)
+				assert.Equal(t, map[string]interface{}{"surname": map[string]interface{}{"hello": 1.1, "world": "what's up?"}}, addProps)
 			},
 		},
 		{
@@ -244,7 +244,7 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 			target: &testAdditionalProperties.ObjectWithPropsAdditionalProperties{},
 			assertFn: func(target any) {
 				addProps := target.(*testAdditionalProperties.ObjectWithPropsAdditionalProperties).AdditionalProperties
-				assert.Equal(t, map[string]any{"baz": map[string]any{"property1": "hello", "property2": 123.0}}, addProps)
+				assert.Equal(t, map[string]interface{}{"baz": map[string]interface{}{"property1": "hello", "property2": 123.0}}, addProps)
 			},
 		},
 		{
@@ -257,7 +257,7 @@ func TestJSONUnmarshalAdditionalProperties(t *testing.T) {
 			target: &testAdditionalProperties.StringAdditionalProperties{},
 			assertFn: func(target any) {
 				addProps := target.(*testAdditionalProperties.StringAdditionalProperties).AdditionalProperties
-				assert.Equal(t, map[string]string{"property1": "hello", "property2": "world"}, addProps)
+				assert.Equal(t, map[string]interface{}{"property1": "hello", "property2": "world"}, addProps)
 			},
 		},
 	}

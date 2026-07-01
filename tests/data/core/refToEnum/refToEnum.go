@@ -73,11 +73,17 @@ func (j *RefToEnum) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *RefToEnum) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Mything *Thing
+	}
 	type Plain RefToEnum
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mything = rawStruct.Mything
+	plain = plain
 	*j = RefToEnum(plain)
 	return nil
 }

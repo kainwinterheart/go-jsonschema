@@ -255,11 +255,37 @@ func (j *Enum) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Enum) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Mybooleantypedenum   *Enummybooleantypedenum
+		Mybooleanuntypedenum *Enummybooleanuntypedenum
+		Myintegertypedenum   *Enummyintegertypedenum
+		Mymixedtypeenum      *Enummymixedtypeenum
+		Mymixeduntypedenum   *Enummymixeduntypedenum
+		Mynulltypedenum      *Enummynulltypedenum
+		Mynulluntypedenum    *Enummynulluntypedenum
+		Mynumbertypedenum    *Enummynumbertypedenum
+		Mynumberuntypedenum  *Enummynumberuntypedenum
+		Mystringtypedenum    *Enummystringtypedenum
+		Mystringuntypedenum  *Enummystringuntypedenum
+	}
 	type Plain Enum
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mybooleantypedenum = rawStruct.Mybooleantypedenum
+	plain.mybooleanuntypedenum = rawStruct.Mybooleanuntypedenum
+	plain.myintegertypedenum = rawStruct.Myintegertypedenum
+	plain.mymixedtypeenum = rawStruct.Mymixedtypeenum
+	plain.mymixeduntypedenum = rawStruct.Mymixeduntypedenum
+	plain.mynulltypedenum = rawStruct.Mynulltypedenum
+	plain.mynulluntypedenum = rawStruct.Mynulluntypedenum
+	plain.mynumbertypedenum = rawStruct.Mynumbertypedenum
+	plain.mynumberuntypedenum = rawStruct.Mynumberuntypedenum
+	plain.mystringtypedenum = rawStruct.Mystringtypedenum
+	plain.mystringuntypedenum = rawStruct.Mystringuntypedenum
+	plain = plain
 	*j = Enum(plain)
 	return nil
 }

@@ -82,11 +82,17 @@ func (j *Time) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Time) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Myobject *Timemyobject
+	}
 	type Plain Time
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myobject = rawStruct.Myobject
+	plain = plain
 	*j = Time(plain)
 	return nil
 }
@@ -128,11 +134,17 @@ func (j *Timemyobject) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myTime"]; raw != nil && !ok {
 		return fmt.Errorf("field myTime in Timemyobject: required")
 	}
+	type PlainRaw struct {
+		Mytime types.SerializableTime
+	}
 	type Plain Timemyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mytime = (SerializableTime)(rawStruct.Mytime)
+	plain = plain
 	*j = Timemyobject(plain)
 	return nil
 }
@@ -155,7 +167,7 @@ func (j *Timemyobject) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.mytime = helper.Mytime
+	plain.mytime = (SerializableTime)(helper.Mytime)
 	*j = Timemyobject(plain)
 	return nil
 }

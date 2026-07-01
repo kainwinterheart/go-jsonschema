@@ -25,11 +25,15 @@ func (j *MinStr) UnmarshalJSON(value []byte) error {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *MinStr) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+	}
 	type Plain MinStr
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain = plain
 	if utf8.RuneCountInString(string(plain)) < 5 {
 		return fmt.Errorf("field %s length: must be >= %d", "", 5)
 	}
@@ -137,11 +141,19 @@ func (j *PrimitiveDefs) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myString"]; raw != nil && !ok {
 		return fmt.Errorf("field myString in PrimitiveDefs: required")
 	}
+	type PlainRaw struct {
+		Mynullablestring *MinStr
+		Mystring         MinStr
+	}
 	type Plain PrimitiveDefs
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mynullablestring = rawStruct.Mynullablestring
+	plain.mystring = rawStruct.Mystring
+	plain = plain
 	*j = PrimitiveDefs(plain)
 	return nil
 }

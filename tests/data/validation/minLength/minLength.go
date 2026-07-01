@@ -103,11 +103,19 @@ func (j *MinLength) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myString"]; raw != nil && !ok {
 		return fmt.Errorf("field myString in MinLength: required")
 	}
+	type PlainRaw struct {
+		Mynullablestring *string
+		Mystring         string
+	}
 	type Plain MinLength
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mynullablestring = rawStruct.Mynullablestring
+	plain.mystring = rawStruct.Mystring
+	plain = plain
 	if plain.mynullablestring != nil && utf8.RuneCountInString(string(*plain.mynullablestring)) < 10 {
 		return fmt.Errorf("field %s length: must be >= %d", "myNullableString", 10)
 	}

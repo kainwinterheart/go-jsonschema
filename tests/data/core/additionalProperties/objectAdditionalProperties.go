@@ -21,7 +21,7 @@ type ObjectAdditionalProperties struct {
 	// name corresponds to the JSON schema field "name".
 	name *string `json:"name,omitempty,omitzero" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 
-	AdditionalProperties map[string]interface{} `mapstructure:",remain"`
+	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
 type ObjectAdditionalPropertiesBuilder struct {
@@ -68,9 +68,16 @@ func (j *ObjectAdditionalProperties) UnmarshalJSON(value []byte) error {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = func() interface{} {
+		if additionalPropsRaw == nil {
+			return nil
+		}
+		return additionalPropsRaw
+	}()
 	*j = ObjectAdditionalProperties(plain)
 	return nil
 }
@@ -92,19 +99,29 @@ func (j *ObjectAdditionalProperties) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
+	type PlainRaw struct {
+		Name                 *string
+		AdditionalProperties interface{}
+	}
 	type Plain ObjectAdditionalProperties
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.name = rawStruct.Name
+	plain.AdditionalProperties = rawStruct.AdditionalProperties
+	plain = plain
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = additionalPropsRaw
 	*j = ObjectAdditionalProperties(plain)
 	return nil
 }

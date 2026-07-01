@@ -2,4 +2,6 @@
 
 package test
 
-type RootIsArrayOfString []string
+import "github.com/benbjohnson/immutable"
+
+type RootIsArrayOfString *immutable.List[string]

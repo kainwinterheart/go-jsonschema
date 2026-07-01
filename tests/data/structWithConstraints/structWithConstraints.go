@@ -72,9 +72,16 @@ func (j *StructWithConstraints) UnmarshalJSON(value []byte) error {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = func() interface{} {
+		if additionalPropsRaw == nil {
+			return nil
+		}
+		return additionalPropsRaw
+	}()
 	*j = StructWithConstraints(plain)
 	return nil
 }
@@ -96,11 +103,19 @@ func (j *StructWithConstraints) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
+	type PlainRaw struct {
+		Prop                 *float64
+		AdditionalProperties interface{}
+	}
 	type Plain StructWithConstraints
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.prop = rawStruct.Prop
+	plain.AdditionalProperties = rawStruct.AdditionalProperties
+	plain = plain
 	if plain.prop != nil && 0 > *plain.prop {
 		return fmt.Errorf("field %s: must be >= %v", "prop", 0)
 	}
@@ -109,9 +124,11 @@ func (j *StructWithConstraints) UnmarshalYAML(value *yaml.Node) error {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = additionalPropsRaw
 	*j = StructWithConstraints(plain)
 	return nil
 }

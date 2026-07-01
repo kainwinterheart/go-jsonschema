@@ -4,15 +4,16 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 type AllOf2 struct {
 	// configurations corresponds to the JSON schema field "configurations".
-	configurations []AllOf2configurationsElem `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
+	configurations *immutable.List[AllOf2configurationsElem] `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
 }
 
 type AllOf2Builder struct {
-	configurations []AllOf2configurationsElem
+	configurations *immutable.List[AllOf2configurationsElem]
 }
 
 func (b *AllOf2Builder) Build() *AllOf2 {
@@ -21,7 +22,7 @@ func (b *AllOf2Builder) Build() *AllOf2 {
 	}
 }
 
-func (b *AllOf2Builder) WithConfigurations(v []AllOf2configurationsElem) *AllOf2Builder {
+func (b *AllOf2Builder) WithConfigurations(v *immutable.List[AllOf2configurationsElem]) *AllOf2Builder {
 	b.configurations = v
 	return b
 }
@@ -30,7 +31,7 @@ func (o *AllOf2) Clone() *AllOf2Builder {
 	return NewAllOf2Builder(o)
 }
 
-func (o *AllOf2) Configurations() []AllOf2configurationsElem {
+func (o *AllOf2) Configurations() *immutable.List[AllOf2configurationsElem] {
 	return o.configurations
 }
 
@@ -45,7 +46,16 @@ func (j *AllOf2) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.configurations = helper.Configurations
+	plain.configurations = func() *immutable.List[AllOf2configurationsElem] {
+		if helper.Configurations == nil {
+			return nil
+		}
+		l := make([]AllOf2configurationsElem, 0, len(helper.Configurations))
+		for _, v := range helper.Configurations {
+			l = append(l, (AllOf2configurationsElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = AllOf2(plain)
 	return nil
 }
@@ -56,18 +66,44 @@ func (j *AllOf2) MarshalJSON() ([]byte, error) {
 		Configurations []AllOf2configurationsElem `json:"configurations,omitempty"`
 	}
 	helper := AllOf2MarshalHelper{
-		Configurations: j.configurations,
+		Configurations: func() []AllOf2configurationsElem {
+			if j.configurations == nil {
+				return nil
+			}
+			lst := (*immutable.List[AllOf2configurationsElem])(j.configurations)
+			l := make([]AllOf2configurationsElem, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *AllOf2) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Configurations []AllOf2configurationsElem
+	}
 	type Plain AllOf2
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.configurations = func() *immutable.List[AllOf2configurationsElem] {
+		if rawStruct.Configurations == nil {
+			return nil
+		}
+		l := make([]AllOf2configurationsElem, 0, len(rawStruct.Configurations))
+		for _, v := range rawStruct.Configurations {
+			l = append(l, (AllOf2configurationsElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = AllOf2(plain)
 	return nil
 }
@@ -142,11 +178,21 @@ func (j *AllOf2configurationsElem) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["foo"]; raw != nil && !ok {
 		return fmt.Errorf("field foo in AllOf2configurationsElem: required")
 	}
+	type PlainRaw struct {
+		Bar float64
+		Baz *bool
+		Foo string
+	}
 	type Plain AllOf2configurationsElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.bar = rawStruct.Bar
+	plain.baz = rawStruct.Baz
+	plain.foo = rawStruct.Foo
+	plain = plain
 	*j = AllOf2configurationsElem(plain)
 	return nil
 }
@@ -233,11 +279,17 @@ func (j *Bar) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["bar"]; raw != nil && !ok {
 		return fmt.Errorf("field bar in Bar: required")
 	}
+	type PlainRaw struct {
+		Bar float64
+	}
 	type Plain Bar
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.bar = rawStruct.Bar
+	plain = plain
 	*j = Bar(plain)
 	return nil
 }
@@ -306,11 +358,17 @@ func (o *Baz) Clone() *BazBuilder {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Baz) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Baz *bool
+	}
 	type Plain Baz
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.baz = rawStruct.Baz
+	plain = plain
 	*j = Baz(plain)
 	return nil
 }
@@ -379,11 +437,17 @@ func (j *Foo) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["foo"]; raw != nil && !ok {
 		return fmt.Errorf("field foo in Foo: required")
 	}
+	type PlainRaw struct {
+		Foo string
+	}
 	type Plain Foo
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.foo = rawStruct.Foo
+	plain = plain
 	*j = Foo(plain)
 	return nil
 }

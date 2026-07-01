@@ -252,11 +252,31 @@ func (j *Exact) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["u8"]; raw != nil && !ok {
 		return fmt.Errorf("field u8 in Exact: required")
 	}
+	type PlainRaw struct {
+		I16 int16
+		I32 int32
+		I64 int64
+		I8  int8
+		U16 uint16
+		U32 uint32
+		U64 uint64
+		U8  uint8
+	}
 	type Plain Exact
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.i16 = rawStruct.I16
+	plain.i32 = rawStruct.I32
+	plain.i64 = rawStruct.I64
+	plain.i8 = rawStruct.I8
+	plain.u16 = rawStruct.U16
+	plain.u32 = rawStruct.U32
+	plain.u64 = rawStruct.U64
+	plain.u8 = rawStruct.U8
+	plain = plain
 	*j = Exact(plain)
 	return nil
 }

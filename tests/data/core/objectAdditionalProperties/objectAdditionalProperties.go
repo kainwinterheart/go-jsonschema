@@ -3,6 +3,7 @@
 package test
 
 import "encoding/json"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 func NewObjectAdditionalPropertiesBuilder(o *ObjectAdditionalProperties) *ObjectAdditionalPropertiesBuilder {
@@ -44,12 +45,8 @@ func (o *ObjectAdditionalProperties) Foo() ObjectAdditionalPropertiesfoo {
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *ObjectAdditionalProperties) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
 	type ObjectAdditionalPropertiesHelper struct {
-		Foo ObjectAdditionalPropertiesfoo `json:"foo,omitempty"`
+		Foo map[string]string `json:"foo,omitempty"`
 	}
 	type Plain ObjectAdditionalProperties
 	var helper ObjectAdditionalPropertiesHelper
@@ -57,10 +54,7 @@ func (j *ObjectAdditionalProperties) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.foo = helper.Foo
-	if v, ok := raw["foo"]; !ok || v == nil {
-		plain.foo = map[string]string{}
-	}
+	plain.foo = (ObjectAdditionalPropertiesfoo)(*immutable.NewMapOf[string](nil, helper.Foo))
 	*j = ObjectAdditionalProperties(plain)
 	return nil
 }
@@ -68,30 +62,66 @@ func (j *ObjectAdditionalProperties) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *ObjectAdditionalProperties) MarshalJSON() ([]byte, error) {
 	type ObjectAdditionalPropertiesMarshalHelper struct {
-		Foo ObjectAdditionalPropertiesfoo `json:"foo,omitempty"`
+		Foo map[string]string `json:"foo,omitempty"`
 	}
 	helper := ObjectAdditionalPropertiesMarshalHelper{
-		Foo: j.foo,
+		Foo: func() map[string]string {
+			m := make(map[string]string)
+			iter := (*immutable.Map[string, string])(&j.foo).Iterator()
+			for iter.First(); !iter.Done(); {
+				k, v, ok := iter.Next()
+				if !ok {
+					break
+				}
+				m[k] = v
+			}
+			return m
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *ObjectAdditionalProperties) UnmarshalYAML(value *yaml.Node) error {
-	var raw map[string]interface{}
-	if err := value.Decode(&raw); err != nil {
-		return err
+	type PlainRaw struct {
+		Foo map[string]string
 	}
 	type Plain ObjectAdditionalProperties
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
-	if v, ok := raw["foo"]; !ok || v == nil {
-		plain.foo = map[string]string{}
-	}
+	var plain Plain
+	plain.foo = (ObjectAdditionalPropertiesfoo)(*immutable.NewMapOf[string](nil, rawStruct.Foo))
+	plain = plain
 	*j = ObjectAdditionalProperties(plain)
 	return nil
 }
 
-type ObjectAdditionalPropertiesfoo map[string]string
+type ObjectAdditionalPropertiesfoo immutable.Map[string, string]
+
+func (m ObjectAdditionalPropertiesfoo) Items() []struct {
+	Key   string
+	Value string
+} {
+	var items []struct {
+		Key   string
+		Value string
+	}
+	iter := (&m).Iterator()
+	for iter.First(); !iter.Done(); {
+		k, v, ok := iter.Next()
+		if !ok {
+			break
+		}
+		items = append(items, struct {
+			Key   string
+			Value string
+		}{k, v})
+	}
+	return items
+}
+
+func (m ObjectAdditionalPropertiesfoo) Iterator() *immutable.MapIterator[string, string] {
+	return (*immutable.Map[string, string])(&m).Iterator()
+}

@@ -3,6 +3,7 @@
 package test
 
 import "encoding/json"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 func NewRefToMapBuilder(o *RefToMap) *RefToMapBuilder {
@@ -16,11 +17,11 @@ func NewRefToMapBuilder(o *RefToMap) *RefToMapBuilder {
 
 type RefToMap struct {
 	// mything corresponds to the JSON schema field "myThing".
-	mything map[string]float64 `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
+	mything immutable.Map[string, float64] `json:"myThing,omitempty,omitzero" yaml:"myThing,omitempty" mapstructure:"myThing,omitempty"`
 }
 
 type RefToMapBuilder struct {
-	mything map[string]float64
+	mything immutable.Map[string, float64]
 }
 
 func (b *RefToMapBuilder) Build() *RefToMap {
@@ -29,7 +30,7 @@ func (b *RefToMapBuilder) Build() *RefToMap {
 	}
 }
 
-func (b *RefToMapBuilder) WithMyThing(v map[string]float64) *RefToMapBuilder {
+func (b *RefToMapBuilder) WithMyThing(v immutable.Map[string, float64]) *RefToMapBuilder {
 	b.mything = v
 	return b
 }
@@ -38,7 +39,7 @@ func (o *RefToMap) Clone() *RefToMapBuilder {
 	return NewRefToMapBuilder(o)
 }
 
-func (o *RefToMap) MyThing() map[string]float64 {
+func (o *RefToMap) MyThing() immutable.Map[string, float64] {
 	return o.mything
 }
 
@@ -64,18 +65,35 @@ func (j *RefToMap) MarshalJSON() ([]byte, error) {
 		Mything map[string]float64 `json:"myThing,omitempty"`
 	}
 	helper := RefToMapMarshalHelper{
-		Mything: j.mything,
+		Mything: func() map[string]float64 {
+			m := make(map[string]float64)
+			iter := (*immutable.Map[string, float64])(&j.mything).Iterator()
+			for iter.First(); !iter.Done(); {
+				k, v, ok := iter.Next()
+				if !ok {
+					break
+				}
+				m[k] = v
+			}
+			return m
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *RefToMap) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Mything map[string]float64
+	}
 	type Plain RefToMap
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mything = rawStruct.Mything
+	plain = plain
 	*j = RefToMap(plain)
 	return nil
 }

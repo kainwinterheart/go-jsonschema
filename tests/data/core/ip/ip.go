@@ -37,11 +37,17 @@ func (o *Ip) MyObject() *Ipmyobject {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Ip) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Myobject *Ipmyobject
+	}
 	type Plain Ip
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myobject = rawStruct.Myobject
+	plain = plain
 	*j = Ip(plain)
 	return nil
 }
@@ -110,11 +116,17 @@ func (j *Ipmyobject) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myIp"]; raw != nil && !ok {
 		return fmt.Errorf("field myIp in Ipmyobject: required")
 	}
+	type PlainRaw struct {
+		Myip netip.Addr
+	}
 	type Plain Ipmyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myip = (Addr)(rawStruct.Myip)
+	plain = plain
 	*j = Ipmyobject(plain)
 	return nil
 }
@@ -137,7 +149,7 @@ func (j *Ipmyobject) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.myip = helper.Myip
+	plain.myip = (Addr)(helper.Myip)
 	*j = Ipmyobject(plain)
 	return nil
 }

@@ -111,11 +111,21 @@ func (j *Tags) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Tags) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Html *string
+		Id   *string
+		Url  *string
+	}
 	type Plain Tags
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.html = rawStruct.Html
+	plain.id = rawStruct.Id
+	plain.url = rawStruct.Url
+	plain = plain
 	*j = Tags(plain)
 	return nil
 }

@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import "github.com/go-viper/mapstructure/v2"
 import yaml "gopkg.in/yaml.v3"
 import "reflect"
@@ -77,9 +78,16 @@ func (j *Alpha) UnmarshalJSON(value []byte) error {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = func() interface{} {
+		if additionalPropsRaw == nil {
+			return nil
+		}
+		return additionalPropsRaw
+	}()
 	*j = Alpha(plain)
 	return nil
 }
@@ -103,19 +111,31 @@ func (j *Alpha) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
+	type PlainRaw struct {
+		Beta                 Beta
+		Eta                  *Eta
+		AdditionalProperties interface{}
+	}
 	type Plain Alpha
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.beta = rawStruct.Beta
+	plain.eta = rawStruct.Eta
+	plain.AdditionalProperties = rawStruct.AdditionalProperties
+	plain = plain
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = additionalPropsRaw
 	*j = Alpha(plain)
 	return nil
 }
@@ -179,19 +199,31 @@ func (j *Eta) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["theta"]; raw != nil && !ok {
 		return fmt.Errorf("field theta in Eta: required")
 	}
+	type PlainRaw struct {
+		Epsilon              string
+		Theta                Theta
+		AdditionalProperties interface{}
+	}
 	type Plain Eta
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.epsilon = rawStruct.Epsilon
+	plain.theta = rawStruct.Theta
+	plain.AdditionalProperties = rawStruct.AdditionalProperties
+	plain = plain
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = additionalPropsRaw
 	*j = Eta(plain)
 	return nil
 }
@@ -225,9 +257,16 @@ func (j *Eta) UnmarshalJSON(value []byte) error {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = func() interface{} {
+		if additionalPropsRaw == nil {
+			return nil
+		}
+		return additionalPropsRaw
+	}()
 	*j = Eta(plain)
 	return nil
 }
@@ -281,19 +320,29 @@ func (j *Iota) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
+	type PlainRaw struct {
+		Kappa                *TITLE
+		AdditionalProperties interface{}
+	}
 	type Plain Iota
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.kappa = rawStruct.Kappa
+	plain.AdditionalProperties = rawStruct.AdditionalProperties
+	plain = plain
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = additionalPropsRaw
 	*j = Iota(plain)
 	return nil
 }
@@ -319,9 +368,16 @@ func (j *Iota) UnmarshalJSON(value []byte) error {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = func() interface{} {
+		if additionalPropsRaw == nil {
+			return nil
+		}
+		return additionalPropsRaw
+	}()
 	*j = Iota(plain)
 	return nil
 }
@@ -373,19 +429,29 @@ func (j *IotakappalambdaElem) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
+	type PlainRaw struct {
+		Sigma                *Alpha
+		AdditionalProperties interface{}
+	}
 	type Plain IotakappalambdaElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.sigma = rawStruct.Sigma
+	plain.AdditionalProperties = rawStruct.AdditionalProperties
+	plain = plain
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = additionalPropsRaw
 	*j = IotakappalambdaElem(plain)
 	return nil
 }
@@ -411,9 +477,16 @@ func (j *IotakappalambdaElem) UnmarshalJSON(value []byte) error {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = func() interface{} {
+		if additionalPropsRaw == nil {
+			return nil
+		}
+		return additionalPropsRaw
+	}()
 	*j = IotakappalambdaElem(plain)
 	return nil
 }
@@ -524,19 +597,29 @@ func (j *Properties) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["iota"]; raw != nil && !ok {
 		return fmt.Errorf("field iota in Properties: required")
 	}
+	type PlainRaw struct {
+		Iota                 Iota
+		AdditionalProperties interface{}
+	}
 	type Plain Properties
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.iota = rawStruct.Iota
+	plain.AdditionalProperties = rawStruct.AdditionalProperties
+	plain = plain
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = additionalPropsRaw
 	*j = Properties(plain)
 	return nil
 }
@@ -565,9 +648,16 @@ func (j *Properties) UnmarshalJSON(value []byte) error {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = func() interface{} {
+		if additionalPropsRaw == nil {
+			return nil
+		}
+		return additionalPropsRaw
+	}()
 	*j = Properties(plain)
 	return nil
 }
@@ -586,13 +676,13 @@ func (j *Properties) MarshalJSON() ([]byte, error) {
 // DESCRIPTION
 type TITLE struct {
 	// lambda corresponds to the JSON schema field "lambda".
-	lambda []IotakappalambdaElem `json:"lambda,omitempty,omitzero" yaml:"lambda,omitempty" mapstructure:"lambda,omitempty"`
+	lambda *immutable.List[IotakappalambdaElem] `json:"lambda,omitempty,omitzero" yaml:"lambda,omitempty" mapstructure:"lambda,omitempty"`
 
 	AdditionalProperties interface{} `mapstructure:",remain"`
 }
 
 type TITLEBuilder struct {
-	lambda []IotakappalambdaElem
+	lambda *immutable.List[IotakappalambdaElem]
 }
 
 func (b *TITLEBuilder) Build() *TITLE {
@@ -601,7 +691,7 @@ func (b *TITLEBuilder) Build() *TITLE {
 	}
 }
 
-func (b *TITLEBuilder) WithLambda(v []IotakappalambdaElem) *TITLEBuilder {
+func (b *TITLEBuilder) WithLambda(v *immutable.List[IotakappalambdaElem]) *TITLEBuilder {
 	b.lambda = v
 	return b
 }
@@ -610,7 +700,7 @@ func (o *TITLE) Clone() *TITLEBuilder {
 	return NewTITLEBuilder(o)
 }
 
-func (o *TITLE) Lambda() []IotakappalambdaElem {
+func (o *TITLE) Lambda() *immutable.List[IotakappalambdaElem] {
 	return o.lambda
 }
 
@@ -629,15 +719,31 @@ func (j *TITLE) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.lambda = helper.Lambda
+	plain.lambda = func() *immutable.List[IotakappalambdaElem] {
+		if helper.Lambda == nil {
+			return nil
+		}
+		l := make([]IotakappalambdaElem, 0, len(helper.Lambda))
+		for _, v := range helper.Lambda {
+			l = append(l, (IotakappalambdaElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = func() interface{} {
+		if additionalPropsRaw == nil {
+			return nil
+		}
+		return additionalPropsRaw
+	}()
 	*j = TITLE(plain)
 	return nil
 }
@@ -648,7 +754,18 @@ func (j *TITLE) MarshalJSON() ([]byte, error) {
 		Lambda []IotakappalambdaElem `json:"lambda,omitempty"`
 	}
 	helper := TITLEMarshalHelper{
-		Lambda: j.lambda,
+		Lambda: func() []IotakappalambdaElem {
+			if j.lambda == nil {
+				return nil
+			}
+			lst := (*immutable.List[IotakappalambdaElem])(j.lambda)
+			l := make([]IotakappalambdaElem, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -659,19 +776,38 @@ func (j *TITLE) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
+	type PlainRaw struct {
+		Lambda               []IotakappalambdaElem
+		AdditionalProperties interface{}
+	}
 	type Plain TITLE
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.lambda = func() *immutable.List[IotakappalambdaElem] {
+		if rawStruct.Lambda == nil {
+			return nil
+		}
+		l := make([]IotakappalambdaElem, 0, len(rawStruct.Lambda))
+		for _, v := range rawStruct.Lambda {
+			l = append(l, (IotakappalambdaElem)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.AdditionalProperties = rawStruct.AdditionalProperties
+	plain = plain
 	st := reflect.TypeOf(Plain{})
 	for i := range st.NumField() {
 		delete(raw, st.Field(i).Name)
 		delete(raw, strings.Split(st.Field(i).Tag.Get("json"), ",")[0])
 	}
-	if err := mapstructure.Decode(raw, &plain.AdditionalProperties); err != nil {
+	var additionalPropsRaw map[string]interface{}
+	if err := mapstructure.Decode(raw, &additionalPropsRaw); err != nil {
 		return err
 	}
+	plain.AdditionalProperties = additionalPropsRaw
 	*j = TITLE(plain)
 	return nil
 }
@@ -680,11 +816,15 @@ type Theta int
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Theta) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+	}
 	type Plain Theta
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain = plain
 	if 65535 < plain {
 		return fmt.Errorf("field %s: must be <= %v", "", 65535)
 	}

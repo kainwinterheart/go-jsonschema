@@ -286,11 +286,33 @@ func (j *Larger) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["u64"]; raw != nil && !ok {
 		return fmt.Errorf("field u64 in Larger: required")
 	}
+	type PlainRaw struct {
+		I16l *int16
+		I16u *int16
+		I32l *int32
+		I32u *int32
+		I64l *int64
+		I64u *int64
+		U16  uint16
+		U32  uint32
+		U64  uint64
+	}
 	type Plain Larger
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.i16l = rawStruct.I16l
+	plain.i16u = rawStruct.I16u
+	plain.i32l = rawStruct.I32l
+	plain.i32u = rawStruct.I32u
+	plain.i64l = rawStruct.I64l
+	plain.i64u = rawStruct.I64u
+	plain.u16 = rawStruct.U16
+	plain.u32 = rawStruct.U32
+	plain.u64 = rawStruct.U64
+	plain = plain
 	if plain.i16l != nil && 127 < *plain.i16l {
 		return fmt.Errorf("field %s: must be <= %v", "i16l", 127)
 	}

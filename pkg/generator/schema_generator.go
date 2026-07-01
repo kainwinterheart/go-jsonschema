@@ -330,7 +330,9 @@ func (g *schemaGenerator) generateDeclaredType(t *schemas.Type, scope nameScope)
 
 		// Generate public read-only getters for all struct fields.
 		for _, f := range tt.Fields {
-			if f.Name == additionalProperties { continue }
+			if f.Name == additionalProperties {
+				continue
+			}
 			getterName := g.caser.Identifierize(f.JSONName)
 			fieldName := f.Name
 			fieldType := f.Type
@@ -359,7 +361,9 @@ func (g *schemaGenerator) generateDeclaredType(t *schemas.Type, scope nameScope)
 		}
 
 		for _, f := range tt.Fields {
-			if f.Name == additionalProperties { continue }
+			if f.Name == additionalProperties {
+				continue
+			}
 			if f.DefaultValue != nil {
 				if f.Name == additionalProperties {
 					g.output.file.Package.AddImport("reflect", "")
@@ -413,6 +417,12 @@ func (g *schemaGenerator) generateDeclaredType(t *schemas.Type, scope nameScope)
 		if t.IsSubSchemaTypeElem() {
 			g.generateUnmarshaler(&decl, []validator{})
 		}
+		// Generate wrapper methods for map type definitions to allow calling Iterator()
+		// without unsafe.Pointer casts
+		if !isNamedType(theType) {
+			g.generateMapWrapperMethods(&decl, theType)
+		}
+	case codegen.ArrayType, *codegen.ArrayType:
 	}
 
 	return &codegen.NamedType{Decl: &decl}, nil
@@ -616,6 +626,7 @@ func (g *schemaGenerator) generateType(t *schemas.Type, scope nameScope) (codege
 	switch typeName {
 	case schemas.TypeNameArray:
 		if t.Items == nil {
+			g.output.file.Package.AddImport("github.com/benbjohnson/immutable", "")
 			return arrayTypeVal, nil
 		}
 
@@ -624,6 +635,7 @@ func (g *schemaGenerator) generateType(t *schemas.Type, scope nameScope) (codege
 			return nil, err
 		}
 
+		g.output.file.Package.AddImport("github.com/benbjohnson/immutable", "")
 		return codegen.ArrayType{Type: elemType}, nil
 
 	case schemas.TypeNameObject:
@@ -759,6 +771,7 @@ func (g *schemaGenerator) generateStructType(t *schemas.Type, scope nameScope) (
 			}
 		}
 
+		g.output.file.Package.AddImport("github.com/benbjohnson/immutable", "")
 		return &codegen.MapType{
 			KeyType:   codegen.PrimitiveType{Type: schemas.TypeNameString},
 			ValueType: valueType,
@@ -790,63 +803,12 @@ func (g *schemaGenerator) generateStructType(t *schemas.Type, scope nameScope) (
 
 	// Checking .Not here because `false` is unmarshalled to .Not = Type{}.
 	if t.AdditionalProperties != nil && t.AdditionalProperties.Not == nil {
-		var (
-			defaultValue any          = nil
-			fieldType    codegen.Type = emptyInterfaceTypeVal
-		)
-
-		if len(t.AdditionalProperties.Type) == 1 {
-			switch t.AdditionalProperties.Type[0] {
-			case schemas.TypeNameString:
-				defaultValue = map[string]string{}
-				fieldType = codegen.MapType{
-					KeyType:   stringTypeVal,
-					ValueType: stringTypeVal,
-				}
-
-			case schemas.TypeNameArray:
-				defaultValue = map[string][]any{}
-				fieldType = codegen.MapType{
-					KeyType:   stringTypeVal,
-					ValueType: arrayTypeVal,
-				}
-
-			case schemas.TypeNameNumber:
-				defaultValue = map[string]float64{}
-				fieldType = codegen.MapType{
-					KeyType:   stringTypeVal,
-					ValueType: codegen.PrimitiveType{Type: float64Type},
-				}
-
-			case schemas.TypeNameInteger:
-				defaultValue = map[string]int{}
-				fieldType = codegen.MapType{
-					KeyType:   stringTypeVal,
-					ValueType: intTypeVal,
-				}
-
-			case schemas.TypeNameBoolean:
-				defaultValue = map[string]bool{}
-				fieldType = codegen.MapType{
-					KeyType:   stringTypeVal,
-					ValueType: boolTypeVal,
-				}
-
-			default:
-				defaultValue = map[string]any{}
-				fieldType = codegen.MapType{
-					KeyType:   stringTypeVal,
-					ValueType: emptyInterfaceTypeVal,
-				}
-			}
-		}
-
 		structType.AddField(
 			codegen.StructField{
 				Name:         additionalProperties,
-				DefaultValue: defaultValue,
+				DefaultValue: nil,
 				SchemaType:   &schemas.Type{},
-				Type:         fieldType,
+				Type:         emptyInterfaceTypeVal,
 				Tags:         "mapstructure:\",remain\"",
 			},
 		)
@@ -909,7 +871,6 @@ func (g *schemaGenerator) addStructField(
 	if err != nil {
 		return fmt.Errorf("cannot add struct field: %w", err)
 	}
-
 
 	structField := codegen.StructField{
 		Name:         fieldName,
@@ -1123,19 +1084,19 @@ func (g *schemaGenerator) defaultPropertyValue(prop *schemas.Type) any {
 
 		switch prop.AdditionalProperties.Type[0] {
 		case schemas.TypeNameString:
-			return map[string]string{}
+			return nil
 
 		case schemas.TypeNameArray:
-			return map[string][]any{}
+			return nil
 
 		case schemas.TypeNameNumber:
-			return map[string]float64{}
+			return nil
 
 		case schemas.TypeNameInteger:
-			return map[string]int{}
+			return nil
 
 		case schemas.TypeNameBoolean:
-			return map[string]bool{}
+			return nil
 
 		default:
 			return prop.Default
@@ -1245,6 +1206,7 @@ func (g *schemaGenerator) generateTypeInline(t *schemas.Type, scope nameScope) (
 				}
 			}
 
+			g.output.file.Package.AddImport("github.com/benbjohnson/immutable", "")
 			return &codegen.ArrayType{Type: theType}, nil
 		}
 
@@ -1669,3 +1631,101 @@ func (g *schemaGenerator) generateBuilder(decl *codegen.TypeDecl, st *codegen.St
 		})
 	}
 }
+
+// generateMapWrapperMethods generates wrapper methods for map type definitions.
+// These methods allow calling Iterator() on the type definition without using unsafe.
+func (g *schemaGenerator) generateMapWrapperMethods(decl *codegen.TypeDecl, t codegen.Type) {
+	// Only generate for MapType
+	var keyType, valueType codegen.Type
+	switch x := t.(type) {
+	case codegen.MapType:
+		keyType = x.KeyType
+		valueType = x.ValueType
+	case *codegen.MapType:
+		keyType = x.KeyType
+		valueType = x.ValueType
+	default:
+		return
+	}
+
+	// Generate Iterator() wrapper method using Emitter for correct type rendering
+	g.output.file.Package.AddDecl(&codegen.Method{
+		Impl: func(out *codegen.Emitter) error {
+			out.Printf("func (m %s) Iterator() *immutable.MapIterator[", decl.Name)
+			if err := keyType.Generate(out); err != nil {
+				return err
+			}
+			out.Printf(", ")
+			if err := valueType.Generate(out); err != nil {
+				return err
+			}
+			out.Printf("] {")
+			out.Indent(1)
+			out.Printf("return (*immutable.Map[")
+			if err := keyType.Generate(out); err != nil {
+				return err
+			}
+			out.Printf(", ")
+			if err := valueType.Generate(out); err != nil {
+				return err
+			}
+			out.Printf("])(&m).Iterator()")
+			out.Indent(-1)
+			out.Printf("}")
+			return nil
+		},
+		Name: decl.Name + "_Iterator",
+	})
+
+	// Generate Items() wrapper method
+	g.output.file.Package.AddDecl(&codegen.Method{
+		Impl: func(out *codegen.Emitter) error {
+			out.Printf("func (m %s) Items() []struct{Key ", decl.Name)
+			if err := keyType.Generate(out); err != nil {
+				return err
+			}
+			out.Printf("; Value ")
+			if err := valueType.Generate(out); err != nil {
+				return err
+			}
+			out.Printf("} {")
+			out.Printlnf("")
+			out.Printf("var items []struct{Key ")
+			if err := keyType.Generate(out); err != nil {
+				return err
+			}
+			out.Printf("; Value ")
+			if err := valueType.Generate(out); err != nil {
+				return err
+			}
+			out.Printf("}")
+			out.Printlnf("")
+			out.Printf("iter := (&m).Iterator()")
+			out.Printlnf("")
+			out.Printf("for iter.First(); !iter.Done(); {")
+			out.Printlnf("")
+			out.Printf("	k, v, ok := iter.Next()")
+			out.Printlnf("")
+			out.Printf("	if !ok { break }")
+			out.Printlnf("")
+			out.Printf("	items = append(items, struct{Key ")
+			if err := keyType.Generate(out); err != nil {
+				return err
+			}
+			out.Printf("; Value ")
+			if err := valueType.Generate(out); err != nil {
+				return err
+			}
+			out.Printf("}{k, v})")
+			out.Printlnf("")
+			out.Printf("}")
+			out.Printlnf("")
+			out.Printf("return items")
+			out.Printlnf("")
+			out.Printf("}")
+			return nil
+		},
+		Name: decl.Name + "_Items",
+	})
+}
+

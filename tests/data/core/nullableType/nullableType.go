@@ -97,11 +97,19 @@ func (j *NullableType) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *NullableType) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Myinlinestringvalue NullableTypemyinlinestringvalue
+		Mystringvalue       StringThing
+	}
 	type Plain NullableType
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myinlinestringvalue = rawStruct.Myinlinestringvalue
+	plain.mystringvalue = rawStruct.Mystringvalue
+	plain = plain
 	*j = NullableType(plain)
 	return nil
 }

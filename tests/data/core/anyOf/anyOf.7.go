@@ -5,23 +5,24 @@ package test
 import "encoding/json"
 import "errors"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 type AnyOf7 struct {
 	// bar corresponds to the JSON schema field "bar".
-	bar []*AnyOf7barElem `json:"bar" yaml:"bar" mapstructure:"bar"`
+	bar *immutable.List[*AnyOf7barElem] `json:"bar" yaml:"bar" mapstructure:"bar"`
 
 	// baz corresponds to the JSON schema field "baz".
-	baz []*AnyOf7bazElem `json:"baz,omitempty,omitzero" yaml:"baz,omitempty" mapstructure:"baz,omitempty"`
+	baz *immutable.List[*AnyOf7bazElem] `json:"baz,omitempty,omitzero" yaml:"baz,omitempty" mapstructure:"baz,omitempty"`
 
 	// foo corresponds to the JSON schema field "foo".
 	foo *AnyOf7foo `json:"foo" yaml:"foo" mapstructure:"foo"`
 }
 
 type AnyOf7Builder struct {
-	bar []*AnyOf7barElem
+	bar *immutable.List[*AnyOf7barElem]
 
-	baz []*AnyOf7bazElem
+	baz *immutable.List[*AnyOf7bazElem]
 
 	foo *AnyOf7foo
 }
@@ -34,12 +35,12 @@ func (b *AnyOf7Builder) Build() *AnyOf7 {
 	}
 }
 
-func (b *AnyOf7Builder) WithBar(v []*AnyOf7barElem) *AnyOf7Builder {
+func (b *AnyOf7Builder) WithBar(v *immutable.List[*AnyOf7barElem]) *AnyOf7Builder {
 	b.bar = v
 	return b
 }
 
-func (b *AnyOf7Builder) WithBaz(v []*AnyOf7bazElem) *AnyOf7Builder {
+func (b *AnyOf7Builder) WithBaz(v *immutable.List[*AnyOf7bazElem]) *AnyOf7Builder {
 	b.baz = v
 	return b
 }
@@ -49,11 +50,11 @@ func (b *AnyOf7Builder) WithFoo(v *AnyOf7foo) *AnyOf7Builder {
 	return b
 }
 
-func (o *AnyOf7) Bar() []*AnyOf7barElem {
+func (o *AnyOf7) Bar() *immutable.List[*AnyOf7barElem] {
 	return o.bar
 }
 
-func (o *AnyOf7) Baz() []*AnyOf7bazElem {
+func (o *AnyOf7) Baz() *immutable.List[*AnyOf7bazElem] {
 	return o.baz
 }
 
@@ -88,8 +89,26 @@ func (j *AnyOf7) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.bar = helper.Bar
-	plain.baz = helper.Baz
+	plain.bar = func() *immutable.List[*AnyOf7barElem] {
+		if helper.Bar == nil {
+			return nil
+		}
+		l := make([]*AnyOf7barElem, 0, len(helper.Bar))
+		for _, v := range helper.Bar {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.baz = func() *immutable.List[*AnyOf7bazElem] {
+		if helper.Baz == nil {
+			return nil
+		}
+		l := make([]*AnyOf7bazElem, 0, len(helper.Baz))
+		for _, v := range helper.Baz {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.foo = helper.Foo
 	*j = AnyOf7(plain)
 	return nil
@@ -103,8 +122,30 @@ func (j *AnyOf7) MarshalJSON() ([]byte, error) {
 		Foo *AnyOf7foo       `json:"foo"`
 	}
 	helper := AnyOf7MarshalHelper{
-		Bar: j.bar,
-		Baz: j.baz,
+		Bar: func() []*AnyOf7barElem {
+			if j.bar == nil {
+				return nil
+			}
+			lst := (*immutable.List[*AnyOf7barElem])(j.bar)
+			l := make([]*AnyOf7barElem, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Baz: func() []*AnyOf7bazElem {
+			if j.baz == nil {
+				return nil
+			}
+			lst := (*immutable.List[*AnyOf7bazElem])(j.baz)
+			l := make([]*AnyOf7bazElem, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 		Foo: j.foo,
 	}
 	return json.Marshal(helper)
@@ -122,11 +163,39 @@ func (j *AnyOf7) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["foo"]; raw != nil && !ok {
 		return fmt.Errorf("field foo in AnyOf7: required")
 	}
+	type PlainRaw struct {
+		Bar []*AnyOf7barElem
+		Baz []*AnyOf7bazElem
+		Foo *AnyOf7foo
+	}
 	type Plain AnyOf7
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.bar = func() *immutable.List[*AnyOf7barElem] {
+		if rawStruct.Bar == nil {
+			return nil
+		}
+		l := make([]*AnyOf7barElem, 0, len(rawStruct.Bar))
+		for _, v := range rawStruct.Bar {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.baz = func() *immutable.List[*AnyOf7bazElem] {
+		if rawStruct.Baz == nil {
+			return nil
+		}
+		l := make([]*AnyOf7bazElem, 0, len(rawStruct.Baz))
+		for _, v := range rawStruct.Baz {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.foo = rawStruct.Foo
+	plain = plain
 	*j = AnyOf7(plain)
 	return nil
 }
@@ -173,11 +242,17 @@ func (j *AnyOf7barElem) UnmarshalYAML(value *yaml.Node) error {
 	if len(errs) == 1 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
+	type PlainRaw struct {
+		Name *string
+	}
 	type Plain AnyOf7barElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.name = rawStruct.Name
+	plain = plain
 	*j = AnyOf7barElem(plain)
 	return nil
 }
@@ -302,11 +377,17 @@ func (j *AnyOf7bazElem) UnmarshalYAML(value *yaml.Node) error {
 	if len(errs) == 1 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
+	type PlainRaw struct {
+		Name *string
+	}
 	type Plain AnyOf7bazElem
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.name = rawStruct.Name
+	plain = plain
 	*j = AnyOf7bazElem(plain)
 	return nil
 }
@@ -392,11 +473,17 @@ func (j *AnyOf7foo) UnmarshalYAML(value *yaml.Node) error {
 	if len(errs) == 1 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
+	type PlainRaw struct {
+		Name *string
+	}
 	type Plain AnyOf7foo
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.name = rawStruct.Name
+	plain = plain
 	*j = AnyOf7foo(plain)
 	return nil
 }
@@ -431,11 +518,17 @@ type AnyOf7barElem_0 = Item
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Item) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Name *string
+	}
 	type Plain Item
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.name = rawStruct.Name
+	plain = plain
 	*j = Item(plain)
 	return nil
 }

@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 import "time"
 
@@ -58,7 +59,7 @@ type Pointer struct {
 	requiredintpointer *int `json:"requiredIntPointer" yaml:"requiredIntPointer" mapstructure:"requiredIntPointer"`
 
 	// slicewithdefault corresponds to the JSON schema field "sliceWithDefault".
-	slicewithdefault []string `json:"sliceWithDefault,omitempty,omitzero" yaml:"sliceWithDefault,omitempty" mapstructure:"sliceWithDefault,omitempty"`
+	slicewithdefault *immutable.List[string] `json:"sliceWithDefault,omitempty,omitzero" yaml:"sliceWithDefault,omitempty" mapstructure:"sliceWithDefault,omitempty"`
 
 	// stringwithdefault corresponds to the JSON schema field "stringWithDefault".
 	stringwithdefault *string `json:"stringWithDefault,omitempty,omitzero" yaml:"stringWithDefault,omitempty" mapstructure:"stringWithDefault,omitempty"`
@@ -83,7 +84,7 @@ type PointerBuilder struct {
 
 	requiredintpointer *int
 
-	slicewithdefault []string
+	slicewithdefault *immutable.List[string]
 
 	stringwithdefault *string
 }
@@ -149,7 +150,7 @@ func (b *PointerBuilder) WithRequiredIntPointer(v *int) *PointerBuilder {
 	return b
 }
 
-func (b *PointerBuilder) WithSliceWithDefault(v []string) *PointerBuilder {
+func (b *PointerBuilder) WithSliceWithDefault(v *immutable.List[string]) *PointerBuilder {
 	b.slicewithdefault = v
 	return b
 }
@@ -199,7 +200,7 @@ func (o *Pointer) RequiredIntPointer() *int {
 	return o.requiredintpointer
 }
 
-func (o *Pointer) SliceWithDefault() []string {
+func (o *Pointer) SliceWithDefault() *immutable.List[string] {
 	return o.slicewithdefault
 }
 
@@ -247,7 +248,16 @@ func (j *Pointer) UnmarshalJSON(value []byte) error {
 	plain.optionalstringnonpointer = helper.Optionalstringnonpointer
 	plain.requiredintnonpointer = helper.Requiredintnonpointer
 	plain.requiredintpointer = helper.Requiredintpointer
-	plain.slicewithdefault = helper.Slicewithdefault
+	plain.slicewithdefault = func() *immutable.List[string] {
+		if helper.Slicewithdefault == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Slicewithdefault))
+		for _, v := range helper.Slicewithdefault {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.stringwithdefault = helper.Stringwithdefault
 	if v, ok := raw["boolWithDefault"]; !ok || v == nil {
 		var defaultboolwithdefault bool = true
@@ -269,10 +279,7 @@ func (j *Pointer) UnmarshalJSON(value []byte) error {
 		plain.normaldefault = "world"
 	}
 	if v, ok := raw["sliceWithDefault"]; !ok || v == nil {
-		plain.slicewithdefault = []string{
-			"a",
-			"b",
-		}
+		plain.slicewithdefault = immutable.NewList[string]("a", "b")
 	}
 	if v, ok := raw["stringWithDefault"]; !ok || v == nil {
 		var defaultstringwithdefault string = "hello"
@@ -307,8 +314,19 @@ func (j *Pointer) MarshalJSON() ([]byte, error) {
 		Optionalstringnonpointer: j.optionalstringnonpointer,
 		Requiredintnonpointer:    j.requiredintnonpointer,
 		Requiredintpointer:       j.requiredintpointer,
-		Slicewithdefault:         j.slicewithdefault,
-		Stringwithdefault:        j.stringwithdefault,
+		Slicewithdefault: func() []string {
+			if j.slicewithdefault == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.slicewithdefault)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Stringwithdefault: j.stringwithdefault,
 	}
 	return json.Marshal(helper)
 }
@@ -325,11 +343,46 @@ func (j *Pointer) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["requiredIntPointer"]; raw != nil && !ok {
 		return fmt.Errorf("field requiredIntPointer in Pointer: required")
 	}
+	type PlainRaw struct {
+		Boolwithdefault          *bool
+		Durationwithdefault      *time.Duration
+		Intwithdefault           *int
+		Normaldefault            string
+		Normaloptional           *string
+		Optionalintnonpointer    int
+		Optionalstringnonpointer string
+		Requiredintnonpointer    int
+		Requiredintpointer       *int
+		Slicewithdefault         []string
+		Stringwithdefault        *string
+	}
 	type Plain Pointer
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.boolwithdefault = rawStruct.Boolwithdefault
+	plain.durationwithdefault = rawStruct.Durationwithdefault
+	plain.intwithdefault = rawStruct.Intwithdefault
+	plain.normaldefault = rawStruct.Normaldefault
+	plain.normaloptional = rawStruct.Normaloptional
+	plain.optionalintnonpointer = rawStruct.Optionalintnonpointer
+	plain.optionalstringnonpointer = rawStruct.Optionalstringnonpointer
+	plain.requiredintnonpointer = rawStruct.Requiredintnonpointer
+	plain.requiredintpointer = rawStruct.Requiredintpointer
+	plain.slicewithdefault = func() *immutable.List[string] {
+		if rawStruct.Slicewithdefault == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Slicewithdefault))
+		for _, v := range rawStruct.Slicewithdefault {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.stringwithdefault = rawStruct.Stringwithdefault
+	plain = plain
 	if v, ok := raw["boolWithDefault"]; !ok || v == nil {
 		var defaultboolwithdefault bool = true
 		plain.boolwithdefault = &defaultboolwithdefault
@@ -350,10 +403,7 @@ func (j *Pointer) UnmarshalYAML(value *yaml.Node) error {
 		plain.normaldefault = "world"
 	}
 	if v, ok := raw["sliceWithDefault"]; !ok || v == nil {
-		plain.slicewithdefault = []string{
-			"a",
-			"b",
-		}
+		plain.slicewithdefault = immutable.NewList[string]("a", "b")
 	}
 	if v, ok := raw["stringWithDefault"]; !ok || v == nil {
 		var defaultstringwithdefault string = "hello"

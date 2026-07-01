@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 import "reflect"
 import "time"
@@ -11,7 +12,7 @@ import "time"
 // Base definition for all elements in a resource.
 type Element struct {
 	// Additional content defined by implementations.
-	extension []string `json:"extension,omitempty,omitzero" yaml:"extension,omitempty" mapstructure:"extension,omitempty"`
+	extension *immutable.List[string] `json:"extension,omitempty,omitzero" yaml:"extension,omitempty" mapstructure:"extension,omitempty"`
 
 	// Unique id for the element within a resource (for internal references).
 	id *string `json:"id,omitempty,omitzero" yaml:"id,omitempty" mapstructure:"id,omitempty"`
@@ -21,7 +22,7 @@ type Element struct {
 }
 
 type ElementBuilder struct {
-	extension []string
+	extension *immutable.List[string]
 
 	id *string
 
@@ -36,7 +37,7 @@ func (b *ElementBuilder) Build() *Element {
 	}
 }
 
-func (b *ElementBuilder) WithExtension(v []string) *ElementBuilder {
+func (b *ElementBuilder) WithExtension(v *immutable.List[string]) *ElementBuilder {
 	b.extension = v
 	return b
 }
@@ -55,7 +56,7 @@ func (o *Element) Clone() *ElementBuilder {
 	return NewElementBuilder(o)
 }
 
-func (o *Element) Extension() []string {
+func (o *Element) Extension() *immutable.List[string] {
 	return o.extension
 }
 
@@ -80,7 +81,16 @@ func (j *Element) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.extension = helper.Extension
+	plain.extension = func() *immutable.List[string] {
+		if helper.Extension == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Extension))
+		for _, v := range helper.Extension {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.id = helper.Id
 	plain.name = helper.Name
 	*j = Element(plain)
@@ -95,20 +105,50 @@ func (j *Element) MarshalJSON() ([]byte, error) {
 		Name      *string  `json:"name,omitempty"`
 	}
 	helper := ElementMarshalHelper{
-		Extension: j.extension,
-		Id:        j.id,
-		Name:      j.name,
+		Extension: func() []string {
+			if j.extension == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.extension)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Id:   j.id,
+		Name: j.name,
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Element) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Extension []string
+		Id        *string
+		Name      *string
+	}
 	type Plain Element
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.extension = func() *immutable.List[string] {
+		if rawStruct.Extension == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Extension))
+		for _, v := range rawStruct.Extension {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.id = rawStruct.Id
+	plain.name = rawStruct.Name
+	plain = plain
 	*j = Element(plain)
 	return nil
 }
@@ -172,11 +212,17 @@ func (j *Issue6) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Issue6) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Name *Issue6name
+	}
 	type Plain Issue6
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.name = rawStruct.Name
+	plain = plain
 	*j = Issue6(plain)
 	return nil
 }
@@ -187,13 +233,13 @@ type Issue6name struct {
 	family *Element `json:"_family,omitempty,omitzero" yaml:"_family,omitempty" mapstructure:"_family,omitempty"`
 
 	// Extensions for given
-	given []Element `json:"_given,omitempty,omitzero" yaml:"_given,omitempty" mapstructure:"_given,omitempty"`
+	given *immutable.List[Element] `json:"_given,omitempty,omitzero" yaml:"_given,omitempty" mapstructure:"_given,omitempty"`
 
 	// Extensions for prefix
-	prefix []Element `json:"_prefix,omitempty,omitzero" yaml:"_prefix,omitempty" mapstructure:"_prefix,omitempty"`
+	prefix *immutable.List[Element] `json:"_prefix,omitempty,omitzero" yaml:"_prefix,omitempty" mapstructure:"_prefix,omitempty"`
 
 	// Extensions for suffix
-	suffix []Element `json:"_suffix,omitempty,omitzero" yaml:"_suffix,omitempty" mapstructure:"_suffix,omitempty"`
+	suffix *immutable.List[Element] `json:"_suffix,omitempty,omitzero" yaml:"_suffix,omitempty" mapstructure:"_suffix,omitempty"`
 
 	// Extensions for text
 	text *Element `json:"_text,omitempty,omitzero" yaml:"_text,omitempty" mapstructure:"_text,omitempty"`
@@ -206,18 +252,18 @@ type Issue6name struct {
 	family_2 *string `json:"family,omitempty,omitzero" yaml:"family,omitempty" mapstructure:"family,omitempty"`
 
 	// Given name.
-	given_2 []string `json:"given,omitempty,omitzero" yaml:"given,omitempty" mapstructure:"given,omitempty"`
+	given_2 *immutable.List[string] `json:"given,omitempty,omitzero" yaml:"given,omitempty" mapstructure:"given,omitempty"`
 
 	// Indicates the period of time when this name was valid for the named person.
 	period *Period `json:"period,omitempty,omitzero" yaml:"period,omitempty" mapstructure:"period,omitempty"`
 
 	// Part of the name that is acquired as a title due to academic, legal, employment
 	// or nobility status, etc. and that appears at the start of the name.
-	prefix_2 []string `json:"prefix,omitempty,omitzero" yaml:"prefix,omitempty" mapstructure:"prefix,omitempty"`
+	prefix_2 *immutable.List[string] `json:"prefix,omitempty,omitzero" yaml:"prefix,omitempty" mapstructure:"prefix,omitempty"`
 
 	// Part of the name that is acquired as a title due to academic, legal, employment
 	// or nobility status, etc. and that appears at the end of the name.
-	suffix_2 []string `json:"suffix,omitempty,omitzero" yaml:"suffix,omitempty" mapstructure:"suffix,omitempty"`
+	suffix_2 *immutable.List[string] `json:"suffix,omitempty,omitzero" yaml:"suffix,omitempty" mapstructure:"suffix,omitempty"`
 
 	// A full text representation of the name.
 	text_2 *string `json:"text,omitempty,omitzero" yaml:"text,omitempty" mapstructure:"text,omitempty"`
@@ -229,11 +275,11 @@ type Issue6name struct {
 type Issue6nameBuilder struct {
 	family *Element
 
-	given []Element
+	given *immutable.List[Element]
 
-	prefix []Element
+	prefix *immutable.List[Element]
 
-	suffix []Element
+	suffix *immutable.List[Element]
 
 	text *Element
 
@@ -241,13 +287,13 @@ type Issue6nameBuilder struct {
 
 	family_2 *string
 
-	given_2 []string
+	given_2 *immutable.List[string]
 
 	period *Period
 
-	prefix_2 []string
+	prefix_2 *immutable.List[string]
 
-	suffix_2 []string
+	suffix_2 *immutable.List[string]
 
 	text_2 *string
 
@@ -277,7 +323,7 @@ func (b *Issue6nameBuilder) WithFamily(v *Element) *Issue6nameBuilder {
 	return b
 }
 
-func (b *Issue6nameBuilder) WithGiven(v []Element) *Issue6nameBuilder {
+func (b *Issue6nameBuilder) WithGiven(v *immutable.List[Element]) *Issue6nameBuilder {
 	b.given = v
 	return b
 }
@@ -287,12 +333,12 @@ func (b *Issue6nameBuilder) WithPeriod(v *Period) *Issue6nameBuilder {
 	return b
 }
 
-func (b *Issue6nameBuilder) WithPrefix(v []Element) *Issue6nameBuilder {
+func (b *Issue6nameBuilder) WithPrefix(v *immutable.List[Element]) *Issue6nameBuilder {
 	b.prefix = v
 	return b
 }
 
-func (b *Issue6nameBuilder) WithSuffix(v []Element) *Issue6nameBuilder {
+func (b *Issue6nameBuilder) WithSuffix(v *immutable.List[Element]) *Issue6nameBuilder {
 	b.suffix = v
 	return b
 }
@@ -315,7 +361,7 @@ func (o *Issue6name) Family() *Element {
 	return o.family
 }
 
-func (o *Issue6name) Given() []Element {
+func (o *Issue6name) Given() *immutable.List[Element] {
 	return o.given
 }
 
@@ -323,11 +369,11 @@ func (o *Issue6name) Period() *Period {
 	return o.period
 }
 
-func (o *Issue6name) Prefix() []Element {
+func (o *Issue6name) Prefix() *immutable.List[Element] {
 	return o.prefix
 }
 
-func (o *Issue6name) Suffix() []Element {
+func (o *Issue6name) Suffix() *immutable.List[Element] {
 	return o.suffix
 }
 
@@ -363,16 +409,70 @@ func (j *Issue6name) UnmarshalJSON(value []byte) error {
 	}
 	var plain Plain
 	plain.family = helper.Family
-	plain.given = helper.Given
-	plain.prefix = helper.Prefix
-	plain.suffix = helper.Suffix
+	plain.given = func() *immutable.List[Element] {
+		if helper.Given == nil {
+			return nil
+		}
+		l := make([]Element, 0, len(helper.Given))
+		for _, v := range helper.Given {
+			l = append(l, (Element)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.prefix = func() *immutable.List[Element] {
+		if helper.Prefix == nil {
+			return nil
+		}
+		l := make([]Element, 0, len(helper.Prefix))
+		for _, v := range helper.Prefix {
+			l = append(l, (Element)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.suffix = func() *immutable.List[Element] {
+		if helper.Suffix == nil {
+			return nil
+		}
+		l := make([]Element, 0, len(helper.Suffix))
+		for _, v := range helper.Suffix {
+			l = append(l, (Element)(v))
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.text = helper.Text
 	plain.use = helper.Use
 	plain.family_2 = helper.Family_2
-	plain.given_2 = helper.Given_2
+	plain.given_2 = func() *immutable.List[string] {
+		if helper.Given_2 == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Given_2))
+		for _, v := range helper.Given_2 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.period = helper.Period
-	plain.prefix_2 = helper.Prefix_2
-	plain.suffix_2 = helper.Suffix_2
+	plain.prefix_2 = func() *immutable.List[string] {
+		if helper.Prefix_2 == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Prefix_2))
+		for _, v := range helper.Prefix_2 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.suffix_2 = func() *immutable.List[string] {
+		if helper.Suffix_2 == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Suffix_2))
+		for _, v := range helper.Suffix_2 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.text_2 = helper.Text_2
 	plain.use_2 = helper.Use_2
 	*j = Issue6name(plain)
@@ -397,30 +497,180 @@ func (j *Issue6name) MarshalJSON() ([]byte, error) {
 		Use_2    *Issue6nameuse_2 `json:"use,omitempty"`
 	}
 	helper := Issue6nameMarshalHelper{
-		Family:   j.family,
-		Given:    j.given,
-		Prefix:   j.prefix,
-		Suffix:   j.suffix,
+		Family: j.family,
+		Given: func() []Element {
+			if j.given == nil {
+				return nil
+			}
+			lst := (*immutable.List[Element])(j.given)
+			l := make([]Element, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Prefix: func() []Element {
+			if j.prefix == nil {
+				return nil
+			}
+			lst := (*immutable.List[Element])(j.prefix)
+			l := make([]Element, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Suffix: func() []Element {
+			if j.suffix == nil {
+				return nil
+			}
+			lst := (*immutable.List[Element])(j.suffix)
+			l := make([]Element, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 		Text:     j.text,
 		Use:      j.use,
 		Family_2: j.family_2,
-		Given_2:  j.given_2,
-		Period:   j.period,
-		Prefix_2: j.prefix_2,
-		Suffix_2: j.suffix_2,
-		Text_2:   j.text_2,
-		Use_2:    j.use_2,
+		Given_2: func() []string {
+			if j.given_2 == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.given_2)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Period: j.period,
+		Prefix_2: func() []string {
+			if j.prefix_2 == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.prefix_2)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Suffix_2: func() []string {
+			if j.suffix_2 == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.suffix_2)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Text_2: j.text_2,
+		Use_2:  j.use_2,
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Issue6name) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Family   *Element
+		Given    []Element
+		Prefix   []Element
+		Suffix   []Element
+		Text     *Element
+		Use      *Element
+		Family_2 *string
+		Given_2  []string
+		Period   *Period
+		Prefix_2 []string
+		Suffix_2 []string
+		Text_2   *string
+		Use_2    *Issue6nameuse_2
+	}
 	type Plain Issue6name
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.family = rawStruct.Family
+	plain.given = func() *immutable.List[Element] {
+		if rawStruct.Given == nil {
+			return nil
+		}
+		l := make([]Element, 0, len(rawStruct.Given))
+		for _, v := range rawStruct.Given {
+			l = append(l, (Element)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.prefix = func() *immutable.List[Element] {
+		if rawStruct.Prefix == nil {
+			return nil
+		}
+		l := make([]Element, 0, len(rawStruct.Prefix))
+		for _, v := range rawStruct.Prefix {
+			l = append(l, (Element)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.suffix = func() *immutable.List[Element] {
+		if rawStruct.Suffix == nil {
+			return nil
+		}
+		l := make([]Element, 0, len(rawStruct.Suffix))
+		for _, v := range rawStruct.Suffix {
+			l = append(l, (Element)(v))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.text = rawStruct.Text
+	plain.use = rawStruct.Use
+	plain.family_2 = rawStruct.Family_2
+	plain.given_2 = func() *immutable.List[string] {
+		if rawStruct.Given_2 == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Given_2))
+		for _, v := range rawStruct.Given_2 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.period = rawStruct.Period
+	plain.prefix_2 = func() *immutable.List[string] {
+		if rawStruct.Prefix_2 == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Prefix_2))
+		for _, v := range rawStruct.Prefix_2 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.suffix_2 = func() *immutable.List[string] {
+		if rawStruct.Suffix_2 == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Suffix_2))
+		for _, v := range rawStruct.Suffix_2 {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.text_2 = rawStruct.Text_2
+	plain.use_2 = rawStruct.Use_2
+	plain = plain
 	*j = Issue6name(plain)
 	return nil
 }
@@ -614,11 +864,19 @@ func (j *Period) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Period) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		End   *time.Time
+		Start *time.Time
+	}
 	type Plain Period
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.end = rawStruct.End
+	plain.start = rawStruct.Start
+	plain = plain
 	*j = Period(plain)
 	return nil
 }

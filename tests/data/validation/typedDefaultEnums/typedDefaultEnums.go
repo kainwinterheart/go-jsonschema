@@ -84,11 +84,17 @@ func (j *TypedDefaultEnums) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
+	type PlainRaw struct {
+		Some TypedDefaultEnumssome
+	}
 	type Plain TypedDefaultEnums
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.some = rawStruct.Some
+	plain = plain
 	if v, ok := raw["some"]; !ok || v == nil {
 		plain.some = "random"
 	}

@@ -298,6 +298,11 @@ func (PointerType) IsNillable() bool { return true }
 func (p PointerType) Generate(out *Emitter) error {
 	out.Printf("*")
 
+	if p.Type == nil {
+		out.Printf("interface{}")
+		return nil
+	}
+
 	if err := p.Type.Generate(out); err != nil {
 		return fmt.Errorf("cannot generate codegen.PointerType content: %w", err)
 	}
@@ -312,12 +317,13 @@ type ArrayType struct {
 func (ArrayType) IsNillable() bool { return true }
 
 func (a ArrayType) Generate(out *Emitter) error {
-	out.Printf("[]")
+	out.Printf("*immutable.List[")
 
 	if err := a.Type.Generate(out); err != nil {
 		return fmt.Errorf("cannot generate codegen.ArrayType content: %w", err)
 	}
 
+	out.Printf("]")
 	return nil
 }
 
@@ -396,18 +402,53 @@ type MapType struct {
 func (MapType) IsNillable() bool { return true }
 
 func (p MapType) Generate(out *Emitter) error {
-	out.Printf("map[")
+	out.Printf("immutable.Map[")
 
 	if kerr := p.KeyType.Generate(out); kerr != nil {
 		return fmt.Errorf("cannot generate codegen.MapType key type: %w", kerr)
 	}
 
-	out.Printf("]")
+	out.Printf(", ")
 
 	if perr := p.ValueType.Generate(out); perr != nil {
 		return fmt.Errorf("cannot generate codegen.MapType value type: %w", perr)
 	}
 
+	out.Printf("]")
+	return nil
+}
+
+// RawArrayType generates []T for use in helper structs for JSON/YAML unmarshalling.
+type RawArrayType struct {
+	Type Type
+}
+
+func (RawArrayType) IsNillable() bool { return true }
+
+func (r RawArrayType) Generate(out *Emitter) error {
+	out.Printf("[]")
+	if err := r.Type.Generate(out); err != nil {
+		return fmt.Errorf("cannot generate codegen.RawArrayType content: %w", err)
+	}
+	return nil
+}
+
+// RawMapType generates map[K]V for use in helper structs for JSON/YAML unmarshalling.
+type RawMapType struct {
+	KeyType, ValueType Type
+}
+
+func (RawMapType) IsNillable() bool { return true }
+
+func (r RawMapType) Generate(out *Emitter) error {
+	out.Printf("map[")
+	if kerr := r.KeyType.Generate(out); kerr != nil {
+		return fmt.Errorf("cannot generate codegen.RawMapType key type: %w", kerr)
+	}
+	out.Printf("]")
+	if perr := r.ValueType.Generate(out); perr != nil {
+		return fmt.Errorf("cannot generate codegen.RawMapType value type: %w", perr)
+	}
 	return nil
 }
 

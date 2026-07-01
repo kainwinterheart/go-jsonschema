@@ -4,56 +4,57 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 type Array struct {
 	// myarray corresponds to the JSON schema field "myArray".
-	myarray []interface{} `json:"myArray,omitempty,omitzero" yaml:"myArray,omitempty" mapstructure:"myArray,omitempty"`
+	myarray *immutable.List[interface{}] `json:"myArray,omitempty,omitzero" yaml:"myArray,omitempty" mapstructure:"myArray,omitempty"`
 
 	// mybooleanarray corresponds to the JSON schema field "myBooleanArray".
-	mybooleanarray []bool `json:"myBooleanArray,omitempty,omitzero" yaml:"myBooleanArray,omitempty" mapstructure:"myBooleanArray,omitempty"`
+	mybooleanarray *immutable.List[bool] `json:"myBooleanArray,omitempty,omitzero" yaml:"myBooleanArray,omitempty" mapstructure:"myBooleanArray,omitempty"`
 
 	// myintegerarray corresponds to the JSON schema field "myIntegerArray".
-	myintegerarray []int `json:"myIntegerArray,omitempty,omitzero" yaml:"myIntegerArray,omitempty" mapstructure:"myIntegerArray,omitempty"`
+	myintegerarray *immutable.List[int] `json:"myIntegerArray,omitempty,omitzero" yaml:"myIntegerArray,omitempty" mapstructure:"myIntegerArray,omitempty"`
 
 	// mynestednullarray corresponds to the JSON schema field "myNestedNullArray".
-	mynestednullarray [][]interface{} `json:"myNestedNullArray,omitempty,omitzero" yaml:"myNestedNullArray,omitempty" mapstructure:"myNestedNullArray,omitempty"`
+	mynestednullarray *immutable.List[*immutable.List[interface{}]] `json:"myNestedNullArray,omitempty,omitzero" yaml:"myNestedNullArray,omitempty" mapstructure:"myNestedNullArray,omitempty"`
 
 	// mynullarray corresponds to the JSON schema field "myNullArray".
-	mynullarray []interface{} `json:"myNullArray,omitempty,omitzero" yaml:"myNullArray,omitempty" mapstructure:"myNullArray,omitempty"`
+	mynullarray *immutable.List[interface{}] `json:"myNullArray,omitempty,omitzero" yaml:"myNullArray,omitempty" mapstructure:"myNullArray,omitempty"`
 
 	// mynullableuntypedarray corresponds to the JSON schema field
 	// "myNullableUntypedArray".
 	mynullableuntypedarray *Arraymynullableuntypedarray `json:"myNullableUntypedArray,omitempty,omitzero" yaml:"myNullableUntypedArray,omitempty" mapstructure:"myNullableUntypedArray,omitempty"`
 
 	// mynumberarray corresponds to the JSON schema field "myNumberArray".
-	mynumberarray []float64 `json:"myNumberArray,omitempty,omitzero" yaml:"myNumberArray,omitempty" mapstructure:"myNumberArray,omitempty"`
+	mynumberarray *immutable.List[float64] `json:"myNumberArray,omitempty,omitzero" yaml:"myNumberArray,omitempty" mapstructure:"myNumberArray,omitempty"`
 
 	// myobjectarray corresponds to the JSON schema field "myObjectArray".
-	myobjectarray []ArraymyobjectarrayElem `json:"myObjectArray,omitempty,omitzero" yaml:"myObjectArray,omitempty" mapstructure:"myObjectArray,omitempty"`
+	myobjectarray *immutable.List[ArraymyobjectarrayElem] `json:"myObjectArray,omitempty,omitzero" yaml:"myObjectArray,omitempty" mapstructure:"myObjectArray,omitempty"`
 
 	// mystringarray corresponds to the JSON schema field "myStringArray".
-	mystringarray []string `json:"myStringArray,omitempty,omitzero" yaml:"myStringArray,omitempty" mapstructure:"myStringArray,omitempty"`
+	mystringarray *immutable.List[string] `json:"myStringArray,omitempty,omitzero" yaml:"myStringArray,omitempty" mapstructure:"myStringArray,omitempty"`
 }
 
 type ArrayBuilder struct {
-	myarray []interface{}
+	myarray *immutable.List[interface{}]
 
-	mybooleanarray []bool
+	mybooleanarray *immutable.List[bool]
 
-	myintegerarray []int
+	myintegerarray *immutable.List[int]
 
-	mynestednullarray [][]interface{}
+	mynestednullarray *immutable.List[*immutable.List[interface{}]]
 
-	mynullarray []interface{}
+	mynullarray *immutable.List[interface{}]
 
 	mynullableuntypedarray *Arraymynullableuntypedarray
 
-	mynumberarray []float64
+	mynumberarray *immutable.List[float64]
 
-	myobjectarray []ArraymyobjectarrayElem
+	myobjectarray *immutable.List[ArraymyobjectarrayElem]
 
-	mystringarray []string
+	mystringarray *immutable.List[string]
 }
 
 func (b *ArrayBuilder) Build() *Array {
@@ -70,27 +71,27 @@ func (b *ArrayBuilder) Build() *Array {
 	}
 }
 
-func (b *ArrayBuilder) WithMyArray(v []interface{}) *ArrayBuilder {
+func (b *ArrayBuilder) WithMyArray(v *immutable.List[interface{}]) *ArrayBuilder {
 	b.myarray = v
 	return b
 }
 
-func (b *ArrayBuilder) WithMyBooleanArray(v []bool) *ArrayBuilder {
+func (b *ArrayBuilder) WithMyBooleanArray(v *immutable.List[bool]) *ArrayBuilder {
 	b.mybooleanarray = v
 	return b
 }
 
-func (b *ArrayBuilder) WithMyIntegerArray(v []int) *ArrayBuilder {
+func (b *ArrayBuilder) WithMyIntegerArray(v *immutable.List[int]) *ArrayBuilder {
 	b.myintegerarray = v
 	return b
 }
 
-func (b *ArrayBuilder) WithMyNestedNullArray(v [][]interface{}) *ArrayBuilder {
+func (b *ArrayBuilder) WithMyNestedNullArray(v *immutable.List[*immutable.List[interface{}]]) *ArrayBuilder {
 	b.mynestednullarray = v
 	return b
 }
 
-func (b *ArrayBuilder) WithMyNullArray(v []interface{}) *ArrayBuilder {
+func (b *ArrayBuilder) WithMyNullArray(v *immutable.List[interface{}]) *ArrayBuilder {
 	b.mynullarray = v
 	return b
 }
@@ -100,17 +101,17 @@ func (b *ArrayBuilder) WithMyNullableUntypedArray(v *Arraymynullableuntypedarray
 	return b
 }
 
-func (b *ArrayBuilder) WithMyNumberArray(v []float64) *ArrayBuilder {
+func (b *ArrayBuilder) WithMyNumberArray(v *immutable.List[float64]) *ArrayBuilder {
 	b.mynumberarray = v
 	return b
 }
 
-func (b *ArrayBuilder) WithMyObjectArray(v []ArraymyobjectarrayElem) *ArrayBuilder {
+func (b *ArrayBuilder) WithMyObjectArray(v *immutable.List[ArraymyobjectarrayElem]) *ArrayBuilder {
 	b.myobjectarray = v
 	return b
 }
 
-func (b *ArrayBuilder) WithMyStringArray(v []string) *ArrayBuilder {
+func (b *ArrayBuilder) WithMyStringArray(v *immutable.List[string]) *ArrayBuilder {
 	b.mystringarray = v
 	return b
 }
@@ -119,23 +120,23 @@ func (o *Array) Clone() *ArrayBuilder {
 	return NewArrayBuilder(o)
 }
 
-func (o *Array) MyArray() []interface{} {
+func (o *Array) MyArray() *immutable.List[interface{}] {
 	return o.myarray
 }
 
-func (o *Array) MyBooleanArray() []bool {
+func (o *Array) MyBooleanArray() *immutable.List[bool] {
 	return o.mybooleanarray
 }
 
-func (o *Array) MyIntegerArray() []int {
+func (o *Array) MyIntegerArray() *immutable.List[int] {
 	return o.myintegerarray
 }
 
-func (o *Array) MyNestedNullArray() [][]interface{} {
+func (o *Array) MyNestedNullArray() *immutable.List[*immutable.List[interface{}]] {
 	return o.mynestednullarray
 }
 
-func (o *Array) MyNullArray() []interface{} {
+func (o *Array) MyNullArray() *immutable.List[interface{}] {
 	return o.mynullarray
 }
 
@@ -143,15 +144,15 @@ func (o *Array) MyNullableUntypedArray() *Arraymynullableuntypedarray {
 	return o.mynullableuntypedarray
 }
 
-func (o *Array) MyNumberArray() []float64 {
+func (o *Array) MyNumberArray() *immutable.List[float64] {
 	return o.mynumberarray
 }
 
-func (o *Array) MyObjectArray() []ArraymyobjectarrayElem {
+func (o *Array) MyObjectArray() *immutable.List[ArraymyobjectarrayElem] {
 	return o.myobjectarray
 }
 
-func (o *Array) MyStringArray() []string {
+func (o *Array) MyStringArray() *immutable.List[string] {
 	return o.mystringarray
 }
 
@@ -162,15 +163,15 @@ func (j *Array) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type ArrayHelper struct {
-		Myarray                []interface{}                `json:"myArray,omitempty"`
-		Mybooleanarray         []bool                       `json:"myBooleanArray,omitempty"`
-		Myintegerarray         []int                        `json:"myIntegerArray,omitempty"`
-		Mynestednullarray      [][]interface{}              `json:"myNestedNullArray,omitempty"`
-		Mynullarray            []interface{}                `json:"myNullArray,omitempty"`
-		Mynullableuntypedarray *Arraymynullableuntypedarray `json:"myNullableUntypedArray,omitempty"`
-		Mynumberarray          []float64                    `json:"myNumberArray,omitempty"`
-		Myobjectarray          []ArraymyobjectarrayElem     `json:"myObjectArray,omitempty"`
-		Mystringarray          []string                     `json:"myStringArray,omitempty"`
+		Myarray                []interface{}            `json:"myArray,omitempty"`
+		Mybooleanarray         []bool                   `json:"myBooleanArray,omitempty"`
+		Myintegerarray         []int                    `json:"myIntegerArray,omitempty"`
+		Mynestednullarray      [][]interface{}          `json:"myNestedNullArray,omitempty"`
+		Mynullarray            []interface{}            `json:"myNullArray,omitempty"`
+		Mynullableuntypedarray []interface{}            `json:"myNullableUntypedArray,omitempty"`
+		Mynumberarray          []float64                `json:"myNumberArray,omitempty"`
+		Myobjectarray          []map[string]interface{} `json:"myObjectArray,omitempty"`
+		Mystringarray          []string                 `json:"myStringArray,omitempty"`
 	}
 	type Plain Array
 	var helper ArrayHelper
@@ -178,24 +179,116 @@ func (j *Array) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.myarray = helper.Myarray
-	plain.mybooleanarray = helper.Mybooleanarray
-	plain.myintegerarray = helper.Myintegerarray
-	plain.mynestednullarray = helper.Mynestednullarray
-	plain.mynullarray = helper.Mynullarray
-	plain.mynullableuntypedarray = helper.Mynullableuntypedarray
-	plain.mynumberarray = helper.Mynumberarray
-	plain.myobjectarray = helper.Myobjectarray
-	plain.mystringarray = helper.Mystringarray
-	for i0 := range plain.mynestednullarray {
-		for i1 := range plain.mynestednullarray[i0] {
-			if plain.mynestednullarray[i0][i1] != nil {
+	plain.myarray = func() *immutable.List[interface{}] {
+		if helper.Myarray == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(helper.Myarray))
+		for _, v := range helper.Myarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mybooleanarray = func() *immutable.List[bool] {
+		if helper.Mybooleanarray == nil {
+			return nil
+		}
+		l := make([]bool, 0, len(helper.Mybooleanarray))
+		for _, v := range helper.Mybooleanarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.myintegerarray = func() *immutable.List[int] {
+		if helper.Myintegerarray == nil {
+			return nil
+		}
+		l := make([]int, 0, len(helper.Myintegerarray))
+		for _, v := range helper.Myintegerarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mynestednullarray = func() *immutable.List[*immutable.List[interface{}]] {
+		if helper.Mynestednullarray == nil {
+			return nil
+		}
+		l := make([]*immutable.List[interface{}], 0, len(helper.Mynestednullarray))
+		for _, v := range helper.Mynestednullarray {
+			l = append(l, func() *immutable.List[interface{}] {
+				if v == nil {
+					return nil
+				}
+				l := make([]interface{}, 0, len(v))
+				for _, v := range v {
+					l = append(l, v)
+				}
+				return immutable.NewList(l...)
+			}())
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mynullarray = func() *immutable.List[interface{}] {
+		if helper.Mynullarray == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(helper.Mynullarray))
+		for _, v := range helper.Mynullarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mynullableuntypedarray = func() *Arraymynullableuntypedarray {
+		if helper.Mynullableuntypedarray == nil {
+			return nil
+		}
+		raw := helper.Mynullableuntypedarray
+		l := make([]interface{}, 0, len(raw))
+		for _, v := range raw {
+			l = append(l, v)
+		}
+		nv := Arraymynullableuntypedarray(immutable.NewList(l...))
+		return &nv
+	}()
+	plain.mynumberarray = func() *immutable.List[float64] {
+		if helper.Mynumberarray == nil {
+			return nil
+		}
+		l := make([]float64, 0, len(helper.Mynumberarray))
+		for _, v := range helper.Mynumberarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.myobjectarray = func() *immutable.List[ArraymyobjectarrayElem] {
+		if helper.Myobjectarray == nil {
+			return nil
+		}
+		l := make([]ArraymyobjectarrayElem, 0, len(helper.Myobjectarray))
+		for _, v := range helper.Myobjectarray {
+			l = append(l, (ArraymyobjectarrayElem)((ArraymyobjectarrayElem)(*immutable.NewMapOf[string](nil, v))))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mystringarray = func() *immutable.List[string] {
+		if helper.Mystringarray == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Mystringarray))
+		for _, v := range helper.Mystringarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	for i0 := 0; i0 < plain.mynestednullarray.Len(); i0++ {
+		for i1 := 0; i1 < plain.mynestednullarray.Get(i0).Len(); i1++ {
+			if plain.mynestednullarray.Get(i0).Get(i1) != nil {
 				return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNestedNullArray[%d][%d]", i0, i1))
 			}
 		}
 	}
-	for i0 := range plain.mynullarray {
-		if plain.mynullarray[i0] != nil {
+	for i0 := 0; i0 < plain.mynullarray.Len(); i0++ {
+		if plain.mynullarray.Get(i0) != nil {
 			return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNullArray[%d]", i0))
 		}
 	}
@@ -206,26 +299,147 @@ func (j *Array) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Array) MarshalJSON() ([]byte, error) {
 	type ArrayMarshalHelper struct {
-		Myarray                []interface{}                `json:"myArray,omitempty"`
-		Mybooleanarray         []bool                       `json:"myBooleanArray,omitempty"`
-		Myintegerarray         []int                        `json:"myIntegerArray,omitempty"`
-		Mynestednullarray      [][]interface{}              `json:"myNestedNullArray,omitempty"`
-		Mynullarray            []interface{}                `json:"myNullArray,omitempty"`
-		Mynullableuntypedarray *Arraymynullableuntypedarray `json:"myNullableUntypedArray,omitempty"`
-		Mynumberarray          []float64                    `json:"myNumberArray,omitempty"`
-		Myobjectarray          []ArraymyobjectarrayElem     `json:"myObjectArray,omitempty"`
-		Mystringarray          []string                     `json:"myStringArray,omitempty"`
+		Myarray                []interface{}            `json:"myArray,omitempty"`
+		Mybooleanarray         []bool                   `json:"myBooleanArray,omitempty"`
+		Myintegerarray         []int                    `json:"myIntegerArray,omitempty"`
+		Mynestednullarray      [][]interface{}          `json:"myNestedNullArray,omitempty"`
+		Mynullarray            []interface{}            `json:"myNullArray,omitempty"`
+		Mynullableuntypedarray []interface{}            `json:"myNullableUntypedArray,omitempty"`
+		Mynumberarray          []float64                `json:"myNumberArray,omitempty"`
+		Myobjectarray          []map[string]interface{} `json:"myObjectArray,omitempty"`
+		Mystringarray          []string                 `json:"myStringArray,omitempty"`
 	}
 	helper := ArrayMarshalHelper{
-		Myarray:                j.myarray,
-		Mybooleanarray:         j.mybooleanarray,
-		Myintegerarray:         j.myintegerarray,
-		Mynestednullarray:      j.mynestednullarray,
-		Mynullarray:            j.mynullarray,
-		Mynullableuntypedarray: j.mynullableuntypedarray,
-		Mynumberarray:          j.mynumberarray,
-		Myobjectarray:          j.myobjectarray,
-		Mystringarray:          j.mystringarray,
+		Myarray: func() []interface{} {
+			if j.myarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(j.myarray)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Mybooleanarray: func() []bool {
+			if j.mybooleanarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[bool])(j.mybooleanarray)
+			l := make([]bool, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Myintegerarray: func() []int {
+			if j.myintegerarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[int])(j.myintegerarray)
+			l := make([]int, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Mynestednullarray: func() [][]interface{} {
+			if j.mynestednullarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[*immutable.List[interface{}]])(j.mynestednullarray)
+			l := make([][]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = func() []interface{} {
+					if __elem == nil {
+						return nil
+					}
+					lst := (*immutable.List[interface{}])(__elem)
+					l := make([]interface{}, lst.Len())
+					for i := 0; i < lst.Len(); i++ {
+						__elem := lst.Get(i)
+						l[i] = __elem
+					}
+					return l
+				}()
+			}
+			return l
+		}(),
+		Mynullarray: func() []interface{} {
+			if j.mynullarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(j.mynullarray)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Mynullableuntypedarray: func() []interface{} {
+			if j.mynullableuntypedarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(*j.mynullableuntypedarray)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Mynumberarray: func() []float64 {
+			if j.mynumberarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[float64])(j.mynumberarray)
+			l := make([]float64, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Myobjectarray: func() []map[string]interface{} {
+			if j.myobjectarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[ArraymyobjectarrayElem])(j.myobjectarray)
+			l := make([]map[string]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = func() map[string]interface{} {
+					m := make(map[string]interface{})
+					iter := (*immutable.Map[string, interface{}])(&__elem).Iterator()
+					for iter.First(); !iter.Done(); {
+						k, v, ok := iter.Next()
+						if !ok {
+							break
+						}
+						m[k] = v
+					}
+					return m
+				}()
+			}
+			return l
+		}(),
+		Mystringarray: func() []string {
+			if j.mystringarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.mystringarray)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
@@ -236,20 +450,134 @@ func (j *Array) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
+	type PlainRaw struct {
+		Myarray                []interface{}
+		Mybooleanarray         []bool
+		Myintegerarray         []int
+		Mynestednullarray      [][]interface{}
+		Mynullarray            []interface{}
+		Mynullableuntypedarray []interface{}
+		Mynumberarray          []float64
+		Myobjectarray          []map[string]interface{}
+		Mystringarray          []string
+	}
 	type Plain Array
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
-	for i0 := range plain.mynestednullarray {
-		for i1 := range plain.mynestednullarray[i0] {
-			if plain.mynestednullarray[i0][i1] != nil {
+	var plain Plain
+	plain.myarray = func() *immutable.List[interface{}] {
+		if rawStruct.Myarray == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(rawStruct.Myarray))
+		for _, v := range rawStruct.Myarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mybooleanarray = func() *immutable.List[bool] {
+		if rawStruct.Mybooleanarray == nil {
+			return nil
+		}
+		l := make([]bool, 0, len(rawStruct.Mybooleanarray))
+		for _, v := range rawStruct.Mybooleanarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.myintegerarray = func() *immutable.List[int] {
+		if rawStruct.Myintegerarray == nil {
+			return nil
+		}
+		l := make([]int, 0, len(rawStruct.Myintegerarray))
+		for _, v := range rawStruct.Myintegerarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mynestednullarray = func() *immutable.List[*immutable.List[interface{}]] {
+		if rawStruct.Mynestednullarray == nil {
+			return nil
+		}
+		l := make([]*immutable.List[interface{}], 0, len(rawStruct.Mynestednullarray))
+		for _, v := range rawStruct.Mynestednullarray {
+			l = append(l, func() *immutable.List[interface{}] {
+				if v == nil {
+					return nil
+				}
+				l := make([]interface{}, 0, len(v))
+				for _, v := range v {
+					l = append(l, v)
+				}
+				return immutable.NewList(l...)
+			}())
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mynullarray = func() *immutable.List[interface{}] {
+		if rawStruct.Mynullarray == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(rawStruct.Mynullarray))
+		for _, v := range rawStruct.Mynullarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mynullableuntypedarray = func() *Arraymynullableuntypedarray {
+		if rawStruct.Mynullableuntypedarray == nil {
+			return nil
+		}
+		raw := rawStruct.Mynullableuntypedarray
+		l := make([]interface{}, 0, len(raw))
+		for _, v := range raw {
+			l = append(l, v)
+		}
+		nv := Arraymynullableuntypedarray(immutable.NewList(l...))
+		return &nv
+	}()
+	plain.mynumberarray = func() *immutable.List[float64] {
+		if rawStruct.Mynumberarray == nil {
+			return nil
+		}
+		l := make([]float64, 0, len(rawStruct.Mynumberarray))
+		for _, v := range rawStruct.Mynumberarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.myobjectarray = func() *immutable.List[ArraymyobjectarrayElem] {
+		if rawStruct.Myobjectarray == nil {
+			return nil
+		}
+		l := make([]ArraymyobjectarrayElem, 0, len(rawStruct.Myobjectarray))
+		for _, v := range rawStruct.Myobjectarray {
+			l = append(l, (ArraymyobjectarrayElem)((ArraymyobjectarrayElem)(*immutable.NewMapOf[string](nil, v))))
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mystringarray = func() *immutable.List[string] {
+		if rawStruct.Mystringarray == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Mystringarray))
+		for _, v := range rawStruct.Mystringarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
+	for i0 := 0; i0 < plain.mynestednullarray.Len(); i0++ {
+		for i1 := 0; i1 < plain.mynestednullarray.Get(i0).Len(); i1++ {
+			if plain.mynestednullarray.Get(i0).Get(i1) != nil {
 				return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNestedNullArray[%d][%d]", i0, i1))
 			}
 		}
 	}
-	for i0 := range plain.mynullarray {
-		if plain.mynullarray[i0] != nil {
+	for i0 := 0; i0 < plain.mynullarray.Len(); i0++ {
+		if plain.mynullarray.Get(i0) != nil {
 			return fmt.Errorf("field %s: must be null", fmt.Sprintf("myNullArray[%d]", i0))
 		}
 	}
@@ -257,9 +585,35 @@ func (j *Array) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-type Arraymynullableuntypedarray []interface{}
+type Arraymynullableuntypedarray *immutable.List[interface{}]
 
-type ArraymyobjectarrayElem map[string]interface{}
+type ArraymyobjectarrayElem immutable.Map[string, interface{}]
+
+func (m ArraymyobjectarrayElem) Items() []struct {
+	Key   string
+	Value interface{}
+} {
+	var items []struct {
+		Key   string
+		Value interface{}
+	}
+	iter := (&m).Iterator()
+	for iter.First(); !iter.Done(); {
+		k, v, ok := iter.Next()
+		if !ok {
+			break
+		}
+		items = append(items, struct {
+			Key   string
+			Value interface{}
+		}{k, v})
+	}
+	return items
+}
+
+func (m ArraymyobjectarrayElem) Iterator() *immutable.MapIterator[string, interface{}] {
+	return (*immutable.Map[string, interface{}])(&m).Iterator()
+}
 
 func NewArrayBuilder(o *Array) *ArrayBuilder {
 	if o == nil {

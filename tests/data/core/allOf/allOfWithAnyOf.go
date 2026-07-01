@@ -5,6 +5,7 @@ package test
 import "encoding/json"
 import "errors"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 type Agreement struct {
@@ -49,17 +50,32 @@ func (b *AgreementBuilder) WithProhibition(v *float64) *AgreementBuilder {
 	return b
 }
 
-type Agreement_0 map[string]interface{}
+type Agreement_0 immutable.Map[string, interface{}]
 
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *Agreement_0) UnmarshalYAML(value *yaml.Node) error {
-	type Plain Agreement_0
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
+func (m Agreement_0) Items() []struct {
+	Key   string
+	Value interface{}
+} {
+	var items []struct {
+		Key   string
+		Value interface{}
 	}
-	*j = Agreement_0(plain)
-	return nil
+	iter := (&m).Iterator()
+	for iter.First(); !iter.Done(); {
+		k, v, ok := iter.Next()
+		if !ok {
+			break
+		}
+		items = append(items, struct {
+			Key   string
+			Value interface{}
+		}{k, v})
+	}
+	return items
+}
+
+func (m Agreement_0) Iterator() *immutable.MapIterator[string, interface{}] {
+	return (*immutable.Map[string, interface{}])(&m).Iterator()
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -73,7 +89,48 @@ func (j *Agreement_0) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-type Agreement_1 map[string]interface{}
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Agreement_0) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+	}
+	type Plain Agreement_0
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
+		return err
+	}
+	var plain Plain
+	plain = plain
+	*j = Agreement_0(plain)
+	return nil
+}
+
+type Agreement_1 immutable.Map[string, interface{}]
+
+func (m Agreement_1) Items() []struct {
+	Key   string
+	Value interface{}
+} {
+	var items []struct {
+		Key   string
+		Value interface{}
+	}
+	iter := (&m).Iterator()
+	for iter.First(); !iter.Done(); {
+		k, v, ok := iter.Next()
+		if !ok {
+			break
+		}
+		items = append(items, struct {
+			Key   string
+			Value interface{}
+		}{k, v})
+	}
+	return items
+}
+
+func (m Agreement_1) Iterator() *immutable.MapIterator[string, interface{}] {
+	return (*immutable.Map[string, interface{}])(&m).Iterator()
+}
 
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Agreement_1) UnmarshalJSON(value []byte) error {
@@ -88,11 +145,15 @@ func (j *Agreement_1) UnmarshalJSON(value []byte) error {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Agreement_1) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+	}
 	type Plain Agreement_1
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain = plain
 	*j = Agreement_1(plain)
 	return nil
 }
@@ -131,11 +192,21 @@ func (j *Agreement) UnmarshalYAML(value *yaml.Node) error {
 	if len(errs) == 2 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
+	type PlainRaw struct {
+		Atype       string
+		Permission  *string
+		Prohibition *float64
+	}
 	type Plain Agreement
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.atype = rawStruct.Atype
+	plain.permission = rawStruct.Permission
+	plain.prohibition = rawStruct.Prohibition
+	plain = plain
 	*j = Agreement(plain)
 	return nil
 }
@@ -234,6 +305,25 @@ func (o *CommonType) Prohibition() *float64 {
 	return o.prohibition
 }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *CommonType) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Permission  *string
+		Prohibition *float64
+	}
+	type Plain CommonType
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.permission = rawStruct.Permission
+	plain.prohibition = rawStruct.Prohibition
+	plain = plain
+	*j = CommonType(plain)
+	return nil
+}
+
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *CommonType) UnmarshalJSON(value []byte) error {
 	type CommonTypeHelper struct {
@@ -263,17 +353,6 @@ func (j *CommonType) MarshalJSON() ([]byte, error) {
 		Prohibition: j.prohibition,
 	}
 	return json.Marshal(helper)
-}
-
-// UnmarshalYAML implements yaml.Unmarshaler.
-func (j *CommonType) UnmarshalYAML(value *yaml.Node) error {
-	type Plain CommonType
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
-		return err
-	}
-	*j = CommonType(plain)
-	return nil
 }
 
 func NewAgreementBuilder(o *Agreement) *AgreementBuilder {

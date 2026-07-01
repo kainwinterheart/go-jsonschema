@@ -101,11 +101,19 @@ func (j *Schema) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Schema) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Definotherschema *other.Thing
+		Definsameschema  *Thing
+	}
 	type Plain Schema
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.definotherschema = rawStruct.Definotherschema
+	plain.definsameschema = rawStruct.Definsameschema
+	plain = plain
 	*j = Schema(plain)
 	return nil
 }
@@ -140,11 +148,17 @@ func (o *Thing) S() *string {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		S *string
+	}
 	type Plain Thing
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.s = rawStruct.S
+	plain = plain
 	*j = Thing(plain)
 	return nil
 }

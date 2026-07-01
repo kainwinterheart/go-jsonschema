@@ -2,11 +2,86 @@
 
 package test
 
+import "encoding/json"
+import yaml "gopkg.in/yaml.v3"
+
+func NewThingBuilder(o *Thing) *ThingBuilder {
+	if o == nil {
+		return &ThingBuilder{}
+	}
+	return &ThingBuilder{
+		s: o.s,
+	}
+}
+
 type Thing struct {
 	// s corresponds to the JSON schema field "s".
 	s *string `json:"s,omitempty,omitzero" yaml:"s,omitempty" mapstructure:"s,omitempty"`
 }
 
+type ThingBuilder struct {
+	s *string
+}
+
+func (b *ThingBuilder) Build() *Thing {
+	return &Thing{
+		s: b.s,
+	}
+}
+
+func (b *ThingBuilder) WithS(v *string) *ThingBuilder {
+	b.s = v
+	return b
+}
+
+func (o *Thing) Clone() *ThingBuilder {
+	return NewThingBuilder(o)
+}
+
 func (o *Thing) S() *string {
 	return o.s
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *Thing) UnmarshalJSON(value []byte) error {
+	type ThingHelper struct {
+		S *string `json:"s,omitempty"`
+	}
+	type Plain Thing
+	var helper ThingHelper
+	if err := json.Unmarshal(value, &helper); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.s = helper.S
+	*j = Thing(plain)
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler.
+func (j *Thing) MarshalJSON() ([]byte, error) {
+	type ThingMarshalHelper struct {
+		S *string `json:"s,omitempty"`
+	}
+	helper := ThingMarshalHelper{
+		S: j.s,
+	}
+	return json.Marshal(helper)
+}
+
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		S *string
+	}
+	type Plain Thing
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
+		return err
+	}
+	var plain Plain
+	plain.s = rawStruct.S
+	plain = plain
+	*j = Thing(plain)
+	return nil
 }

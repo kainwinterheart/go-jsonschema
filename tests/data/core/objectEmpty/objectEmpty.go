@@ -3,6 +3,7 @@
 package test
 
 import "encoding/json"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 func NewObjectEmptyBuilder(o *ObjectEmpty) *ObjectEmptyBuilder {
@@ -45,7 +46,7 @@ func (o *ObjectEmpty) Foo() ObjectEmptyfoo {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *ObjectEmpty) UnmarshalJSON(value []byte) error {
 	type ObjectEmptyHelper struct {
-		Foo ObjectEmptyfoo `json:"foo,omitempty"`
+		Foo map[string]interface{} `json:"foo,omitempty"`
 	}
 	type Plain ObjectEmpty
 	var helper ObjectEmptyHelper
@@ -53,7 +54,7 @@ func (j *ObjectEmpty) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.foo = helper.Foo
+	plain.foo = (ObjectEmptyfoo)(*immutable.NewMapOf[string](nil, helper.Foo))
 	*j = ObjectEmpty(plain)
 	return nil
 }
@@ -61,23 +62,66 @@ func (j *ObjectEmpty) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *ObjectEmpty) MarshalJSON() ([]byte, error) {
 	type ObjectEmptyMarshalHelper struct {
-		Foo ObjectEmptyfoo `json:"foo,omitempty"`
+		Foo map[string]interface{} `json:"foo,omitempty"`
 	}
 	helper := ObjectEmptyMarshalHelper{
-		Foo: j.foo,
+		Foo: func() map[string]interface{} {
+			m := make(map[string]interface{})
+			iter := (*immutable.Map[string, interface{}])(&j.foo).Iterator()
+			for iter.First(); !iter.Done(); {
+				k, v, ok := iter.Next()
+				if !ok {
+					break
+				}
+				m[k] = v
+			}
+			return m
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *ObjectEmpty) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Foo map[string]interface{}
+	}
 	type Plain ObjectEmpty
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.foo = (ObjectEmptyfoo)(*immutable.NewMapOf[string](nil, rawStruct.Foo))
+	plain = plain
 	*j = ObjectEmpty(plain)
 	return nil
 }
 
-type ObjectEmptyfoo map[string]interface{}
+type ObjectEmptyfoo immutable.Map[string, interface{}]
+
+func (m ObjectEmptyfoo) Items() []struct {
+	Key   string
+	Value interface{}
+} {
+	var items []struct {
+		Key   string
+		Value interface{}
+	}
+	iter := (&m).Iterator()
+	for iter.First(); !iter.Done(); {
+		k, v, ok := iter.Next()
+		if !ok {
+			break
+		}
+		items = append(items, struct {
+			Key   string
+			Value interface{}
+		}{k, v})
+	}
+	return items
+}
+
+func (m ObjectEmptyfoo) Iterator() *immutable.MapIterator[string, interface{}] {
+	return (*immutable.Map[string, interface{}])(&m).Iterator()
+}

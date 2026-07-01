@@ -197,11 +197,19 @@ func (j *PeerName) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["value"]; raw != nil && !ok {
 		return fmt.Errorf("field value in PeerName: required")
 	}
+	type PlainRaw struct {
+		Kind  PeerKind
+		Value string
+	}
 	type Plain PeerName
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.kind = rawStruct.Kind
+	plain.value = rawStruct.Value
+	plain = plain
 	*j = PeerName(plain)
 	return nil
 }
@@ -259,11 +267,19 @@ func (j *Testcase) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["expected_peer_name"]; raw != nil && !ok {
 		return fmt.Errorf("field expected_peer_name in Testcase: required")
 	}
+	type PlainRaw struct {
+		Expectedpeername    *Testcaseexpectedpeername
+		Notexpectedpeername *Testcasenotexpectedpeername
+	}
 	type Plain Testcase
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.expectedpeername = rawStruct.Expectedpeername
+	plain.notexpectedpeername = rawStruct.Notexpectedpeername
+	plain = plain
 	*j = Testcase(plain)
 	return nil
 }
@@ -364,11 +380,19 @@ func (j *Testcaseexpectedpeername) UnmarshalYAML(value *yaml.Node) error {
 	if len(errs) == 1 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
+	type PlainRaw struct {
+		Kind  PeerKind
+		Value string
+	}
 	type Plain Testcaseexpectedpeername
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.kind = rawStruct.Kind
+	plain.value = rawStruct.Value
+	plain = plain
 	*j = Testcaseexpectedpeername(plain)
 	return nil
 }
@@ -476,11 +500,19 @@ func (j *Testcasenotexpectedpeername) UnmarshalYAML(value *yaml.Node) error {
 	if len(errs) == 1 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
+	type PlainRaw struct {
+		Kind  PeerKind
+		Value string
+	}
 	type Plain Testcasenotexpectedpeername
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.kind = rawStruct.Kind
+	plain.value = rawStruct.Value
+	plain = plain
 	*j = Testcasenotexpectedpeername(plain)
 	return nil
 }

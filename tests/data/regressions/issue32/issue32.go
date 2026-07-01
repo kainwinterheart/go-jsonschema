@@ -4,6 +4,7 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 func NewTestObjectBuilder(o *TestObject) *TestObjectBuilder {
@@ -88,9 +89,9 @@ func (j *TestObject) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field owner in TestObject: required")
 	}
 	type TestObjectHelper struct {
-		Config TestObjectconfig `json:"config,omitempty"`
-		Name   string           `json:"name"`
-		Owner  string           `json:"owner"`
+		Config map[string]interface{} `json:"config,omitempty"`
+		Name   string                 `json:"name"`
+		Owner  string                 `json:"owner"`
 	}
 	type Plain TestObject
 	var helper TestObjectHelper
@@ -98,7 +99,7 @@ func (j *TestObject) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.config = helper.Config
+	plain.config = (TestObjectconfig)(*immutable.NewMapOf[string](nil, helper.Config))
 	plain.name = helper.Name
 	plain.owner = helper.Owner
 	*j = TestObject(plain)
@@ -108,14 +109,25 @@ func (j *TestObject) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *TestObject) MarshalJSON() ([]byte, error) {
 	type TestObjectMarshalHelper struct {
-		Config TestObjectconfig `json:"config,omitempty"`
-		Name   string           `json:"name"`
-		Owner  string           `json:"owner"`
+		Config map[string]interface{} `json:"config,omitempty"`
+		Name   string                 `json:"name"`
+		Owner  string                 `json:"owner"`
 	}
 	helper := TestObjectMarshalHelper{
-		Config: j.config,
-		Name:   j.name,
-		Owner:  j.owner,
+		Config: func() map[string]interface{} {
+			m := make(map[string]interface{})
+			iter := (*immutable.Map[string, interface{}])(&j.config).Iterator()
+			for iter.First(); !iter.Done(); {
+				k, v, ok := iter.Next()
+				if !ok {
+					break
+				}
+				m[k] = v
+			}
+			return m
+		}(),
+		Name:  j.name,
+		Owner: j.owner,
 	}
 	return json.Marshal(helper)
 }
@@ -132,13 +144,49 @@ func (j *TestObject) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["owner"]; raw != nil && !ok {
 		return fmt.Errorf("field owner in TestObject: required")
 	}
+	type PlainRaw struct {
+		Config map[string]interface{}
+		Name   string
+		Owner  string
+	}
 	type Plain TestObject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.config = (TestObjectconfig)(*immutable.NewMapOf[string](nil, rawStruct.Config))
+	plain.name = rawStruct.Name
+	plain.owner = rawStruct.Owner
+	plain = plain
 	*j = TestObject(plain)
 	return nil
 }
 
-type TestObjectconfig map[string]interface{}
+type TestObjectconfig immutable.Map[string, interface{}]
+
+func (m TestObjectconfig) Items() []struct {
+	Key   string
+	Value interface{}
+} {
+	var items []struct {
+		Key   string
+		Value interface{}
+	}
+	iter := (&m).Iterator()
+	for iter.First(); !iter.Done(); {
+		k, v, ok := iter.Next()
+		if !ok {
+			break
+		}
+		items = append(items, struct {
+			Key   string
+			Value interface{}
+		}{k, v})
+	}
+	return items
+}
+
+func (m TestObjectconfig) Iterator() *immutable.MapIterator[string, interface{}] {
+	return (*immutable.Map[string, interface{}])(&m).Iterator()
+}

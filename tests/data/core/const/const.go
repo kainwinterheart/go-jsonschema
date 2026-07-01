@@ -132,11 +132,23 @@ func (j *AConst) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *AConst) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Myboolean *bool
+		Myinteger *int
+		Mynumber  *float64
+		Mystring  *string
+	}
 	type Plain AConst
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myboolean = rawStruct.Myboolean
+	plain.myinteger = rawStruct.Myinteger
+	plain.mynumber = rawStruct.Mynumber
+	plain.mystring = rawStruct.Mystring
+	plain = plain
 	if plain.myboolean != nil && *plain.myboolean != true {
 		return fmt.Errorf("field %s: must be equal to %t", "myBoolean", true)
 	}
@@ -268,11 +280,23 @@ func (j *Required) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myString"]; raw != nil && !ok {
 		return fmt.Errorf("field myString in Required: required")
 	}
+	type PlainRaw struct {
+		Myboolean bool
+		Myinteger int
+		Mynumber  float64
+		Mystring  string
+	}
 	type Plain Required
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myboolean = rawStruct.Myboolean
+	plain.myinteger = rawStruct.Myinteger
+	plain.mynumber = rawStruct.Mynumber
+	plain.mystring = rawStruct.Mystring
+	plain = plain
 	if plain.myboolean != true {
 		return fmt.Errorf("field %s: must be equal to %t", "myBoolean", true)
 	}

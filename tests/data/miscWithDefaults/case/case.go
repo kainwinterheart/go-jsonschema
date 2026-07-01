@@ -157,11 +157,27 @@ func (j *ACase) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *ACase) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Capitalcamelfield *string
+		Uppercasefield    *string
+		Camelcase         *string
+		Lowercase         *string
+		Snakemixedcase    *string
+		Snakecase         *string
+	}
 	type Plain ACase
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.capitalcamelfield = rawStruct.Capitalcamelfield
+	plain.uppercasefield = rawStruct.Uppercasefield
+	plain.camelcase = rawStruct.Camelcase
+	plain.lowercase = rawStruct.Lowercase
+	plain.snakemixedcase = rawStruct.Snakemixedcase
+	plain.snakecase = rawStruct.Snakecase
+	plain = plain
 	*j = ACase(plain)
 	return nil
 }

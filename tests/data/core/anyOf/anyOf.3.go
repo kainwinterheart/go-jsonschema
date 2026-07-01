@@ -5,6 +5,7 @@ package test
 import "encoding/json"
 import "errors"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 // object with anyOf properties as root
@@ -13,7 +14,7 @@ type AnyOf3 struct {
 	bar *float64 `json:"bar,omitempty,omitzero" yaml:"bar,omitempty" mapstructure:"bar,omitempty"`
 
 	// configurations corresponds to the JSON schema field "configurations".
-	configurations []interface{} `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
+	configurations *immutable.List[interface{}] `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
 
 	// foo corresponds to the JSON schema field "foo".
 	foo *string `json:"foo,omitempty,omitzero" yaml:"foo,omitempty" mapstructure:"foo,omitempty"`
@@ -22,7 +23,7 @@ type AnyOf3 struct {
 type AnyOf3Builder struct {
 	bar *float64
 
-	configurations []interface{}
+	configurations *immutable.List[interface{}]
 
 	foo *string
 }
@@ -40,7 +41,7 @@ func (b *AnyOf3Builder) WithBar(v *float64) *AnyOf3Builder {
 	return b
 }
 
-func (b *AnyOf3Builder) WithConfigurations(v []interface{}) *AnyOf3Builder {
+func (b *AnyOf3Builder) WithConfigurations(v *immutable.List[interface{}]) *AnyOf3Builder {
 	b.configurations = v
 	return b
 }
@@ -87,11 +88,17 @@ func (j *AnyOf3_0) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["foo"]; raw != nil && !ok {
 		return fmt.Errorf("field foo in AnyOf3_0: required")
 	}
+	type PlainRaw struct {
+		Foo string
+	}
 	type Plain AnyOf3_0
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.foo = rawStruct.Foo
+	plain = plain
 	*j = AnyOf3_0(plain)
 	return nil
 }
@@ -167,11 +174,17 @@ func (j *AnyOf3_1) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["bar"]; raw != nil && !ok {
 		return fmt.Errorf("field bar in AnyOf3_1: required")
 	}
+	type PlainRaw struct {
+		Bar float64
+	}
 	type Plain AnyOf3_1
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.bar = rawStruct.Bar
+	plain = plain
 	*j = AnyOf3_1(plain)
 	return nil
 }
@@ -212,11 +225,11 @@ func (j *AnyOf3_1) MarshalJSON() ([]byte, error) {
 
 type AnyOf3_2 struct {
 	// configurations corresponds to the JSON schema field "configurations".
-	configurations []interface{} `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
+	configurations *immutable.List[interface{}] `json:"configurations,omitempty,omitzero" yaml:"configurations,omitempty" mapstructure:"configurations,omitempty"`
 }
 
 type AnyOf3_2Builder struct {
-	configurations []interface{}
+	configurations *immutable.List[interface{}]
 }
 
 func (b *AnyOf3_2Builder) Build() *AnyOf3_2 {
@@ -225,7 +238,7 @@ func (b *AnyOf3_2Builder) Build() *AnyOf3_2 {
 	}
 }
 
-func (b *AnyOf3_2Builder) WithConfigurations(v []interface{}) *AnyOf3_2Builder {
+func (b *AnyOf3_2Builder) WithConfigurations(v *immutable.List[interface{}]) *AnyOf3_2Builder {
 	b.configurations = v
 	return b
 }
@@ -234,7 +247,7 @@ func (o *AnyOf3_2) Clone() *AnyOf3_2Builder {
 	return NewAnyOf3_2Builder(o)
 }
 
-func (o *AnyOf3_2) Configurations() []interface{} {
+func (o *AnyOf3_2) Configurations() *immutable.List[interface{}] {
 	return o.configurations
 }
 
@@ -249,7 +262,16 @@ func (j *AnyOf3_2) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.configurations = helper.Configurations
+	plain.configurations = func() *immutable.List[interface{}] {
+		if helper.Configurations == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(helper.Configurations))
+		for _, v := range helper.Configurations {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	*j = AnyOf3_2(plain)
 	return nil
 }
@@ -260,18 +282,44 @@ func (j *AnyOf3_2) MarshalJSON() ([]byte, error) {
 		Configurations []interface{} `json:"configurations,omitempty"`
 	}
 	helper := AnyOf3_2MarshalHelper{
-		Configurations: j.configurations,
+		Configurations: func() []interface{} {
+			if j.configurations == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(j.configurations)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *AnyOf3_2) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Configurations []interface{}
+	}
 	type Plain AnyOf3_2
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.configurations = func() *immutable.List[interface{}] {
+		if rawStruct.Configurations == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(rawStruct.Configurations))
+		for _, v := range rawStruct.Configurations {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
 	*j = AnyOf3_2(plain)
 	return nil
 }
@@ -284,7 +332,7 @@ func (o *AnyOf3) Clone() *AnyOf3Builder {
 	return NewAnyOf3Builder(o)
 }
 
-func (o *AnyOf3) Configurations() []interface{} {
+func (o *AnyOf3) Configurations() *immutable.List[interface{}] {
 	return o.configurations
 }
 
@@ -326,7 +374,16 @@ func (j *AnyOf3) UnmarshalJSON(value []byte) error {
 	}
 	var plain Plain
 	plain.bar = helper.Bar
-	plain.configurations = helper.Configurations
+	plain.configurations = func() *immutable.List[interface{}] {
+		if helper.Configurations == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(helper.Configurations))
+		for _, v := range helper.Configurations {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
 	plain.foo = helper.Foo
 	*j = AnyOf3(plain)
 	return nil
@@ -340,9 +397,20 @@ func (j *AnyOf3) MarshalJSON() ([]byte, error) {
 		Foo            *string       `json:"foo,omitempty"`
 	}
 	helper := AnyOf3MarshalHelper{
-		Bar:            j.bar,
-		Configurations: j.configurations,
-		Foo:            j.foo,
+		Bar: j.bar,
+		Configurations: func() []interface{} {
+			if j.configurations == nil {
+				return nil
+			}
+			lst := (*immutable.List[interface{}])(j.configurations)
+			l := make([]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
+		Foo: j.foo,
 	}
 	return json.Marshal(helper)
 }
@@ -369,11 +437,30 @@ func (j *AnyOf3) UnmarshalYAML(value *yaml.Node) error {
 	if len(errs) == 3 {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
+	type PlainRaw struct {
+		Bar            *float64
+		Configurations []interface{}
+		Foo            *string
+	}
 	type Plain AnyOf3
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.bar = rawStruct.Bar
+	plain.configurations = func() *immutable.List[interface{}] {
+		if rawStruct.Configurations == nil {
+			return nil
+		}
+		l := make([]interface{}, 0, len(rawStruct.Configurations))
+		for _, v := range rawStruct.Configurations {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.foo = rawStruct.Foo
+	plain = plain
 	*j = AnyOf3(plain)
 	return nil
 }

@@ -27,11 +27,15 @@ func (j *I16L) UnmarshalJSON(value []byte) error {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *I16L) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+	}
 	type Plain I16L
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain = plain
 	if 127 < plain {
 		return fmt.Errorf("field %s: must be <= %v", "", 127)
 	}
@@ -63,11 +67,15 @@ func (j *I16U) UnmarshalJSON(value []byte) error {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *I16U) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+	}
 	type Plain I16U
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain = plain
 	if 128 < plain {
 		return fmt.Errorf("field %s: must be <= %v", "", 128)
 	}
@@ -99,11 +107,15 @@ func (j *I32L) UnmarshalJSON(value []byte) error {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *I32L) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+	}
 	type Plain I32L
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain = plain
 	if 32767 < plain {
 		return fmt.Errorf("field %s: must be <= %v", "", 32767)
 	}
@@ -135,11 +147,15 @@ func (j *I32U) UnmarshalJSON(value []byte) error {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *I32U) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+	}
 	type Plain I32U
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain = plain
 	if 32768 < plain {
 		return fmt.Errorf("field %s: must be <= %v", "", 32768)
 	}
@@ -171,11 +187,15 @@ func (j *I64L) UnmarshalJSON(value []byte) error {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *I64L) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+	}
 	type Plain I64L
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain = plain
 	if 2147483647 < plain {
 		return fmt.Errorf("field %s: must be <= %v", "", 2147483647)
 	}
@@ -207,11 +227,15 @@ func (j *I64U) UnmarshalJSON(value []byte) error {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *I64U) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+	}
 	type Plain I64U
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain = plain
 	if 2147483648 < plain {
 		return fmt.Errorf("field %s: must be <= %v", "", 2147483648)
 	}
@@ -510,11 +534,33 @@ func (j *Restricted) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["u64"]; raw != nil && !ok {
 		return fmt.Errorf("field u64 in Restricted: required")
 	}
+	type PlainRaw struct {
+		I16l I16L
+		I16u I16U
+		I32l I32L
+		I32u I32U
+		I64l I64L
+		I64u I64U
+		U16  U16
+		U32  U32
+		U64  U64
+	}
 	type Plain Restricted
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.i16l = rawStruct.I16l
+	plain.i16u = rawStruct.I16u
+	plain.i32l = rawStruct.I32l
+	plain.i32u = rawStruct.I32u
+	plain.i64l = rawStruct.I64l
+	plain.i64u = rawStruct.I64u
+	plain.u16 = rawStruct.U16
+	plain.u32 = rawStruct.U32
+	plain.u64 = rawStruct.U64
+	plain = plain
 	*j = Restricted(plain)
 	return nil
 }
@@ -537,11 +583,15 @@ func (j *U16) UnmarshalJSON(value []byte) error {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *U16) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+	}
 	type Plain U16
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain = plain
 	if 256 < plain {
 		return fmt.Errorf("field %s: must be <= %v", "", 256)
 	}
@@ -553,11 +603,15 @@ type U32 uint32
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *U32) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+	}
 	type Plain U32
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain = plain
 	if 65536 < plain {
 		return fmt.Errorf("field %s: must be <= %v", "", 65536)
 	}
@@ -583,11 +637,15 @@ type U64 uint64
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *U64) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+	}
 	type Plain U64
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain = plain
 	if 4294967296 < plain {
 		return fmt.Errorf("field %s: must be <= %v", "", 4294967296)
 	}

@@ -96,11 +96,19 @@ func (j *AllOfNestedRefs) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["foo"]; raw != nil && !ok {
 		return fmt.Errorf("field foo in AllOfNestedRefs: required")
 	}
+	type PlainRaw struct {
+		Bar *string
+		Foo interface{}
+	}
 	type Plain AllOfNestedRefs
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.bar = rawStruct.Bar
+	plain.foo = rawStruct.Foo
+	plain = plain
 	*j = AllOfNestedRefs(plain)
 	return nil
 }
@@ -162,11 +170,17 @@ func (j *ExtraProps) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *ExtraProps) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Bar *string
+	}
 	type Plain ExtraProps
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.bar = rawStruct.Bar
+	plain = plain
 	*j = ExtraProps(plain)
 	return nil
 }
@@ -252,11 +266,19 @@ func (j *RootObject) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["foo"]; raw != nil && !ok {
 		return fmt.Errorf("field foo in RootObject: required")
 	}
+	type PlainRaw struct {
+		Bar *string
+		Foo interface{}
+	}
 	type Plain RootObject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.bar = rawStruct.Bar
+	plain.foo = rawStruct.Foo
+	plain = plain
 	*j = RootObject(plain)
 	return nil
 }

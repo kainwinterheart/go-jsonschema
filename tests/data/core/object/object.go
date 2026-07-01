@@ -81,11 +81,17 @@ func (j *Object) MarshalJSON() ([]byte, error) {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Object) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Myobject *Objectmyobject
+	}
 	type Plain Object
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myobject = rawStruct.Myobject
+	plain = plain
 	*j = Object(plain)
 	return nil
 }
@@ -127,11 +133,17 @@ func (j *Objectmyobject) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myString"]; raw != nil && !ok {
 		return fmt.Errorf("field myString in Objectmyobject: required")
 	}
+	type PlainRaw struct {
+		Mystring string
+	}
 	type Plain Objectmyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mystring = rawStruct.Mystring
+	plain = plain
 	*j = Objectmyobject(plain)
 	return nil
 }

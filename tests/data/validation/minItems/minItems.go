@@ -4,20 +4,21 @@ package test
 
 import "encoding/json"
 import "fmt"
+import "github.com/benbjohnson/immutable"
 import yaml "gopkg.in/yaml.v3"
 
 type MinItems struct {
 	// mynestedarray corresponds to the JSON schema field "myNestedArray".
-	mynestedarray [][]interface{} `json:"myNestedArray,omitempty,omitzero" yaml:"myNestedArray,omitempty" mapstructure:"myNestedArray,omitempty"`
+	mynestedarray *immutable.List[*immutable.List[interface{}]] `json:"myNestedArray,omitempty,omitzero" yaml:"myNestedArray,omitempty" mapstructure:"myNestedArray,omitempty"`
 
 	// mystringarray corresponds to the JSON schema field "myStringArray".
-	mystringarray []string `json:"myStringArray,omitempty,omitzero" yaml:"myStringArray,omitempty" mapstructure:"myStringArray,omitempty"`
+	mystringarray *immutable.List[string] `json:"myStringArray,omitempty,omitzero" yaml:"myStringArray,omitempty" mapstructure:"myStringArray,omitempty"`
 }
 
 type MinItemsBuilder struct {
-	mynestedarray [][]interface{}
+	mynestedarray *immutable.List[*immutable.List[interface{}]]
 
-	mystringarray []string
+	mystringarray *immutable.List[string]
 }
 
 func (b *MinItemsBuilder) Build() *MinItems {
@@ -27,12 +28,12 @@ func (b *MinItemsBuilder) Build() *MinItems {
 	}
 }
 
-func (b *MinItemsBuilder) WithMyNestedArray(v [][]interface{}) *MinItemsBuilder {
+func (b *MinItemsBuilder) WithMyNestedArray(v *immutable.List[*immutable.List[interface{}]]) *MinItemsBuilder {
 	b.mynestedarray = v
 	return b
 }
 
-func (b *MinItemsBuilder) WithMyStringArray(v []string) *MinItemsBuilder {
+func (b *MinItemsBuilder) WithMyStringArray(v *immutable.List[string]) *MinItemsBuilder {
 	b.mystringarray = v
 	return b
 }
@@ -41,11 +42,11 @@ func (o *MinItems) Clone() *MinItemsBuilder {
 	return NewMinItemsBuilder(o)
 }
 
-func (o *MinItems) MyNestedArray() [][]interface{} {
+func (o *MinItems) MyNestedArray() *immutable.List[*immutable.List[interface{}]] {
 	return o.mynestedarray
 }
 
-func (o *MinItems) MyStringArray() []string {
+func (o *MinItems) MyStringArray() *immutable.List[string] {
 	return o.mystringarray
 }
 
@@ -61,17 +62,44 @@ func (j *MinItems) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.mynestedarray = helper.Mynestedarray
-	plain.mystringarray = helper.Mystringarray
-	if plain.mynestedarray != nil && len(plain.mynestedarray) < 5 {
+	plain.mynestedarray = func() *immutable.List[*immutable.List[interface{}]] {
+		if helper.Mynestedarray == nil {
+			return nil
+		}
+		l := make([]*immutable.List[interface{}], 0, len(helper.Mynestedarray))
+		for _, v := range helper.Mynestedarray {
+			l = append(l, func() *immutable.List[interface{}] {
+				if v == nil {
+					return nil
+				}
+				l := make([]interface{}, 0, len(v))
+				for _, v := range v {
+					l = append(l, v)
+				}
+				return immutable.NewList(l...)
+			}())
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mystringarray = func() *immutable.List[string] {
+		if helper.Mystringarray == nil {
+			return nil
+		}
+		l := make([]string, 0, len(helper.Mystringarray))
+		for _, v := range helper.Mystringarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	if plain.mynestedarray != nil && plain.mynestedarray.Len() < 5 {
 		return fmt.Errorf("field %s length: must be >= %d", "myNestedArray", 5)
 	}
-	for i1 := range plain.mynestedarray {
-		if plain.mynestedarray[i1] != nil && len(plain.mynestedarray[i1]) < 5 {
+	for i1 := 0; i1 < plain.mynestedarray.Len(); i1++ {
+		if plain.mynestedarray.Get(i1) != nil && plain.mynestedarray.Get(i1).Len() < 5 {
 			return fmt.Errorf("field %s length: must be >= %d", fmt.Sprintf("myNestedArray[%d]", i1), 5)
 		}
 	}
-	if plain.mystringarray != nil && len(plain.mystringarray) < 5 {
+	if plain.mystringarray != nil && plain.mystringarray.Len() < 5 {
 		return fmt.Errorf("field %s length: must be >= %d", "myStringArray", 5)
 	}
 	*j = MinItems(plain)
@@ -85,28 +113,96 @@ func (j *MinItems) MarshalJSON() ([]byte, error) {
 		Mystringarray []string        `json:"myStringArray,omitempty"`
 	}
 	helper := MinItemsMarshalHelper{
-		Mynestedarray: j.mynestedarray,
-		Mystringarray: j.mystringarray,
+		Mynestedarray: func() [][]interface{} {
+			if j.mynestedarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[*immutable.List[interface{}]])(j.mynestedarray)
+			l := make([][]interface{}, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = func() []interface{} {
+					if __elem == nil {
+						return nil
+					}
+					lst := (*immutable.List[interface{}])(__elem)
+					l := make([]interface{}, lst.Len())
+					for i := 0; i < lst.Len(); i++ {
+						__elem := lst.Get(i)
+						l[i] = __elem
+					}
+					return l
+				}()
+			}
+			return l
+		}(),
+		Mystringarray: func() []string {
+			if j.mystringarray == nil {
+				return nil
+			}
+			lst := (*immutable.List[string])(j.mystringarray)
+			l := make([]string, lst.Len())
+			for i := 0; i < lst.Len(); i++ {
+				__elem := lst.Get(i)
+				l[i] = __elem
+			}
+			return l
+		}(),
 	}
 	return json.Marshal(helper)
 }
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *MinItems) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Mynestedarray [][]interface{}
+		Mystringarray []string
+	}
 	type Plain MinItems
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
-	if plain.mynestedarray != nil && len(plain.mynestedarray) < 5 {
+	var plain Plain
+	plain.mynestedarray = func() *immutable.List[*immutable.List[interface{}]] {
+		if rawStruct.Mynestedarray == nil {
+			return nil
+		}
+		l := make([]*immutable.List[interface{}], 0, len(rawStruct.Mynestedarray))
+		for _, v := range rawStruct.Mynestedarray {
+			l = append(l, func() *immutable.List[interface{}] {
+				if v == nil {
+					return nil
+				}
+				l := make([]interface{}, 0, len(v))
+				for _, v := range v {
+					l = append(l, v)
+				}
+				return immutable.NewList(l...)
+			}())
+		}
+		return immutable.NewList(l...)
+	}()
+	plain.mystringarray = func() *immutable.List[string] {
+		if rawStruct.Mystringarray == nil {
+			return nil
+		}
+		l := make([]string, 0, len(rawStruct.Mystringarray))
+		for _, v := range rawStruct.Mystringarray {
+			l = append(l, v)
+		}
+		return immutable.NewList(l...)
+	}()
+	plain = plain
+	if plain.mynestedarray != nil && plain.mynestedarray.Len() < 5 {
 		return fmt.Errorf("field %s length: must be >= %d", "myNestedArray", 5)
 	}
-	for i1 := range plain.mynestedarray {
-		if plain.mynestedarray[i1] != nil && len(plain.mynestedarray[i1]) < 5 {
+	for i1 := 0; i1 < plain.mynestedarray.Len(); i1++ {
+		if plain.mynestedarray.Get(i1) != nil && plain.mynestedarray.Get(i1).Len() < 5 {
 			return fmt.Errorf("field %s length: must be >= %d", fmt.Sprintf("myNestedArray[%d]", i1), 5)
 		}
 	}
-	if plain.mystringarray != nil && len(plain.mystringarray) < 5 {
+	if plain.mystringarray != nil && plain.mystringarray.Len() < 5 {
 		return fmt.Errorf("field %s length: must be >= %d", "myStringArray", 5)
 	}
 	*j = MinItems(plain)

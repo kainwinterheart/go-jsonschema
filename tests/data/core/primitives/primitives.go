@@ -163,11 +163,25 @@ func (j *Primitives) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
+	type PlainRaw struct {
+		Myboolean *bool
+		Myinteger *int
+		Mynull    interface{}
+		Mynumber  *float64
+		Mystring  *string
+	}
 	type Plain Primitives
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myboolean = rawStruct.Myboolean
+	plain.myinteger = rawStruct.Myinteger
+	plain.mynull = rawStruct.Mynull
+	plain.mynumber = rawStruct.Mynumber
+	plain.mystring = rawStruct.Mystring
+	plain = plain
 	if plain.mynull != nil {
 		return fmt.Errorf("field %s: must be null", "myNull")
 	}

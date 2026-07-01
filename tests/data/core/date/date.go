@@ -37,11 +37,17 @@ func (o *Date) MyObject() *Datemyobject {
 
 // UnmarshalYAML implements yaml.Unmarshaler.
 func (j *Date) UnmarshalYAML(value *yaml.Node) error {
+	type PlainRaw struct {
+		Myobject *Datemyobject
+	}
 	type Plain Date
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.myobject = rawStruct.Myobject
+	plain = plain
 	*j = Date(plain)
 	return nil
 }
@@ -110,11 +116,17 @@ func (j *Datemyobject) UnmarshalYAML(value *yaml.Node) error {
 	if _, ok := raw["myDate"]; raw != nil && !ok {
 		return fmt.Errorf("field myDate in Datemyobject: required")
 	}
+	type PlainRaw struct {
+		Mydate types.SerializableDate
+	}
 	type Plain Datemyobject
-	var plain Plain
-	if err := value.Decode(&plain); err != nil {
+	var rawStruct PlainRaw
+	if err := value.Decode(&rawStruct); err != nil {
 		return err
 	}
+	var plain Plain
+	plain.mydate = (SerializableDate)(rawStruct.Mydate)
+	plain = plain
 	*j = Datemyobject(plain)
 	return nil
 }
@@ -137,7 +149,7 @@ func (j *Datemyobject) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	var plain Plain
-	plain.mydate = helper.Mydate
+	plain.mydate = (SerializableDate)(helper.Mydate)
 	*j = Datemyobject(plain)
 	return nil
 }
