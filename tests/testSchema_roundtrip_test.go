@@ -20,10 +20,24 @@ func TestRoundTripTestSchema(t *testing.T) {
 	pdAllChangesRaw := immutable.NewMapOf[string](nil, map[string]string{"key": "val"})
 	dsAllChangesRaw := immutable.NewMapOf[string](nil, map[string]string{"change": "updated"})
 	coderOutputs := immutable.NewList(dt.Coder{})
-	findingsList := immutable.NewList(dt.InvestigatorFindings{})
+	// Shared populated InvestigatorFindings for findingsList and investigatorFindings in PayloadData
+	payloadFinding := (&dt.InvestigatorFindingsBuilder{}).
+		WithConclusions(immutable.NewList[string]("Conclusion: Data integrity verified")).
+		WithConfidenceLevel(dt.InvestigatorFindingsconfidencelevelHigh).
+		WithSupportingEvidence(immutable.NewList(
+			*((&dt.InvestigatorFindingssupportingevidenceElemBuilder{}).
+				WithEvidenceDescription("Database checksums match").
+				WithEvidenceType("code_snippet").
+				WithSourceReference("db-checksum-v3").
+				Build()),
+		)).
+		WithUnansweredQuestions(immutable.NewList[string]()).
+		WithWorkstreamObjective("Validate data integrity").
+		Build()
+	findingsList := immutable.NewList[dt.InvestigatorFindings](*payloadFinding)
 	coderOutputsDS := immutable.NewList(dt.Coder{})
-	codeSummaries := immutable.NewList("summary1", "summary2")
-	speculativeExpansions := immutable.NewList("exp1", "exp2")
+	codeSummaries := immutable.NewList[string]("summary1", "summary2")
+	speculativeExpansions := immutable.NewList[string]("exp1", "exp2")
 	workstreams := immutable.NewList(dt.InvestigatorPlanworkstreamsElem{})
 
 	// ---- Build DomainState (used in nested domains map) ----
@@ -63,7 +77,7 @@ func TestRoundTripTestSchema(t *testing.T) {
 		WithInitialPromptContext("initial-context").
 		WithInvestigationPlanQualityReview(&dt.InvestigationPlanQualityReview{}).
 		WithInvestigationReport(&dt.InvestigationReport{}).
-		WithInvestigatorFindings(&dt.InvestigatorFindings{}).
+		WithInvestigatorFindings(payloadFinding).
 		WithIterCount(42).
 		WithPlanReview(&dt.PlanReview{}).
 		WithRevisionInvPrefix("rev-inv-prefix").
@@ -73,16 +87,43 @@ func TestRoundTripTestSchema(t *testing.T) {
 		WithWorkstreamElem(&dt.InvestigatorPlanworkstreamsElem{}).
 		Build()
 
-	// ---- Build WorkflowState ----
-	completedWorkstreamsRaw := immutable.NewMapOf[string](nil, map[string]dt.InvestigatorFindings{
-		"w1": {},
-		"w2": {},
-	})
+	// ---- Build populated InvestigatorFindings for completedWorkstreams ----
+	findingW1 := (&dt.InvestigatorFindingsBuilder{}).
+		WithConclusions(immutable.NewList[string]("Conclusion: System stable", "Conclusion: No regressions")).
+		WithConfidenceLevel(dt.InvestigatorFindingsconfidencelevelHigh).
+		WithSupportingEvidence(immutable.NewList(
+			*((&dt.InvestigatorFindingssupportingevidenceElemBuilder{}).
+				WithEvidenceDescription("All unit tests passing").
+				WithEvidenceType("log_entry").
+				WithSourceReference("build-log-42").
+				Build()),
+			*((&dt.InvestigatorFindingssupportingevidenceElemBuilder{}).
+				WithEvidenceDescription("Coverage above 90%").
+				WithEvidenceType("metric_value").
+				WithSourceReference("coverage-report").
+				Build()),
+		)).
+		WithUnansweredQuestions(immutable.NewList[string]("Should we migrate to Go generics?")).
+		WithWorkstreamObjective("Verify system stability").
+		Build()
+	findingW2 := (&dt.InvestigatorFindingsBuilder{}).
+		WithConclusions(immutable.NewList[string]("Conclusion: Performance degraded")).
+		WithConfidenceLevel(dt.InvestigatorFindingsconfidencelevelMedium).
+		WithSupportingEvidence(immutable.NewList[dt.InvestigatorFindingssupportingevidenceElem]()).
+		WithUnansweredQuestions(immutable.NewList[string]("Root cause unknown", "Impact scope unclear")).
+		WithWorkstreamObjective("Investigate performance regression").
+		Build()
+
 	// Domains map with a fully-populated DomainState value
 	domainsMapRaw := immutable.NewMapOf[string](nil, map[string]test.DomainState{
 		"d1": *ds,
 	})
 
+	// ---- Build WorkflowState ----
+	completedWorkstreamsRaw := immutable.NewMapOf[string](nil, map[string]dt.InvestigatorFindings{
+		"w1": *findingW1,
+		"w2": *findingW2,
+	})
 	workflowState := new(test.WorkflowStateBuilder).
 		WithCompletedWorkstreams(toWorkflowStateCompletedWorkstreams(completedWorkstreamsRaw)).
 		WithDecompositionResult(&dt.SystemDecomposition{}).
@@ -132,7 +173,10 @@ func TestRoundTripTestSchema(t *testing.T) {
 	// ---- Compare ALL fields ----
 	before := convertToComparable(example)
 	after := convertToComparable(&deserialized)
-	if diff := cmp.Diff(before, after, cmpopts.EquateEmpty()); diff != "" {
+	if diff := cmp.Diff(before, after, cmpopts.EquateEmpty(), cmpopts.IgnoreUnexported(
+		dt.InvestigatorFindings{},
+		dt.InvestigatorFindingssupportingevidenceElem{},
+	)); diff != "" {
 		t.Fatalf("field mismatch after round-trip:\n%s", diff)
 	}
 }
@@ -196,9 +240,23 @@ type comparableDomainState struct {
 	WrappedTask             string
 }
 
+type comparableInvestigatorFindingssupportingevidenceElem struct {
+	EvidenceDescription string
+	EvidenceType        string
+	SourceReference     string
+}
+
+type comparableInvestigatorFindings struct {
+	Conclusions         []string
+	ConfidenceLevel     string
+	SupportingEvidence  []comparableInvestigatorFindingssupportingevidenceElem
+	UnansweredQuestions []string
+	WorkstreamObjective string
+}
+
 type comparableWorkflowState struct {
 	Choices                 string
-	CompletedWorkstreams    map[string]dt.InvestigatorFindings
+	CompletedWorkstreams    map[string]comparableInvestigatorFindings
 	DecompositionResult     *dt.SystemDecomposition
 	DomainCurrentStage      string
 	DomainIterationIndex    int
@@ -319,14 +377,33 @@ func convertDomainState(ds test.DomainState) comparableDomainState {
 	}
 }
 
+func convertInvestigatorFindings(f dt.InvestigatorFindings) comparableInvestigatorFindings {
+	se := toList(dt.InvestigatorFindingssupportingevidenceElem{}, f.SupportingEvidence())
+	seComp := make([]comparableInvestigatorFindingssupportingevidenceElem, len(se))
+	for i, elem := range se {
+		seComp[i] = comparableInvestigatorFindingssupportingevidenceElem{
+			EvidenceDescription: elem.EvidenceDescription(),
+			EvidenceType:        elem.EvidenceType(),
+			SourceReference:     elem.SourceReference(),
+		}
+	}
+	return comparableInvestigatorFindings{
+		Conclusions:         toList("", f.Conclusions()),
+		ConfidenceLevel:     string(f.ConfidenceLevel()),
+		SupportingEvidence:  seComp,
+		UnansweredQuestions: toList("", f.UnansweredQuestions()),
+		WorkstreamObjective: f.WorkstreamObjective(),
+	}
+}
+
 func convertWorkflowState(ws *test.WorkflowState) *comparableWorkflowState {
 	if ws == nil {
 		return nil
 	}
 	completedItems := ws.CompletedWorkstreams().Items()
-	completedWorkstreams := make(map[string]dt.InvestigatorFindings, len(completedItems))
+	completedWorkstreams := make(map[string]comparableInvestigatorFindings, len(completedItems))
 	for _, it := range completedItems {
-		completedWorkstreams[it.Key] = it.Value
+		completedWorkstreams[it.Key] = convertInvestigatorFindings(it.Value)
 	}
 	domainsItems := ws.Domains().Items()
 	domains := make(map[string]comparableDomainState, len(domainsItems))

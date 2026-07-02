@@ -1877,7 +1877,7 @@ func (o *WorkflowState) Workstreams() *immutable.List[dt.InvestigatorPlanworkstr
 func (j *WorkflowState) UnmarshalYAML(value *yaml.Node) error {
 	type PlainRaw struct {
 		Choices                string
-		Completedworkstreams   map[string]dt.InvestigatorFindings
+		Completedworkstreams   map[string]*dt.InvestigatorFindings
 		Decompositionresult    *dt.SystemDecomposition
 		Domaincurrentstage     string
 		Domainiterationindex   int
@@ -1902,7 +1902,13 @@ func (j *WorkflowState) UnmarshalYAML(value *yaml.Node) error {
 	}
 	var plain Plain
 	plain.choices = rawStruct.Choices
-	plain.completedworkstreams = (WorkflowStatecompletedworkstreams)(*immutable.NewMapOf[string](nil, rawStruct.Completedworkstreams))
+	plain.completedworkstreams = (WorkflowStatecompletedworkstreams)(*immutable.NewMapOf[string](nil, func() map[string]dt.InvestigatorFindings {
+		m := make(map[string]dt.InvestigatorFindings)
+		for k, v := range rawStruct.Completedworkstreams {
+			m[k] = *v
+		}
+		return m
+	}()))
 	plain.decompositionresult = rawStruct.Decompositionresult
 	plain.domaincurrentstage = rawStruct.Domaincurrentstage
 	plain.domainiterationindex = rawStruct.Domainiterationindex
@@ -1952,7 +1958,7 @@ func (j *WorkflowState) UnmarshalYAML(value *yaml.Node) error {
 func (j *WorkflowState) UnmarshalJSON(value []byte) error {
 	type WorkflowStateHelper struct {
 		Choices                string                               `json:"choices,omitempty,omitzero"`
-		Completedworkstreams   map[string]dt.InvestigatorFindings   `json:"completedWorkstreams,omitempty,omitzero"`
+		Completedworkstreams   map[string]*dt.InvestigatorFindings  `json:"completedWorkstreams,omitempty,omitzero"`
 		Decompositionresult    *dt.SystemDecomposition              `json:"decompositionResult,omitempty,omitzero"`
 		Domaincurrentstage     string                               `json:"domainCurrentStage,omitempty,omitzero"`
 		Domainiterationindex   int                                  `json:"domainIterationIndex,omitempty,omitzero"`
@@ -1977,7 +1983,13 @@ func (j *WorkflowState) UnmarshalJSON(value []byte) error {
 	}
 	var plain Plain
 	plain.choices = helper.Choices
-	plain.completedworkstreams = (WorkflowStatecompletedworkstreams)(*immutable.NewMapOf[string](nil, helper.Completedworkstreams))
+	plain.completedworkstreams = (WorkflowStatecompletedworkstreams)(*immutable.NewMapOf[string](nil, func() map[string]dt.InvestigatorFindings {
+		m := make(map[string]dt.InvestigatorFindings)
+		for k, v := range helper.Completedworkstreams {
+			m[k] = *v
+		}
+		return m
+	}()))
 	plain.decompositionresult = helper.Decompositionresult
 	plain.domaincurrentstage = helper.Domaincurrentstage
 	plain.domainiterationindex = helper.Domainiterationindex
@@ -2026,7 +2038,7 @@ func (j *WorkflowState) UnmarshalJSON(value []byte) error {
 func (j *WorkflowState) MarshalJSON() ([]byte, error) {
 	type WorkflowStateMarshalHelper struct {
 		Choices                string                               `json:"choices,omitempty,omitzero"`
-		Completedworkstreams   map[string]dt.InvestigatorFindings   `json:"completedWorkstreams,omitempty,omitzero"`
+		Completedworkstreams   map[string]*dt.InvestigatorFindings  `json:"completedWorkstreams,omitempty,omitzero"`
 		Decompositionresult    *dt.SystemDecomposition              `json:"decompositionResult,omitempty,omitzero"`
 		Domaincurrentstage     string                               `json:"domainCurrentStage,omitempty,omitzero"`
 		Domainiterationindex   int                                  `json:"domainIterationIndex,omitempty,omitzero"`
@@ -2046,15 +2058,15 @@ func (j *WorkflowState) MarshalJSON() ([]byte, error) {
 	}
 	helper := WorkflowStateMarshalHelper{
 		Choices: j.choices,
-		Completedworkstreams: func() map[string]dt.InvestigatorFindings {
-			m := make(map[string]dt.InvestigatorFindings)
+		Completedworkstreams: func() map[string]*dt.InvestigatorFindings {
+			m := make(map[string]*dt.InvestigatorFindings)
 			iter := (*immutable.Map[string, dt.InvestigatorFindings])(&j.completedworkstreams).Iterator()
 			for iter.First(); !iter.Done(); {
 				k, v, ok := iter.Next()
 				if !ok {
 					break
 				}
-				m[k] = v
+				m[k] = &v
 			}
 			return m
 		}(),

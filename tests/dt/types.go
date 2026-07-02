@@ -18,7 +18,6 @@ type PlanReview struct{}
 type FactCheckingReview struct{}
 type SynthesisConsistencyReview struct{}
 type InvestigationReport struct{}
-type InvestigatorFindings struct{}
 type InvestigatorPlanworkstreamsElem struct{}
 type PmSynthesizer struct{}
 type InvestigatorPlan struct{}

@@ -92,6 +92,19 @@ func rawTypeForHelper(t codegen.Type) codegen.Type {
 					}
 				}
 			}
+			// Check for CustomNameType from goJSONSchema extension (e.g., "dt.InvestigatorFindings")
+			if cn, ok := valType.(*codegen.CustomNameType); ok && strings.Contains(cn.Type, ".") {
+				return codegen.RawMapTypeWithPointerValue{
+					KeyType:   rm.KeyType,
+					ValueType: rm.ValueType,
+				}
+			}
+			if cn, ok := valType.(codegen.CustomNameType); ok && strings.Contains(cn.Type, ".") {
+				return codegen.RawMapTypeWithPointerValue{
+					KeyType:   rm.KeyType,
+					ValueType: rm.ValueType,
+				}
+			}
 			// For struct-valued maps with inline structs (no Package), return raw type without pointer
 			// This preserves the original behavior for maps like AutoinstallSchemareporting
 			if _, ok := valType.(*codegen.StructType); ok {
@@ -400,7 +413,17 @@ func (jf *jsonFormatter) generate(
 							if nt, ok := valType.(*codegen.NamedType); ok && nt.Decl != nil {
 								valType = nt.Decl.Type
 							}
-							if _, isStruct := valType.(*codegen.StructType); isStruct {
+							isStruct := false
+							if _, isStruct = valType.(*codegen.StructType); isStruct {
+							}
+							// Also check for CustomNameType from goJSONSchema extension
+							if cn, ok := valType.(*codegen.CustomNameType); ok && strings.Contains(cn.Type, ".") {
+								isStruct = true
+							}
+							if cn, ok := valType.(codegen.CustomNameType); ok && strings.Contains(cn.Type, ".") {
+								isStruct = true
+							}
+							if isStruct {
 								conv := immutableToRawConversionForMarshal(f.Type, "j."+f.Name)
 								out.Printf("\t%s: %s,\n", exportedName, conv)
 								continue
@@ -900,6 +923,13 @@ func needsPointerConversion(t codegen.Type) bool {
 				if _, isStruct := nt.Decl.Type.(*codegen.StructType); isStruct {
 					return true
 				}
+			}
+			// Also check for CustomNameType from goJSONSchema extension (e.g., "dt.InvestigatorFindings")
+			if cn, ok := valType.(*codegen.CustomNameType); ok && strings.Contains(cn.Type, ".") {
+				return true
+			}
+			if cn, ok := valType.(codegen.CustomNameType); ok && strings.Contains(cn.Type, ".") {
+				return true
 			}
 		}
 	}
