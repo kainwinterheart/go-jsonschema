@@ -54,7 +54,7 @@ func (j *Bar) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Bar) UnmarshalJSON(value []byte) error {
 	type BarHelper struct {
-		Reftofoo *Foo `json:"refToFoo,omitempty"`
+		Reftofoo *Foo `json:"refToFoo,omitempty,omitzero"`
 	}
 	type Plain Bar
 	var helper BarHelper
@@ -70,7 +70,7 @@ func (j *Bar) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Bar) MarshalJSON() ([]byte, error) {
 	type BarMarshalHelper struct {
-		Reftofoo *Foo `json:"refToFoo,omitempty"`
+		Reftofoo *Foo `json:"refToFoo,omitempty,omitzero"`
 	}
 	helper := BarMarshalHelper{
 		Reftofoo: j.reftofoo,
@@ -109,7 +109,7 @@ func (o *CyclicAndRequired1) Clone() *CyclicAndRequired1Builder {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *CyclicAndRequired1) UnmarshalJSON(value []byte) error {
 	type CyclicAndRequired1Helper struct {
-		A *Foo `json:"a,omitempty"`
+		A *Foo `json:"a,omitempty,omitzero"`
 	}
 	type Plain CyclicAndRequired1
 	var helper CyclicAndRequired1Helper
@@ -125,7 +125,7 @@ func (j *CyclicAndRequired1) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *CyclicAndRequired1) MarshalJSON() ([]byte, error) {
 	type CyclicAndRequired1MarshalHelper struct {
-		A *Foo `json:"a,omitempty"`
+		A *Foo `json:"a,omitempty,omitzero"`
 	}
 	helper := CyclicAndRequired1MarshalHelper{
 		A: j.a,

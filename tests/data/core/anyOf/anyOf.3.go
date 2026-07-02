@@ -254,7 +254,7 @@ func (o *AnyOf3_2) Configurations() *immutable.List[interface{}] {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AnyOf3_2) UnmarshalJSON(value []byte) error {
 	type AnyOf3_2Helper struct {
-		Configurations []interface{} `json:"configurations,omitempty"`
+		Configurations []interface{} `json:"configurations,omitempty,omitzero"`
 	}
 	type Plain AnyOf3_2
 	var helper AnyOf3_2Helper
@@ -279,7 +279,7 @@ func (j *AnyOf3_2) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AnyOf3_2) MarshalJSON() ([]byte, error) {
 	type AnyOf3_2MarshalHelper struct {
-		Configurations []interface{} `json:"configurations,omitempty"`
+		Configurations []interface{} `json:"configurations,omitempty,omitzero"`
 	}
 	helper := AnyOf3_2MarshalHelper{
 		Configurations: func() []interface{} {
@@ -363,9 +363,9 @@ func (j *AnyOf3) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
 	type AnyOf3Helper struct {
-		Bar            *float64      `json:"bar,omitempty"`
-		Configurations []interface{} `json:"configurations,omitempty"`
-		Foo            *string       `json:"foo,omitempty"`
+		Bar            *float64      `json:"bar,omitempty,omitzero"`
+		Configurations []interface{} `json:"configurations,omitempty,omitzero"`
+		Foo            *string       `json:"foo,omitempty,omitzero"`
 	}
 	type Plain AnyOf3
 	var helper AnyOf3Helper
@@ -392,9 +392,9 @@ func (j *AnyOf3) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AnyOf3) MarshalJSON() ([]byte, error) {
 	type AnyOf3MarshalHelper struct {
-		Bar            *float64      `json:"bar,omitempty"`
-		Configurations []interface{} `json:"configurations,omitempty"`
-		Foo            *string       `json:"foo,omitempty"`
+		Bar            *float64      `json:"bar,omitempty,omitzero"`
+		Configurations []interface{} `json:"configurations,omitempty,omitzero"`
+		Foo            *string       `json:"foo,omitempty,omitzero"`
 	}
 	helper := AnyOf3MarshalHelper{
 		Bar: j.bar,

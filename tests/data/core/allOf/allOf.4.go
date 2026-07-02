@@ -122,7 +122,7 @@ func (j *AllOf4Elem) UnmarshalJSON(value []byte) error {
 		From     Embeddedlinkendfrom        `json:"from"`
 		Linkkind string                     `json:"linkKind"`
 		Linktype Embeddedlinkendlinktype    `json:"linkType"`
-		Tags     map[string]interface{}     `json:"tags,omitempty"`
+		Tags     map[string]interface{}     `json:"tags,omitempty,omitzero"`
 		Target   Embeddedlinkrelationtarget `json:"target"`
 	}
 	type Plain AllOf4Elem
@@ -149,7 +149,7 @@ func (j *AllOf4Elem) MarshalJSON() ([]byte, error) {
 		From     Embeddedlinkendfrom        `json:"from"`
 		Linkkind string                     `json:"linkKind"`
 		Linktype Embeddedlinkendlinktype    `json:"linkType"`
-		Tags     map[string]interface{}     `json:"tags,omitempty"`
+		Tags     map[string]interface{}     `json:"tags,omitempty,omitzero"`
 		Target   Embeddedlinkrelationtarget `json:"target"`
 	}
 	helper := AllOf4ElemMarshalHelper{
@@ -286,9 +286,9 @@ func (j *Embeddedlinkend) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field linkType in Embeddedlinkend: required")
 	}
 	type EmbeddedlinkendHelper struct {
-		From     *Embeddedlinkendfrom    `json:"from,omitempty"`
+		From     *Embeddedlinkendfrom    `json:"from,omitempty,omitzero"`
 		Linktype Embeddedlinkendlinktype `json:"linkType"`
-		Tags     map[string]interface{}  `json:"tags,omitempty"`
+		Tags     map[string]interface{}  `json:"tags,omitempty,omitzero"`
 	}
 	type Plain Embeddedlinkend
 	var helper EmbeddedlinkendHelper
@@ -306,9 +306,9 @@ func (j *Embeddedlinkend) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Embeddedlinkend) MarshalJSON() ([]byte, error) {
 	type EmbeddedlinkendMarshalHelper struct {
-		From     *Embeddedlinkendfrom    `json:"from,omitempty"`
+		From     *Embeddedlinkendfrom    `json:"from,omitempty,omitzero"`
 		Linktype Embeddedlinkendlinktype `json:"linkType"`
-		Tags     map[string]interface{}  `json:"tags,omitempty"`
+		Tags     map[string]interface{}  `json:"tags,omitempty,omitzero"`
 	}
 	helper := EmbeddedlinkendMarshalHelper{
 		From:     j.from,
@@ -632,7 +632,7 @@ func (j *Embeddedlinkpath) UnmarshalJSON(value []byte) error {
 	type EmbeddedlinkpathHelper struct {
 		From     Embeddedlinkpathfrom     `json:"from"`
 		Linktype Embeddedlinkpathlinktype `json:"linkType"`
-		Tags     map[string]interface{}   `json:"tags,omitempty"`
+		Tags     map[string]interface{}   `json:"tags,omitempty,omitzero"`
 	}
 	type Plain Embeddedlinkpath
 	var helper EmbeddedlinkpathHelper
@@ -652,7 +652,7 @@ func (j *Embeddedlinkpath) MarshalJSON() ([]byte, error) {
 	type EmbeddedlinkpathMarshalHelper struct {
 		From     Embeddedlinkpathfrom     `json:"from"`
 		Linktype Embeddedlinkpathlinktype `json:"linkType"`
-		Tags     map[string]interface{}   `json:"tags,omitempty"`
+		Tags     map[string]interface{}   `json:"tags,omitempty,omitzero"`
 	}
 	helper := EmbeddedlinkpathMarshalHelper{
 		From:     j.from,
@@ -934,7 +934,7 @@ func (j *Embeddedlinkrelation) UnmarshalJSON(value []byte) error {
 	type EmbeddedlinkrelationHelper struct {
 		Linkkind string                       `json:"linkKind"`
 		Linktype Embeddedlinkrelationlinktype `json:"linkType"`
-		Tags     map[string]interface{}       `json:"tags,omitempty"`
+		Tags     map[string]interface{}       `json:"tags,omitempty,omitzero"`
 		Target   Embeddedlinkrelationtarget   `json:"target"`
 	}
 	type Plain Embeddedlinkrelation
@@ -959,7 +959,7 @@ func (j *Embeddedlinkrelation) MarshalJSON() ([]byte, error) {
 	type EmbeddedlinkrelationMarshalHelper struct {
 		Linkkind string                       `json:"linkKind"`
 		Linktype Embeddedlinkrelationlinktype `json:"linkType"`
-		Tags     map[string]interface{}       `json:"tags,omitempty"`
+		Tags     map[string]interface{}       `json:"tags,omitempty,omitzero"`
 		Target   Embeddedlinkrelationtarget   `json:"target"`
 	}
 	helper := EmbeddedlinkrelationMarshalHelper{
@@ -1128,7 +1128,7 @@ func (o *Embeddedlinkrelationtarget) ContextId() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Embeddedlinkrelationtarget) UnmarshalJSON(value []byte) error {
 	type EmbeddedlinkrelationtargetHelper struct {
-		Contextid *string `json:"contextId,omitempty"`
+		Contextid *string `json:"contextId,omitempty,omitzero"`
 	}
 	type Plain Embeddedlinkrelationtarget
 	var helper EmbeddedlinkrelationtargetHelper
@@ -1147,7 +1147,7 @@ func (j *Embeddedlinkrelationtarget) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Embeddedlinkrelationtarget) MarshalJSON() ([]byte, error) {
 	type EmbeddedlinkrelationtargetMarshalHelper struct {
-		Contextid *string `json:"contextId,omitempty"`
+		Contextid *string `json:"contextId,omitempty,omitzero"`
 	}
 	helper := EmbeddedlinkrelationtargetMarshalHelper{
 		Contextid: j.contextid,

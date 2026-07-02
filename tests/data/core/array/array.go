@@ -163,15 +163,15 @@ func (j *Array) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type ArrayHelper struct {
-		Myarray                []interface{}            `json:"myArray,omitempty"`
-		Mybooleanarray         []bool                   `json:"myBooleanArray,omitempty"`
-		Myintegerarray         []int                    `json:"myIntegerArray,omitempty"`
-		Mynestednullarray      [][]interface{}          `json:"myNestedNullArray,omitempty"`
-		Mynullarray            []interface{}            `json:"myNullArray,omitempty"`
-		Mynullableuntypedarray []interface{}            `json:"myNullableUntypedArray,omitempty"`
-		Mynumberarray          []float64                `json:"myNumberArray,omitempty"`
-		Myobjectarray          []map[string]interface{} `json:"myObjectArray,omitempty"`
-		Mystringarray          []string                 `json:"myStringArray,omitempty"`
+		Myarray                []interface{}            `json:"myArray,omitempty,omitzero"`
+		Mybooleanarray         []bool                   `json:"myBooleanArray,omitempty,omitzero"`
+		Myintegerarray         []int                    `json:"myIntegerArray,omitempty,omitzero"`
+		Mynestednullarray      [][]interface{}          `json:"myNestedNullArray,omitempty,omitzero"`
+		Mynullarray            []interface{}            `json:"myNullArray,omitempty,omitzero"`
+		Mynullableuntypedarray []interface{}            `json:"myNullableUntypedArray,omitempty,omitzero"`
+		Mynumberarray          []float64                `json:"myNumberArray,omitempty,omitzero"`
+		Myobjectarray          []map[string]interface{} `json:"myObjectArray,omitempty,omitzero"`
+		Mystringarray          []string                 `json:"myStringArray,omitempty,omitzero"`
 	}
 	type Plain Array
 	var helper ArrayHelper
@@ -299,15 +299,15 @@ func (j *Array) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Array) MarshalJSON() ([]byte, error) {
 	type ArrayMarshalHelper struct {
-		Myarray                []interface{}            `json:"myArray,omitempty"`
-		Mybooleanarray         []bool                   `json:"myBooleanArray,omitempty"`
-		Myintegerarray         []int                    `json:"myIntegerArray,omitempty"`
-		Mynestednullarray      [][]interface{}          `json:"myNestedNullArray,omitempty"`
-		Mynullarray            []interface{}            `json:"myNullArray,omitempty"`
-		Mynullableuntypedarray []interface{}            `json:"myNullableUntypedArray,omitempty"`
-		Mynumberarray          []float64                `json:"myNumberArray,omitempty"`
-		Myobjectarray          []map[string]interface{} `json:"myObjectArray,omitempty"`
-		Mystringarray          []string                 `json:"myStringArray,omitempty"`
+		Myarray                []interface{}            `json:"myArray,omitempty,omitzero"`
+		Mybooleanarray         []bool                   `json:"myBooleanArray,omitempty,omitzero"`
+		Myintegerarray         []int                    `json:"myIntegerArray,omitempty,omitzero"`
+		Mynestednullarray      [][]interface{}          `json:"myNestedNullArray,omitempty,omitzero"`
+		Mynullarray            []interface{}            `json:"myNullArray,omitempty,omitzero"`
+		Mynullableuntypedarray []interface{}            `json:"myNullableUntypedArray,omitempty,omitzero"`
+		Mynumberarray          []float64                `json:"myNumberArray,omitempty,omitzero"`
+		Myobjectarray          []map[string]interface{} `json:"myObjectArray,omitempty,omitzero"`
+		Mystringarray          []string                 `json:"myStringArray,omitempty,omitzero"`
 	}
 	helper := ArrayMarshalHelper{
 		Myarray: func() []interface{} {

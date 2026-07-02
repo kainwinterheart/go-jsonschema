@@ -104,7 +104,7 @@ func (j *PrimitiveDefs) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field myString in PrimitiveDefs: required")
 	}
 	type PrimitiveDefsHelper struct {
-		Mynullablestring *MinStr `json:"myNullableString,omitempty"`
+		Mynullablestring *MinStr `json:"myNullableString,omitempty,omitzero"`
 		Mystring         MinStr  `json:"myString"`
 	}
 	type Plain PrimitiveDefs
@@ -122,7 +122,7 @@ func (j *PrimitiveDefs) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *PrimitiveDefs) MarshalJSON() ([]byte, error) {
 	type PrimitiveDefsMarshalHelper struct {
-		Mynullablestring *MinStr `json:"myNullableString,omitempty"`
+		Mynullablestring *MinStr `json:"myNullableString,omitempty,omitzero"`
 		Mystring         MinStr  `json:"myString"`
 	}
 	helper := PrimitiveDefsMarshalHelper{

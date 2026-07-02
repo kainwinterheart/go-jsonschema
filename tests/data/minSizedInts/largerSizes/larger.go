@@ -170,12 +170,12 @@ func (j *Larger) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field u64 in Larger: required")
 	}
 	type LargerHelper struct {
-		I16l *int16 `json:"i16l,omitempty"`
-		I16u *int16 `json:"i16u,omitempty"`
-		I32l *int32 `json:"i32l,omitempty"`
-		I32u *int32 `json:"i32u,omitempty"`
-		I64l *int64 `json:"i64l,omitempty"`
-		I64u *int64 `json:"i64u,omitempty"`
+		I16l *int16 `json:"i16l,omitempty,omitzero"`
+		I16u *int16 `json:"i16u,omitempty,omitzero"`
+		I32l *int32 `json:"i32l,omitempty,omitzero"`
+		I32u *int32 `json:"i32u,omitempty,omitzero"`
+		I64l *int64 `json:"i64l,omitempty,omitzero"`
+		I64u *int64 `json:"i64u,omitempty,omitzero"`
 		U16  uint16 `json:"u16"`
 		U32  uint32 `json:"u32"`
 		U64  uint64 `json:"u64"`
@@ -247,12 +247,12 @@ func (j *Larger) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Larger) MarshalJSON() ([]byte, error) {
 	type LargerMarshalHelper struct {
-		I16l *int16 `json:"i16l,omitempty"`
-		I16u *int16 `json:"i16u,omitempty"`
-		I32l *int32 `json:"i32l,omitempty"`
-		I32u *int32 `json:"i32u,omitempty"`
-		I64l *int64 `json:"i64l,omitempty"`
-		I64u *int64 `json:"i64u,omitempty"`
+		I16l *int16 `json:"i16l,omitempty,omitzero"`
+		I16u *int16 `json:"i16u,omitempty,omitzero"`
+		I32l *int32 `json:"i32l,omitempty,omitzero"`
+		I32u *int32 `json:"i32u,omitempty,omitzero"`
+		I64l *int64 `json:"i64l,omitempty,omitzero"`
+		I64u *int64 `json:"i64u,omitempty,omitzero"`
 		U16  uint16 `json:"u16"`
 		U32  uint32 `json:"u32"`
 		U64  uint64 `json:"u64"`

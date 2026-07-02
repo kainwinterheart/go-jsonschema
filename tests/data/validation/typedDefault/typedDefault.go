@@ -50,7 +50,7 @@ func (j *TypedDefault) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type TypedDefaultHelper struct {
-		Topleveldomains []string `json:"topLevelDomains,omitempty"`
+		Topleveldomains []string `json:"topLevelDomains,omitempty,omitzero"`
 	}
 	type Plain TypedDefault
 	var helper TypedDefaultHelper
@@ -78,7 +78,7 @@ func (j *TypedDefault) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *TypedDefault) MarshalJSON() ([]byte, error) {
 	type TypedDefaultMarshalHelper struct {
-		Topleveldomains []string `json:"topLevelDomains,omitempty"`
+		Topleveldomains []string `json:"topLevelDomains,omitempty,omitzero"`
 	}
 	helper := TypedDefaultMarshalHelper{
 		Topleveldomains: func() []string {

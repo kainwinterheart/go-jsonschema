@@ -14,7 +14,9 @@ const (
 
 var ErrCannotUnmarshalEnum = fmt.Errorf("cannot unmarshal enum")
 
-type jsonFormatter struct{}
+type jsonFormatter struct {
+	config *Config
+}
 
 // rawType converts a codegen.Type to its raw (non-immutable) equivalent
 // suitable for json.Unmarshal into helper structs.
@@ -167,7 +169,12 @@ func (jf *jsonFormatter) generate(
 				}
 				jsonTag := f.JSONName
 				if !isRequiredField(f, structType) {
-					jsonTag += ",omitempty"
+					if !jf.config.DisableOmitEmpty {
+						jsonTag += ",omitempty"
+					}
+					if !jf.config.DisableOmitZero {
+						jsonTag += ",omitzero"
+					}
 				}
 				tag := fmt.Sprintf(`json:"%s"`, jsonTag)
 				out.Printf("`%s`", tag)
@@ -217,7 +224,12 @@ func (jf *jsonFormatter) generate(
 					}
 					jsonTag := f.JSONName
 					if !isRequiredField(f, structType) {
-						jsonTag += ",omitempty"
+						if !jf.config.DisableOmitEmpty {
+							jsonTag += ",omitempty"
+						}
+						if !jf.config.DisableOmitZero {
+							jsonTag += ",omitzero"
+						}
 					}
 					tag := fmt.Sprintf(`json:"%s"`, jsonTag)
 					out.Printf("`%s`", tag)
@@ -345,7 +357,12 @@ func (jf *jsonFormatter) generate(
 					}
 					jsonTag := f.JSONName
 					if !isRequiredField(f, structType) {
-						jsonTag += ",omitempty"
+						if !jf.config.DisableOmitEmpty {
+							jsonTag += ",omitempty"
+						}
+						if !jf.config.DisableOmitZero {
+							jsonTag += ",omitzero"
+						}
 					}
 					tag := fmt.Sprintf(`json:"%s"`, jsonTag)
 					out.Printf("`%s`", tag)
@@ -388,7 +405,12 @@ func (jf *jsonFormatter) generate(
 					exportedName := rawExportedName(f.Name)
 					jsonTag := f.JSONName
 					if !isRequiredField(f, structType) {
-						jsonTag += ",omitempty"
+						if !jf.config.DisableOmitEmpty {
+							jsonTag += ",omitempty"
+						}
+						if !jf.config.DisableOmitZero {
+							jsonTag += ",omitzero"
+						}
 					}
 					tag := fmt.Sprintf(`json:"%s"`, jsonTag)
 					out.Printf("\t%s ", exportedName)

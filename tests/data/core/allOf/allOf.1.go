@@ -64,7 +64,7 @@ func (j *AllOf1) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AllOf1) UnmarshalJSON(value []byte) error {
 	type AllOf1Helper struct {
-		Configurations []AllOf1configurationsElem `json:"configurations,omitempty"`
+		Configurations []AllOf1configurationsElem `json:"configurations,omitempty,omitzero"`
 	}
 	type Plain AllOf1
 	var helper AllOf1Helper
@@ -89,7 +89,7 @@ func (j *AllOf1) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AllOf1) MarshalJSON() ([]byte, error) {
 	type AllOf1MarshalHelper struct {
-		Configurations []AllOf1configurationsElem `json:"configurations,omitempty"`
+		Configurations []AllOf1configurationsElem `json:"configurations,omitempty,omitzero"`
 	}
 	helper := AllOf1MarshalHelper{
 		Configurations: func() []AllOf1configurationsElem {

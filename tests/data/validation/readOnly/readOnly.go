@@ -72,7 +72,7 @@ func (j *ReadOnly) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field myReadOnlyString in ReadOnly: read only")
 	}
 	type ReadOnlyHelper struct {
-		Myreadonlystring *string `json:"myReadOnlyString,omitempty"`
+		Myreadonlystring *string `json:"myReadOnlyString,omitempty,omitzero"`
 		Mystring         string  `json:"myString"`
 	}
 	type Plain ReadOnly
@@ -90,7 +90,7 @@ func (j *ReadOnly) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *ReadOnly) MarshalJSON() ([]byte, error) {
 	type ReadOnlyMarshalHelper struct {
-		Myreadonlystring *string `json:"myReadOnlyString,omitempty"`
+		Myreadonlystring *string `json:"myReadOnlyString,omitempty,omitzero"`
 		Mystring         string  `json:"myString"`
 	}
 	helper := ReadOnlyMarshalHelper{

@@ -114,11 +114,11 @@ func (j *Primitives) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type PrimitivesHelper struct {
-		Myboolean *bool       `json:"myBoolean,omitempty"`
-		Myinteger *int        `json:"myInteger,omitempty"`
-		Mynull    interface{} `json:"myNull,omitempty"`
-		Mynumber  *float64    `json:"myNumber,omitempty"`
-		Mystring  *string     `json:"myString,omitempty"`
+		Myboolean *bool       `json:"myBoolean,omitempty,omitzero"`
+		Myinteger *int        `json:"myInteger,omitempty,omitzero"`
+		Mynull    interface{} `json:"myNull,omitempty,omitzero"`
+		Mynumber  *float64    `json:"myNumber,omitempty,omitzero"`
+		Mystring  *string     `json:"myString,omitempty,omitzero"`
 	}
 	type Plain Primitives
 	var helper PrimitivesHelper
@@ -141,11 +141,11 @@ func (j *Primitives) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Primitives) MarshalJSON() ([]byte, error) {
 	type PrimitivesMarshalHelper struct {
-		Myboolean *bool       `json:"myBoolean,omitempty"`
-		Myinteger *int        `json:"myInteger,omitempty"`
-		Mynull    interface{} `json:"myNull,omitempty"`
-		Mynumber  *float64    `json:"myNumber,omitempty"`
-		Mystring  *string     `json:"myString,omitempty"`
+		Myboolean *bool       `json:"myBoolean,omitempty,omitzero"`
+		Myinteger *int        `json:"myInteger,omitempty,omitzero"`
+		Mynull    interface{} `json:"myNull,omitempty,omitzero"`
+		Mynumber  *float64    `json:"myNumber,omitempty,omitzero"`
+		Mystring  *string     `json:"myString,omitempty,omitzero"`
 	}
 	helper := PrimitivesMarshalHelper{
 		Myboolean: j.myboolean,

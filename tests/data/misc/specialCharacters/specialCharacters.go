@@ -241,10 +241,10 @@ func (j *SpecialCharacters) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *SpecialCharacters) UnmarshalJSON(value []byte) error {
 	type SpecialCharactersHelper struct {
-		Plainlicenses    *SpecialCharactersplainlicenses `json:"plainLicenses,omitempty"`
-		Plainlicensesref []License                       `json:"plainLicensesRef,omitempty"`
-		Pluslicenses     *SpecialCharacterspluslicenses  `json:"plusLicenses,omitempty"`
-		Pluslicensesref  []License_1                     `json:"plusLicensesRef,omitempty"`
+		Plainlicenses    *SpecialCharactersplainlicenses `json:"plainLicenses,omitempty,omitzero"`
+		Plainlicensesref []License                       `json:"plainLicensesRef,omitempty,omitzero"`
+		Pluslicenses     *SpecialCharacterspluslicenses  `json:"plusLicenses,omitempty,omitzero"`
+		Pluslicensesref  []License_1                     `json:"plusLicensesRef,omitempty,omitzero"`
 	}
 	type Plain SpecialCharacters
 	var helper SpecialCharactersHelper
@@ -281,10 +281,10 @@ func (j *SpecialCharacters) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *SpecialCharacters) MarshalJSON() ([]byte, error) {
 	type SpecialCharactersMarshalHelper struct {
-		Plainlicenses    *SpecialCharactersplainlicenses `json:"plainLicenses,omitempty"`
-		Plainlicensesref []License                       `json:"plainLicensesRef,omitempty"`
-		Pluslicenses     *SpecialCharacterspluslicenses  `json:"plusLicenses,omitempty"`
-		Pluslicensesref  []License_1                     `json:"plusLicensesRef,omitempty"`
+		Plainlicenses    *SpecialCharactersplainlicenses `json:"plainLicenses,omitempty,omitzero"`
+		Plainlicensesref []License                       `json:"plainLicensesRef,omitempty,omitzero"`
+		Pluslicenses     *SpecialCharacterspluslicenses  `json:"plusLicenses,omitempty,omitzero"`
+		Pluslicensesref  []License_1                     `json:"plusLicensesRef,omitempty,omitzero"`
 	}
 	helper := SpecialCharactersMarshalHelper{
 		Plainlicenses: j.plainlicenses,

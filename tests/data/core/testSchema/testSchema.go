@@ -315,21 +315,21 @@ func (j *DomainState) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *DomainState) UnmarshalJSON(value []byte) error {
 	type DomainStateHelper struct {
-		Allchanges            map[string]string `json:"allChanges,omitempty"`
-		Architecture          *dt.Arch          `json:"architecture,omitempty"`
-		Codeoutputs           []dt.Coder        `json:"codeOutputs,omitempty"`
-		Codesummaries         []string          `json:"codeSummaries,omitempty"`
-		Codesummary           string            `json:"codeSummary,omitempty"`
-		Finalfeedback         *dt.ArchFinal     `json:"finalFeedback,omitempty"`
-		Finalreviewpassed     bool              `json:"finalReviewPassed,omitempty"`
-		Mergedsummaries       string            `json:"mergedSummaries,omitempty"`
-		Plan                  *dt.Plan          `json:"plan,omitempty"`
-		Pmfilepath            string            `json:"pmFilepath,omitempty"`
-		Techleadreviewiter    int               `json:"techLeadReviewIter,omitempty"`
-		Techleadreviewresult  *dt.TechLeadFinal `json:"techLeadReviewResult,omitempty"`
-		Techleadrevisioncycle bool              `json:"techLeadRevisionCycle,omitempty"`
-		Wrappedcodertask      string            `json:"wrappedCoderTask,omitempty"`
-		Wrappedtask           string            `json:"wrappedTask,omitempty"`
+		Allchanges            map[string]string `json:"allChanges,omitempty,omitzero"`
+		Architecture          *dt.Arch          `json:"architecture,omitempty,omitzero"`
+		Codeoutputs           []dt.Coder        `json:"codeOutputs,omitempty,omitzero"`
+		Codesummaries         []string          `json:"codeSummaries,omitempty,omitzero"`
+		Codesummary           string            `json:"codeSummary,omitempty,omitzero"`
+		Finalfeedback         *dt.ArchFinal     `json:"finalFeedback,omitempty,omitzero"`
+		Finalreviewpassed     bool              `json:"finalReviewPassed,omitempty,omitzero"`
+		Mergedsummaries       string            `json:"mergedSummaries,omitempty,omitzero"`
+		Plan                  *dt.Plan          `json:"plan,omitempty,omitzero"`
+		Pmfilepath            string            `json:"pmFilepath,omitempty,omitzero"`
+		Techleadreviewiter    int               `json:"techLeadReviewIter,omitempty,omitzero"`
+		Techleadreviewresult  *dt.TechLeadFinal `json:"techLeadReviewResult,omitempty,omitzero"`
+		Techleadrevisioncycle bool              `json:"techLeadRevisionCycle,omitempty,omitzero"`
+		Wrappedcodertask      string            `json:"wrappedCoderTask,omitempty,omitzero"`
+		Wrappedtask           string            `json:"wrappedTask,omitempty,omitzero"`
 	}
 	type Plain DomainState
 	var helper DomainStateHelper
@@ -377,21 +377,21 @@ func (j *DomainState) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *DomainState) MarshalJSON() ([]byte, error) {
 	type DomainStateMarshalHelper struct {
-		Allchanges            map[string]string `json:"allChanges,omitempty"`
-		Architecture          *dt.Arch          `json:"architecture,omitempty"`
-		Codeoutputs           []dt.Coder        `json:"codeOutputs,omitempty"`
-		Codesummaries         []string          `json:"codeSummaries,omitempty"`
-		Codesummary           string            `json:"codeSummary,omitempty"`
-		Finalfeedback         *dt.ArchFinal     `json:"finalFeedback,omitempty"`
-		Finalreviewpassed     bool              `json:"finalReviewPassed,omitempty"`
-		Mergedsummaries       string            `json:"mergedSummaries,omitempty"`
-		Plan                  *dt.Plan          `json:"plan,omitempty"`
-		Pmfilepath            string            `json:"pmFilepath,omitempty"`
-		Techleadreviewiter    int               `json:"techLeadReviewIter,omitempty"`
-		Techleadreviewresult  *dt.TechLeadFinal `json:"techLeadReviewResult,omitempty"`
-		Techleadrevisioncycle bool              `json:"techLeadRevisionCycle,omitempty"`
-		Wrappedcodertask      string            `json:"wrappedCoderTask,omitempty"`
-		Wrappedtask           string            `json:"wrappedTask,omitempty"`
+		Allchanges            map[string]string `json:"allChanges,omitempty,omitzero"`
+		Architecture          *dt.Arch          `json:"architecture,omitempty,omitzero"`
+		Codeoutputs           []dt.Coder        `json:"codeOutputs,omitempty,omitzero"`
+		Codesummaries         []string          `json:"codeSummaries,omitempty,omitzero"`
+		Codesummary           string            `json:"codeSummary,omitempty,omitzero"`
+		Finalfeedback         *dt.ArchFinal     `json:"finalFeedback,omitempty,omitzero"`
+		Finalreviewpassed     bool              `json:"finalReviewPassed,omitempty,omitzero"`
+		Mergedsummaries       string            `json:"mergedSummaries,omitempty,omitzero"`
+		Plan                  *dt.Plan          `json:"plan,omitempty,omitzero"`
+		Pmfilepath            string            `json:"pmFilepath,omitempty,omitzero"`
+		Techleadreviewiter    int               `json:"techLeadReviewIter,omitempty,omitzero"`
+		Techleadreviewresult  *dt.TechLeadFinal `json:"techLeadReviewResult,omitempty,omitzero"`
+		Techleadrevisioncycle bool              `json:"techLeadRevisionCycle,omitempty,omitzero"`
+		Wrappedcodertask      string            `json:"wrappedCoderTask,omitempty,omitzero"`
+		Wrappedtask           string            `json:"wrappedTask,omitempty,omitzero"`
 	}
 	helper := DomainStateMarshalHelper{
 		Allchanges: func() map[string]string {
@@ -937,29 +937,29 @@ func (o *PayloadData) WorkstreamElem() *dt.InvestigatorPlanworkstreamsElem {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *PayloadData) UnmarshalJSON(value []byte) error {
 	type PayloadDataHelper struct {
-		Allchanges                     map[string]string                   `json:"allChanges,omitempty"`
-		Archfinal                      *dt.ArchFinal                       `json:"archFinal,omitempty"`
-		Archreview                     *dt.ArchReview                      `json:"archReview,omitempty"`
-		Codereview                     *dt.CodeReview                      `json:"codeReview,omitempty"`
-		Coderoutputs                   []dt.Coder                          `json:"coderOutputs,omitempty"`
-		Consistencyreview              *dt.SynthesisConsistencyReview      `json:"consistencyReview,omitempty"`
-		Decompositionreview            *dt.SystemDecompositionReview       `json:"decompositionReview,omitempty"`
-		Docsuffix                      string                              `json:"docSuffix,omitempty"`
-		Factreview                     *dt.FactCheckingReview              `json:"factReview,omitempty"`
-		Findingslist                   []dt.InvestigatorFindings           `json:"findingsList,omitempty"`
-		Gapanalysisreview              *dt.GapAnalysisReview               `json:"gapAnalysisReview,omitempty"`
-		Hastechleadfinalreview         bool                                `json:"hasTechLeadFinalReview,omitempty"`
-		Initialpromptcontext           string                              `json:"initialPromptContext,omitempty"`
-		Investigationplanqualityreview *dt.InvestigationPlanQualityReview  `json:"investigationPlanQualityReview,omitempty"`
-		Investigationreport            *dt.InvestigationReport             `json:"investigationReport,omitempty"`
-		Investigatorfindings           *dt.InvestigatorFindings            `json:"investigatorFindings,omitempty"`
-		Itercount                      int                                 `json:"iterCount,omitempty"`
-		Planreview                     *dt.PlanReview                      `json:"planReview,omitempty"`
-		Revisioninvprefix              string                              `json:"revisionInvPrefix,omitempty"`
-		Revisionprompt                 string                              `json:"revisionPrompt,omitempty"`
-		Techleadfinalreview            *dt.TechLeadFinal                   `json:"techLeadFinalReview,omitempty"`
-		Tliter                         int                                 `json:"tlIter,omitempty"`
-		Workstreamelem                 *dt.InvestigatorPlanworkstreamsElem `json:"workstreamElem,omitempty"`
+		Allchanges                     map[string]string                   `json:"allChanges,omitempty,omitzero"`
+		Archfinal                      *dt.ArchFinal                       `json:"archFinal,omitempty,omitzero"`
+		Archreview                     *dt.ArchReview                      `json:"archReview,omitempty,omitzero"`
+		Codereview                     *dt.CodeReview                      `json:"codeReview,omitempty,omitzero"`
+		Coderoutputs                   []dt.Coder                          `json:"coderOutputs,omitempty,omitzero"`
+		Consistencyreview              *dt.SynthesisConsistencyReview      `json:"consistencyReview,omitempty,omitzero"`
+		Decompositionreview            *dt.SystemDecompositionReview       `json:"decompositionReview,omitempty,omitzero"`
+		Docsuffix                      string                              `json:"docSuffix,omitempty,omitzero"`
+		Factreview                     *dt.FactCheckingReview              `json:"factReview,omitempty,omitzero"`
+		Findingslist                   []dt.InvestigatorFindings           `json:"findingsList,omitempty,omitzero"`
+		Gapanalysisreview              *dt.GapAnalysisReview               `json:"gapAnalysisReview,omitempty,omitzero"`
+		Hastechleadfinalreview         bool                                `json:"hasTechLeadFinalReview,omitempty,omitzero"`
+		Initialpromptcontext           string                              `json:"initialPromptContext,omitempty,omitzero"`
+		Investigationplanqualityreview *dt.InvestigationPlanQualityReview  `json:"investigationPlanQualityReview,omitempty,omitzero"`
+		Investigationreport            *dt.InvestigationReport             `json:"investigationReport,omitempty,omitzero"`
+		Investigatorfindings           *dt.InvestigatorFindings            `json:"investigatorFindings,omitempty,omitzero"`
+		Itercount                      int                                 `json:"iterCount,omitempty,omitzero"`
+		Planreview                     *dt.PlanReview                      `json:"planReview,omitempty,omitzero"`
+		Revisioninvprefix              string                              `json:"revisionInvPrefix,omitempty,omitzero"`
+		Revisionprompt                 string                              `json:"revisionPrompt,omitempty,omitzero"`
+		Techleadfinalreview            *dt.TechLeadFinal                   `json:"techLeadFinalReview,omitempty,omitzero"`
+		Tliter                         int                                 `json:"tlIter,omitempty,omitzero"`
+		Workstreamelem                 *dt.InvestigatorPlanworkstreamsElem `json:"workstreamElem,omitempty,omitzero"`
 	}
 	type Plain PayloadData
 	var helper PayloadDataHelper
@@ -1015,29 +1015,29 @@ func (j *PayloadData) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *PayloadData) MarshalJSON() ([]byte, error) {
 	type PayloadDataMarshalHelper struct {
-		Allchanges                     map[string]string                   `json:"allChanges,omitempty"`
-		Archfinal                      *dt.ArchFinal                       `json:"archFinal,omitempty"`
-		Archreview                     *dt.ArchReview                      `json:"archReview,omitempty"`
-		Codereview                     *dt.CodeReview                      `json:"codeReview,omitempty"`
-		Coderoutputs                   []dt.Coder                          `json:"coderOutputs,omitempty"`
-		Consistencyreview              *dt.SynthesisConsistencyReview      `json:"consistencyReview,omitempty"`
-		Decompositionreview            *dt.SystemDecompositionReview       `json:"decompositionReview,omitempty"`
-		Docsuffix                      string                              `json:"docSuffix,omitempty"`
-		Factreview                     *dt.FactCheckingReview              `json:"factReview,omitempty"`
-		Findingslist                   []dt.InvestigatorFindings           `json:"findingsList,omitempty"`
-		Gapanalysisreview              *dt.GapAnalysisReview               `json:"gapAnalysisReview,omitempty"`
-		Hastechleadfinalreview         bool                                `json:"hasTechLeadFinalReview,omitempty"`
-		Initialpromptcontext           string                              `json:"initialPromptContext,omitempty"`
-		Investigationplanqualityreview *dt.InvestigationPlanQualityReview  `json:"investigationPlanQualityReview,omitempty"`
-		Investigationreport            *dt.InvestigationReport             `json:"investigationReport,omitempty"`
-		Investigatorfindings           *dt.InvestigatorFindings            `json:"investigatorFindings,omitempty"`
-		Itercount                      int                                 `json:"iterCount,omitempty"`
-		Planreview                     *dt.PlanReview                      `json:"planReview,omitempty"`
-		Revisioninvprefix              string                              `json:"revisionInvPrefix,omitempty"`
-		Revisionprompt                 string                              `json:"revisionPrompt,omitempty"`
-		Techleadfinalreview            *dt.TechLeadFinal                   `json:"techLeadFinalReview,omitempty"`
-		Tliter                         int                                 `json:"tlIter,omitempty"`
-		Workstreamelem                 *dt.InvestigatorPlanworkstreamsElem `json:"workstreamElem,omitempty"`
+		Allchanges                     map[string]string                   `json:"allChanges,omitempty,omitzero"`
+		Archfinal                      *dt.ArchFinal                       `json:"archFinal,omitempty,omitzero"`
+		Archreview                     *dt.ArchReview                      `json:"archReview,omitempty,omitzero"`
+		Codereview                     *dt.CodeReview                      `json:"codeReview,omitempty,omitzero"`
+		Coderoutputs                   []dt.Coder                          `json:"coderOutputs,omitempty,omitzero"`
+		Consistencyreview              *dt.SynthesisConsistencyReview      `json:"consistencyReview,omitempty,omitzero"`
+		Decompositionreview            *dt.SystemDecompositionReview       `json:"decompositionReview,omitempty,omitzero"`
+		Docsuffix                      string                              `json:"docSuffix,omitempty,omitzero"`
+		Factreview                     *dt.FactCheckingReview              `json:"factReview,omitempty,omitzero"`
+		Findingslist                   []dt.InvestigatorFindings           `json:"findingsList,omitempty,omitzero"`
+		Gapanalysisreview              *dt.GapAnalysisReview               `json:"gapAnalysisReview,omitempty,omitzero"`
+		Hastechleadfinalreview         bool                                `json:"hasTechLeadFinalReview,omitempty,omitzero"`
+		Initialpromptcontext           string                              `json:"initialPromptContext,omitempty,omitzero"`
+		Investigationplanqualityreview *dt.InvestigationPlanQualityReview  `json:"investigationPlanQualityReview,omitempty,omitzero"`
+		Investigationreport            *dt.InvestigationReport             `json:"investigationReport,omitempty,omitzero"`
+		Investigatorfindings           *dt.InvestigatorFindings            `json:"investigatorFindings,omitempty,omitzero"`
+		Itercount                      int                                 `json:"iterCount,omitempty,omitzero"`
+		Planreview                     *dt.PlanReview                      `json:"planReview,omitempty,omitzero"`
+		Revisioninvprefix              string                              `json:"revisionInvPrefix,omitempty,omitzero"`
+		Revisionprompt                 string                              `json:"revisionPrompt,omitempty,omitzero"`
+		Techleadfinalreview            *dt.TechLeadFinal                   `json:"techLeadFinalReview,omitempty,omitzero"`
+		Tliter                         int                                 `json:"tlIter,omitempty,omitzero"`
+		Workstreamelem                 *dt.InvestigatorPlanworkstreamsElem `json:"workstreamElem,omitempty,omitzero"`
 	}
 	helper := PayloadDataMarshalHelper{
 		Allchanges: func() map[string]string {
@@ -1373,16 +1373,16 @@ func (o *TestSchema) WorkstreamIndex() int {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *TestSchema) UnmarshalJSON(value []byte) error {
 	type TestSchemaHelper struct {
-		Codereviewiteration int                `json:"codeReviewIteration,omitempty"`
-		Domainid            string             `json:"domainID,omitempty"`
-		Domainindex         int                `json:"domainIndex,omitempty"`
-		Iteration           int                `json:"iteration,omitempty"`
-		Payload             *PayloadData       `json:"payload,omitempty"`
-		Reviewiteration     int                `json:"reviewIteration,omitempty"`
-		State               *WorkflowState     `json:"state,omitempty"`
-		Steptype            TestSchemasteptype `json:"stepType,omitempty"`
-		Workstreamid        string             `json:"workstreamID,omitempty"`
-		Workstreamindex     int                `json:"workstreamIndex,omitempty"`
+		Codereviewiteration int                `json:"codeReviewIteration,omitempty,omitzero"`
+		Domainid            string             `json:"domainID,omitempty,omitzero"`
+		Domainindex         int                `json:"domainIndex,omitempty,omitzero"`
+		Iteration           int                `json:"iteration,omitempty,omitzero"`
+		Payload             *PayloadData       `json:"payload,omitempty,omitzero"`
+		Reviewiteration     int                `json:"reviewIteration,omitempty,omitzero"`
+		State               *WorkflowState     `json:"state,omitempty,omitzero"`
+		Steptype            TestSchemasteptype `json:"stepType,omitempty,omitzero"`
+		Workstreamid        string             `json:"workstreamID,omitempty,omitzero"`
+		Workstreamindex     int                `json:"workstreamIndex,omitempty,omitzero"`
 	}
 	type Plain TestSchema
 	var helper TestSchemaHelper
@@ -1407,16 +1407,16 @@ func (j *TestSchema) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *TestSchema) MarshalJSON() ([]byte, error) {
 	type TestSchemaMarshalHelper struct {
-		Codereviewiteration int                `json:"codeReviewIteration,omitempty"`
-		Domainid            string             `json:"domainID,omitempty"`
-		Domainindex         int                `json:"domainIndex,omitempty"`
-		Iteration           int                `json:"iteration,omitempty"`
-		Payload             *PayloadData       `json:"payload,omitempty"`
-		Reviewiteration     int                `json:"reviewIteration,omitempty"`
-		State               *WorkflowState     `json:"state,omitempty"`
-		Steptype            TestSchemasteptype `json:"stepType,omitempty"`
-		Workstreamid        string             `json:"workstreamID,omitempty"`
-		Workstreamindex     int                `json:"workstreamIndex,omitempty"`
+		Codereviewiteration int                `json:"codeReviewIteration,omitempty,omitzero"`
+		Domainid            string             `json:"domainID,omitempty,omitzero"`
+		Domainindex         int                `json:"domainIndex,omitempty,omitzero"`
+		Iteration           int                `json:"iteration,omitempty,omitzero"`
+		Payload             *PayloadData       `json:"payload,omitempty,omitzero"`
+		Reviewiteration     int                `json:"reviewIteration,omitempty,omitzero"`
+		State               *WorkflowState     `json:"state,omitempty,omitzero"`
+		Steptype            TestSchemasteptype `json:"stepType,omitempty,omitzero"`
+		Workstreamid        string             `json:"workstreamID,omitempty,omitzero"`
+		Workstreamindex     int                `json:"workstreamIndex,omitempty,omitzero"`
 	}
 	helper := TestSchemaMarshalHelper{
 		Codereviewiteration: j.codereviewiteration,
@@ -1945,24 +1945,24 @@ func (j *WorkflowState) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *WorkflowState) UnmarshalJSON(value []byte) error {
 	type WorkflowStateHelper struct {
-		Choices                string                               `json:"choices,omitempty"`
-		Completedworkstreams   map[string]dt.InvestigatorFindings   `json:"completedWorkstreams,omitempty"`
-		Decompositionresult    *dt.SystemDecomposition              `json:"decompositionResult,omitempty"`
-		Domaincurrentstage     string                               `json:"domainCurrentStage,omitempty"`
-		Domainiterationindex   int                                  `json:"domainIterationIndex,omitempty"`
-		Domainiterationtotal   int                                  `json:"domainIterationTotal,omitempty"`
-		Domains                map[string]DomainState               `json:"domains,omitempty"`
-		Finalinvestigationtask string                               `json:"finalInvestigationTask,omitempty"`
-		Investigationplan      *dt.InvestigatorPlan                 `json:"investigationPlan,omitempty"`
-		Investigationresults   *dt.InvestigationReport              `json:"investigationResults,omitempty"`
-		Out                    string                               `json:"out,omitempty"`
-		Pmfilepath             string                               `json:"pmFilepath,omitempty"`
-		Rephrasedtask          *dt.PmSynthesizer                    `json:"rephrasedTask,omitempty"`
-		Speculativeexpansions  []string                             `json:"speculativeExpansions,omitempty"`
-		Subdir                 string                               `json:"subdir,omitempty"`
-		Task                   string                               `json:"task,omitempty"`
-		Techleaddocsuffix      string                               `json:"techLeadDocSuffix,omitempty"`
-		Workstreams            []dt.InvestigatorPlanworkstreamsElem `json:"workstreams,omitempty"`
+		Choices                string                               `json:"choices,omitempty,omitzero"`
+		Completedworkstreams   map[string]dt.InvestigatorFindings   `json:"completedWorkstreams,omitempty,omitzero"`
+		Decompositionresult    *dt.SystemDecomposition              `json:"decompositionResult,omitempty,omitzero"`
+		Domaincurrentstage     string                               `json:"domainCurrentStage,omitempty,omitzero"`
+		Domainiterationindex   int                                  `json:"domainIterationIndex,omitempty,omitzero"`
+		Domainiterationtotal   int                                  `json:"domainIterationTotal,omitempty,omitzero"`
+		Domains                map[string]DomainState               `json:"domains,omitempty,omitzero"`
+		Finalinvestigationtask string                               `json:"finalInvestigationTask,omitempty,omitzero"`
+		Investigationplan      *dt.InvestigatorPlan                 `json:"investigationPlan,omitempty,omitzero"`
+		Investigationresults   *dt.InvestigationReport              `json:"investigationResults,omitempty,omitzero"`
+		Out                    string                               `json:"out,omitempty,omitzero"`
+		Pmfilepath             string                               `json:"pmFilepath,omitempty,omitzero"`
+		Rephrasedtask          *dt.PmSynthesizer                    `json:"rephrasedTask,omitempty,omitzero"`
+		Speculativeexpansions  []string                             `json:"speculativeExpansions,omitempty,omitzero"`
+		Subdir                 string                               `json:"subdir,omitempty,omitzero"`
+		Task                   string                               `json:"task,omitempty,omitzero"`
+		Techleaddocsuffix      string                               `json:"techLeadDocSuffix,omitempty,omitzero"`
+		Workstreams            []dt.InvestigatorPlanworkstreamsElem `json:"workstreams,omitempty,omitzero"`
 	}
 	type Plain WorkflowState
 	var helper WorkflowStateHelper
@@ -2013,24 +2013,24 @@ func (j *WorkflowState) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *WorkflowState) MarshalJSON() ([]byte, error) {
 	type WorkflowStateMarshalHelper struct {
-		Choices                string                               `json:"choices,omitempty"`
-		Completedworkstreams   map[string]dt.InvestigatorFindings   `json:"completedWorkstreams,omitempty"`
-		Decompositionresult    *dt.SystemDecomposition              `json:"decompositionResult,omitempty"`
-		Domaincurrentstage     string                               `json:"domainCurrentStage,omitempty"`
-		Domainiterationindex   int                                  `json:"domainIterationIndex,omitempty"`
-		Domainiterationtotal   int                                  `json:"domainIterationTotal,omitempty"`
-		Domains                map[string]DomainState               `json:"domains,omitempty"`
-		Finalinvestigationtask string                               `json:"finalInvestigationTask,omitempty"`
-		Investigationplan      *dt.InvestigatorPlan                 `json:"investigationPlan,omitempty"`
-		Investigationresults   *dt.InvestigationReport              `json:"investigationResults,omitempty"`
-		Out                    string                               `json:"out,omitempty"`
-		Pmfilepath             string                               `json:"pmFilepath,omitempty"`
-		Rephrasedtask          *dt.PmSynthesizer                    `json:"rephrasedTask,omitempty"`
-		Speculativeexpansions  []string                             `json:"speculativeExpansions,omitempty"`
-		Subdir                 string                               `json:"subdir,omitempty"`
-		Task                   string                               `json:"task,omitempty"`
-		Techleaddocsuffix      string                               `json:"techLeadDocSuffix,omitempty"`
-		Workstreams            []dt.InvestigatorPlanworkstreamsElem `json:"workstreams,omitempty"`
+		Choices                string                               `json:"choices,omitempty,omitzero"`
+		Completedworkstreams   map[string]dt.InvestigatorFindings   `json:"completedWorkstreams,omitempty,omitzero"`
+		Decompositionresult    *dt.SystemDecomposition              `json:"decompositionResult,omitempty,omitzero"`
+		Domaincurrentstage     string                               `json:"domainCurrentStage,omitempty,omitzero"`
+		Domainiterationindex   int                                  `json:"domainIterationIndex,omitempty,omitzero"`
+		Domainiterationtotal   int                                  `json:"domainIterationTotal,omitempty,omitzero"`
+		Domains                map[string]DomainState               `json:"domains,omitempty,omitzero"`
+		Finalinvestigationtask string                               `json:"finalInvestigationTask,omitempty,omitzero"`
+		Investigationplan      *dt.InvestigatorPlan                 `json:"investigationPlan,omitempty,omitzero"`
+		Investigationresults   *dt.InvestigationReport              `json:"investigationResults,omitempty,omitzero"`
+		Out                    string                               `json:"out,omitempty,omitzero"`
+		Pmfilepath             string                               `json:"pmFilepath,omitempty,omitzero"`
+		Rephrasedtask          *dt.PmSynthesizer                    `json:"rephrasedTask,omitempty,omitzero"`
+		Speculativeexpansions  []string                             `json:"speculativeExpansions,omitempty,omitzero"`
+		Subdir                 string                               `json:"subdir,omitempty,omitzero"`
+		Task                   string                               `json:"task,omitempty,omitzero"`
+		Techleaddocsuffix      string                               `json:"techLeadDocSuffix,omitempty,omitzero"`
+		Workstreams            []dt.InvestigatorPlanworkstreamsElem `json:"workstreams,omitempty,omitzero"`
 	}
 	helper := WorkflowStateMarshalHelper{
 		Choices: j.choices,

@@ -71,9 +71,9 @@ func (o *Element) Name() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Element) UnmarshalJSON(value []byte) error {
 	type ElementHelper struct {
-		Extension []string `json:"extension,omitempty"`
-		Id        *string  `json:"id,omitempty"`
-		Name      *string  `json:"name,omitempty"`
+		Extension []string `json:"extension,omitempty,omitzero"`
+		Id        *string  `json:"id,omitempty,omitzero"`
+		Name      *string  `json:"name,omitempty,omitzero"`
 	}
 	type Plain Element
 	var helper ElementHelper
@@ -100,9 +100,9 @@ func (j *Element) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Element) MarshalJSON() ([]byte, error) {
 	type ElementMarshalHelper struct {
-		Extension []string `json:"extension,omitempty"`
-		Id        *string  `json:"id,omitempty"`
-		Name      *string  `json:"name,omitempty"`
+		Extension []string `json:"extension,omitempty,omitzero"`
+		Id        *string  `json:"id,omitempty,omitzero"`
+		Name      *string  `json:"name,omitempty,omitzero"`
 	}
 	helper := ElementMarshalHelper{
 		Extension: func() []string {
@@ -186,7 +186,7 @@ func (o *Issue6) Name() *Issue6name {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Issue6) UnmarshalJSON(value []byte) error {
 	type Issue6Helper struct {
-		Name *Issue6name `json:"name,omitempty"`
+		Name *Issue6name `json:"name,omitempty,omitzero"`
 	}
 	type Plain Issue6
 	var helper Issue6Helper
@@ -202,7 +202,7 @@ func (j *Issue6) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Issue6) MarshalJSON() ([]byte, error) {
 	type Issue6MarshalHelper struct {
-		Name *Issue6name `json:"name,omitempty"`
+		Name *Issue6name `json:"name,omitempty,omitzero"`
 	}
 	helper := Issue6MarshalHelper{
 		Name: j.name,
@@ -388,19 +388,19 @@ func (o *Issue6name) Use() *Element {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Issue6name) UnmarshalJSON(value []byte) error {
 	type Issue6nameHelper struct {
-		Family   *Element         `json:"_family,omitempty"`
-		Given    []Element        `json:"_given,omitempty"`
-		Prefix   []Element        `json:"_prefix,omitempty"`
-		Suffix   []Element        `json:"_suffix,omitempty"`
-		Text     *Element         `json:"_text,omitempty"`
-		Use      *Element         `json:"_use,omitempty"`
-		Family_2 *string          `json:"family,omitempty"`
-		Given_2  []string         `json:"given,omitempty"`
-		Period   *Period          `json:"period,omitempty"`
-		Prefix_2 []string         `json:"prefix,omitempty"`
-		Suffix_2 []string         `json:"suffix,omitempty"`
-		Text_2   *string          `json:"text,omitempty"`
-		Use_2    *Issue6nameuse_2 `json:"use,omitempty"`
+		Family   *Element         `json:"_family,omitempty,omitzero"`
+		Given    []Element        `json:"_given,omitempty,omitzero"`
+		Prefix   []Element        `json:"_prefix,omitempty,omitzero"`
+		Suffix   []Element        `json:"_suffix,omitempty,omitzero"`
+		Text     *Element         `json:"_text,omitempty,omitzero"`
+		Use      *Element         `json:"_use,omitempty,omitzero"`
+		Family_2 *string          `json:"family,omitempty,omitzero"`
+		Given_2  []string         `json:"given,omitempty,omitzero"`
+		Period   *Period          `json:"period,omitempty,omitzero"`
+		Prefix_2 []string         `json:"prefix,omitempty,omitzero"`
+		Suffix_2 []string         `json:"suffix,omitempty,omitzero"`
+		Text_2   *string          `json:"text,omitempty,omitzero"`
+		Use_2    *Issue6nameuse_2 `json:"use,omitempty,omitzero"`
 	}
 	type Plain Issue6name
 	var helper Issue6nameHelper
@@ -482,19 +482,19 @@ func (j *Issue6name) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Issue6name) MarshalJSON() ([]byte, error) {
 	type Issue6nameMarshalHelper struct {
-		Family   *Element         `json:"_family,omitempty"`
-		Given    []Element        `json:"_given,omitempty"`
-		Prefix   []Element        `json:"_prefix,omitempty"`
-		Suffix   []Element        `json:"_suffix,omitempty"`
-		Text     *Element         `json:"_text,omitempty"`
-		Use      *Element         `json:"_use,omitempty"`
-		Family_2 *string          `json:"family,omitempty"`
-		Given_2  []string         `json:"given,omitempty"`
-		Period   *Period          `json:"period,omitempty"`
-		Prefix_2 []string         `json:"prefix,omitempty"`
-		Suffix_2 []string         `json:"suffix,omitempty"`
-		Text_2   *string          `json:"text,omitempty"`
-		Use_2    *Issue6nameuse_2 `json:"use,omitempty"`
+		Family   *Element         `json:"_family,omitempty,omitzero"`
+		Given    []Element        `json:"_given,omitempty,omitzero"`
+		Prefix   []Element        `json:"_prefix,omitempty,omitzero"`
+		Suffix   []Element        `json:"_suffix,omitempty,omitzero"`
+		Text     *Element         `json:"_text,omitempty,omitzero"`
+		Use      *Element         `json:"_use,omitempty,omitzero"`
+		Family_2 *string          `json:"family,omitempty,omitzero"`
+		Given_2  []string         `json:"given,omitempty,omitzero"`
+		Period   *Period          `json:"period,omitempty,omitzero"`
+		Prefix_2 []string         `json:"prefix,omitempty,omitzero"`
+		Suffix_2 []string         `json:"suffix,omitempty,omitzero"`
+		Text_2   *string          `json:"text,omitempty,omitzero"`
+		Use_2    *Issue6nameuse_2 `json:"use,omitempty,omitzero"`
 	}
 	helper := Issue6nameMarshalHelper{
 		Family: j.family,
@@ -834,8 +834,8 @@ func (o *Period) Start() *time.Time {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Period) UnmarshalJSON(value []byte) error {
 	type PeriodHelper struct {
-		End   *time.Time `json:"end,omitempty"`
-		Start *time.Time `json:"start,omitempty"`
+		End   *time.Time `json:"end,omitempty,omitzero"`
+		Start *time.Time `json:"start,omitempty,omitzero"`
 	}
 	type Plain Period
 	var helper PeriodHelper
@@ -852,8 +852,8 @@ func (j *Period) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Period) MarshalJSON() ([]byte, error) {
 	type PeriodMarshalHelper struct {
-		End   *time.Time `json:"end,omitempty"`
-		Start *time.Time `json:"start,omitempty"`
+		End   *time.Time `json:"end,omitempty,omitzero"`
+		Start *time.Time `json:"start,omitempty,omitzero"`
 	}
 	helper := PeriodMarshalHelper{
 		End:   j.end,

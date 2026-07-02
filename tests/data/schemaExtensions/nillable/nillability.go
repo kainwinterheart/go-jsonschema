@@ -45,7 +45,7 @@ func (o *Nillability) Name() map[bool]string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Nillability) UnmarshalJSON(value []byte) error {
 	type NillabilityHelper struct {
-		Name map[bool]string `json:"name,omitempty"`
+		Name map[bool]string `json:"name,omitempty,omitzero"`
 	}
 	type Plain Nillability
 	var helper NillabilityHelper
@@ -61,7 +61,7 @@ func (j *Nillability) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Nillability) MarshalJSON() ([]byte, error) {
 	type NillabilityMarshalHelper struct {
-		Name map[bool]string `json:"name,omitempty"`
+		Name map[bool]string `json:"name,omitempty,omitzero"`
 	}
 	helper := NillabilityMarshalHelper{
 		Name: j.name,

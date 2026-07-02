@@ -67,8 +67,8 @@ func (o *NullableType) MyStringValue() StringThing {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *NullableType) UnmarshalJSON(value []byte) error {
 	type NullableTypeHelper struct {
-		Myinlinestringvalue NullableTypemyinlinestringvalue `json:"MyInlineStringValue,omitempty"`
-		Mystringvalue       StringThing                     `json:"MyStringValue,omitempty"`
+		Myinlinestringvalue NullableTypemyinlinestringvalue `json:"MyInlineStringValue,omitempty,omitzero"`
+		Mystringvalue       StringThing                     `json:"MyStringValue,omitempty,omitzero"`
 	}
 	type Plain NullableType
 	var helper NullableTypeHelper
@@ -85,8 +85,8 @@ func (j *NullableType) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *NullableType) MarshalJSON() ([]byte, error) {
 	type NullableTypeMarshalHelper struct {
-		Myinlinestringvalue NullableTypemyinlinestringvalue `json:"MyInlineStringValue,omitempty"`
-		Mystringvalue       StringThing                     `json:"MyStringValue,omitempty"`
+		Myinlinestringvalue NullableTypemyinlinestringvalue `json:"MyInlineStringValue,omitempty,omitzero"`
+		Mystringvalue       StringThing                     `json:"MyStringValue,omitempty,omitzero"`
 	}
 	helper := NullableTypeMarshalHelper{
 		Myinlinestringvalue: j.myinlinestringvalue,

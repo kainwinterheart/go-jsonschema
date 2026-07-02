@@ -46,7 +46,7 @@ func (o *Thing) Values() *immutable.List[Value] {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Thing) UnmarshalJSON(value []byte) error {
 	type ThingHelper struct {
-		Values []Value `json:"values,omitempty"`
+		Values []Value `json:"values,omitempty,omitzero"`
 	}
 	type Plain Thing
 	var helper ThingHelper
@@ -71,7 +71,7 @@ func (j *Thing) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Thing) MarshalJSON() ([]byte, error) {
 	type ThingMarshalHelper struct {
-		Values []Value `json:"values,omitempty"`
+		Values []Value `json:"values,omitempty,omitzero"`
 	}
 	helper := ThingMarshalHelper{
 		Values: func() []Value {

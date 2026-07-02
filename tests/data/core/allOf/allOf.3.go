@@ -79,7 +79,7 @@ func (j *AllOf3) UnmarshalJSON(value []byte) error {
 	}
 	type AllOf3Helper struct {
 		Bar            float64       `json:"bar"`
-		Configurations []interface{} `json:"configurations,omitempty"`
+		Configurations []interface{} `json:"configurations,omitempty,omitzero"`
 		Foo            string        `json:"foo"`
 	}
 	type Plain AllOf3
@@ -108,7 +108,7 @@ func (j *AllOf3) UnmarshalJSON(value []byte) error {
 func (j *AllOf3) MarshalJSON() ([]byte, error) {
 	type AllOf3MarshalHelper struct {
 		Bar            float64       `json:"bar"`
-		Configurations []interface{} `json:"configurations,omitempty"`
+		Configurations []interface{} `json:"configurations,omitempty,omitzero"`
 		Foo            string        `json:"foo"`
 	}
 	helper := AllOf3MarshalHelper{

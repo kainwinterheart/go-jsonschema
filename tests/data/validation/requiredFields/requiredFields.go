@@ -277,8 +277,8 @@ func (j *RequiredFields) UnmarshalJSON(value []byte) error {
 	type RequiredFieldsHelper struct {
 		Myboolean      bool                              `json:"myBoolean"`
 		Mybooleanarray []bool                            `json:"myBooleanArray"`
-		Myinteger      *int                              `json:"myInteger,omitempty"`
-		Myintegerarray []int                             `json:"myIntegerArray,omitempty"`
+		Myinteger      *int                              `json:"myInteger,omitempty,omitzero"`
+		Myintegerarray []int                             `json:"myIntegerArray,omitempty,omitzero"`
 		Mynull         interface{}                       `json:"myNull"`
 		Mynullarray    []interface{}                     `json:"myNullArray"`
 		Mynumber       float64                           `json:"myNumber"`
@@ -377,8 +377,8 @@ func (j *RequiredFields) MarshalJSON() ([]byte, error) {
 	type RequiredFieldsMarshalHelper struct {
 		Myboolean      bool                              `json:"myBoolean"`
 		Mybooleanarray []bool                            `json:"myBooleanArray"`
-		Myinteger      *int                              `json:"myInteger,omitempty"`
-		Myintegerarray []int                             `json:"myIntegerArray,omitempty"`
+		Myinteger      *int                              `json:"myInteger,omitempty,omitzero"`
+		Myintegerarray []int                             `json:"myIntegerArray,omitempty,omitzero"`
 		Mynull         interface{}                       `json:"myNull"`
 		Mynullarray    []interface{}                     `json:"myNullArray"`
 		Mynumber       float64                           `json:"myNumber"`

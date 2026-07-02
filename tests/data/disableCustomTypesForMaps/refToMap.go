@@ -46,7 +46,7 @@ func (o *RefToMap) MyThing() immutable.Map[string, float64] {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *RefToMap) UnmarshalJSON(value []byte) error {
 	type RefToMapHelper struct {
-		Mything map[string]float64 `json:"myThing,omitempty"`
+		Mything map[string]float64 `json:"myThing,omitempty,omitzero"`
 	}
 	type Plain RefToMap
 	var helper RefToMapHelper
@@ -62,7 +62,7 @@ func (j *RefToMap) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *RefToMap) MarshalJSON() ([]byte, error) {
 	type RefToMapMarshalHelper struct {
-		Mything map[string]float64 `json:"myThing,omitempty"`
+		Mything map[string]float64 `json:"myThing,omitempty,omitzero"`
 	}
 	helper := RefToMapMarshalHelper{
 		Mything: func() map[string]float64 {

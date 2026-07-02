@@ -56,7 +56,7 @@ func (o *RefNested) MyThing() *Thing {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *RefNested) UnmarshalJSON(value []byte) error {
 	type RefNestedHelper struct {
-		Mything *Thing `json:"myThing,omitempty"`
+		Mything *Thing `json:"myThing,omitempty,omitzero"`
 	}
 	type Plain RefNested
 	var helper RefNestedHelper
@@ -72,7 +72,7 @@ func (j *RefNested) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *RefNested) MarshalJSON() ([]byte, error) {
 	type RefNestedMarshalHelper struct {
-		Mything *Thing `json:"myThing,omitempty"`
+		Mything *Thing `json:"myThing,omitempty,omitzero"`
 	}
 	helper := RefNestedMarshalHelper{
 		Mything: j.mything,
@@ -145,7 +145,7 @@ func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Thing) UnmarshalJSON(value []byte) error {
 	type ThingHelper struct {
-		Name *Name `json:"name,omitempty"`
+		Name *Name `json:"name,omitempty,omitzero"`
 	}
 	type Plain Thing
 	var helper ThingHelper
@@ -161,7 +161,7 @@ func (j *Thing) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Thing) MarshalJSON() ([]byte, error) {
 	type ThingMarshalHelper struct {
-		Name *Name `json:"name,omitempty"`
+		Name *Name `json:"name,omitempty,omitzero"`
 	}
 	helper := ThingMarshalHelper{
 		Name: j.name,

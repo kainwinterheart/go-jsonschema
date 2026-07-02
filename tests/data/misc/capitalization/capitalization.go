@@ -234,22 +234,22 @@ func (o *Capitalization) URLSomethingElse() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Capitalization) UnmarshalJSON(value []byte) error {
 	type CapitalizationHelper struct {
-		Html              *string `json:"html,omitempty"`
-		Htmlsomethingelse *string `json:"htmlSomethingElse,omitempty"`
-		Html_2            *string `json:"html__,omitempty"`
-		Htmlsomething     *string `json:"html_something,omitempty"`
-		Id                *string `json:"id,omitempty"`
-		Idsomethingelse   *string `json:"idSomethingElse,omitempty"`
-		Id_2              *string `json:"id__,omitempty"`
-		Idsomething       *string `json:"id_something,omitempty"`
-		Url               *string `json:"url,omitempty"`
-		Urlsomethingelse  *string `json:"urlSomethingElse,omitempty"`
-		Url_2             *string `json:"url__,omitempty"`
-		Urlsomething      *string `json:"url_something,omitempty"`
-		Aアトリビュート          *string `json:"アトリビュート,omitempty"`
-		A属性               *string `json:"属性,omitempty"`
-		A屬性               *string `json:"屬性,omitempty"`
-		A속성               *string `json:"속성,omitempty"`
+		Html              *string `json:"html,omitempty,omitzero"`
+		Htmlsomethingelse *string `json:"htmlSomethingElse,omitempty,omitzero"`
+		Html_2            *string `json:"html__,omitempty,omitzero"`
+		Htmlsomething     *string `json:"html_something,omitempty,omitzero"`
+		Id                *string `json:"id,omitempty,omitzero"`
+		Idsomethingelse   *string `json:"idSomethingElse,omitempty,omitzero"`
+		Id_2              *string `json:"id__,omitempty,omitzero"`
+		Idsomething       *string `json:"id_something,omitempty,omitzero"`
+		Url               *string `json:"url,omitempty,omitzero"`
+		Urlsomethingelse  *string `json:"urlSomethingElse,omitempty,omitzero"`
+		Url_2             *string `json:"url__,omitempty,omitzero"`
+		Urlsomething      *string `json:"url_something,omitempty,omitzero"`
+		Aアトリビュート          *string `json:"アトリビュート,omitempty,omitzero"`
+		A属性               *string `json:"属性,omitempty,omitzero"`
+		A屬性               *string `json:"屬性,omitempty,omitzero"`
+		A속성               *string `json:"속성,omitempty,omitzero"`
 	}
 	type Plain Capitalization
 	var helper CapitalizationHelper
@@ -280,22 +280,22 @@ func (j *Capitalization) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Capitalization) MarshalJSON() ([]byte, error) {
 	type CapitalizationMarshalHelper struct {
-		Html              *string `json:"html,omitempty"`
-		Htmlsomethingelse *string `json:"htmlSomethingElse,omitempty"`
-		Html_2            *string `json:"html__,omitempty"`
-		Htmlsomething     *string `json:"html_something,omitempty"`
-		Id                *string `json:"id,omitempty"`
-		Idsomethingelse   *string `json:"idSomethingElse,omitempty"`
-		Id_2              *string `json:"id__,omitempty"`
-		Idsomething       *string `json:"id_something,omitempty"`
-		Url               *string `json:"url,omitempty"`
-		Urlsomethingelse  *string `json:"urlSomethingElse,omitempty"`
-		Url_2             *string `json:"url__,omitempty"`
-		Urlsomething      *string `json:"url_something,omitempty"`
-		Aアトリビュート          *string `json:"アトリビュート,omitempty"`
-		A属性               *string `json:"属性,omitempty"`
-		A屬性               *string `json:"屬性,omitempty"`
-		A속성               *string `json:"속성,omitempty"`
+		Html              *string `json:"html,omitempty,omitzero"`
+		Htmlsomethingelse *string `json:"htmlSomethingElse,omitempty,omitzero"`
+		Html_2            *string `json:"html__,omitempty,omitzero"`
+		Htmlsomething     *string `json:"html_something,omitempty,omitzero"`
+		Id                *string `json:"id,omitempty,omitzero"`
+		Idsomethingelse   *string `json:"idSomethingElse,omitempty,omitzero"`
+		Id_2              *string `json:"id__,omitempty,omitzero"`
+		Idsomething       *string `json:"id_something,omitempty,omitzero"`
+		Url               *string `json:"url,omitempty,omitzero"`
+		Urlsomethingelse  *string `json:"urlSomethingElse,omitempty,omitzero"`
+		Url_2             *string `json:"url__,omitempty,omitzero"`
+		Urlsomething      *string `json:"url_something,omitempty,omitzero"`
+		Aアトリビュート          *string `json:"アトリビュート,omitempty,omitzero"`
+		A属性               *string `json:"属性,omitempty,omitzero"`
+		A屬性               *string `json:"屬性,omitempty,omitzero"`
+		A속성               *string `json:"속성,omitempty,omitzero"`
 	}
 	helper := CapitalizationMarshalHelper{
 		Html:              j.html,

@@ -53,8 +53,8 @@ func (o *MinItems) MyStringArray() *immutable.List[string] {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *MinItems) UnmarshalJSON(value []byte) error {
 	type MinItemsHelper struct {
-		Mynestedarray [][]interface{} `json:"myNestedArray,omitempty"`
-		Mystringarray []string        `json:"myStringArray,omitempty"`
+		Mynestedarray [][]interface{} `json:"myNestedArray,omitempty,omitzero"`
+		Mystringarray []string        `json:"myStringArray,omitempty,omitzero"`
 	}
 	type Plain MinItems
 	var helper MinItemsHelper
@@ -109,8 +109,8 @@ func (j *MinItems) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *MinItems) MarshalJSON() ([]byte, error) {
 	type MinItemsMarshalHelper struct {
-		Mynestedarray [][]interface{} `json:"myNestedArray,omitempty"`
-		Mystringarray []string        `json:"myStringArray,omitempty"`
+		Mynestedarray [][]interface{} `json:"myNestedArray,omitempty,omitzero"`
+		Mystringarray []string        `json:"myStringArray,omitempty,omitzero"`
 	}
 	helper := MinItemsMarshalHelper{
 		Mynestedarray: func() [][]interface{} {

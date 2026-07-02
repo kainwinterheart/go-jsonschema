@@ -295,7 +295,7 @@ func (j *Testcase) UnmarshalJSON(value []byte) error {
 	}
 	type TestcaseHelper struct {
 		Expectedpeername    *Testcaseexpectedpeername    `json:"expected_peer_name"`
-		Notexpectedpeername *Testcasenotexpectedpeername `json:"not_expected_peer_name,omitempty"`
+		Notexpectedpeername *Testcasenotexpectedpeername `json:"not_expected_peer_name,omitempty,omitzero"`
 	}
 	type Plain Testcase
 	var helper TestcaseHelper
@@ -313,7 +313,7 @@ func (j *Testcase) UnmarshalJSON(value []byte) error {
 func (j *Testcase) MarshalJSON() ([]byte, error) {
 	type TestcaseMarshalHelper struct {
 		Expectedpeername    *Testcaseexpectedpeername    `json:"expected_peer_name"`
-		Notexpectedpeername *Testcasenotexpectedpeername `json:"not_expected_peer_name,omitempty"`
+		Notexpectedpeername *Testcasenotexpectedpeername `json:"not_expected_peer_name,omitempty,omitzero"`
 	}
 	helper := TestcaseMarshalHelper{
 		Expectedpeername:    j.expectedpeername,

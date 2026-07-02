@@ -55,7 +55,7 @@ func (j *Duration) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Duration) UnmarshalJSON(value []byte) error {
 	type DurationHelper struct {
-		Myobject *Durationmyobject `json:"myObject,omitempty"`
+		Myobject *Durationmyobject `json:"myObject,omitempty,omitzero"`
 	}
 	type Plain Duration
 	var helper DurationHelper
@@ -71,7 +71,7 @@ func (j *Duration) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Duration) MarshalJSON() ([]byte, error) {
 	type DurationMarshalHelper struct {
-		Myobject *Durationmyobject `json:"myObject,omitempty"`
+		Myobject *Durationmyobject `json:"myObject,omitempty,omitzero"`
 	}
 	helper := DurationMarshalHelper{
 		Myobject: j.myobject,
@@ -160,8 +160,8 @@ func (j *Durationmyobject) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type DurationmyobjectHelper struct {
-		Withdefault    time.Duration  `json:"withDefault,omitempty"`
-		Withoutdefault *time.Duration `json:"withoutDefault,omitempty"`
+		Withdefault    time.Duration  `json:"withDefault,omitempty,omitzero"`
+		Withoutdefault *time.Duration `json:"withoutDefault,omitempty,omitzero"`
 	}
 	type Plain Durationmyobject
 	var helper DurationmyobjectHelper
@@ -186,8 +186,8 @@ func (j *Durationmyobject) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Durationmyobject) MarshalJSON() ([]byte, error) {
 	type DurationmyobjectMarshalHelper struct {
-		Withdefault    time.Duration  `json:"withDefault,omitempty"`
-		Withoutdefault *time.Duration `json:"withoutDefault,omitempty"`
+		Withdefault    time.Duration  `json:"withDefault,omitempty,omitzero"`
+		Withoutdefault *time.Duration `json:"withoutDefault,omitempty,omitzero"`
 	}
 	helper := DurationmyobjectMarshalHelper{
 		Withdefault:    j.withdefault,

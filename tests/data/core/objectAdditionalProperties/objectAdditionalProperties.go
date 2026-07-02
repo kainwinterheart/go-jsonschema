@@ -46,7 +46,7 @@ func (o *ObjectAdditionalProperties) Foo() ObjectAdditionalPropertiesfoo {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *ObjectAdditionalProperties) UnmarshalJSON(value []byte) error {
 	type ObjectAdditionalPropertiesHelper struct {
-		Foo map[string]string `json:"foo,omitempty"`
+		Foo map[string]string `json:"foo,omitempty,omitzero"`
 	}
 	type Plain ObjectAdditionalProperties
 	var helper ObjectAdditionalPropertiesHelper
@@ -62,7 +62,7 @@ func (j *ObjectAdditionalProperties) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *ObjectAdditionalProperties) MarshalJSON() ([]byte, error) {
 	type ObjectAdditionalPropertiesMarshalHelper struct {
-		Foo map[string]string `json:"foo,omitempty"`
+		Foo map[string]string `json:"foo,omitempty,omitzero"`
 	}
 	helper := ObjectAdditionalPropertiesMarshalHelper{
 		Foo: func() map[string]string {

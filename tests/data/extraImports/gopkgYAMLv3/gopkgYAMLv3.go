@@ -151,12 +151,12 @@ func (j *GopkgYAMLv3) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type GopkgYAMLv3Helper struct {
-		Myboolean *bool              `json:"myBoolean,omitempty"`
-		Myenum    *GopkgYAMLv3myenum `json:"myEnum,omitempty"`
-		Myinteger *int               `json:"myInteger,omitempty"`
-		Mynull    interface{}        `json:"myNull,omitempty"`
-		Mynumber  *float64           `json:"myNumber,omitempty"`
-		Mystring  *string            `json:"myString,omitempty"`
+		Myboolean *bool              `json:"myBoolean,omitempty,omitzero"`
+		Myenum    *GopkgYAMLv3myenum `json:"myEnum,omitempty,omitzero"`
+		Myinteger *int               `json:"myInteger,omitempty,omitzero"`
+		Mynull    interface{}        `json:"myNull,omitempty,omitzero"`
+		Mynumber  *float64           `json:"myNumber,omitempty,omitzero"`
+		Mystring  *string            `json:"myString,omitempty,omitzero"`
 	}
 	type Plain GopkgYAMLv3
 	var helper GopkgYAMLv3Helper
@@ -180,12 +180,12 @@ func (j *GopkgYAMLv3) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *GopkgYAMLv3) MarshalJSON() ([]byte, error) {
 	type GopkgYAMLv3MarshalHelper struct {
-		Myboolean *bool              `json:"myBoolean,omitempty"`
-		Myenum    *GopkgYAMLv3myenum `json:"myEnum,omitempty"`
-		Myinteger *int               `json:"myInteger,omitempty"`
-		Mynull    interface{}        `json:"myNull,omitempty"`
-		Mynumber  *float64           `json:"myNumber,omitempty"`
-		Mystring  *string            `json:"myString,omitempty"`
+		Myboolean *bool              `json:"myBoolean,omitempty,omitzero"`
+		Myenum    *GopkgYAMLv3myenum `json:"myEnum,omitempty,omitzero"`
+		Myinteger *int               `json:"myInteger,omitempty,omitzero"`
+		Mynull    interface{}        `json:"myNull,omitempty,omitzero"`
+		Mynumber  *float64           `json:"myNumber,omitempty,omitzero"`
+		Mystring  *string            `json:"myString,omitempty,omitzero"`
 	}
 	helper := GopkgYAMLv3MarshalHelper{
 		Myboolean: j.myboolean,

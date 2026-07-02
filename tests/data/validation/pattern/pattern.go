@@ -86,8 +86,8 @@ func (j *Pattern) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field myString in Pattern: required")
 	}
 	type PatternHelper struct {
-		Myescapedstring  *string `json:"myEscapedString,omitempty"`
-		Mynullablestring *string `json:"myNullableString,omitempty"`
+		Myescapedstring  *string `json:"myEscapedString,omitempty,omitzero"`
+		Mynullablestring *string `json:"myNullableString,omitempty,omitzero"`
 		Mystring         string  `json:"myString"`
 	}
 	type Plain Pattern
@@ -119,8 +119,8 @@ func (j *Pattern) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Pattern) MarshalJSON() ([]byte, error) {
 	type PatternMarshalHelper struct {
-		Myescapedstring  *string `json:"myEscapedString,omitempty"`
-		Mynullablestring *string `json:"myNullableString,omitempty"`
+		Myescapedstring  *string `json:"myEscapedString,omitempty,omitzero"`
+		Mynullablestring *string `json:"myNullableString,omitempty,omitzero"`
 		Mystring         string  `json:"myString"`
 	}
 	helper := PatternMarshalHelper{

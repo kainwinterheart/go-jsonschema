@@ -37,7 +37,7 @@ func (o *AMap) MyMap() immutable.Map[string, float64] {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *AMap) UnmarshalJSON(value []byte) error {
 	type AMapHelper struct {
-		Mymap map[string]float64 `json:"myMap,omitempty"`
+		Mymap map[string]float64 `json:"myMap,omitempty,omitzero"`
 	}
 	type Plain AMap
 	var helper AMapHelper
@@ -53,7 +53,7 @@ func (j *AMap) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AMap) MarshalJSON() ([]byte, error) {
 	type AMapMarshalHelper struct {
-		Mymap map[string]float64 `json:"myMap,omitempty"`
+		Mymap map[string]float64 `json:"myMap,omitempty,omitzero"`
 	}
 	helper := AMapMarshalHelper{
 		Mymap: func() map[string]float64 {

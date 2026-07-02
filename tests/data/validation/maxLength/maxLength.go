@@ -60,7 +60,7 @@ func (j *MaxLength) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field myString in MaxLength: required")
 	}
 	type MaxLengthHelper struct {
-		Mynullablestring *string `json:"myNullableString,omitempty"`
+		Mynullablestring *string `json:"myNullableString,omitempty,omitzero"`
 		Mystring         string  `json:"myString"`
 	}
 	type Plain MaxLength
@@ -84,7 +84,7 @@ func (j *MaxLength) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *MaxLength) MarshalJSON() ([]byte, error) {
 	type MaxLengthMarshalHelper struct {
-		Mynullablestring *string `json:"myNullableString,omitempty"`
+		Mynullablestring *string `json:"myNullableString,omitempty,omitzero"`
 		Mystring         string  `json:"myString"`
 	}
 	helper := MaxLengthMarshalHelper{

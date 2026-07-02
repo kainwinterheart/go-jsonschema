@@ -39,7 +39,7 @@ func (o *Agreement) Id() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Agreement) UnmarshalJSON(value []byte) error {
 	type AgreementHelper struct {
-		Id *string `json:"id,omitempty"`
+		Id *string `json:"id,omitempty,omitzero"`
 	}
 	type Plain Agreement
 	var helper AgreementHelper
@@ -55,7 +55,7 @@ func (j *Agreement) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Agreement) MarshalJSON() ([]byte, error) {
 	type AgreementMarshalHelper struct {
-		Id *string `json:"id,omitempty"`
+		Id *string `json:"id,omitempty,omitzero"`
 	}
 	helper := AgreementMarshalHelper{
 		Id: j.id,
@@ -179,8 +179,8 @@ func (j *AnyOfRef_0) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
 	type AnyOfRef_0Helper struct {
-		Id   *string `json:"id,omitempty"`
-		Name *string `json:"name,omitempty"`
+		Id   *string `json:"id,omitempty,omitzero"`
+		Name *string `json:"name,omitempty,omitzero"`
 	}
 	type Plain AnyOfRef_0
 	var helper AnyOfRef_0Helper
@@ -197,8 +197,8 @@ func (j *AnyOfRef_0) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AnyOfRef_0) MarshalJSON() ([]byte, error) {
 	type AnyOfRef_0MarshalHelper struct {
-		Id   *string `json:"id,omitempty"`
-		Name *string `json:"name,omitempty"`
+		Id   *string `json:"id,omitempty,omitzero"`
+		Name *string `json:"name,omitempty,omitzero"`
 	}
 	helper := AnyOfRef_0MarshalHelper{
 		Id:   j.id,
@@ -309,7 +309,7 @@ func (j *Offer) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Offer) UnmarshalJSON(value []byte) error {
 	type OfferHelper struct {
-		Name *string `json:"name,omitempty"`
+		Name *string `json:"name,omitempty,omitzero"`
 	}
 	type Plain Offer
 	var helper OfferHelper
@@ -325,7 +325,7 @@ func (j *Offer) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Offer) MarshalJSON() ([]byte, error) {
 	type OfferMarshalHelper struct {
-		Name *string `json:"name,omitempty"`
+		Name *string `json:"name,omitempty,omitzero"`
 	}
 	helper := OfferMarshalHelper{
 		Name: j.name,

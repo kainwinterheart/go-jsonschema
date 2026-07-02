@@ -71,8 +71,8 @@ func (o *Schema) DefInSameSchema() *Thing {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Schema) UnmarshalJSON(value []byte) error {
 	type SchemaHelper struct {
-		Definotherschema *other.Thing `json:"defInOtherSchema,omitempty"`
-		Definsameschema  *Thing       `json:"defInSameSchema,omitempty"`
+		Definotherschema *other.Thing `json:"defInOtherSchema,omitempty,omitzero"`
+		Definsameschema  *Thing       `json:"defInSameSchema,omitempty,omitzero"`
 	}
 	type Plain Schema
 	var helper SchemaHelper
@@ -89,8 +89,8 @@ func (j *Schema) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Schema) MarshalJSON() ([]byte, error) {
 	type SchemaMarshalHelper struct {
-		Definotherschema *other.Thing `json:"defInOtherSchema,omitempty"`
-		Definsameschema  *Thing       `json:"defInSameSchema,omitempty"`
+		Definotherschema *other.Thing `json:"defInOtherSchema,omitempty,omitzero"`
+		Definsameschema  *Thing       `json:"defInSameSchema,omitempty,omitzero"`
 	}
 	helper := SchemaMarshalHelper{
 		Definotherschema: j.definotherschema,
@@ -166,7 +166,7 @@ func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Thing) UnmarshalJSON(value []byte) error {
 	type ThingHelper struct {
-		S *string `json:"s,omitempty"`
+		S *string `json:"s,omitempty,omitzero"`
 	}
 	type Plain Thing
 	var helper ThingHelper
@@ -182,7 +182,7 @@ func (j *Thing) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Thing) MarshalJSON() ([]byte, error) {
 	type ThingMarshalHelper struct {
-		S *string `json:"s,omitempty"`
+		S *string `json:"s,omitempty,omitzero"`
 	}
 	helper := ThingMarshalHelper{
 		S: j.s,

@@ -56,7 +56,7 @@ func (o *Time) MyObject() *Timemyobject {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Time) UnmarshalJSON(value []byte) error {
 	type TimeHelper struct {
-		Myobject *Timemyobject `json:"myObject,omitempty"`
+		Myobject *Timemyobject `json:"myObject,omitempty,omitzero"`
 	}
 	type Plain Time
 	var helper TimeHelper
@@ -72,7 +72,7 @@ func (j *Time) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Time) MarshalJSON() ([]byte, error) {
 	type TimeMarshalHelper struct {
-		Myobject *Timemyobject `json:"myObject,omitempty"`
+		Myobject *Timemyobject `json:"myObject,omitempty,omitzero"`
 	}
 	helper := TimeMarshalHelper{
 		Myobject: j.myobject,

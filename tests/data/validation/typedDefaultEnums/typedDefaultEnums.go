@@ -51,7 +51,7 @@ func (j *TypedDefaultEnums) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type TypedDefaultEnumsHelper struct {
-		Some TypedDefaultEnumssome `json:"some,omitempty"`
+		Some TypedDefaultEnumssome `json:"some,omitempty,omitzero"`
 	}
 	type Plain TypedDefaultEnums
 	var helper TypedDefaultEnumsHelper
@@ -70,7 +70,7 @@ func (j *TypedDefaultEnums) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *TypedDefaultEnums) MarshalJSON() ([]byte, error) {
 	type TypedDefaultEnumsMarshalHelper struct {
-		Some TypedDefaultEnumssome `json:"some,omitempty"`
+		Some TypedDefaultEnumssome `json:"some,omitempty,omitzero"`
 	}
 	helper := TypedDefaultEnumsMarshalHelper{
 		Some: j.some,

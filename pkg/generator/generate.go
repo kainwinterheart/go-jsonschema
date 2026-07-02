@@ -52,7 +52,7 @@ type qualifiedDefinition struct {
 
 func New(config Config) (*Generator, error) {
 	formatters := []formatter{
-		&jsonFormatter{},
+		&jsonFormatter{config: &config},
 	}
 	if config.ExtraImports {
 		formatters = append(formatters, &yamlFormatter{})

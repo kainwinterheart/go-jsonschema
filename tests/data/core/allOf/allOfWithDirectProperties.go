@@ -152,7 +152,7 @@ func (j *ComposedWithAllOfAndProperties) UnmarshalJSON(value []byte) error {
 	}
 	type ComposedWithAllOfAndPropertiesHelper struct {
 		Basefield   string   `json:"BaseField"`
-		Directfield []string `json:"DirectField,omitempty"`
+		Directfield []string `json:"DirectField,omitempty,omitzero"`
 	}
 	type Plain ComposedWithAllOfAndProperties
 	var helper ComposedWithAllOfAndPropertiesHelper
@@ -194,7 +194,7 @@ func (j *ComposedWithAllOfAndProperties) UnmarshalJSON(value []byte) error {
 func (j *ComposedWithAllOfAndProperties) MarshalJSON() ([]byte, error) {
 	type ComposedWithAllOfAndPropertiesMarshalHelper struct {
 		Basefield   string   `json:"BaseField"`
-		Directfield []string `json:"DirectField,omitempty"`
+		Directfield []string `json:"DirectField,omitempty,omitzero"`
 	}
 	helper := ComposedWithAllOfAndPropertiesMarshalHelper{
 		Basefield: j.basefield,

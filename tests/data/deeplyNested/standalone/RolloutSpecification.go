@@ -632,7 +632,7 @@ func (j *applyacrossserviceresources) UnmarshalJSON(value []byte) error {
 	}
 	type applyacrossserviceresourcesHelper struct {
 		Definitionname     string   `json:"definitionName"`
-		Deployarmresources *bool    `json:"deployArmResources,omitempty"`
+		Deployarmresources *bool    `json:"deployArmResources,omitempty,omitzero"`
 		Names              []string `json:"names"`
 	}
 	type Plain applyacrossserviceresources
@@ -661,7 +661,7 @@ func (j *applyacrossserviceresources) UnmarshalJSON(value []byte) error {
 func (j *applyacrossserviceresources) MarshalJSON() ([]byte, error) {
 	type applyacrossserviceresourcesMarshalHelper struct {
 		Definitionname     string   `json:"definitionName"`
-		Deployarmresources *bool    `json:"deployArmResources,omitempty"`
+		Deployarmresources *bool    `json:"deployArmResources,omitempty,omitzero"`
 		Names              []string `json:"names"`
 	}
 	helper := applyacrossserviceresourcesMarshalHelper{
@@ -860,7 +860,7 @@ func (j *configuration) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *configuration) UnmarshalJSON(value []byte) error {
 	type configurationHelper struct {
-		Servicescope *servicescope `json:"serviceScope,omitempty"`
+		Servicescope *servicescope `json:"serviceScope,omitempty,omitzero"`
 	}
 	type Plain configuration
 	var helper configurationHelper
@@ -876,7 +876,7 @@ func (j *configuration) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *configuration) MarshalJSON() ([]byte, error) {
 	type configurationMarshalHelper struct {
-		Servicescope *servicescope `json:"serviceScope,omitempty"`
+		Servicescope *servicescope `json:"serviceScope,omitempty,omitzero"`
 	}
 	helper := configurationMarshalHelper{
 		Servicescope: j.servicescope,
@@ -982,8 +982,8 @@ func (j *email) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field to in email: required")
 	}
 	type emailHelper struct {
-		Cc      *string  `json:"cc,omitempty"`
-		Options *options `json:"options,omitempty"`
+		Cc      *string  `json:"cc,omitempty,omitzero"`
+		Options *options `json:"options,omitempty,omitzero"`
 		To      string   `json:"to"`
 	}
 	type Plain email
@@ -1002,8 +1002,8 @@ func (j *email) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *email) MarshalJSON() ([]byte, error) {
 	type emailMarshalHelper struct {
-		Cc      *string  `json:"cc,omitempty"`
-		Options *options `json:"options,omitempty"`
+		Cc      *string  `json:"cc,omitempty,omitzero"`
+		Options *options `json:"options,omitempty,omitzero"`
 		To      string   `json:"to"`
 	}
 	helper := emailMarshalHelper{
@@ -1117,7 +1117,7 @@ func (j *incident) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field providerType in incident: required")
 	}
 	type incidentHelper struct {
-		Options      *incidentoptions `json:"options,omitempty"`
+		Options      *incidentoptions `json:"options,omitempty,omitzero"`
 		Properties   properties       `json:"properties"`
 		Providertype string           `json:"providerType"`
 	}
@@ -1137,7 +1137,7 @@ func (j *incident) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *incident) MarshalJSON() ([]byte, error) {
 	type incidentMarshalHelper struct {
-		Options      *incidentoptions `json:"options,omitempty"`
+		Options      *incidentoptions `json:"options,omitempty,omitzero"`
 		Properties   properties       `json:"properties"`
 		Providertype string           `json:"providerType"`
 	}
@@ -1207,7 +1207,7 @@ func (j *incidentoptions) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *incidentoptions) UnmarshalJSON(value []byte) error {
 	type incidentoptionsHelper struct {
-		When []string `json:"when,omitempty"`
+		When []string `json:"when,omitempty,omitzero"`
 	}
 	type Plain incidentoptions
 	var helper incidentoptionsHelper
@@ -1232,7 +1232,7 @@ func (j *incidentoptions) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *incidentoptions) MarshalJSON() ([]byte, error) {
 	type incidentoptionsMarshalHelper struct {
-		When []string `json:"when,omitempty"`
+		When []string `json:"when,omitempty,omitzero"`
 	}
 	helper := incidentoptionsMarshalHelper{
 		When: func() []string {
@@ -1317,8 +1317,8 @@ func (j *notification) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *notification) UnmarshalJSON(value []byte) error {
 	type notificationHelper struct {
-		Email    *email    `json:"email,omitempty"`
-		Incident *incident `json:"incident,omitempty"`
+		Email    *email    `json:"email,omitempty,omitzero"`
+		Incident *incident `json:"incident,omitempty,omitzero"`
 	}
 	type Plain notification
 	var helper notificationHelper
@@ -1335,8 +1335,8 @@ func (j *notification) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *notification) MarshalJSON() ([]byte, error) {
 	type notificationMarshalHelper struct {
-		Email    *email    `json:"email,omitempty"`
-		Incident *incident `json:"incident,omitempty"`
+		Email    *email    `json:"email,omitempty,omitzero"`
+		Incident *incident `json:"incident,omitempty,omitzero"`
 	}
 	helper := notificationMarshalHelper{
 		Email:    j.email,
@@ -1428,8 +1428,8 @@ func (j *options) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *options) UnmarshalJSON(value []byte) error {
 	type optionsHelper struct {
-		Verbosity *string  `json:"verbosity,omitempty"`
-		When      []string `json:"when,omitempty"`
+		Verbosity *string  `json:"verbosity,omitempty,omitzero"`
+		When      []string `json:"when,omitempty,omitzero"`
 	}
 	type Plain options
 	var helper optionsHelper
@@ -1460,8 +1460,8 @@ func (j *options) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *options) MarshalJSON() ([]byte, error) {
 	type optionsMarshalHelper struct {
-		Verbosity *string  `json:"verbosity,omitempty"`
-		When      []string `json:"when,omitempty"`
+		Verbosity *string  `json:"verbosity,omitempty,omitzero"`
+		When      []string `json:"when,omitempty,omitzero"`
 	}
 	helper := optionsMarshalHelper{
 		Verbosity: j.verbosity,
@@ -1602,11 +1602,11 @@ func (j *orchestratedstep) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field targetType in orchestratedstep: required")
 	}
 	type orchestratedstepHelper struct {
-		Actions      []string      `json:"actions,omitempty"`
-		Applications *applications `json:"applications,omitempty"`
-		Dependson    []string      `json:"dependsOn,omitempty"`
+		Actions      []string      `json:"actions,omitempty,omitzero"`
+		Applications *applications `json:"applications,omitempty,omitzero"`
+		Dependson    []string      `json:"dependsOn,omitempty,omitzero"`
 		Name         string        `json:"name"`
-		Targetname   *string       `json:"targetName,omitempty"`
+		Targetname   *string       `json:"targetName,omitempty,omitzero"`
 		Targettype   string        `json:"targetType"`
 	}
 	type Plain orchestratedstep
@@ -1655,11 +1655,11 @@ func (j *orchestratedstep) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *orchestratedstep) MarshalJSON() ([]byte, error) {
 	type orchestratedstepMarshalHelper struct {
-		Actions      []string      `json:"actions,omitempty"`
-		Applications *applications `json:"applications,omitempty"`
-		Dependson    []string      `json:"dependsOn,omitempty"`
+		Actions      []string      `json:"actions,omitempty,omitzero"`
+		Applications *applications `json:"applications,omitempty,omitzero"`
+		Dependson    []string      `json:"dependsOn,omitempty,omitzero"`
 		Name         string        `json:"name"`
-		Targetname   *string       `json:"targetName,omitempty"`
+		Targetname   *string       `json:"targetName,omitempty,omitzero"`
 		Targettype   string        `json:"targetType"`
 	}
 	helper := orchestratedstepMarshalHelper{
@@ -1979,8 +1979,8 @@ func (j *properties) UnmarshalJSON(value []byte) error {
 	}
 	type propertiesHelper struct {
 		Connectorid string  `json:"connectorId"`
-		Correlateby *string `json:"correlateBy,omitempty"`
-		Environment *string `json:"environment,omitempty"`
+		Correlateby *string `json:"correlateBy,omitempty,omitzero"`
+		Environment *string `json:"environment,omitempty,omitzero"`
 		Routingid   string  `json:"routingId"`
 	}
 	type Plain properties
@@ -2011,8 +2011,8 @@ func (j *properties) UnmarshalJSON(value []byte) error {
 func (j *properties) MarshalJSON() ([]byte, error) {
 	type propertiesMarshalHelper struct {
 		Connectorid string  `json:"connectorId"`
-		Correlateby *string `json:"correlateBy,omitempty"`
-		Environment *string `json:"environment,omitempty"`
+		Correlateby *string `json:"correlateBy,omitempty,omitzero"`
+		Environment *string `json:"environment,omitempty,omitzero"`
 		Routingid   string  `json:"routingId"`
 	}
 	helper := propertiesMarshalHelper{
@@ -2242,11 +2242,11 @@ func (j *rolloutmetadata) UnmarshalJSON(value []byte) error {
 	}
 	type rolloutmetadataHelper struct {
 		Buildsource               buildsource              `json:"buildSource"`
-		Configuration             *configuration           `json:"configuration,omitempty"`
+		Configuration             *configuration           `json:"configuration,omitempty,omitzero"`
 		Name                      string                   `json:"name"`
-		Notification              *notification            `json:"notification,omitempty"`
-		Parameterreplacementspath *string                  `json:"parameterReplacementsPath,omitempty"`
-		Rolloutpolicyreferences   []rolloutpolicyreference `json:"rolloutPolicyReferences,omitempty"`
+		Notification              *notification            `json:"notification,omitempty,omitzero"`
+		Parameterreplacementspath *string                  `json:"parameterReplacementsPath,omitempty,omitzero"`
+		Rolloutpolicyreferences   []rolloutpolicyreference `json:"rolloutPolicyReferences,omitempty,omitzero"`
 		Rollouttype               string                   `json:"rolloutType"`
 		Servicemodelpath          string                   `json:"serviceModelPath"`
 	}
@@ -2287,11 +2287,11 @@ func (j *rolloutmetadata) UnmarshalJSON(value []byte) error {
 func (j *rolloutmetadata) MarshalJSON() ([]byte, error) {
 	type rolloutmetadataMarshalHelper struct {
 		Buildsource               buildsource              `json:"buildSource"`
-		Configuration             *configuration           `json:"configuration,omitempty"`
+		Configuration             *configuration           `json:"configuration,omitempty,omitzero"`
 		Name                      string                   `json:"name"`
-		Notification              *notification            `json:"notification,omitempty"`
-		Parameterreplacementspath *string                  `json:"parameterReplacementsPath,omitempty"`
-		Rolloutpolicyreferences   []rolloutpolicyreference `json:"rolloutPolicyReferences,omitempty"`
+		Notification              *notification            `json:"notification,omitempty,omitzero"`
+		Parameterreplacementspath *string                  `json:"parameterReplacementsPath,omitempty,omitzero"`
+		Rolloutpolicyreferences   []rolloutpolicyreference `json:"rolloutPolicyReferences,omitempty,omitzero"`
 		Rollouttype               string                   `json:"rolloutType"`
 		Servicemodelpath          string                   `json:"serviceModelPath"`
 	}
@@ -2467,7 +2467,7 @@ func (o *servicescope) SpecPath() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *servicescope) UnmarshalJSON(value []byte) error {
 	type servicescopeHelper struct {
-		Specpath *string `json:"specPath,omitempty"`
+		Specpath *string `json:"specPath,omitempty,omitzero"`
 	}
 	type Plain servicescope
 	var helper servicescopeHelper
@@ -2483,7 +2483,7 @@ func (j *servicescope) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *servicescope) MarshalJSON() ([]byte, error) {
 	type servicescopeMarshalHelper struct {
-		Specpath *string `json:"specPath,omitempty"`
+		Specpath *string `json:"specPath,omitempty,omitzero"`
 	}
 	helper := servicescopeMarshalHelper{
 		Specpath: j.specpath,

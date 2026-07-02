@@ -59,8 +59,8 @@ func (j *DecoratedPlanner) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type DecoratedPlannerHelper struct {
-		Decorator DecoratedPlannerdecorator `json:"decorator,omitempty"`
-		Event     *Event                    `json:"event,omitempty"`
+		Decorator DecoratedPlannerdecorator `json:"decorator,omitempty,omitzero"`
+		Event     *Event                    `json:"event,omitempty,omitzero"`
 	}
 	type Plain DecoratedPlanner
 	var helper DecoratedPlannerHelper
@@ -83,8 +83,8 @@ func (j *DecoratedPlanner) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *DecoratedPlanner) MarshalJSON() ([]byte, error) {
 	type DecoratedPlannerMarshalHelper struct {
-		Decorator DecoratedPlannerdecorator `json:"decorator,omitempty"`
-		Event     *Event                    `json:"event,omitempty"`
+		Decorator DecoratedPlannerdecorator `json:"decorator,omitempty,omitzero"`
+		Event     *Event                    `json:"event,omitempty,omitzero"`
 	}
 	helper := DecoratedPlannerMarshalHelper{
 		Decorator: j.decorator,
@@ -198,8 +198,8 @@ func (j *DecoratedPlannerdecorator) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type DecoratedPlannerdecoratorHelper struct {
-		Color string  `json:"color,omitempty"`
-		Theme *string `json:"theme,omitempty"`
+		Color string  `json:"color,omitempty,omitzero"`
+		Theme *string `json:"theme,omitempty,omitzero"`
 	}
 	type Plain DecoratedPlannerdecorator
 	var helper DecoratedPlannerdecoratorHelper
@@ -219,8 +219,8 @@ func (j *DecoratedPlannerdecorator) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *DecoratedPlannerdecorator) MarshalJSON() ([]byte, error) {
 	type DecoratedPlannerdecoratorMarshalHelper struct {
-		Color string  `json:"color,omitempty"`
-		Theme *string `json:"theme,omitempty"`
+		Color string  `json:"color,omitempty,omitzero"`
+		Theme *string `json:"theme,omitempty,omitzero"`
 	}
 	helper := DecoratedPlannerdecoratorMarshalHelper{
 		Color: j.color,
@@ -260,7 +260,7 @@ func (o *DefaultPlanner) Event() *Event {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *DefaultPlanner) UnmarshalJSON(value []byte) error {
 	type DefaultPlannerHelper struct {
-		Event *Event `json:"event,omitempty"`
+		Event *Event `json:"event,omitempty,omitzero"`
 	}
 	type Plain DefaultPlanner
 	var helper DefaultPlannerHelper
@@ -276,7 +276,7 @@ func (j *DefaultPlanner) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *DefaultPlanner) MarshalJSON() ([]byte, error) {
 	type DefaultPlannerMarshalHelper struct {
-		Event *Event `json:"event,omitempty"`
+		Event *Event `json:"event,omitempty,omitzero"`
 	}
 	helper := DefaultPlannerMarshalHelper{
 		Event: j.event,
@@ -351,8 +351,8 @@ func (j *Event) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type EventHelper struct {
-		Name *Eventname      `json:"name,omitempty"`
-		Tags []EventtagsElem `json:"tags,omitempty"`
+		Name *Eventname      `json:"name,omitempty,omitzero"`
+		Tags []EventtagsElem `json:"tags,omitempty,omitzero"`
 	}
 	type Plain Event
 	var helper EventHelper
@@ -381,8 +381,8 @@ func (j *Event) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Event) MarshalJSON() ([]byte, error) {
 	type EventMarshalHelper struct {
-		Name *Eventname      `json:"name,omitempty"`
-		Tags []EventtagsElem `json:"tags,omitempty"`
+		Name *Eventname      `json:"name,omitempty,omitzero"`
+		Tags []EventtagsElem `json:"tags,omitempty,omitzero"`
 	}
 	helper := EventMarshalHelper{
 		Name: j.name,
@@ -694,8 +694,8 @@ func (j *ObjectPropertiesDefault) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *ObjectPropertiesDefault) UnmarshalJSON(value []byte) error {
 	type ObjectPropertiesDefaultHelper struct {
-		Active   interface{}                           `json:"active,omitempty"`
-		Planners []ObjectPropertiesDefaultplannersElem `json:"planners,omitempty"`
+		Active   interface{}                           `json:"active,omitempty,omitzero"`
+		Planners []ObjectPropertiesDefaultplannersElem `json:"planners,omitempty,omitzero"`
 	}
 	type Plain ObjectPropertiesDefault
 	var helper ObjectPropertiesDefaultHelper
@@ -721,8 +721,8 @@ func (j *ObjectPropertiesDefault) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *ObjectPropertiesDefault) MarshalJSON() ([]byte, error) {
 	type ObjectPropertiesDefaultMarshalHelper struct {
-		Active   interface{}                           `json:"active,omitempty"`
-		Planners []ObjectPropertiesDefaultplannersElem `json:"planners,omitempty"`
+		Active   interface{}                           `json:"active,omitempty,omitzero"`
+		Planners []ObjectPropertiesDefaultplannersElem `json:"planners,omitempty,omitzero"`
 	}
 	helper := ObjectPropertiesDefaultMarshalHelper{
 		Active: j.active,
@@ -821,7 +821,7 @@ func (j *ObjectPropertiesDefaultplannersElem_0) UnmarshalYAML(value *yaml.Node) 
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *ObjectPropertiesDefaultplannersElem_0) UnmarshalJSON(value []byte) error {
 	type ObjectPropertiesDefaultplannersElem_0Helper struct {
-		Plain *DefaultPlanner `json:"plain,omitempty"`
+		Plain *DefaultPlanner `json:"plain,omitempty,omitzero"`
 	}
 	type Plain ObjectPropertiesDefaultplannersElem_0
 	var helper ObjectPropertiesDefaultplannersElem_0Helper
@@ -837,7 +837,7 @@ func (j *ObjectPropertiesDefaultplannersElem_0) UnmarshalJSON(value []byte) erro
 // MarshalJSON implements json.Marshaler.
 func (j *ObjectPropertiesDefaultplannersElem_0) MarshalJSON() ([]byte, error) {
 	type ObjectPropertiesDefaultplannersElem_0MarshalHelper struct {
-		Plain *DefaultPlanner `json:"plain,omitempty"`
+		Plain *DefaultPlanner `json:"plain,omitempty,omitzero"`
 	}
 	helper := ObjectPropertiesDefaultplannersElem_0MarshalHelper{
 		Plain: j.plain,
@@ -876,7 +876,7 @@ func (o *ObjectPropertiesDefaultplannersElem_1) Decorated() *DecoratedPlanner {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *ObjectPropertiesDefaultplannersElem_1) UnmarshalJSON(value []byte) error {
 	type ObjectPropertiesDefaultplannersElem_1Helper struct {
-		Decorated *DecoratedPlanner `json:"decorated,omitempty"`
+		Decorated *DecoratedPlanner `json:"decorated,omitempty,omitzero"`
 	}
 	type Plain ObjectPropertiesDefaultplannersElem_1
 	var helper ObjectPropertiesDefaultplannersElem_1Helper
@@ -892,7 +892,7 @@ func (j *ObjectPropertiesDefaultplannersElem_1) UnmarshalJSON(value []byte) erro
 // MarshalJSON implements json.Marshaler.
 func (j *ObjectPropertiesDefaultplannersElem_1) MarshalJSON() ([]byte, error) {
 	type ObjectPropertiesDefaultplannersElem_1MarshalHelper struct {
-		Decorated *DecoratedPlanner `json:"decorated,omitempty"`
+		Decorated *DecoratedPlanner `json:"decorated,omitempty,omitzero"`
 	}
 	helper := ObjectPropertiesDefaultplannersElem_1MarshalHelper{
 		Decorated: j.decorated,
@@ -983,8 +983,8 @@ func (j *ObjectPropertiesDefaultplannersElem) UnmarshalJSON(value []byte) error 
 		return fmt.Errorf("all validators failed: %s", errors.Join(errs...))
 	}
 	type ObjectPropertiesDefaultplannersElemHelper struct {
-		Decorated *DecoratedPlanner `json:"decorated,omitempty"`
-		Plain     *DefaultPlanner   `json:"plain,omitempty"`
+		Decorated *DecoratedPlanner `json:"decorated,omitempty,omitzero"`
+		Plain     *DefaultPlanner   `json:"plain,omitempty,omitzero"`
 	}
 	type Plain ObjectPropertiesDefaultplannersElem
 	var helper ObjectPropertiesDefaultplannersElemHelper
@@ -1001,8 +1001,8 @@ func (j *ObjectPropertiesDefaultplannersElem) UnmarshalJSON(value []byte) error 
 // MarshalJSON implements json.Marshaler.
 func (j *ObjectPropertiesDefaultplannersElem) MarshalJSON() ([]byte, error) {
 	type ObjectPropertiesDefaultplannersElemMarshalHelper struct {
-		Decorated *DecoratedPlanner `json:"decorated,omitempty"`
-		Plain     *DefaultPlanner   `json:"plain,omitempty"`
+		Decorated *DecoratedPlanner `json:"decorated,omitempty,omitzero"`
+		Plain     *DefaultPlanner   `json:"plain,omitempty,omitzero"`
 	}
 	helper := ObjectPropertiesDefaultplannersElemMarshalHelper{
 		Decorated: j.decorated,

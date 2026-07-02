@@ -60,7 +60,7 @@ func (j *MinLength) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field myString in MinLength: required")
 	}
 	type MinLengthHelper struct {
-		Mynullablestring *string `json:"myNullableString,omitempty"`
+		Mynullablestring *string `json:"myNullableString,omitempty,omitzero"`
 		Mystring         string  `json:"myString"`
 	}
 	type Plain MinLength
@@ -84,7 +84,7 @@ func (j *MinLength) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *MinLength) MarshalJSON() ([]byte, error) {
 	type MinLengthMarshalHelper struct {
-		Mynullablestring *string `json:"myNullableString,omitempty"`
+		Mynullablestring *string `json:"myNullableString,omitempty,omitzero"`
 		Mystring         string  `json:"myString"`
 	}
 	helper := MinLengthMarshalHelper{

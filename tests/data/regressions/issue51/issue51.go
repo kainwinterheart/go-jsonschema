@@ -45,7 +45,7 @@ func (j *Issue51) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	type Issue51Helper struct {
-		Name *string `json:"name,omitempty"`
+		Name *string `json:"name,omitempty,omitzero"`
 	}
 	type Plain Issue51
 	var helper Issue51Helper
@@ -76,7 +76,7 @@ func (j *Issue51) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Issue51) MarshalJSON() ([]byte, error) {
 	type Issue51MarshalHelper struct {
-		Name *string `json:"name,omitempty"`
+		Name *string `json:"name,omitempty,omitzero"`
 	}
 	helper := Issue51MarshalHelper{
 		Name: j.name,

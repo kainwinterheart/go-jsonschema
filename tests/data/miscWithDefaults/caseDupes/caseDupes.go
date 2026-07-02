@@ -69,11 +69,11 @@ func (o *CaseDupes) Somefield() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *CaseDupes) UnmarshalJSON(value []byte) error {
 	type CaseDupesHelper struct {
-		Somefield   *string `json:"SomeField,omitempty"`
-		Somefield_2 *string `json:"someField,omitempty"`
-		Somefield_3 *string `json:"some_Field,omitempty"`
-		Somefield_4 *string `json:"some_field,omitempty"`
-		Somefield_5 *string `json:"somefield,omitempty"`
+		Somefield   *string `json:"SomeField,omitempty,omitzero"`
+		Somefield_2 *string `json:"someField,omitempty,omitzero"`
+		Somefield_3 *string `json:"some_Field,omitempty,omitzero"`
+		Somefield_4 *string `json:"some_field,omitempty,omitzero"`
+		Somefield_5 *string `json:"somefield,omitempty,omitzero"`
 	}
 	type Plain CaseDupes
 	var helper CaseDupesHelper
@@ -93,11 +93,11 @@ func (j *CaseDupes) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *CaseDupes) MarshalJSON() ([]byte, error) {
 	type CaseDupesMarshalHelper struct {
-		Somefield   *string `json:"SomeField,omitempty"`
-		Somefield_2 *string `json:"someField,omitempty"`
-		Somefield_3 *string `json:"some_Field,omitempty"`
-		Somefield_4 *string `json:"some_field,omitempty"`
-		Somefield_5 *string `json:"somefield,omitempty"`
+		Somefield   *string `json:"SomeField,omitempty,omitzero"`
+		Somefield_2 *string `json:"someField,omitempty,omitzero"`
+		Somefield_3 *string `json:"some_Field,omitempty,omitzero"`
+		Somefield_4 *string `json:"some_field,omitempty,omitzero"`
+		Somefield_5 *string `json:"somefield,omitempty,omitzero"`
 	}
 	helper := CaseDupesMarshalHelper{
 		Somefield:   j.somefield,

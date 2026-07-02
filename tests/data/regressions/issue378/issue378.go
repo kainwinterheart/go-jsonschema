@@ -38,7 +38,7 @@ func (o *Issue378) Memory() *string {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Issue378) UnmarshalJSON(value []byte) error {
 	type Issue378Helper struct {
-		Memory *string `json:"memory,omitempty"`
+		Memory *string `json:"memory,omitempty,omitzero"`
 	}
 	type Plain Issue378
 	var helper Issue378Helper
@@ -59,7 +59,7 @@ func (j *Issue378) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Issue378) MarshalJSON() ([]byte, error) {
 	type Issue378MarshalHelper struct {
-		Memory *string `json:"memory,omitempty"`
+		Memory *string `json:"memory,omitempty,omitzero"`
 	}
 	helper := Issue378MarshalHelper{
 		Memory: j.memory,

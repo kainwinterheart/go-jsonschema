@@ -94,8 +94,8 @@ func (j *MultipleOf) UnmarshalJSON(value []byte) error {
 	}
 	type MultipleOfHelper struct {
 		Myinteger         int      `json:"myInteger"`
-		Mynullableinteger *int     `json:"myNullableInteger,omitempty"`
-		Mynullablenumber  *float64 `json:"myNullableNumber,omitempty"`
+		Mynullableinteger *int     `json:"myNullableInteger,omitempty,omitzero"`
+		Mynullablenumber  *float64 `json:"myNullableNumber,omitempty,omitzero"`
 		Mynumber          float64  `json:"myNumber"`
 	}
 	type Plain MultipleOf
@@ -134,8 +134,8 @@ func (j *MultipleOf) UnmarshalJSON(value []byte) error {
 func (j *MultipleOf) MarshalJSON() ([]byte, error) {
 	type MultipleOfMarshalHelper struct {
 		Myinteger         int      `json:"myInteger"`
-		Mynullableinteger *int     `json:"myNullableInteger,omitempty"`
-		Mynullablenumber  *float64 `json:"myNullableNumber,omitempty"`
+		Mynullableinteger *int     `json:"myNullableInteger,omitempty,omitzero"`
+		Mynullablenumber  *float64 `json:"myNullableNumber,omitempty,omitzero"`
 		Mynumber          float64  `json:"myNumber"`
 	}
 	helper := MultipleOfMarshalHelper{

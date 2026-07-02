@@ -89,7 +89,7 @@ func (j *TestObject) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field owner in TestObject: required")
 	}
 	type TestObjectHelper struct {
-		Config map[string]interface{} `json:"config,omitempty"`
+		Config map[string]interface{} `json:"config,omitempty,omitzero"`
 		Name   string                 `json:"name"`
 		Owner  string                 `json:"owner"`
 	}
@@ -109,7 +109,7 @@ func (j *TestObject) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *TestObject) MarshalJSON() ([]byte, error) {
 	type TestObjectMarshalHelper struct {
-		Config map[string]interface{} `json:"config,omitempty"`
+		Config map[string]interface{} `json:"config,omitempty,omitzero"`
 		Name   string                 `json:"name"`
 		Owner  string                 `json:"owner"`
 	}

@@ -59,7 +59,7 @@ func (j *AllOfNestedRefs) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field foo in AllOfNestedRefs: required")
 	}
 	type AllOfNestedRefsHelper struct {
-		Bar *string     `json:"bar,omitempty"`
+		Bar *string     `json:"bar,omitempty,omitzero"`
 		Foo interface{} `json:"foo"`
 	}
 	type Plain AllOfNestedRefs
@@ -77,7 +77,7 @@ func (j *AllOfNestedRefs) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *AllOfNestedRefs) MarshalJSON() ([]byte, error) {
 	type AllOfNestedRefsMarshalHelper struct {
-		Bar *string     `json:"bar,omitempty"`
+		Bar *string     `json:"bar,omitempty,omitzero"`
 		Foo interface{} `json:"foo"`
 	}
 	helper := AllOfNestedRefsMarshalHelper{
@@ -144,7 +144,7 @@ func (o *ExtraProps) Clone() *ExtraPropsBuilder {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *ExtraProps) UnmarshalJSON(value []byte) error {
 	type ExtraPropsHelper struct {
-		Bar *string `json:"bar,omitempty"`
+		Bar *string `json:"bar,omitempty,omitzero"`
 	}
 	type Plain ExtraProps
 	var helper ExtraPropsHelper
@@ -160,7 +160,7 @@ func (j *ExtraProps) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *ExtraProps) MarshalJSON() ([]byte, error) {
 	type ExtraPropsMarshalHelper struct {
-		Bar *string `json:"bar,omitempty"`
+		Bar *string `json:"bar,omitempty,omitzero"`
 	}
 	helper := ExtraPropsMarshalHelper{
 		Bar: j.bar,
@@ -293,7 +293,7 @@ func (j *RootObject) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("field foo in RootObject: required")
 	}
 	type RootObjectHelper struct {
-		Bar *string     `json:"bar,omitempty"`
+		Bar *string     `json:"bar,omitempty,omitzero"`
 		Foo interface{} `json:"foo"`
 	}
 	type Plain RootObject
@@ -311,7 +311,7 @@ func (j *RootObject) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *RootObject) MarshalJSON() ([]byte, error) {
 	type RootObjectMarshalHelper struct {
-		Bar *string     `json:"bar,omitempty"`
+		Bar *string     `json:"bar,omitempty,omitzero"`
 		Foo interface{} `json:"foo"`
 	}
 	helper := RootObjectMarshalHelper{

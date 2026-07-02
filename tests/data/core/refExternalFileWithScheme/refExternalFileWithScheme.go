@@ -131,8 +131,8 @@ func (j *RefExternalFileWithScheme) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *RefExternalFileWithScheme) UnmarshalJSON(value []byte) error {
 	type RefExternalFileWithSchemeHelper struct {
-		Myexternalthing        *Thing `json:"myExternalThing,omitempty"`
-		Someotherexternalthing *Thing `json:"someOtherExternalThing,omitempty"`
+		Myexternalthing        *Thing `json:"myExternalThing,omitempty,omitzero"`
+		Someotherexternalthing *Thing `json:"someOtherExternalThing,omitempty,omitzero"`
 	}
 	type Plain RefExternalFileWithScheme
 	var helper RefExternalFileWithSchemeHelper
@@ -149,8 +149,8 @@ func (j *RefExternalFileWithScheme) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *RefExternalFileWithScheme) MarshalJSON() ([]byte, error) {
 	type RefExternalFileWithSchemeMarshalHelper struct {
-		Myexternalthing        *Thing `json:"myExternalThing,omitempty"`
-		Someotherexternalthing *Thing `json:"someOtherExternalThing,omitempty"`
+		Myexternalthing        *Thing `json:"myExternalThing,omitempty,omitzero"`
+		Someotherexternalthing *Thing `json:"someOtherExternalThing,omitempty,omitzero"`
 	}
 	helper := RefExternalFileWithSchemeMarshalHelper{
 		Myexternalthing:        j.myexternalthing,
@@ -193,8 +193,8 @@ func (j *Ref) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Ref) UnmarshalJSON(value []byte) error {
 	type RefHelper struct {
-		Mything  *Thing `json:"myThing,omitempty"`
-		Mything2 *Thing `json:"myThing2,omitempty"`
+		Mything  *Thing `json:"myThing,omitempty,omitzero"`
+		Mything2 *Thing `json:"myThing2,omitempty,omitzero"`
 	}
 	type Plain Ref
 	var helper RefHelper
@@ -211,8 +211,8 @@ func (j *Ref) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Ref) MarshalJSON() ([]byte, error) {
 	type RefMarshalHelper struct {
-		Mything  *Thing `json:"myThing,omitempty"`
-		Mything2 *Thing `json:"myThing2,omitempty"`
+		Mything  *Thing `json:"myThing,omitempty,omitzero"`
+		Mything2 *Thing `json:"myThing2,omitempty,omitzero"`
 	}
 	helper := RefMarshalHelper{
 		Mything:  j.mything,
@@ -269,7 +269,7 @@ func (j *Thing) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *Thing) UnmarshalJSON(value []byte) error {
 	type ThingHelper struct {
-		Name *string `json:"name,omitempty"`
+		Name *string `json:"name,omitempty,omitzero"`
 	}
 	type Plain Thing
 	var helper ThingHelper
@@ -285,7 +285,7 @@ func (j *Thing) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *Thing) MarshalJSON() ([]byte, error) {
 	type ThingMarshalHelper struct {
-		Name *string `json:"name,omitempty"`
+		Name *string `json:"name,omitempty,omitzero"`
 	}
 	helper := ThingMarshalHelper{
 		Name: j.name,

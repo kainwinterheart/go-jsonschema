@@ -46,7 +46,7 @@ func (o *ObjectEmpty) Foo() ObjectEmptyfoo {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *ObjectEmpty) UnmarshalJSON(value []byte) error {
 	type ObjectEmptyHelper struct {
-		Foo map[string]interface{} `json:"foo,omitempty"`
+		Foo map[string]interface{} `json:"foo,omitempty,omitzero"`
 	}
 	type Plain ObjectEmpty
 	var helper ObjectEmptyHelper
@@ -62,7 +62,7 @@ func (j *ObjectEmpty) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *ObjectEmpty) MarshalJSON() ([]byte, error) {
 	type ObjectEmptyMarshalHelper struct {
-		Foo map[string]interface{} `json:"foo,omitempty"`
+		Foo map[string]interface{} `json:"foo,omitempty,omitzero"`
 	}
 	helper := ObjectEmptyMarshalHelper{
 		Foo: func() map[string]interface{} {

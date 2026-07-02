@@ -55,7 +55,7 @@ func (j *DateTime) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON implements json.Unmarshaler.
 func (j *DateTime) UnmarshalJSON(value []byte) error {
 	type DateTimeHelper struct {
-		Myobject *DateTimemyobject `json:"myObject,omitempty"`
+		Myobject *DateTimemyobject `json:"myObject,omitempty,omitzero"`
 	}
 	type Plain DateTime
 	var helper DateTimeHelper
@@ -71,7 +71,7 @@ func (j *DateTime) UnmarshalJSON(value []byte) error {
 // MarshalJSON implements json.Marshaler.
 func (j *DateTime) MarshalJSON() ([]byte, error) {
 	type DateTimeMarshalHelper struct {
-		Myobject *DateTimemyobject `json:"myObject,omitempty"`
+		Myobject *DateTimemyobject `json:"myObject,omitempty,omitzero"`
 	}
 	helper := DateTimeMarshalHelper{
 		Myobject: j.myobject,
