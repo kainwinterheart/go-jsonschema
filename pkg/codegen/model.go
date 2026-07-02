@@ -452,6 +452,27 @@ func (r RawMapType) Generate(out *Emitter) error {
 	return nil
 }
 
+// RawMapTypeWithPointerValue generates map[K]*V for use in helper structs
+// for JSON/YAML marshalling. Used for struct-valued maps where the value type
+// has pointer-receiver MarshalJSON/UnmarshalJSON methods.
+type RawMapTypeWithPointerValue struct {
+	KeyType, ValueType Type
+}
+
+func (RawMapTypeWithPointerValue) IsNillable() bool { return true }
+
+func (r RawMapTypeWithPointerValue) Generate(out *Emitter) error {
+	out.Printf("map[")
+	if kerr := r.KeyType.Generate(out); kerr != nil {
+		return fmt.Errorf("cannot generate codegen.RawMapTypeWithPointerValue key type: %w", kerr)
+	}
+	out.Printf("]*")
+	if perr := r.ValueType.Generate(out); perr != nil {
+		return fmt.Errorf("cannot generate codegen.RawMapTypeWithPointerValue value type: %w", perr)
+	}
+	return nil
+}
+
 type EmptyInterfaceType struct{}
 
 func (EmptyInterfaceType) IsNillable() bool { return true }

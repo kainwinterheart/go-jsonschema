@@ -70,6 +70,38 @@ func rawType(t codegen.Type) codegen.Type {
 	}
 }
 
+// rawTypeForHelper returns the raw type for use in helper structs (MarshalJSON/UnmarshalJSON).
+// For struct-valued maps with NAMED struct types (cross-references with Package),
+// it returns RawMapTypeWithPointerValue so that json.Marshal can call pointer-receiver
+// MarshalJSON methods on struct values stored in maps.
+// For struct-valued maps with INLINE struct types (no Package), it returns the raw type
+// but WITHOUT pointer conversion, preserving the original behavior for non-DomainState maps.
+func rawTypeForHelper(t codegen.Type) codegen.Type {
+	rf := rawType(t)
+	if rf != nil {
+		if rm, ok := rf.(*codegen.RawMapType); ok {
+			valType := rm.ValueType
+			if nt, ok := valType.(*codegen.NamedType); ok && nt.Decl != nil {
+			}
+			// Check if value type is a NamedType wrapping a StructType with a Package
+			if nt, ok := valType.(*codegen.NamedType); ok && nt.Decl != nil && nt.Decl.Name != "" {
+				if _, isStruct := nt.Decl.Type.(*codegen.StructType); isStruct {
+					return codegen.RawMapTypeWithPointerValue{
+						KeyType:   rm.KeyType,
+						ValueType: rm.ValueType,
+					}
+				}
+			}
+			// For struct-valued maps with inline structs (no Package), return raw type without pointer
+			// This preserves the original behavior for maps like AutoinstallSchemareporting
+			if _, ok := valType.(*codegen.StructType); ok {
+				return rf
+			}
+		}
+	}
+	return rf
+}
+
 // rawExportedName returns the exported name of a field (first char uppercase).
 func rawExportedName(fieldName string) string {
 	return strings.ToUpper(fieldName[:1]) + fieldName[1:]
@@ -159,7 +191,7 @@ func (jf *jsonFormatter) generate(
 				}
 				exportedName := rawExportedName(f.Name)
 				out.Printf("\t%s ", exportedName)
-				rawFieldType := rawType(f.Type)
+				rawFieldType := rawTypeForHelper(f.Type)
 				if rawFieldType != nil {
 					if err := rawFieldType.Generate(out); err != nil {
 						return err
@@ -219,7 +251,7 @@ func (jf *jsonFormatter) generate(
 				for _, f := range structType.Fields {
 					exportedName := rawExportedName(f.Name)
 					out.Printf("\t%s ", exportedName)
-					if err := rawType(f.Type).Generate(out); err != nil {
+					if err := rawTypeForHelper(f.Type).Generate(out); err != nil {
 						return err
 					}
 					jsonTag := f.JSONName
@@ -335,25 +367,8 @@ func (jf *jsonFormatter) generate(
 					}
 					exportedName := rawExportedName(f.Name)
 					out.Printf("\t%s ", exportedName)
-					// For struct-valued maps, use original type (NamedType) instead of raw type
-					rf := rawType(f.Type)
-					useRawType := true
-					if rf != nil {
-						if rm, ok := rf.(*codegen.RawMapType); ok {
-							if _, isStruct := rm.ValueType.(*codegen.StructType); isStruct {
-								useRawType = false
-							}
-						}
-					}
-					if useRawType && rf != nil {
-						if err := rf.Generate(out); err != nil {
-							return err
-						}
-					} else {
-						// Use original field type for struct-valued maps
-						if err := f.Type.Generate(out); err != nil {
-							return err
-						}
+					if err := rawTypeForHelper(f.Type).Generate(out); err != nil {
+						return err
 					}
 					jsonTag := f.JSONName
 					if !isRequiredField(f, structType) {
@@ -376,13 +391,18 @@ func (jf *jsonFormatter) generate(
 						continue
 					}
 					exportedName := rawExportedName(f.Name)
-					// For struct-valued maps, use direct assignment (original type matches)
+					// For struct-valued maps, generate conversion that takes addresses
 					rf := rawType(f.Type)
 					if rf != nil {
-						// Check for RawMapType with StructType value
+						// Check for RawMapType with StructType value (direct or via NamedType)
 						if rm, ok := rf.(*codegen.RawMapType); ok {
-							if _, isStruct := rm.ValueType.(*codegen.StructType); isStruct {
-								out.Printf("\t%s: j.%s,\n", exportedName, f.Name)
+							valType := rm.ValueType
+							if nt, ok := valType.(*codegen.NamedType); ok && nt.Decl != nil {
+								valType = nt.Decl.Type
+							}
+							if _, isStruct := valType.(*codegen.StructType); isStruct {
+								conv := immutableToRawConversionForMarshal(f.Type, "j."+f.Name)
+								out.Printf("\t%s: %s,\n", exportedName, conv)
 								continue
 							}
 						}
@@ -414,7 +434,7 @@ func (jf *jsonFormatter) generate(
 					}
 					tag := fmt.Sprintf(`json:"%s"`, jsonTag)
 					out.Printf("\t%s ", exportedName)
-					if err := rawType(f.Type).Generate(out); err != nil {
+					if err := rawTypeForHelper(f.Type).Generate(out); err != nil {
 						return err
 					}
 					out.Printf("`%s`\n", tag)
@@ -693,6 +713,13 @@ func rawToImmutableConversion(t codegen.Type, expr string) string {
 			return fmt.Sprintf("func() %s { if %s == nil { return nil }; l := make([]%s, 0, len(%s)); for _, v := range %s { l = append(l, %s) }; return (%s)(immutable.NewList(l...)) }()",
 				resultType, expr, innerTypeName, expr, expr, innerConv, resultType)
 		case codegen.MapType, *codegen.MapType:
+			if needsPointerConversion(mt) {
+				valType := rawTypeName(getType(mt))
+				if x.Decl != nil {
+					return fmt.Sprintf("(%s)(*immutable.NewMapOf[string](nil, func() map[string]%s { m := make(map[string]%s); for k, v := range %s { m[k] = *v }; return m }()))", typeArgName(x), valType, valType, expr)
+				}
+				return fmt.Sprintf("*immutable.NewMapOf[string](nil, func() map[string]%s { m := make(map[string]%s); for k, v := range %s { m[k] = *v }; return m }())", valType, valType, expr)
+			}
 			if x.Decl != nil {
 				return fmt.Sprintf("(%s)(*immutable.NewMapOf[string](nil, %s))", typeArgName(x), expr)
 			}
@@ -726,7 +753,13 @@ func rawToImmutableConversion(t codegen.Type, expr string) string {
 			return fmt.Sprintf("func() %s { if %s == nil { return nil }; l := make([]%s, 0, len(%s)); for _, v := range %s { l = append(l, %s) }; return (%s)(immutable.NewList(l...)) }()",
 				resultType, expr, innerTypeName, expr, expr, innerConv, resultType)
 		case codegen.MapType, *codegen.MapType:
-			// Cast to the named type if available
+			if needsPointerConversion(mt) {
+				valType := rawTypeName(getType(mt))
+				if x.Decl != nil {
+					return fmt.Sprintf("(%s)(*immutable.NewMapOf[string](nil, func() map[string]%s { m := make(map[string]%s); for k, v := range %s { m[k] = *v }; return m }()))", typeArgName(x), valType, valType, expr)
+				}
+				return fmt.Sprintf("*immutable.NewMapOf[string](nil, func() map[string]%s { m := make(map[string]%s); for k, v := range %s { m[k] = *v }; return m }())", valType, valType, expr)
+			}
 			if x.Decl != nil {
 				return fmt.Sprintf("(%s)(*immutable.NewMapOf[string](nil, %s))", typeArgName(x), expr)
 			}
@@ -797,7 +830,81 @@ func getResultElementType(t codegen.Type) string {
 	}
 }
 
+// immutableToRawConversionForMarshal generates the Go expression to convert an immutable type
+// to its raw equivalent for MarshalJSON helper struct body. For struct-valued maps, it takes
+// addresses of values so that json.Marshal can call pointer-receiver MarshalJSON methods.
+func immutableToRawConversionForMarshal(t codegen.Type, expr string) string {
+	// Unwrap NamedType to get the underlying type
+	origT := t
+	if nt, ok := t.(*codegen.NamedType); ok && nt.Decl != nil {
+		t = nt.Decl.Type
+	}
+	switch t.(type) {
+	case codegen.MapType, *codegen.MapType:
+		if needsPointerConversion(t) {
+			valType := rawTypeName(getType(t))
+			return fmt.Sprintf("func() map[string]*%s { m := make(map[string]*%s); iter := (*immutable.Map[string,%s])(&%s).Iterator(); for iter.First(); !iter.Done(); { k, v, ok := iter.Next(); if !ok { break }; m[k] = &v }; return m }()",
+				valType, valType, valType, expr)
+		}
+		// For inline struct-valued maps, generate the correct struct type
+		valType := getType(t)
+		if valType != nil {
+			if st, ok := valType.(*codegen.StructType); ok {
+				structDef := generateStructTypeDef(st)
+				return fmt.Sprintf("func() map[string]%s { m := make(map[string]%s); iter := (*immutable.Map[string,%s])(&%s).Iterator(); for iter.First(); !iter.Done(); { k, v, ok := iter.Next(); if !ok { break }; m[k] = v }; return m }()",
+					structDef, structDef, structDef, expr)
+			}
+		}
+	}
+	// For non-struct-valued maps, fall through to standard conversion
+	return immutableToRawConversion(origT, expr)
+}
+
+// generateStructTypeDef generates a struct type definition string from a StructType.
+func generateStructTypeDef(st *codegen.StructType) string {
+	var buf strings.Builder
+	buf.WriteString("struct {")
+	for i, f := range st.Fields {
+		if i > 0 {
+			buf.WriteString("\n\t")
+		}
+		buf.WriteString(f.Name)
+		buf.WriteString(" ")
+		buf.WriteString(typeArgName(f.Type))
+		if f.Tags != "" {
+			buf.WriteString(" `")
+			buf.WriteString(f.Tags)
+			buf.WriteString("`")
+		}
+	}
+	buf.WriteString("}")
+	return buf.String()
+}
+
 // rawTypeName returns the raw (non-immutable, non-named) type name for use in immutableToRawConversion.
+
+// needsPointerConversion returns true if a map field needs pointer values
+// in the helper/raw struct (for struct-valued maps to enable pointer-receiver MarshalJSON).
+func needsPointerConversion(t codegen.Type) bool {
+	rf := rawType(t)
+	if rf != nil {
+		if rm, ok := rf.(*codegen.RawMapType); ok {
+			valType := rm.ValueType
+			// Only named struct types WITH A PACKAGE (cross-references) have MarshalJSON methods.
+			// Inline struct definitions (no Package) don't have MarshalJSON, so they don't need pointer conversion.
+			if nt, ok := valType.(*codegen.NamedType); ok && nt.Decl != nil {
+				// Skip if this is an inline struct definition (no Package) - no MarshalJSON method
+				if nt.Decl.Name == "" {
+					return false
+				}
+				if _, isStruct := nt.Decl.Type.(*codegen.StructType); isStruct {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
 func rawTypeName(t codegen.Type) string {
 	switch x := t.(type) {
 	case codegen.ArrayType, *codegen.ArrayType:

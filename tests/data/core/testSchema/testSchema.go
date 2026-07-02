@@ -1882,7 +1882,7 @@ func (j *WorkflowState) UnmarshalYAML(value *yaml.Node) error {
 		Domaincurrentstage     string
 		Domainiterationindex   int
 		Domainiterationtotal   int
-		Domains                map[string]DomainState
+		Domains                map[string]*DomainState
 		Finalinvestigationtask string
 		Investigationplan      *dt.InvestigatorPlan
 		Investigationresults   *dt.InvestigationReport
@@ -1907,7 +1907,13 @@ func (j *WorkflowState) UnmarshalYAML(value *yaml.Node) error {
 	plain.domaincurrentstage = rawStruct.Domaincurrentstage
 	plain.domainiterationindex = rawStruct.Domainiterationindex
 	plain.domainiterationtotal = rawStruct.Domainiterationtotal
-	plain.domains = (WorkflowStatedomains)(*immutable.NewMapOf[string](nil, rawStruct.Domains))
+	plain.domains = (WorkflowStatedomains)(*immutable.NewMapOf[string](nil, func() map[string]DomainState {
+		m := make(map[string]DomainState)
+		for k, v := range rawStruct.Domains {
+			m[k] = *v
+		}
+		return m
+	}()))
 	plain.finalinvestigationtask = rawStruct.Finalinvestigationtask
 	plain.investigationplan = rawStruct.Investigationplan
 	plain.investigationresults = rawStruct.Investigationresults
@@ -1951,7 +1957,7 @@ func (j *WorkflowState) UnmarshalJSON(value []byte) error {
 		Domaincurrentstage     string                               `json:"domainCurrentStage,omitempty,omitzero"`
 		Domainiterationindex   int                                  `json:"domainIterationIndex,omitempty,omitzero"`
 		Domainiterationtotal   int                                  `json:"domainIterationTotal,omitempty,omitzero"`
-		Domains                map[string]DomainState               `json:"domains,omitempty,omitzero"`
+		Domains                map[string]*DomainState              `json:"domains,omitempty,omitzero"`
 		Finalinvestigationtask string                               `json:"finalInvestigationTask,omitempty,omitzero"`
 		Investigationplan      *dt.InvestigatorPlan                 `json:"investigationPlan,omitempty,omitzero"`
 		Investigationresults   *dt.InvestigationReport              `json:"investigationResults,omitempty,omitzero"`
@@ -1976,7 +1982,13 @@ func (j *WorkflowState) UnmarshalJSON(value []byte) error {
 	plain.domaincurrentstage = helper.Domaincurrentstage
 	plain.domainiterationindex = helper.Domainiterationindex
 	plain.domainiterationtotal = helper.Domainiterationtotal
-	plain.domains = (WorkflowStatedomains)(*immutable.NewMapOf[string](nil, helper.Domains))
+	plain.domains = (WorkflowStatedomains)(*immutable.NewMapOf[string](nil, func() map[string]DomainState {
+		m := make(map[string]DomainState)
+		for k, v := range helper.Domains {
+			m[k] = *v
+		}
+		return m
+	}()))
 	plain.finalinvestigationtask = helper.Finalinvestigationtask
 	plain.investigationplan = helper.Investigationplan
 	plain.investigationresults = helper.Investigationresults
@@ -2019,7 +2031,7 @@ func (j *WorkflowState) MarshalJSON() ([]byte, error) {
 		Domaincurrentstage     string                               `json:"domainCurrentStage,omitempty,omitzero"`
 		Domainiterationindex   int                                  `json:"domainIterationIndex,omitempty,omitzero"`
 		Domainiterationtotal   int                                  `json:"domainIterationTotal,omitempty,omitzero"`
-		Domains                map[string]DomainState               `json:"domains,omitempty,omitzero"`
+		Domains                map[string]*DomainState              `json:"domains,omitempty,omitzero"`
 		Finalinvestigationtask string                               `json:"finalInvestigationTask,omitempty,omitzero"`
 		Investigationplan      *dt.InvestigatorPlan                 `json:"investigationPlan,omitempty,omitzero"`
 		Investigationresults   *dt.InvestigationReport              `json:"investigationResults,omitempty,omitzero"`
@@ -2050,15 +2062,15 @@ func (j *WorkflowState) MarshalJSON() ([]byte, error) {
 		Domaincurrentstage:   j.domaincurrentstage,
 		Domainiterationindex: j.domainiterationindex,
 		Domainiterationtotal: j.domainiterationtotal,
-		Domains: func() map[string]DomainState {
-			m := make(map[string]DomainState)
+		Domains: func() map[string]*DomainState {
+			m := make(map[string]*DomainState)
 			iter := (*immutable.Map[string, DomainState])(&j.domains).Iterator()
 			for iter.First(); !iter.Done(); {
 				k, v, ok := iter.Next()
 				if !ok {
 					break
 				}
-				m[k] = v
+				m[k] = &v
 			}
 			return m
 		}(),

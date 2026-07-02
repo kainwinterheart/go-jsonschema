@@ -70,7 +70,7 @@ func (yf *yamlFormatter) generate(
 			for _, f := range structType.Fields {
 				exportedName := rawExportedName(f.Name)
 				out.Printf("\t%s ", exportedName)
-				if err := rawType(f.Type).Generate(out); err != nil {
+				if err := rawTypeForHelper(f.Type).Generate(out); err != nil {
 					return err
 				}
 				out.Printlnf("")

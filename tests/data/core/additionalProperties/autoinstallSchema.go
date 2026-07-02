@@ -876,19 +876,24 @@ func (j *AutoinstallSchema) MarshalJSON() ([]byte, error) {
 		Packages            []string                           `json:"packages,omitempty,omitzero"`
 		Proxy               AutoinstallSchemaproxy             `json:"proxy,omitempty,omitzero"`
 		Refreshinstaller    *AutoinstallSchemarefreshinstaller `json:"refresh-installer,omitempty,omitzero"`
-		Reporting           AutoinstallSchemareporting         `json:"reporting,omitempty,omitzero"`
-		Shutdown            *AutoinstallSchemashutdown         `json:"shutdown,omitempty,omitzero"`
-		Snaps               []AutoinstallSchemasnapsElem       `json:"snaps,omitempty,omitzero"`
-		Source              *AutoinstallSchemasource           `json:"source,omitempty,omitzero"`
-		Ssh                 *AutoinstallSchemassh              `json:"ssh,omitempty,omitzero"`
-		Storage             map[string]interface{}             `json:"storage,omitempty,omitzero"`
-		Timezone            *string                            `json:"timezone,omitempty,omitzero"`
-		Ubuntuadvantage     *AutoinstallSchemaubuntuadvantage  `json:"ubuntu-advantage,omitempty,omitzero"`
-		Ubuntupro           *AutoinstallSchemaubuntupro        `json:"ubuntu-pro,omitempty,omitzero"`
-		Updates             *AutoinstallSchemaupdates          `json:"updates,omitempty,omitzero"`
-		Userdata            map[string]interface{}             `json:"user-data,omitempty,omitzero"`
-		Version             int                                `json:"version"`
-		Zdevs               []AutoinstallSchemazdevsElem       `json:"zdevs,omitempty,omitzero"`
+		Reporting           map[string]struct {
+			// atype corresponds to the JSON schema field "type".
+			atype string `json:"type" yaml:"type" mapstructure:"type"`
+
+			AdditionalProperties interface{} `mapstructure:",remain"`
+		} `json:"reporting,omitempty,omitzero"`
+		Shutdown        *AutoinstallSchemashutdown        `json:"shutdown,omitempty,omitzero"`
+		Snaps           []AutoinstallSchemasnapsElem      `json:"snaps,omitempty,omitzero"`
+		Source          *AutoinstallSchemasource          `json:"source,omitempty,omitzero"`
+		Ssh             *AutoinstallSchemassh             `json:"ssh,omitempty,omitzero"`
+		Storage         map[string]interface{}            `json:"storage,omitempty,omitzero"`
+		Timezone        *string                           `json:"timezone,omitempty,omitzero"`
+		Ubuntuadvantage *AutoinstallSchemaubuntuadvantage `json:"ubuntu-advantage,omitempty,omitzero"`
+		Ubuntupro       *AutoinstallSchemaubuntupro       `json:"ubuntu-pro,omitempty,omitzero"`
+		Updates         *AutoinstallSchemaupdates         `json:"updates,omitempty,omitzero"`
+		Userdata        map[string]interface{}            `json:"user-data,omitempty,omitzero"`
+		Version         int                               `json:"version"`
+		Zdevs           []AutoinstallSchemazdevsElem      `json:"zdevs,omitempty,omitzero"`
 	}
 	helper := AutoinstallSchemaMarshalHelper{
 		Activedirectory:   j.activedirectory,
@@ -965,8 +970,28 @@ func (j *AutoinstallSchema) MarshalJSON() ([]byte, error) {
 		}(),
 		Proxy:            j.proxy,
 		Refreshinstaller: j.refreshinstaller,
-		Reporting:        j.reporting,
-		Shutdown:         j.shutdown,
+		Reporting: func() map[string]struct {
+			atype                string      `json:"type" yaml:"type" mapstructure:"type"`
+			AdditionalProperties interface{} `mapstructure:",remain"`
+		} {
+			m := make(map[string]struct {
+				atype                string      `json:"type" yaml:"type" mapstructure:"type"`
+				AdditionalProperties interface{} `mapstructure:",remain"`
+			})
+			iter := (*immutable.Map[string, struct {
+				atype                string      `json:"type" yaml:"type" mapstructure:"type"`
+				AdditionalProperties interface{} `mapstructure:",remain"`
+			}])(&j.reporting).Iterator()
+			for iter.First(); !iter.Done(); {
+				k, v, ok := iter.Next()
+				if !ok {
+					break
+				}
+				m[k] = v
+			}
+			return m
+		}(),
+		Shutdown: j.shutdown,
 		Snaps: func() []AutoinstallSchemasnapsElem {
 			if j.snaps == nil {
 				return nil
